@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geo-intel-map</title>
+  <!-- Leaflet 1.9.4 CSS (지도 스타일) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <!-- 지도가 그려질 div — MapController가 이 id를 사용 -->
+  <div id="map"></div>
+
+  <!-- 우측 상단 정보 패널 -->
+  <div class="info-panel">
+    <span class="info-title">geo-intel-map</span>
+    <span class="info-version">v0.0.1</span>
+  </div>
+
+  <!-- Leaflet JS (CDN) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- 진입점 — ES 모듈로 MapController 불러와서 초기화 -->
+  <script type="module">
+    import { MapController } from './src/core/MapController.js';
+    const controller = new MapController('map');
+    controller.init();
+  </script>
+</body>
+</html>
