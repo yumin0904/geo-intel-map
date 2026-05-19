@@ -1,0 +1,19 @@
+# Phase 0 기본 패키지 (2026-05-19 기준 최신 안정 버전)
+
+# 웹 프레임워크
+fastapi==0.136.1
+
+# ASGI 서버 (standard = websockets, httptools 포함)
+uvicorn[standard]==0.47.0
+
+# 비동기 HTTP 클라이언트 (외부 API 호출용)
+httpx==0.28.1
+
+# 데이터 검증 (v2: Event 모델 등 Pydantic BaseModel에 사용)
+pydantic==2.13.4
+
+# .env 파일에서 API 키 로드
+python-dotenv==1.2.2
+
+# 비동기 SQLite (Phase 1 DB)
+aiosqlite==0.22.1
