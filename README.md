@@ -23,6 +23,46 @@
 - [ ] Phase 2: 핵심 차별화 (실시간 + 룰북 + 인과 그래프)
 - [ ] Phase 3: 학습 도구 완성
 
+## 로컬 개발 시작하기
+
+### 1. 가상환경 활성화 (매번 작업 시작 전)
+
+```bash
+# 프로젝트 루트에서 실행
+source backend/.venv/bin/activate
+
+# 비활성화할 때
+deactivate
+```
+
+### 2. 백엔드 서버 실행
+
+```bash
+# backend 폴더 안으로 이동 후 실행해야 한다 (main.py가 있는 위치)
+cd backend
+uvicorn main:app --reload --port 8000
+```
+
+- `--reload` : 코드를 수정하면 서버가 자동으로 재시작됨. 개발 중에만 사용.
+- `--port 8000` : 8000번 포트에서 실행. 브라우저에서 http://localhost:8000 으로 접근.
+- 종료는 터미널에서 `Ctrl + C`
+
+### 3. 동작 확인
+
+서버 실행 후 아래 URL을 브라우저나 터미널에서 확인:
+
+| 경로 | 설명 |
+|------|------|
+| http://localhost:8000/ | API 루트 |
+| http://localhost:8000/api/health | 헬스체크 |
+| http://localhost:8000/docs | 자동 생성 API 문서 (Swagger UI) |
+
+```bash
+# 터미널에서 확인 (curl)
+curl http://localhost:8000/api/health
+# → {"status":"ok","service":"geo-intel-map","version":"0.0.1"}
+```
+
 ## 라이선스
 
 개인 학습 프로젝트 (비공개)
