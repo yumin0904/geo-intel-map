@@ -88,3 +88,106 @@ body {
   border-radius: 4px;
   box-shadow: none;
 }
+
+/* ── 레이어 패널 (좌측 사이드바) ─────────────────────────────── */
+#layer-panel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  width: 180px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--panel-radius);
+  padding: 12px;
+  user-select: none;
+}
+
+.layer-panel__title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.layer-item {
+  margin-bottom: 6px;
+}
+
+/* 레이어 토글 버튼 */
+.layer-item__btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  text-align: left;
+}
+
+.layer-item__btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* 활성화(ON) 상태 */
+.layer-item__btn.is-active {
+  color: var(--color-text-primary);
+  border-color: var(--color-accent);
+  background: rgba(88, 166, 255, 0.08);
+}
+
+.layer-item__icon { font-size: 11px; }
+.layer-item__name { flex: 1; }
+
+/* 로딩 스피너 */
+.layer-item__spinner {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: panel-spin 0.7s linear infinite;
+}
+
+@keyframes panel-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 진영 필터 버튼 영역 */
+.layer-filters-wrap {
+  padding: 4px 4px 0;
+}
+
+.layer-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* 진영 필터 개별 버튼 — --filter-color CSS 변수로 색상 주입 */
+.filter-btn {
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--filter-color, #666);
+  color: var(--filter-color, #666);
+  background: transparent;
+  opacity: 0.3;
+  transition: opacity 0.15s;
+}
+
+.filter-btn:hover  { opacity: 0.65; }
+.filter-btn.is-active { opacity: 1; }
