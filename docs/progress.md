@@ -50,19 +50,32 @@
 
 ---
 
+---
+
+## 2026-05-20 (Phase 0 공식 완료)
+
+### Phase 0 최종 결과 ✅
+
+- **완료 일시**: 2026-05-20
+- **최종 확인**: 다크 테마 Leaflet 지도 위 20개 군사기지 마커 브라우저 동작 확인
+- **마커 색상**: 파랑(미국), 빨강(중국), 노랑(러시아), 초록(동맹국)
+- **팝업 내용**: 기지명·유형·설치연도·전략목적·학술의의·이론태그
+- **좌표 정밀도**: WGS84 소수점 5자리, Wikipedia 대조 검증 완료
+
+---
+
 ### 다음 세션 시작점
-**Phase 1 — LayerManager + 레이어 토글 UI 구현**
+**Phase 1 Step 1 — LayerManager + 레이어 토글 UI**
 
-추천 다음 작업 순서:
-1. `frontend/src/core/LayerManager.js` — 레이어 등록·토글·상태관리
-2. `frontend/src/panels/LayerPanel.js` — 사이드바 토글 UI
-3. ACLED API 연결 (`backend/connectors/acled.py`) — 분쟁 이벤트 레이어 (Phase 1 우선순위 1위)
+추천 작업 순서:
+1. `frontend/src/core/LayerManager.js` — 레이어 등록·토글·show/hide 상태관리, EventBus 연동
+2. `frontend/src/panels/LayerPanel.js` — 좌측 사이드바 토글 버튼 UI (진영별 필터 포함)
+3. `frontend/src/core/MapController.js` — LayerManager 통합
+4. `backend/connectors/acled.py` — ACLED 분쟁 이벤트 레이어 (Phase 1 우선순위 1위)
 
-### 세션 재시작 명령어 (매번 이것만 기억하면 됨)
+### 세션 재시작 명령어
 
 ```bash
-# 프로젝트 루트에서 — 터미널 2개 열고 각각 실행
-
 # [터미널 1] 백엔드
 cd ~/Projects/geo-intel-map/backend && source .venv/bin/activate && uvicorn main:app --reload --port 8000
 
