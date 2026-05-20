@@ -64,14 +64,61 @@
 
 ---
 
+---
+
+## 2026-05-20 (Phase 1 작업)
+
+### 완료 항목
+
+**Step 1 — LayerManager + LayerPanel UI**
+- [x] `frontend/src/core/EventBus.js` — pub/sub 싱글톤
+- [x] `frontend/src/core/LayerManager.js` — 레이어 등록·토글·상태관리 (register() 한 줄로 패널 자동 반영)
+- [x] `frontend/src/panels/LayerPanel.js` — 좌측 사이드바 (진영 필터 버튼 포함)
+- [x] `frontend/styles/main.css` — 사이드바·필터 버튼 CSS
+- [x] 브라우저 확인: 토글/필터/팝업 3가지 모두 동작 ✅
+- [x] 커밋: `2c1c178`, `45bbf70`
+
+**Step 2 — ACLED 분쟁 이벤트 레이어 (구현 완료, API 승인 대기)**
+- [x] `backend/models/event.py` — Event Pydantic 모델 (CLAUDE.md 3.1 스펙)
+- [x] `backend/connectors/base.py` — BaseConnector 추상 클래스
+- [x] `backend/connectors/acled.py` — OAuth 토큰 캐싱/갱신, severity 정규화, theory_tags 매핑
+- [x] `GET /api/layers/conflict-events` 엔드포인트
+- [x] `frontend/src/layers/ConflictEventsLayer.js` — severity 기반 마커 크기/색상
+- [x] 커밋: `c0edfde`
+- ⏳ ACLED API 403 (계정 read 권한 승인 대기 중) — 승인 후 즉시 동작 예정
+
+**Step 3 — 에너지 파이프라인 레이어**
+- [x] `data/energy_pipelines.geojson` — 10개 파이프라인 (실제 경로 3~7개 좌표)
+  - Nord Stream 1·2, 우크라이나 경유, Druzhba, Power of Siberia 1
+  - CAGP, TANAP, TAP, Iran-Pakistan IP, ESPO
+- [x] `GET /api/layers/energy-pipelines` 엔드포인트
+- [x] `frontend/src/layers/EnergyPipelinesLayer.js`
+  - 가스=주황(`#ff8c00`), 석유=노랑(`#ffd700`)
+  - suspended=점선, sabotaged=파단선, planned=짧은 점선
+  - 마우스오버 강조, 클릭 팝업: theory_tags·significance 포함
+- [x] 브라우저 확인: 군사기지 + 에너지 파이프라인 동시 표시 ✅
+- [x] 커밋: `53165a8`
+
+---
+
+### 현재 레이어 현황
+
+| 레이어 | 상태 | 아이콘 | 기본 표시 |
+|--------|------|--------|-----------|
+| 군사기지 | ✅ 동작 | ⬡ | ON |
+| 분쟁 이벤트 | ⏳ ACLED 승인 대기 | ◈ | OFF |
+| 에너지 파이프라인 | ✅ 동작 | ━ | ON |
+
+---
+
 ### 다음 세션 시작점
-**Phase 1 Step 1 — LayerManager + 레이어 토글 UI**
+**Phase 1 Step 4 — 해저 케이블 레이어 + ACLED 승인 시 분쟁 이벤트 연결**
 
 추천 작업 순서:
-1. `frontend/src/core/LayerManager.js` — 레이어 등록·토글·show/hide 상태관리, EventBus 연동
-2. `frontend/src/panels/LayerPanel.js` — 좌측 사이드바 토글 버튼 UI (진영별 필터 포함)
-3. `frontend/src/core/MapController.js` — LayerManager 통합
-4. `backend/connectors/acled.py` — ACLED 분쟁 이벤트 레이어 (Phase 1 우선순위 1위)
+1. `data/submarine_cables.geojson` — TeleGeography 공개 데이터 기반 주요 해저 케이블 (~15개)
+2. `GET /api/layers/submarine-cables` 엔드포인트
+3. `frontend/src/layers/SubmarineCablesLayer.js` — 얇은 선, 절단 위험 구간 강조
+4. ACLED 승인 확인 후 `backend/connectors/acled.py` 테스트
 
 ### 세션 재시작 명령어
 
