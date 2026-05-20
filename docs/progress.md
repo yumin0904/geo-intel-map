@@ -32,27 +32,43 @@
 - 마커 색상: 파랑(미국), 빨강(중국), 노랑(러시아), 초록(동맹)
 - 클릭 시 팝업: 기지명/유형/설치연도/전략목적/학술의의/이론태그
 
+---
+
+### 좌표 검증 작업 (2026-05-20 오후)
+
+- [x] 20개 기지 전체 Wikipedia(영문) 좌표 대조 검증
+- [x] 소수점 5자리 정밀도 표준 적용 (DMS → decimal 변환 포함)
+- [x] `coordinate_source` / `coordinate_verified_at` 메타데이터 필드 추가
+- [x] 5개 큰 오차 발견 및 보정 완료:
+  - 창이 NB: 경도 **4km** 오차 수정
+  - 진주만-히캄: 경도 **2.5km** 오차 수정
+  - 위린 NB(싼야): 경도 **6km** 오차 수정
+  - PLA 지부티: **11km** 오차 수정 (Balbala 실제 위치 반영)
+  - 잔장 NB: **11km** 오차 수정 (GlobalSecurity.org 기준)
+- [x] Vladivostok → Fokino 기지로 대체 (Wikipedia 좌표 없음 → Fokino WP 사용)
+- [x] git 커밋 완료: `63e00fa`
+
+---
+
 ### 다음 세션 시작점
-**Phase 1 — LayerManager + 토글 UI 구현 (레이어 1~5번 추가 시작)**
+**Phase 1 — LayerManager + 레이어 토글 UI 구현**
 
-추천 다음 작업:
-1. `LayerManager.js` — 레이어 등록·토글·상태관리
-2. `LayerPanel.js` — 사이드바 레이어 토글 UI
-3. ACLED API 연결 (분쟁 이벤트 레이어 — Phase 1 우선순위 1위)
+추천 다음 작업 순서:
+1. `frontend/src/core/LayerManager.js` — 레이어 등록·토글·상태관리
+2. `frontend/src/panels/LayerPanel.js` — 사이드바 토글 UI
+3. ACLED API 연결 (`backend/connectors/acled.py`) — 분쟁 이벤트 레이어 (Phase 1 우선순위 1위)
 
-### 서버 실행 명령어
+### 세션 재시작 명령어 (매번 이것만 기억하면 됨)
 
 ```bash
-# 터미널 1 — 백엔드 (backend 폴더 안에서)
-source backend/.venv/bin/activate
-cd backend
-uvicorn main:app --reload --port 8000
+# 프로젝트 루트에서 — 터미널 2개 열고 각각 실행
 
-# 터미널 2 — 프론트엔드 (frontend 폴더 안에서)
-cd frontend
-python3 -m http.server 5500
+# [터미널 1] 백엔드
+cd ~/Projects/geo-intel-map/backend && source .venv/bin/activate && uvicorn main:app --reload --port 8000
 
-# 브라우저에서 열기
-open http://localhost:5500        # 지도
-open http://localhost:8000/docs   # FastAPI 자동 문서
+# [터미널 2] 프론트엔드
+cd ~/Projects/geo-intel-map/frontend && python3 -m http.server 5500
+
+# [브라우저]
+open http://localhost:5500 && open http://localhost:8000/docs
 ```
