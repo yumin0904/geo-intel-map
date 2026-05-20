@@ -1,0 +1,352 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "description": "인도-태평양 및 주요 전략거점 군사기지 (Phase 0 큐레이션)",
+    "sources": ["Wikipedia (English)", "GlobalSecurity.org"],
+    "coordinate_standard": "시설 중심부 (사령부/본진 기준), WGS84, 소수점 5자리",
+    "coordinate_policy": "Wikipedia 영문판 우선, 없을 경우 GlobalSecurity.org",
+    "last_updated": "2026-05-20"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [127.76944, 26.35167] },
+      "properties": {
+        "name": "가데나 공군기지",
+        "name_en": "Kadena Air Base",
+        "country": "USA",
+        "type": "air",
+        "purpose": "제1열도선 내 미 공군력 전진배치 핵심 거점",
+        "theory_tags": ["First Island Chain", "Forward Deployment", "A2AD Counter", "Indo-Pacific Strategy"],
+        "sector": "indo_pacific",
+        "established_year": 1945,
+        "significance": "아시아 최대 규모 미 공군기지로 F-15C/D, KC-135 등을 상시 전진배치한다. 대만해협·남중국해 전역 모두를 작전반경 내에 두며, 중국의 A2/AD 전략에 맞서는 제1열도선 방어의 핵심 축이다. 유사시 한반도 증원전력 발진 기지로도 기능한다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [127.03333, 36.96667] },
+      "properties": {
+        "name": "캠프 험프리스",
+        "name_en": "Camp Humphreys (USAG Humphreys)",
+        "country": "USA",
+        "type": "army",
+        "purpose": "주한미군 통합사령부 — 한반도 확장억제 전략의 지상 닻",
+        "theory_tags": ["Extended Deterrence", "Alliance Theory", "Forward Deployment", "Tripwire Strategy"],
+        "sector": "indo_pacific",
+        "established_year": 1919,
+        "significance": "미국 최대 해외 단일 군사기지로 2017년 평택 이전 완료 후 약 45,000명을 수용한다. 주한미군 지상군의 허브로서 동맹이론상 '인계철선(Tripwire)' 역할을 수행하며, 확장억제의 물리적 실체다. 북한의 재래식 도발 억제뿐 아니라 중국에 대한 지역 균형자 역할도 담당한다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [144.92444, 13.57611] },
+      "properties": {
+        "name": "앤더슨 공군기지",
+        "name_en": "Andersen Air Force Base",
+        "country": "USA",
+        "type": "air",
+        "purpose": "태평양 전략폭격기 순환배치 — 제2열도선 전력투사 핵심",
+        "theory_tags": ["Second Island Chain", "Power Projection", "Strategic Deterrence", "Island Chain Strategy"],
+        "sector": "indo_pacific",
+        "established_year": 1944,
+        "significance": "괌에 위치한 앤더슨 기지는 제2열도선의 거점으로 B-52, B-1B, B-2 전략폭격기의 순환배치를 통해 대중국 전략억제력을 유지한다. 제1열도선(오키나와)이 봉쇄될 경우에도 독립적인 작전능력을 보장하는 '보험 기지' 역할이다. 미국의 핵태세 검토(NPR)에서 반복적으로 언급되는 전략적 핵심 자산이다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [144.65250, 13.44000] },
+      "properties": {
+        "name": "괌 해군기지",
+        "name_en": "Naval Base Guam (Apra Harbor)",
+        "country": "USA",
+        "type": "naval",
+        "purpose": "서태평양 미 해군 잠수함·수상함 전진기지",
+        "theory_tags": ["Sea Power", "Mahan Doctrine", "Second Island Chain", "Submarine Warfare"],
+        "sector": "maritime_chokepoint",
+        "established_year": 1944,
+        "significance": "로스앤젤레스급 및 버지니아급 공격잠수함을 전진배치하여 서태평양에서의 제해권 유지 기반을 제공한다. Mahan의 해양력 이론이 현대화된 형태로, 태평양 도서 거점을 활용한 해양통제 전략의 핵심 노드다. 앤더슨 공군기지와 결합하여 괌 전체가 서태평양의 '불침항모' 역할을 한다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.34861, 35.74861] },
+      "properties": {
+        "name": "요코타 공군기지",
+        "name_en": "Yokota Air Base",
+        "country": "USA",
+        "type": "air",
+        "purpose": "주일미군 공군 사령부 — 일본 전역 작전 지휘·통제",
+        "theory_tags": ["Alliance Theory", "Extended Deterrence", "C2 Hub", "Forward Deployment"],
+        "sector": "indo_pacific",
+        "established_year": 1945,
+        "significance": "주일미군 공군사령부(USFAJ)가 소재하는 지휘·통제 허브다. 지리적으로 도쿄 인근에 위치해 전쟁 억제보다 동맹 관리 기능이 강하다. 인도-태평양사령부(INDOPACOM) 작전의 병참 허브이자 인도적 지원·재난구호(HA/DR) 작전의 출발점이기도 하다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [129.71139, 33.16278] },
+      "properties": {
+        "name": "사세보 해군기지",
+        "name_en": "Fleet Activities Sasebo",
+        "country": "USA",
+        "type": "naval",
+        "purpose": "서태평양 미 해군 수상전투함 전진기지 (일본해·동중국해 접근)",
+        "theory_tags": ["Forward Deployment", "Sea Power", "Alliance Theory", "Naval Presence"],
+        "sector": "maritime_chokepoint",
+        "established_year": 1945,
+        "significance": "일본해와 동중국해에 직접 면한 위치로 상륙함·소해함·구축함을 전진배치한다. 한반도 유사시 해상 증원로 확보에 결정적이며, 대한해협(쓰시마 해협) 통제력과 직결된다. 중국 잠수함의 태평양 진출 경로 감시 임무도 수행한다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [132.24417, 34.14500] },
+      "properties": {
+        "name": "이와쿠니 해병대 항공기지",
+        "name_en": "MCAS Iwakuni",
+        "country": "USA",
+        "type": "air",
+        "purpose": "제1열도선 남부 해병대 항공전력 (F-35B) 전진기지",
+        "theory_tags": ["First Island Chain", "Amphibious Operations", "Forward Deployment", "Distributed STOVL"],
+        "sector": "indo_pacific",
+        "established_year": 1952,
+        "significance": "F-35B 단거리이착륙기(STOVL)를 배치하여 도서 분쟁 시 간이활주로 운용이 가능한 분산배치 작전 개념을 구현한다. 해병항공단이 해병원정군(MEF)과 결합하면 도서 탈환·점령 작전 능력을 제공한다. 중국의 A2/AD 망을 우회하는 분산작전(Distributed Operations) 전략의 핵심 자산이다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [104.02583, 1.32111] },
+      "properties": {
+        "name": "창이 해군기지",
+        "name_en": "Changi Naval Base",
+        "country": "Allied",
+        "type": "naval",
+        "purpose": "말라카 해협 통제 — 동남아 SLOC 안보의 핵심 허브",
+        "theory_tags": ["SLOC Security", "Strait of Malacca", "Maritime Chokepoint", "Naval Basing"],
+        "sector": "maritime_chokepoint",
+        "established_year": 1998,
+        "significance": "전 세계 해상무역의 약 25%가 통과하는 말라카 해협의 동쪽 출구를 통제하는 전략적 위치에 있다. 미 항공모함 전단이 정례적으로 기항하여 사실상 미-싱가포르 준동맹 관계를 물리적으로 구현한다. 중국의 '말라카 딜레마(Malacca Dilemma)' — 에너지 수입의 80% 이상이 이 해협 통과 — 를 실증하는 지점이다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [72.41111, -7.31333] },
+      "properties": {
+        "name": "디에고 가르시아",
+        "name_en": "Diego Garcia (BIOT)",
+        "country": "USA",
+        "type": "multi",
+        "purpose": "인도양 전략폭격기·잠수함 전진기지 — 중동~인도-태평양 연결 고리",
+        "theory_tags": ["Power Projection", "Indian Ocean Strategy", "SLOC Security", "Basing Rights"],
+        "sector": "maritime_chokepoint",
+        "established_year": 1971,
+        "significance": "인도양 한가운데 위치하여 중동, 아프리카, 아시아 어느 방향으로도 72시간 이내 전력 투사가 가능하다. B-52 폭격기와 핵잠수함을 동시 운용할 수 있는 유일한 인도양 기지로 걸프전·이라크전·아프간전 모두의 폭격 출격지다. 인도가 자국 안보권역으로 주장하는 인도양에 미국이 확보한 '닻(Anchor)'으로 미-인 관계의 구조적 긴장 요인이기도 하다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [43.14861, 11.54361] },
+      "properties": {
+        "name": "캠프 레모니에 (미군)",
+        "name_en": "Camp Lemonnier (US)",
+        "country": "USA",
+        "type": "multi",
+        "purpose": "아프리카의 뿔 대테러·홍해 SLOC 감시 전진기지",
+        "theory_tags": ["SLOC Security", "Counter-Terrorism", "Forward Deployment", "Red Sea Chokepoint"],
+        "sector": "maritime_chokepoint",
+        "established_year": 2002,
+        "significance": "지부티에 위치한 미국 유일의 아프리카 상설 군사기지로 드론·특수작전을 통한 대테러 임무와 홍해·바브엘만데브 해협 감시를 수행한다. 2023년 후티 반군의 홍해 상선 공격으로 SLOC 안보의 중요성이 재부각되었다. 아이러니하게도 불과 10km 거리에 중국 PLA 해군 지원기지가 위치해 미-중 전략경쟁이 아프리카까지 확장됨을 보여준다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-157.94389, 21.34917] },
+      "properties": {
+        "name": "진주만-히캄 합동기지",
+        "name_en": "Joint Base Pearl Harbor-Hickam",
+        "country": "USA",
+        "type": "multi",
+        "purpose": "인도-태평양사령부(INDOPACOM) 전략 사령부 소재지",
+        "theory_tags": ["Sea Power", "Mahan Doctrine", "Strategic Command", "Pacific Pivot"],
+        "sector": "indo_pacific",
+        "established_year": 1887,
+        "significance": "미국 인도-태평양사령부(INDOPACOM) 본부로 태평양 전구 전 작전을 지휘한다. Mahan이 1890년 『해양력이 역사에 미치는 영향』에서 예견한 태평양 지배 전략의 실체가 이 기지다. 1941년 일본 기습으로 미국의 태평양 전략을 바꾼 역사적 장소이며, 현재도 핵잠수함·항공모함의 주요 모항이다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [130.87667, -12.41472] },
+      "properties": {
+        "name": "RAAF 다윈기지 (미 해병 순환)",
+        "name_en": "RAAF Base Darwin (MRF-D)",
+        "country": "Allied",
+        "type": "air",
+        "purpose": "미 해병 순환전력(MRF-D) — 동남아 접근성 강화 및 중국 견제",
+        "theory_tags": ["Alliance Theory", "Force Posture Initiative", "Indo-Pacific Strategy", "AUKUS"],
+        "sector": "indo_pacific",
+        "established_year": 2012,
+        "significance": "2012년 오바마 정부의 '아시아 재균형' 정책으로 미 해병대 순환전력(MRF-D)이 배치된 이래 연간 2,500명 규모로 운용된다. AUKUS 체결(2021) 이후 호주의 전략적 가치가 급상승했으며, 미국 전략폭격기의 호주 순환배치 계획도 병행한다. 동남아시아로의 신속 전개 경로이자 남중국해 분쟁 시 제2전선 형성 가능 기지다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [120.28694, 14.80694] },
+      "properties": {
+        "name": "수빅만 (EDCA 기지)",
+        "name_en": "Subic Bay Freeport / EDCA Site",
+        "country": "Allied",
+        "type": "naval",
+        "purpose": "EDCA 협정 거점 — 남중국해 분쟁 시 미군 전진 접근 보장",
+        "theory_tags": ["South China Sea", "EDCA", "Access and Basing", "Ally Hedging"],
+        "sector": "maritime_chokepoint",
+        "established_year": 2014,
+        "significance": "1991년 필리핀 의회가 미군 철수를 결의한 이후 2014년 EDCA(방위협력협정)로 접근권을 회복한 상징적 장소다. 2023년 마르코스 정부가 추가 EDCA 기지를 승인하면서 미-필 동맹이 급속 복원되었고, 남중국해 영유권 분쟁에서 중국 견제를 위한 '생존 가능한 접근거점'으로 기능한다. 동맹이론상 헤징(Hedging) 전략의 실증 사례다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [109.52917, 18.22528] },
+      "properties": {
+        "name": "위린 해군기지 (싼야)",
+        "name_en": "Yulin Naval Base (Sanya)",
+        "country": "China",
+        "type": "naval",
+        "purpose": "PLAN 핵전력(SSBN) 은거지 — A2/AD 전략의 핵심 종심",
+        "theory_tags": ["A2AD", "Bastion Strategy", "Nuclear Deterrence", "Submarine Warfare"],
+        "sector": "indo_pacific",
+        "established_year": 2008,
+        "significance": "하이난섬 남단의 위린 기지는 진급(晉級·094형) 핵잠수함(SSBN)의 주요 기지로 위성 탐지를 피하기 위해 산악을 파낸 지하 터널에 잠수함을 수용한다. 소련의 '요새(Bastion)' 전략처럼 남중국해 전체를 핵전력 보호구역으로 활용하려는 의도가 명확하다. 미 해군 정보국(ONI)이 중국 핵전력 현대화의 핵심으로 반복 지목하는 시설이다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.40000, 21.16667] },
+      "properties": {
+        "name": "잔장 해군기지",
+        "name_en": "Zhanjiang Naval Base (PLAN Southern Theater)",
+        "country": "China",
+        "type": "naval",
+        "purpose": "PLAN 남부전구 해군사령부 — 남중국해 작전 총괄",
+        "theory_tags": ["A2AD", "Naval Expansion", "South China Sea", "PLAN Modernization"],
+        "sector": "indo_pacific",
+        "established_year": 1950,
+        "significance": "중국 인민해방군 해군(PLAN) 남부전구의 주력 기지로 항공모함·구축함·잠수함 전단을 통합 운용한다. 남중국해 인공섬 기지들의 모기지 역할이자 대만 유사시 상륙전단 집결지로 상정된다. 시진핑 시대 PLAN의 '근해방어(Near Seas Defense)'에서 '원해호위(Far Seas Protection)'로의 전략 전환을 물리적으로 구현하는 거점이다.",
+        "coordinate_source": "GlobalSecurity.org",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [112.88917, 9.54917] },
+      "properties": {
+        "name": "파이어리 크로스 초 (융수 초)",
+        "name_en": "Fiery Cross Reef (Yongshu Jiao)",
+        "country": "China",
+        "type": "air",
+        "purpose": "남중국해 중앙 거점 — A2/AD 네트워크 북부 노드",
+        "theory_tags": ["A2AD", "SCS Militarization", "Gray Zone Strategy", "Island Building"],
+        "sector": "maritime_chokepoint",
+        "established_year": 2015,
+        "significance": "2015년 완공된 3,000m 활주로를 갖춘 인공섬 기지로 남중국해 중심에서 전투기·폭격기를 운용할 수 있다. 중국의 남중국해 '회색지대 전략'의 결정체로, 군사적 점령을 기정사실화(Fait Accompli)하는 전술을 보여준다. 미 전략국제문제연구소(CSIS) 아시아해양투명성이니셔티브(AMTI)가 위성으로 군사화를 지속 추적하는 시설이다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [115.53333, 9.91667] },
+      "properties": {
+        "name": "미스치프 초 (메이지 초)",
+        "name_en": "Mischief Reef (Meiji Jiao)",
+        "country": "China",
+        "type": "multi",
+        "purpose": "남중국해 동부 거점 — 필리핀 EEZ 내 불법 군사 시설",
+        "theory_tags": ["Gray Zone Strategy", "SCS Militarization", "UNCLOS Violation", "Coercive Diplomacy"],
+        "sector": "maritime_chokepoint",
+        "established_year": 1995,
+        "significance": "1995년 중국이 필리핀의 EEZ 내에서 '어민 대피소'를 명목으로 점거 후 군사 시설화한 회색지대 전략의 원형 사례다. 2016년 상설중재재판소(PCA)가 필리핀의 EEZ에 속한다고 판결했으나 중국은 이를 무시했다. Hybrid Warfare의 핵심 요소인 모호성(Ambiguity) 전략 — 국제법 위반 vs. 무력충돌 회피 경계선 탐색 — 을 교과서적으로 실증한다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [114.06200, 10.91330] },
+      "properties": {
+        "name": "수비 초 (주비 초)",
+        "name_en": "Subi Reef (Zhubi Jiao)",
+        "country": "China",
+        "type": "multi",
+        "purpose": "남중국해 서부 거점 — A2/AD 네트워크 완성 노드",
+        "theory_tags": ["A2AD", "SCS Militarization", "Gray Zone Strategy", "Island Building"],
+        "sector": "maritime_chokepoint",
+        "established_year": 2015,
+        "significance": "파이어리 크로스·미스치프·수비 세 초가 삼각형을 이뤄 남중국해 중심부를 에워싸는 A2/AD 삼각지대를 형성한다. 레이더 시스템·지대공 미사일·대함 미사일이 배치된 것으로 알려져 있다. 이 삼각지대 안에 들어오는 항공기·함선은 중국의 A2/AD 화망에 노출되어 사실상 자유로운 통항이 불가능해진다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [43.06082, 11.58747] },
+      "properties": {
+        "name": "PLA 해군 지부티 기지",
+        "name_en": "PLA Navy Djibouti Support Base",
+        "country": "China",
+        "type": "naval",
+        "purpose": "중국 최초 해외 군사기지 — '진주목걸이' 전략의 아프리카 종착지",
+        "theory_tags": ["String of Pearls", "Power Projection", "Naval Expansion", "SLOC Security"],
+        "sector": "maritime_chokepoint",
+        "established_year": 2017,
+        "significance": "중국 최초의 공식 해외 군사기지(中国保障基地)로 2017년 개설했다. 인도 전략가들이 명명한 '진주목걸이(String of Pearls)' 전략 — 파키스탄 과다르→스리랑카 함반토타→지부티로 이어지는 항구 네트워크 — 의 현실화다. 미군 캠프 레모니에와 불과 10km 거리에 위치해 미-중 전략경쟁이 아프리카의 뿔(Horn of Africa)까지 확장된 상징이 되었다.",
+        "coordinate_source": "Wikipedia (English)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [132.40000, 42.96667] },
+      "properties": {
+        "name": "포키노 태평양함대 기지",
+        "name_en": "Russian Pacific Fleet Base (Fokino)",
+        "country": "Russia",
+        "type": "naval",
+        "purpose": "러시아 태평양함대 주력 정박지 — 동북아 해양 억제력 거점",
+        "theory_tags": ["Sea Power", "Strategic Deterrence", "Naval Presence", "Russia Far East"],
+        "sector": "indo_pacific",
+        "established_year": 1872,
+        "significance": "블라디보스토크 남방 약 45km의 포키노(Fokino)는 러시아 태평양함대의 주력 정박지로 핵잠수함을 포함한 전투함을 운용한다. 일본해(동해)에 면해 있어 태평양 진출 시 반드시 쓰시마 해협 또는 소야(라페루즈) 해협을 통과해야 하는 지리적 구조적 취약점이 있다. 러시아의 우크라이나 침공 이후 러-중 해군 협력이 강화되었으며, 2023년 이후 러시아 해군의 서태평양 활동이 증가하는 추세다.",
+        "coordinate_source": "Wikipedia (Fokino)",
+        "coordinate_verified_at": "2026-05-20"
+      }
+    }
+  ]
+}
