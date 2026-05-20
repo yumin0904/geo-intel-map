@@ -5,7 +5,7 @@ CLAUDE.md 아키텍처: backend/api/layers.py
 """
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
@@ -14,6 +14,13 @@ from connectors.acled import AcledConnector
 from models.event import Event
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
+
+# ACLED 응답 1시간 캐시 — 분쟁 데이터는 실시간 불필요 (CLAUDE.md 성능 원칙)
+_CONFLICT_TTL = timedelta(hours=1)
+_conflict_cache: dict = {
+    "geojson":     None,
+    "expires_at":  datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
 
 # 프로젝트 루트 기준으로 data/ 폴더 경로 계산
 # 이 파일: backend/api/layers.py → 루트: 두 단계 위
@@ -38,9 +45,13 @@ def _load_geojson(filename: str) -> dict:
 async def get_conflict_events():
     """
     최근 30일, 인도-태평양 분쟁 이벤트 GeoJSON 반환.
-    ACLED API 실시간 조회 → Event 정규화 → GeoJSON 변환.
+    1시간 캐시 적용 — 두 번째 요청부터 즉시 반환.
     연관 이론: Gray Zone Strategy, Hybrid Warfare (CLAUDE.md 섹터 4·5)
     """
+    now = datetime.now(timezone.utc)
+    if _conflict_cache["geojson"] is not None and now < _conflict_cache["expires_at"]:
+        return _conflict_cache["geojson"]
+
     connector = AcledConnector()
     try:
         events = await connector.fetch()
@@ -49,7 +60,10 @@ async def get_conflict_events():
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"ACLED API 연결 실패: {e}") from e
 
-    return _events_to_geojson(events)
+    result = _events_to_geojson(events)
+    _conflict_cache["geojson"] = result
+    _conflict_cache["expires_at"] = now + _CONFLICT_TTL
+    return result
 
 
 def _events_to_geojson(events: list[Event]) -> dict:

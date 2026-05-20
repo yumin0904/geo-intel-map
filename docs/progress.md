@@ -111,14 +111,58 @@
 
 ---
 
+---
+
+## 2026-05-21 (Phase 1 — ACLED 연결 + ConflictEventsLayer 완성)
+
+### 완료 항목
+
+**ACLED API 연결 및 디버깅**
+- [x] 학교 계정(hanyang.ac.kr)으로 ACLED OAuth 토큰 발급 성공
+- [x] `fields` 파라미터 버그 수정 — ACLED v2는 fields 지정 시 `[[],[]]` 배열 반환 → 제거
+- [x] 날짜 범위 버그 수정 — 시스템 시계(2026)와 ACLED 데이터 범위(~2025) 불일치
+  - `date_recency.date`를 upper bound로 사용하는 방식으로 해결
+  - 24h 캐시(`_ref_date_cache`)로 probe 호출 최소화
+- [x] `GET /api/layers/conflict-events` → 200개 이벤트 정상 수신 확인
+
+**ConflictEventsLayer.js 완성**
+- [x] severity 단계별 마커(0~29 초록, 30~59 노랑, 60~79 주황, 80~100 빨강)
+- [x] MarkerCluster CDN 추가 (1000개 이상 시 자동 클러스터링)
+- [x] 팝업 한글화: event_type 영문 → 한국어 매핑 (시위/집회, 무력충돌 등)
+- [x] 줌 레벨 필터: 줌 ≤6은 severity 60+ 만 표시, 줌 7+은 전체 표시
+
+**성능 최적화 (CLAUDE.md 섹션 8)**
+- [x] 백엔드 1시간 TTL 캐시 — 두 번째 요청: 11.8s → 21ms (560배)
+- [x] `limit: 500 → 200` — 전송량 60% 감소
+- [x] 팝업 지연 바인딩 — 클릭 시 최초 1회만 생성
+
+**DivIcon 펄스 애니메이션**
+- [x] `circleMarker` → `L.divIcon` 전환 (군사기지 원형 유지, 분쟁 이벤트 펄스 구분)
+- [x] CSS `@keyframes conflict-pulse` — 바깥으로 퍼지는 링 효과
+- [x] severity별 펄스 속도: 0.5s(최고) / 1s / 2s / 3s(낮음)
+- [x] CSS 변수(`--cdot-color`, `--cdot-duration`)로 컴포넌트 내 하드코딩 제거
+
+**지도 UX 개선**
+- [x] 초기 뷰: `[25, 125]` zoom 4 → `[36.0, 128.0]` zoom 5 (한반도 중심)
+- [x] `worldCopyJump: true` — 날짜변경선 패닝 시 지도 연속 표시
+
+### 현재 레이어 현황
+
+| 레이어 | 상태 | 아이콘 | 기본 표시 |
+|--------|------|--------|-----------|
+| 군사기지 | ✅ 동작 | ⬡ | ON |
+| 분쟁 이벤트 | ✅ 동작 (ACLED, 200개) | ◈ | ON |
+| 에너지 파이프라인 | ✅ 동작 | ━ | ON |
+
+---
+
 ### 다음 세션 시작점
-**Phase 1 Step 4 — 해저 케이블 레이어 + ACLED 승인 시 분쟁 이벤트 연결**
+**"심각도 슬라이더 + GitHub 연결"**
 
 추천 작업 순서:
-1. `data/submarine_cables.geojson` — TeleGeography 공개 데이터 기반 주요 해저 케이블 (~15개)
-2. `GET /api/layers/submarine-cables` 엔드포인트
-3. `frontend/src/layers/SubmarineCablesLayer.js` — 얇은 선, 절단 위험 구간 강조
-4. ACLED 승인 확인 후 `backend/connectors/acled.py` 테스트
+1. LayerPanel에 severity 범위 슬라이더 UI 추가 (0~100 필터)
+2. `ConflictEventsLayer.setMinSeverity(n)` 메서드로 실시간 필터링
+3. GitHub remote 연결 및 push
 
 ### 세션 재시작 명령어
 
@@ -130,5 +174,5 @@ cd ~/Projects/geo-intel-map/backend && source .venv/bin/activate && uvicorn main
 cd ~/Projects/geo-intel-map/frontend && python3 -m http.server 5500
 
 # [브라우저]
-open http://localhost:5500 && open http://localhost:8000/docs
+open http://localhost:5500
 ```

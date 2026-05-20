@@ -6,6 +6,9 @@
   <title>geo-intel-map</title>
   <!-- Leaflet 1.9.4 CSS (지도 스타일) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- MarkerCluster: 마커 1000개 이상 시 자동 그룹핑 (CLAUDE.md 성능 원칙) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <link rel="stylesheet" href="styles/main.css" />
 </head>
 <body>
@@ -23,6 +26,7 @@
 
   <!-- Leaflet JS (CDN) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
   <!-- 진입점 — Phase 1: LayerManager + LayerPanel -->
   <script type="module">
@@ -58,7 +62,7 @@
     ctrl.layerManager.register('conflict-events', conflict, {
       name: '분쟁 이벤트',
       icon: '◈',
-      defaultVisible: false,  // ACLED API 승인 대기 중
+      defaultVisible: true,
     });
 
     ctrl.layerManager.register('energy-pipelines', pipelines, {

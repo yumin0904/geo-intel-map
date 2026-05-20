@@ -77,6 +77,40 @@ body {
   padding: 2px 6px;
 }
 
+/* ── Conflict Event 펄스 마커 (DivIcon) ──────────────────────── */
+/* 군사기지(circleMarker)와 달리 펄스로 "현재 진행 중" 강조 */
+.conflict-icon {
+  background: none !important;
+  border: none !important;
+  overflow: visible !important;
+}
+
+.conflict-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--cdot-color, #3fb950);
+  position: relative;
+  cursor: pointer;
+}
+
+/* 바깥으로 퍼지는 링 — ::after가 scale 3까지 커지며 페이드아웃 */
+.conflict-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--cdot-color, #3fb950);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: conflict-pulse var(--cdot-duration, 2s) ease-out infinite;
+}
+
+@keyframes conflict-pulse {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  100% { transform: scale(3.2); opacity: 0;    }
+}
+
 /* ── Leaflet 툴팁 오버라이드 ─────────────────────────────────── */
 .geo-tooltip {
   background: var(--color-surface);

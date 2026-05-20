@@ -66,6 +66,13 @@ _token_cache: dict = {
     "expires_at":    None,  # datetime (UTC aware)
 }
 
+# ACLED 기준 날짜 캐시 — 프로브 호출 결과를 24시간 재사용
+# 이유: 시스템 시계(2026)와 ACLED 실제 데이터 범위(~2025)가 달라 매번 probe 불필요
+_ref_date_cache: dict = {
+    "date":       None,  # str "YYYY-MM-DD"
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
 
 class AcledConnector(BaseConnector):
     """
@@ -74,23 +81,28 @@ class AcledConnector(BaseConnector):
     """
 
     async def fetch(self) -> list[Event]:
-        """최근 30일, 인도-태평양 분쟁 이벤트를 Event 리스트로 반환한다."""
-        token = await self._get_token()
+        """최근 30일, 인도-태평양 분쟁 이벤트를 Event 리스트로 반환한다.
 
-        today = datetime.now(timezone.utc)
-        since = today - timedelta(days=30)
-        date_range = f"{since.strftime('%Y-%m-%d')}|{today.strftime('%Y-%m-%d')}"
+        _ref_date_cache로 probe 호출을 24시간에 1회로 줄인다.
+        ACLED v2 API: fields 파라미터 지정 시 [[],[]] 형식이므로 사용 금지.
+        """
+        token = await self._get_token()
+        acled_today_str = await self._get_ref_date(token)
+
+        if acled_today_str:
+            upper = datetime.strptime(acled_today_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        else:
+            upper = datetime.now(timezone.utc)
+            logger.warning("[ACLED] date_recency 없음, 시스템 시각 사용")
+
+        since = upper - timedelta(days=30)
+        date_range = f"{since.strftime('%Y-%m-%d')}|{upper.strftime('%Y-%m-%d')}"
 
         params = {
             "event_date":       date_range,
             "event_date_where": "BETWEEN",
             "country":          "|".join(INDO_PACIFIC_COUNTRIES),
-            "limit":            500,
-            # 필요한 필드만 요청 — 불필요한 데이터 전송 금지 (CLAUDE.md 성능 원칙)
-            "fields": (
-                "event_id_cnty,event_date,event_type,sub_event_type,"
-                "actor1,actor2,country,latitude,longitude,fatalities,notes,source"
-            ),
+            "limit":            200,  # 500→200: 전송량 60% 감소, 30일 인도-태평양 충분
         }
 
         resp = await self._get_with_retry(token, params)
@@ -108,6 +120,29 @@ class AcledConnector(BaseConnector):
                 logger.warning(f"[ACLED] 정규화 실패 (id={raw.get('event_id_cnty')}): {e}")
 
         return events
+
+    async def _get_ref_date(self, token: str) -> str | None:
+        """ACLED date_recency.date를 반환한다. 24시간 캐시로 probe 호출을 최소화한다."""
+        now = datetime.now(timezone.utc)
+        if _ref_date_cache["date"] and now < _ref_date_cache["expires_at"]:
+            logger.debug(f"[ACLED] ref_date 캐시 사용: {_ref_date_cache['date']}")
+            return _ref_date_cache["date"]
+
+        probe_resp = await self._get_with_retry(
+            token, {"country": INDO_PACIFIC_COUNTRIES[0], "limit": 1}
+        )
+        probe_resp.raise_for_status()
+        date_str = (
+            probe_resp.json()
+            .get("data_query_restrictions", {})
+            .get("date_recency", {})
+            .get("date")
+        )
+        if date_str:
+            _ref_date_cache["date"] = date_str
+            _ref_date_cache["expires_at"] = now + timedelta(hours=24)
+            logger.info(f"[ACLED] ref_date 취득 및 캐시: {date_str}")
+        return date_str
 
     async def _get_with_retry(self, token: str, params: dict) -> httpx.Response:
         """API 호출. 401 수신 시 토큰 재발급 후 1회 재시도."""
