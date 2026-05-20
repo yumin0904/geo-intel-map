@@ -6,6 +6,8 @@ FastAPI 앱을 초기화하고 기본 엔드포인트를 등록한다.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.layers import router as layers_router
+
 # ── 앱 인스턴스 생성 ──────────────────────────────────────────────
 # FastAPI()는 전체 백엔드 앱의 "몸통"이다.
 # docs_url="/docs" 로 접근하면 자동 생성된 API 문서를 브라우저에서 볼 수 있다.
@@ -30,6 +32,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(layers_router)
 
 # ── 엔드포인트 ───────────────────────────────────────────────────
 # @app.get("/...") : HTTP GET 요청을 처리하는 함수 등록

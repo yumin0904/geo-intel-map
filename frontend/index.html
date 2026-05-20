@@ -21,11 +21,17 @@
   <!-- Leaflet JS (CDN) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- 진입점 — ES 모듈로 MapController 불러와서 초기화 -->
+  <!-- 진입점 — ES 모듈로 MapController + 레이어 초기화 -->
   <script type="module">
-    import { MapController } from './src/core/MapController.js';
+    import { MapController }      from './src/core/MapController.js';
+    import { MilitaryBasesLayer } from './src/layers/MilitaryBasesLayer.js';
+
     const controller = new MapController('map');
     controller.init();
+
+    // Phase 0 Step 5 — 첫 번째 레이어: 군사기지
+    const basesLayer = new MilitaryBasesLayer(controller.map);
+    basesLayer.load();
   </script>
 </body>
 </html>

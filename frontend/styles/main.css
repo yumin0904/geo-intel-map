@@ -44,3 +44,47 @@ body {
 
 .info-title   { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
 .info-version { font-size: 11px; color: var(--color-text-secondary); }
+
+/* ── Leaflet 팝업 오버라이드 ─────────────────────────────────── */
+.geo-popup .leaflet-popup-content-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--panel-radius);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+.geo-popup .leaflet-popup-tip { background: var(--color-surface); }
+.geo-popup .leaflet-popup-content { margin: 14px 16px; }
+
+.base-popup__name    { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.base-popup__name-en { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 10px; }
+
+.base-popup__table   { font-size: 12px; border-collapse: collapse; width: 100%; margin-bottom: 10px; }
+.base-popup__table td { padding: 2px 6px 2px 0; vertical-align: top; }
+.base-popup__table td:first-child { color: var(--color-text-secondary); white-space: nowrap; }
+
+.base-popup__purpose      { font-size: 12px; color: var(--color-accent); margin-bottom: 8px; }
+.base-popup__significance { font-size: 11px; line-height: 1.6; color: var(--color-text-secondary); margin-bottom: 10px; }
+
+.base-popup__tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.theory-tag {
+  font-size: 10px;
+  background: rgba(88,166,255,0.12);
+  color: var(--color-accent);
+  border: 1px solid rgba(88,166,255,0.3);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+/* ── Leaflet 툴팁 오버라이드 ─────────────────────────────────── */
+.geo-tooltip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: none;
+}

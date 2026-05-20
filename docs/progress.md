@@ -12,8 +12,33 @@
 - [x] frontend/styles/main.css — CSS 변수 디자인 토큰
 - [x] frontend/src/core/MapController.js — 지도 초기화 클래스
 
+---
+
+## 2026-05-20 (Phase 0 Step 4~5)
+
+### 완료 항목
+- [x] 백엔드 포트 8000 + 프론트 포트 5500 동시 실행 확인
+- [x] `GET /api/health` 200 OK 검증
+- [x] `data/military_bases.geojson` — 20개 기지 (USA 10, China 6, Allied 3, Russia 1)
+  - 검증 좌표 (WGS84), theory_tags, significance, established_year 등 학습 필드 완비
+- [x] `backend/api/layers.py` — `/api/layers/military-bases` GeoJSON 엔드포인트
+- [x] `frontend/src/services/api.js` — 백엔드 HTTP 클라이언트 (중앙화)
+- [x] `frontend/src/layers/MilitaryBasesLayer.js` — circleMarker 렌더링 + 팝업 + 툴팁
+- [x] `frontend/styles/main.css` — 팝업/툴팁 다크 테마 CSS
+- [x] 브라우저에서 지도 + 기지 마커 동작 확인 (서버 로그로 API 호출 검증)
+
+### 현재 상태
+- Phase 0 완료 ✅
+- 마커 색상: 파랑(미국), 빨강(중국), 노랑(러시아), 초록(동맹)
+- 클릭 시 팝업: 기지명/유형/설치연도/전략목적/학술의의/이론태그
+
 ### 다음 세션 시작점
-**Phase 0 — 4단계: 브라우저 동작 확인 + 5단계: 첫 GeoJSON (군사기지 점 표시)**
+**Phase 1 — LayerManager + 토글 UI 구현 (레이어 1~5번 추가 시작)**
+
+추천 다음 작업:
+1. `LayerManager.js` — 레이어 등록·토글·상태관리
+2. `LayerPanel.js` — 사이드바 레이어 토글 UI
+3. ACLED API 연결 (분쟁 이벤트 레이어 — Phase 1 우선순위 1위)
 
 ### 서버 실행 명령어
 
