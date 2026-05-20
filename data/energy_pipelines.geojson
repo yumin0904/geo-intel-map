@@ -1,0 +1,288 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [28.75, 60.71],
+          [24.00, 59.50],
+          [18.00, 57.50],
+          [15.00, 56.00],
+          [13.90, 54.13]
+        ]
+      },
+      "properties": {
+        "id": "nord_stream_1",
+        "name": "Nord Stream 1",
+        "name_en": "Nord Stream 1",
+        "operator": "Nord Stream AG (Gazprom 51%)",
+        "type": "gas",
+        "status": "suspended",
+        "route": "러시아 Vyborg → 발트해 → 독일 Lubmin",
+        "length_km": 1224,
+        "capacity_bcm": 55,
+        "completed_year": 2011,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Weaponized Interdependence", "Energy Security", "Coercive Diplomacy"],
+        "significance": "러시아가 에너지를 외교적 압박 수단으로 사용한 가장 상징적 사례로, Farrell & Newman의 '무기화된 상호의존' 이론의 현실적 적용을 보여준다. 2022년 9월 폭발 사건으로 가스 공급이 완전 차단되며 유럽 에너지 안보의 취약성을 극적으로 드러냈다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [28.40, 59.68],
+          [25.00, 58.80],
+          [19.00, 57.00],
+          [15.50, 55.50],
+          [13.90, 54.13]
+        ]
+      },
+      "properties": {
+        "id": "nord_stream_2",
+        "name": "Nord Stream 2",
+        "name_en": "Nord Stream 2",
+        "operator": "Nord Stream 2 AG (Gazprom)",
+        "type": "gas",
+        "status": "sabotaged",
+        "route": "러시아 Ust-Luga → 발트해 → 독일 Lubmin",
+        "length_km": 1230,
+        "capacity_bcm": 55,
+        "completed_year": 2021,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Weaponized Interdependence", "Energy Security", "Critical Infrastructure Attack"],
+        "significance": "완공 후 한 번도 상업 운전 없이 2022년 9월 수중 폭발로 파괴된 파이프라인으로, 에너지 인프라가 지정학적 충돌의 표적이 될 수 있음을 실증하였다. 가해자 미상이라는 점에서 회색지대 전략과 비국가행위자의 역할에 관한 논쟁을 촉발시켰다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [35.27, 51.20],
+          [34.00, 49.60],
+          [30.00, 49.50],
+          [26.00, 49.00],
+          [22.30, 48.62]
+        ]
+      },
+      "properties": {
+        "id": "ukrainian_corridor",
+        "name": "우크라이나 경유 가스관",
+        "name_en": "Ukrainian Gas Corridor",
+        "operator": "Naftogaz Ukraine / Gazprom",
+        "type": "gas",
+        "status": "active",
+        "route": "러시아 Sudzha → 우크라이나 횡단 → 슬로바키아 Velke Kapusany",
+        "length_km": 1100,
+        "capacity_bcm": 40,
+        "completed_year": 1967,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Transit State Politics", "Weaponized Interdependence", "Energy Security"],
+        "significance": "우크라이나가 러시아 가스를 유럽으로 전달하는 통과국(Transit State) 지위를 활용해 지정학적 레버리지를 행사해온 대표 사례다. 2022년 전쟁 발발 후에도 계약이 유지되어, 에너지 상호의존의 복잡한 역설—교전국 간에도 경제적 연결이 단절되기 어렵다는 점—을 보여준다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [52.30, 54.90],
+          [40.00, 53.50],
+          [29.30, 52.00],
+          [23.70, 52.10],
+          [14.30, 53.10]
+        ]
+      },
+      "properties": {
+        "id": "druzhba",
+        "name": "드루즈바 송유관",
+        "name_en": "Druzhba (Friendship) Pipeline",
+        "operator": "Transneft (Russia)",
+        "type": "oil",
+        "status": "active",
+        "route": "러시아 알메티예프스크 → 벨라루스 모지르 → 폴란드/독일",
+        "length_km": 4000,
+        "capacity_mbpd": 1.2,
+        "completed_year": 1964,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Resource Weaponization", "Energy Security", "Coercive Diplomacy"],
+        "significance": "세계 최장의 석유 파이프라인으로, 냉전 시기부터 구소련권 국가들에 대한 에너지 통제 수단으로 기능해왔다. 2022년 우크라이나 제재로 인한 통과료 분쟁이 폴란드·헝가리 등 동유럽 국가들의 에너지 취약성을 다시 한번 부각시켰다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.60, 58.10],
+          [124.00, 56.00],
+          [126.50, 52.00],
+          [127.55, 50.28],
+          [127.65, 50.10],
+          [126.65, 45.80]
+        ]
+      },
+      "properties": {
+        "id": "power_of_siberia_1",
+        "name": "시베리아의 힘 1",
+        "name_en": "Power of Siberia 1",
+        "operator": "Gazprom",
+        "type": "gas",
+        "status": "active",
+        "route": "러시아 차얀다 가스전 → 블라고베셴스크 → 중국 헤이허 → 하얼빈",
+        "length_km": 3000,
+        "capacity_bcm": 38,
+        "completed_year": 2019,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Sino-Russian Alignment", "Energy Pivot to Asia", "Weaponized Interdependence"],
+        "significance": "유럽 시장 의존도를 낮추려는 러시아와 에너지 다변화를 추구하는 중국의 전략적 이해가 맞물려 탄생한 파이프라인으로, 러중 에너지 동맹의 물리적 상징이다. 2019년 가동 이후 유럽 압박 시 러시아의 아시아 피벗 능력을 실질적으로 강화하였다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [62.20, 37.60],
+          [64.40, 39.80],
+          [69.60, 42.30],
+          [80.40, 44.20],
+          [87.60, 43.80],
+          [100.00, 36.00],
+          [121.50, 31.20]
+        ]
+      },
+      "properties": {
+        "id": "cagp",
+        "name": "중앙아시아-중국 가스관",
+        "name_en": "Central Asia-China Gas Pipeline (CAGP)",
+        "operator": "CNPC / Turkmengas",
+        "type": "gas",
+        "status": "active",
+        "route": "투르크메니스탄 도블레타바트 → 우즈베키스탄 → 카자흐스탄 → 중국 신장 → 상하이",
+        "length_km": 7000,
+        "capacity_bcm": 55,
+        "completed_year": 2009,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Resource Competition", "BRI Energy Corridor", "Supply Diversification"],
+        "significance": "중앙아시아 에너지 자원에 대한 중국의 영향력을 공고히 한 전략적 인프라로, 러시아의 독점적 통과국 지위를 우회하는 중국의 BRI(일대일로) 에너지 전략의 핵심 루트다. 투르크메니스탄의 대중국 가스 의존도를 85% 이상으로 높여 사실상 단일 고객 취약성 구조를 형성하였다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [49.84, 40.20],
+          [44.80, 41.70],
+          [41.27, 39.91],
+          [32.85, 39.93],
+          [26.38, 40.93]
+        ]
+      },
+      "properties": {
+        "id": "tanap",
+        "name": "TANAP (범아나톨리아 파이프라인)",
+        "name_en": "Trans-Anatolian Pipeline (TANAP)",
+        "operator": "BOTAŞ / SOCAR / BP",
+        "type": "gas",
+        "status": "active",
+        "route": "아제르바이잔 상가찰 → 조지아 → 터키 에르주룸 → 이프살라(그리스 국경)",
+        "length_km": 1850,
+        "capacity_bcm": 16,
+        "completed_year": 2018,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Southern Gas Corridor", "Supply Diversification", "Energy Security"],
+        "significance": "유럽의 러시아 가스 의존도를 낮추기 위해 설계된 '남부 가스 회랑(Southern Gas Corridor)'의 핵심 구간으로, 카스피해 에너지가 러시아·이란을 우회하여 서방에 공급되는 경로다. 터키를 에너지 허브로 격상시켜 앙카라의 지정학적 레버리지를 강화하는 효과를 낳았다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [26.38, 40.93],
+          [22.95, 40.64],
+          [19.56, 40.71],
+          [18.50, 40.60],
+          [17.93, 40.64]
+        ]
+      },
+      "properties": {
+        "id": "tap",
+        "name": "TAP (범아드리아 파이프라인)",
+        "name_en": "Trans-Adriatic Pipeline (TAP)",
+        "operator": "BP / SOCAR / Snam / Fluxys",
+        "type": "gas",
+        "status": "active",
+        "route": "그리스 키포이 → 알바니아 피에르 → 아드리아해 → 이탈리아 브린디시",
+        "length_km": 878,
+        "capacity_bcm": 10,
+        "completed_year": 2020,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Southern Gas Corridor", "Supply Diversification", "Energy Security"],
+        "significance": "TANAP과 연결되어 카스피해 가스를 이탈리아까지 공급하는 남부 가스 회랑의 최종 구간이다. 유럽의 러시아 가스 의존도 감소를 위한 EU의 전략적 투자이자, 서발칸 국가들의 에너지 전환 과정에서 통과국 이익을 둘러싼 지역 정치의 축소판이기도 하다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [52.61, 27.47],
+          [58.00, 27.50],
+          [61.50, 27.00],
+          [62.32, 25.12],
+          [71.47, 30.18]
+        ]
+      },
+      "properties": {
+        "id": "iran_pakistan",
+        "name": "이란-파키스탄 가스관 (IP)",
+        "name_en": "Iran-Pakistan Pipeline (IP / Peace Pipeline)",
+        "operator": "NIGC (Iran) / ISGS (Pakistan)",
+        "type": "gas",
+        "status": "planned",
+        "route": "이란 South Pars → 이란-파키스탄 국경 → Gwadar → 파키스탄 물탄",
+        "length_km": 2775,
+        "capacity_bcm": 21.5,
+        "completed_year": null,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Sanctions Evasion", "Regional Energy Politics", "US-Pakistan Relations"],
+        "significance": "미국의 이란 제재가 에너지 안보와 충돌하는 딜레마의 상징적 사례로, 파키스탄이 에너지 부족 해소를 위해 대미 관계 위험을 감수하는 구조적 취약성을 드러낸다. 중국이 CPEC 프레임 내에서 이 프로젝트를 지원함으로써 미국의 제재 체계에 간접적으로 도전하는 양상을 보인다."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [97.86, 55.94],
+          [105.78, 56.78],
+          [123.98, 54.00],
+          [135.09, 48.47],
+          [132.80, 42.73]
+        ]
+      },
+      "properties": {
+        "id": "espo",
+        "name": "ESPO (동시베리아-태평양 송유관)",
+        "name_en": "East Siberia-Pacific Ocean Pipeline (ESPO)",
+        "operator": "Transneft",
+        "type": "oil",
+        "status": "active",
+        "route": "러시아 타이셰트 → 스코보로디노 → 하바롭스크 → 코즈미노 만",
+        "length_km": 4740,
+        "capacity_mbpd": 1.6,
+        "completed_year": 2012,
+        "sector": "energy_infrastructure",
+        "theory_tags": ["Energy Pivot to Asia", "Sino-Russian Alignment", "Supply Diversification"],
+        "significance": "러시아의 석유 수출 방향을 유럽에서 아시아(특히 중국·일본·한국)로 전환하기 위해 건설된 파이프라인으로, 스코보로디노에서 중국 다칭으로 분기하는 지선(ESPO 지선)을 포함한다. 서방 제재 국면에서 러시아의 에너지 동진(東進) 전략을 뒷받침하는 핵심 인프라다."
+      }
+    }
+  ]
+}

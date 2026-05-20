@@ -99,3 +99,13 @@ async def get_military_bases():
     연관 이론: Forward Deployment, A2/AD, String of Pearls
     """
     return _load_geojson("military_bases.geojson")
+
+
+@router.get("/energy-pipelines")
+async def get_energy_pipelines():
+    """
+    주요 에너지 파이프라인 GeoJSON 반환 (정적 데이터).
+    가스관·송유관 10개 — 러시아-유럽, 러시아-중국, 중앙아시아-중국, 중동 경로.
+    연관 이론: Weaponized Interdependence (Farrell & Newman), Resource Weaponization
+    """
+    return _load_geojson("energy_pipelines.geojson")

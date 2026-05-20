@@ -26,16 +26,18 @@
 
   <!-- 진입점 — Phase 1: LayerManager + LayerPanel -->
   <script type="module">
-    import { MapController }       from './src/core/MapController.js';
-    import { MilitaryBasesLayer }  from './src/layers/MilitaryBasesLayer.js';
-    import { ConflictEventsLayer } from './src/layers/ConflictEventsLayer.js';
-    import { LayerPanel }          from './src/panels/LayerPanel.js';
+    import { MapController }        from './src/core/MapController.js';
+    import { MilitaryBasesLayer }   from './src/layers/MilitaryBasesLayer.js';
+    import { ConflictEventsLayer }  from './src/layers/ConflictEventsLayer.js';
+    import { EnergyPipelinesLayer } from './src/layers/EnergyPipelinesLayer.js';
+    import { LayerPanel }           from './src/panels/LayerPanel.js';
 
-    const ctrl    = new MapController('map').init();
-    const bases   = new MilitaryBasesLayer(ctrl.map);
-    const conflict = new ConflictEventsLayer(ctrl.map);
+    const ctrl      = new MapController('map').init();
+    const bases     = new MilitaryBasesLayer(ctrl.map);
+    const conflict  = new ConflictEventsLayer(ctrl.map);
+    const pipelines = new EnergyPipelinesLayer(ctrl.map);
 
-    // 새 레이어 추가 = register() 한 줄 추가만으로 패널에 자동 반영
+    // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
       name: '군사기지',
       icon: '⬡',
@@ -56,7 +58,13 @@
     ctrl.layerManager.register('conflict-events', conflict, {
       name: '분쟁 이벤트',
       icon: '◈',
-      defaultVisible: false,  // 수동 토글 — ACLED API 호출 비용 절약
+      defaultVisible: false,  // ACLED API 승인 대기 중
+    });
+
+    ctrl.layerManager.register('energy-pipelines', pipelines, {
+      name: '에너지 파이프라인',
+      icon: '━',
+      defaultVisible: true,
     });
 
     const panel = new LayerPanel(ctrl.layerManager, ctrl.eventBus);
