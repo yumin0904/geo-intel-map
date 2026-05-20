@@ -1,8 +1,11 @@
 /**
  * MapController.js
  * Leaflet 지도 초기화 및 생명주기 관리.
- * 향후 레이어 추가, 이벤트 바인딩이 모두 이 클래스를 통해 이루어진다.
+ * EventBus / LayerManager를 소유하며, 레이어 등록은 index.html에서 수행한다.
  */
+
+import { EventBus }    from './EventBus.js';
+import { LayerManager } from './LayerManager.js';
 
 // CartoDB Dark Matter — 무료, API 키 불필요, 다크 인텔리전스 분위기에 최적
 const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
@@ -16,27 +19,30 @@ const INITIAL_ZOOM   = 4;
 
 export class MapController {
   constructor(containerId) {
-    this.containerId = containerId;
-    this.map = null; // init() 호출 전까지 null
+    this.containerId  = containerId;
+    this.map          = null;
+    this.eventBus     = new EventBus();
+    this.layerManager = null;
   }
 
   init() {
     // preferCanvas: true — 마커 1000개 이상 시 Canvas가 SVG보다 훨씬 빠름
-    // (CLAUDE.md 성능 원칙: 1000+ 마커 시 canvas 사용)
-    this.map = L.map(this.containerId, { preferCanvas: true })
+    // zoomControl: false — 줌 버튼 숨김, 마우스 휠 줌만 사용 (사이드바와 공간 충돌 방지)
+    this.map = L.map(this.containerId, { preferCanvas: true, zoomControl: false })
       .setView(INITIAL_CENTER, INITIAL_ZOOM);
 
     L.tileLayer(TILE_URL, {
       attribution: TILE_ATTRIBUTION,
       maxZoom: 19,
-      subdomains: 'abcd', // 여러 서브도메인에서 병렬로 타일 수신 → 로딩 속도 향상
+      subdomains: 'abcd',
     }).addTo(this.map);
 
-    return this; // 메서드 체이닝 허용
+    this.layerManager = new LayerManager(this.map, this.eventBus);
+
+    return this;
   }
 
   destroy() {
-    // 컴포넌트 제거 시 Leaflet 리소스 정리 — 메모리 누수 방지
     if (this.map) {
       this.map.remove();
       this.map = null;

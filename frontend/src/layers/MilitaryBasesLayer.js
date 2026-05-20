@@ -53,6 +53,8 @@ export class MilitaryBasesLayer {
     this.map = map;
     // 레이어 그룹으로 관리 — 토글 시 레이어 전체를 한번에 숨김/표시 가능
     this._layerGroup = L.layerGroup();
+    // setFilter에서 개별 마커 스타일 제어를 위해 보관
+    this._markers = [];
   }
 
   async load() {
@@ -61,7 +63,7 @@ export class MilitaryBasesLayer {
       geojson = await api.get('/api/layers/military-bases');
     } catch (err) {
       console.error('[MilitaryBasesLayer] 데이터 로드 실패:', err);
-      return;
+      throw err; // LayerManager가 error 상태로 처리하도록 re-throw
     }
 
     L.geoJSON(geojson, {
@@ -72,7 +74,7 @@ export class MilitaryBasesLayer {
         const color  = COUNTRY_COLORS[props.country] ?? '#ffffff';
         const radius = TYPE_RADIUS[props.type]       ?? 7;
 
-        return L.circleMarker(latlng, {
+        const marker = L.circleMarker(latlng, {
           radius,
           color,
           fillColor:   color,
@@ -80,6 +82,9 @@ export class MilitaryBasesLayer {
           weight:      1.5,
           opacity:     1,
         });
+
+        this._markers.push({ marker, country: props.country });
+        return marker;
       },
       // 각 마커에 학습 정보 팝업 바인딩
       onEachFeature: (feature, layer) => {
@@ -101,12 +106,35 @@ export class MilitaryBasesLayer {
     console.info(`[MilitaryBasesLayer] ${geojson.features.length}개 기지 로드 완료`);
   }
 
-  /** 레이어 표시/숨김 토글 */
+  /** 레이어 표시/숨김 */
   setVisible(visible) {
     if (visible) {
       this._layerGroup.addTo(this.map);
     } else {
       this._layerGroup.remove();
     }
+  }
+
+  /**
+   * 진영 필터 — 선택된 국가 마커만 강조, 나머지는 흐리게.
+   * 완전 숨김 대신 dim 처리 → 위치 인식을 유지하면서 비교 학습 가능.
+   * @param {string[]} countries - 활성화할 국가 배열 (예: ['USA', 'China'])
+   */
+  setFilter(countries) {
+    const active = new Set(countries);
+    this._markers.forEach(({ marker, country }) => {
+      const show = active.has(country);
+      marker.setStyle({
+        opacity:     show ? 1    : 0.08,
+        fillOpacity: show ? 0.85 : 0.05,
+      });
+    });
+  }
+
+  /** 레이어 그룹 및 마커 참조 정리 */
+  destroy() {
+    this._layerGroup.clearLayers();
+    this._layerGroup.remove();
+    this._markers = [];
   }
 }
