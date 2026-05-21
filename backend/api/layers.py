@@ -125,6 +125,16 @@ async def get_energy_pipelines():
     return _load_geojson("energy_pipelines.geojson")
 
 
+@router.get("/submarine-cables")
+async def get_submarine_cables():
+    """
+    전략적 해저 광케이블 GeoJSON 반환 (정적 데이터, 18개).
+    strategic_risk(high/medium/low)로 중국 주도 vs 미국/동맹 케이블을 구분한다.
+    연관 이론: Techno-nationalism, Digital Iron Curtain, Platform Power
+    """
+    return _load_geojson("submarine_cables.geojson")
+
+
 @router.get("/chokepoints")
 async def get_chokepoints():
     """

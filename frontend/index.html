@@ -50,7 +50,8 @@
     import { MilitaryBasesLayer }   from './src/layers/MilitaryBasesLayer.js';
     import { ConflictEventsLayer }  from './src/layers/ConflictEventsLayer.js';
     import { EnergyPipelinesLayer } from './src/layers/EnergyPipelinesLayer.js';
-    import { ChokepointsLayer }     from './src/layers/ChokepointsLayer.js';
+    import { ChokepointsLayer }      from './src/layers/ChokepointsLayer.js';
+    import { SubmarineCablesLayer }  from './src/layers/SubmarineCablesLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
 
     const ctrl        = new MapController('map').init();
@@ -58,6 +59,7 @@
     const conflict    = new ConflictEventsLayer(ctrl.map);
     const pipelines   = new EnergyPipelinesLayer(ctrl.map);
     const chokepoints = new ChokepointsLayer(ctrl.map);
+    const cables      = new SubmarineCablesLayer(ctrl.map);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -86,6 +88,12 @@
     ctrl.layerManager.register('energy-pipelines', pipelines, {
       name: '에너지 파이프라인',
       icon: '━',
+      defaultVisible: true,
+    });
+
+    ctrl.layerManager.register('submarine-cables', cables, {
+      name: '해저 광케이블',
+      icon: '⌇',
       defaultVisible: true,
     });
 

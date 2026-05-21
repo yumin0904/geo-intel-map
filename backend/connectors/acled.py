@@ -90,6 +90,7 @@ class AcledConnector(BaseConnector):
         acled_today_str = await self._get_ref_date(token)
 
         if acled_today_str:
+            # ACLED date_recency = API 키가 접근 가능한 실제 최신 날짜
             upper = datetime.strptime(acled_today_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         else:
             upper = datetime.now(timezone.utc)

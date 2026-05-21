@@ -1,0 +1,437 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [66.5, 25.1], [56.3, 23.6], [45.0, 12.0], [43.1, 11.6],
+          [39.7, -4.1], [39.3, -6.8], [35.0, -16.0], [23.0, -24.0],
+          [18.4, -33.9], [5.0, -20.0], [-5.0, -8.0], [-10.0, 5.0],
+          [-14.5, 14.7], [-10.0, 30.0], [-5.0, 38.0], [5.4, 43.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_peace",
+        "name": "PEACE Cable",
+        "name_en": "Pakistan & East Africa Connecting Europe",
+        "owners": ["China Unicom", "China Telecom", "Pakistan Telecom", "Djibouti Telecom", "Telecom Egypt"],
+        "rfs_year": 2022,
+        "length_km": 12000,
+        "landing_countries": ["파키스탄", "UAE", "지부티", "케냐", "탄자니아", "프랑스"],
+        "strategic_risk": "high",
+        "theory_tags": ["digital_iron_curtain", "techno_nationalism", "infrastructure_competition"],
+        "significance": "중국이 주도한 최초의 파키스탄·동아프리카-유럽 연결 케이블. 화웨이 해양(HMN)이 일부 구간을 시공했으며, 서방 진영의 케이블 파트너십 배제 논란이 있다.",
+        "theory_ref": "Techno-nationalism: 디지털 인프라를 지정학 도구로 사용 (Drezner 2019)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [114.2, 22.3], [110.0, 16.0], [108.2, 16.1], [103.8, 1.3],
+          [97.0, 5.5], [79.9, 6.9], [72.8, 18.9], [67.0, 24.9],
+          [58.4, 23.6], [45.0, 12.0], [43.1, 11.6], [40.0, 16.0],
+          [36.0, 22.0], [32.5, 30.0], [32.3, 31.3], [26.0, 34.0],
+          [24.0, 35.5], [14.5, 37.5], [5.4, 43.3], [-2.9, 43.4]
+        ]
+      },
+      "properties": {
+        "id": "cable_aae1",
+        "name": "AAE-1",
+        "name_en": "Asia-Africa-Europe 1",
+        "owners": ["China Telecom", "China Unicom", "China Mobile", "Tata Communications", "Telecom Egypt"],
+        "rfs_year": 2017,
+        "length_km": 25000,
+        "landing_countries": ["홍콩", "베트남", "싱가포르", "인도", "파키스탄", "오만", "지부티", "이집트", "프랑스", "스페인"],
+        "strategic_risk": "high",
+        "theory_tags": ["digital_iron_curtain", "chokepoint_vulnerability", "sloc"],
+        "significance": "중국 3대 통신사가 공동 소유. 말라카 해협·수에즈 운하·호르무즈를 통과하는 전략적 취약 경로. 중국 주도의 유라시아 데이터 루트 확보 수단.",
+        "theory_ref": "SLOC 통제 이론: 해저 케이블이 초크포인트와 겹칠 때 전략 취약성 극대화"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [103.8, 1.3], [79.9, 6.9], [58.4, 23.6], [45.0, 12.0],
+          [43.1, 11.6], [40.0, 16.0], [32.5, 30.0], [32.3, 31.3],
+          [26.0, 34.0], [14.5, 37.5], [5.4, 43.3], [-4.5, 50.8]
+        ]
+      },
+      "properties": {
+        "id": "cable_smw5",
+        "name": "SEA-ME-WE 5",
+        "name_en": "South East Asia - Middle East - Western Europe 5",
+        "owners": ["China Mobile", "Tata Communications", "Telecom Egypt", "Orange", "Vodafone"],
+        "rfs_year": 2016,
+        "length_km": 20000,
+        "landing_countries": ["싱가포르", "스리랑카", "오만", "지부티", "이집트", "프랑스", "영국"],
+        "strategic_risk": "high",
+        "theory_tags": ["digital_iron_curtain", "chokepoint_vulnerability", "weaponized_interdependence"],
+        "significance": "China Mobile이 주요 지분 보유. 수에즈 운하·홍해 통과 경로. 2024년 예멘 후티 세력의 홍해 공격 시 실제 케이블 절단 피해 발생.",
+        "theory_ref": "무기화된 상호의존 (Farrell & Newman 2019): 인프라 집중도가 강압의 수단이 됨"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [139.8, 35.7], [129.0, 35.1], [121.5, 31.2], [114.2, 22.3],
+          [117.0, 18.0], [115.0, 8.0], [120.9, 14.6], [110.0, 5.0],
+          [103.8, 1.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_sjc",
+        "name": "SJC",
+        "name_en": "Southeast Asia-Japan Cable",
+        "owners": ["China Telecom", "China Unicom", "SingTel", "KDDI", "NTT"],
+        "rfs_year": 2013,
+        "length_km": 8900,
+        "landing_countries": ["일본", "한국", "중국", "필리핀", "싱가포르"],
+        "strategic_risk": "high",
+        "theory_tags": ["digital_iron_curtain", "techno_nationalism"],
+        "significance": "중국 주요 통신사들이 공동 소유한 아시아 역내 핵심 케이블. 남중국해를 통과하며, 중국의 분쟁 구역 내 인프라 존재감을 높인다.",
+        "theory_ref": "Techno-nationalism: 디지털 실크로드 전략의 일환으로 아시아 역내 데이터 흐름 장악"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [140.1, 34.8], [129.0, 35.1], [121.9, 31.6], [116.7, 23.4],
+          [114.2, 22.3], [110.0, 12.0], [106.0, 3.5], [103.8, 1.3],
+          [101.7, 3.1]
+        ]
+      },
+      "properties": {
+        "id": "cable_apg",
+        "name": "APG",
+        "name_en": "Asia Pacific Gateway",
+        "owners": ["China Telecom", "China Mobile", "China Unicom", "KDDI", "SingTel"],
+        "rfs_year": 2016,
+        "length_km": 10400,
+        "landing_countries": ["일본", "한국", "중국", "홍콩", "말레이시아", "싱가포르"],
+        "strategic_risk": "high",
+        "theory_tags": ["digital_iron_curtain", "techno_nationalism"],
+        "significance": "중국 3대 통신사 모두 참여. 일본-한국-중국-동남아를 연결하는 아시아 핵심 데이터 루트. 미국 IT 기업 배제.",
+        "theory_ref": "Digital Iron Curtain: 중국 주도 인프라를 통한 데이터 흐름 분절"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [235.8, 40.8], [205.0, 35.0], [180.0, 30.0],
+          [160.0, 32.0], [140.1, 34.8], [129.0, 35.1], [121.9, 31.6]
+        ]
+      },
+      "properties": {
+        "id": "cable_ncp",
+        "name": "NCP",
+        "name_en": "New Cross Pacific",
+        "owners": ["China Telecom", "China Unicom", "China Mobile", "KDDI", "SK Broadband"],
+        "rfs_year": 2018,
+        "length_km": 13000,
+        "landing_countries": ["미국", "일본", "한국", "중국"],
+        "strategic_risk": "high",
+        "theory_tags": ["digital_iron_curtain", "infrastructure_competition", "techno_nationalism"],
+        "significance": "중국 3대 통신사가 미국-중국 직결 태평양 케이블 소유. 미국 FCC가 중국 통신사의 미국 시장 접근을 차단하는 배경이 된 사례.",
+        "theory_ref": "Techno-nationalism: 태평양 데이터 루트를 둘러싼 미-중 인프라 경쟁의 핵심"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [235.6, 43.1], [215.0, 38.0], [180.0, 33.0],
+          [155.0, 33.0], [136.8, 34.3], [120.4, 36.1], [129.0, 35.1]
+        ]
+      },
+      "properties": {
+        "id": "cable_tpe",
+        "name": "TPE",
+        "name_en": "Trans-Pacific Express",
+        "owners": ["AT&T", "China Telecom", "China Unicom", "KDDI"],
+        "rfs_year": 2010,
+        "length_km": 18000,
+        "landing_countries": ["미국", "일본", "중국", "한국"],
+        "strategic_risk": "medium",
+        "theory_tags": ["infrastructure_competition", "digital_iron_curtain"],
+        "significance": "AT&T와 중국 통신사 합작 태평양 케이블. 미국-중국 직결 인프라를 둘러싼 안보 우려의 선례 사례.",
+        "theory_ref": "무기화된 상호의존: 혼합 소유 인프라가 강압의 잠재적 수단이 될 수 있음"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [140.1, 34.8], [129.0, 35.1], [121.5, 25.0], [120.9, 14.6],
+          [108.2, 16.1], [105.0, 10.5], [103.8, 1.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_sjc2",
+        "name": "SJC2",
+        "name_en": "Southeast Asia-Japan Cable 2",
+        "owners": ["SingTel", "KDDI", "NTT", "Meta", "Google"],
+        "rfs_year": 2021,
+        "length_km": 10500,
+        "landing_countries": ["일본", "한국", "대만", "필리핀", "베트남", "싱가포르"],
+        "strategic_risk": "medium",
+        "theory_tags": ["infrastructure_competition", "decoupling"],
+        "significance": "SJC의 후속 케이블. 중국 본토 상륙 없이 설계 — 미국 IT 기업들이 중국 배제 인프라 구축에 나선 초기 사례. 미-중 디지털 디커플링 경향을 반영.",
+        "theory_ref": "Decoupling 이론: 기술 공급망에서 중국을 우회하는 서방 전략"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [-4.5, 50.8], [-6.1, 36.3], [-5.5, 33.0], [-17.0, 14.7],
+            [-0.2, 5.6], [3.4, 6.5], [9.7, 4.0], [9.5, -2.0],
+            [12.0, -5.0], [13.5, -12.0], [15.0, -23.0], [18.4, -33.9]
+          ],
+          [
+            [18.4, -33.9], [32.6, -25.9], [39.3, -6.8], [39.7, -4.1],
+            [43.1, 11.6], [39.2, 21.5], [32.5, 30.0], [29.9, 31.2],
+            [24.0, 35.5], [14.5, 37.5], [5.4, 43.3], [-4.5, 50.8]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "cable_2africa",
+        "name": "2Africa",
+        "name_en": "2Africa Cable System",
+        "owners": ["Meta", "China Mobile", "Orange", "Telecom Egypt", "MTN", "STC"],
+        "rfs_year": 2024,
+        "length_km": 45000,
+        "landing_countries": ["영국", "스페인", "모로코", "세네갈", "나이지리아", "카메룬", "남아프리카", "모잠비크", "케냐", "지부티", "사우디아라비아", "이집트"],
+        "strategic_risk": "medium",
+        "theory_tags": ["infrastructure_competition", "digital_iron_curtain", "africa_strategy"],
+        "significance": "세계 최장 해저 케이블(45,000km). Meta가 주도하나 China Mobile 참여. 아프리카를 둘러싼 중-서방 디지털 인프라 경쟁의 핵심 무대.",
+        "theory_ref": "디지털 실크로드 vs. 서방 대안: 아프리카 인터넷 인프라 주도권 경쟁"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [139.8, 35.7], [129.0, 35.1], [121.5, 31.2], [103.8, 1.3],
+          [97.0, 5.5], [79.9, 6.9], [80.3, 13.1], [72.8, 18.9],
+          [67.0, 24.9], [58.4, 23.6], [45.0, 12.0], [43.1, 11.6],
+          [40.0, 16.0], [32.5, 30.0], [32.3, 31.3], [26.0, 34.0],
+          [14.5, 37.5], [5.4, 43.3], [-4.5, 50.8], [7.2, 53.6]
+        ]
+      },
+      "properties": {
+        "id": "cable_smw3",
+        "name": "SEA-ME-WE 3",
+        "name_en": "South East Asia - Middle East - Western Europe 3",
+        "owners": ["SingTel", "Tata Communications", "Deutsche Telekom", "France Telecom", "NTT", "KT"],
+        "rfs_year": 1999,
+        "length_km": 39000,
+        "landing_countries": ["일본", "한국", "중국", "싱가포르", "스리랑카", "인도", "파키스탄", "오만", "지부티", "이집트", "프랑스", "영국", "독일"],
+        "strategic_risk": "medium",
+        "theory_tags": ["chokepoint_vulnerability", "sloc", "critical_infrastructure"],
+        "significance": "1999년 개통된 최초의 아시아-유럽 대용량 광케이블. 말라카·수에즈·호르무즈를 모두 통과. 아시아-유럽 인터넷 트래픽의 상당 부분을 오늘날도 담당.",
+        "theory_ref": "SLOC 취약성: 단일 물리 경로에 의존하는 디지털 연결은 군사·자연재해에 취약"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [238.1, 37.0], [202.1, 21.3], [180.0, 24.0],
+          [160.0, 28.0], [127.7, 26.3], [136.8, 34.3], [120.9, 14.6]
+        ]
+      },
+      "properties": {
+        "id": "cable_jupiter",
+        "name": "JUPITER",
+        "name_en": "JUPITER Cable System",
+        "owners": ["Meta", "Amazon", "SoftBank", "PLDT"],
+        "rfs_year": 2020,
+        "length_km": 14000,
+        "landing_countries": ["미국", "일본", "필리핀"],
+        "strategic_risk": "low",
+        "theory_tags": ["infrastructure_competition", "indo_pacific_strategy"],
+        "significance": "미국 GAFAM 기업(Meta·Amazon)과 일본 SoftBank가 주도한 중국 배제 태평양 케이블. 미-일-필리핀 동맹 라인과 물리적으로 일치.",
+        "theory_ref": "인도-태평양 전략: 동맹 기반 디지털 인프라로 중국 영향력에 대항"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [235.6, 43.1], [215.0, 41.0], [180.0, 37.0],
+          [155.0, 36.0], [140.1, 34.8], [136.8, 34.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_faster",
+        "name": "FASTER",
+        "name_en": "FASTER Cable System",
+        "owners": ["Google", "SingTel", "KDDI", "China Mobile International"],
+        "rfs_year": 2016,
+        "length_km": 9000,
+        "landing_countries": ["미국", "일본"],
+        "strategic_risk": "low",
+        "theory_tags": ["infrastructure_competition", "platform_power"],
+        "significance": "Google이 처음으로 주도한 사설 기업 태평양 케이블. IT 기업의 해저 케이블 직접 소유 트렌드의 시작점.",
+        "theory_ref": "Platform Power: 빅테크 기업이 물리 인프라 소유로 국가급 통신 역량 확보"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [235.6, 43.1], [202.1, 21.3], [180.0, 18.0],
+          [155.0, 15.0], [144.8, 13.5], [128.0, 3.0], [103.8, 1.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_echo",
+        "name": "Echo",
+        "name_en": "Echo Cable System",
+        "owners": ["Google", "Meta"],
+        "rfs_year": 2023,
+        "length_km": 13000,
+        "landing_countries": ["미국", "괌", "싱가포르"],
+        "strategic_risk": "low",
+        "theory_tags": ["infrastructure_competition", "platform_power", "indo_pacific_strategy"],
+        "significance": "Google·Meta의 미국-싱가포르 직결 케이블. 괌 경유로 미국 전략 거점과 연결. 중국 배제 설계.",
+        "theory_ref": "Platform Power + 인도-태평양 전략: 민간 기업이 동맹 인프라 구축을 선도"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [235.6, 43.1], [202.1, 21.3], [180.0, 15.0],
+          [144.8, 13.5], [120.9, 14.6], [124.8, 1.5], [104.1, 1.0], [103.8, 1.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_bifrost",
+        "name": "Bifrost",
+        "name_en": "Bifrost Cable System",
+        "owners": ["Meta", "PT Telin (Telkom Indonesia)"],
+        "rfs_year": 2024,
+        "length_km": 16000,
+        "landing_countries": ["미국", "괌", "필리핀", "인도네시아", "싱가포르"],
+        "strategic_risk": "low",
+        "theory_tags": ["infrastructure_competition", "indo_pacific_strategy"],
+        "significance": "Meta가 주도하고 인도네시아 국영 통신사와 공동 건설. 인도네시아 경유로 동남아 연결 다변화. 중국 본토 미경유.",
+        "theory_ref": "인도-태평양 전략: 중국 우회 다변화 인프라로 동남아 파트너 국가 연결"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-75.9, 36.8], [-55.0, 40.0], [-30.0, 42.0],
+          [-10.0, 43.5], [-2.9, 43.4]
+        ]
+      },
+      "properties": {
+        "id": "cable_marea",
+        "name": "MAREA",
+        "name_en": "MAREA Transatlantic Cable",
+        "owners": ["Microsoft", "Meta"],
+        "rfs_year": 2017,
+        "length_km": 6600,
+        "landing_countries": ["미국", "스페인"],
+        "strategic_risk": "low",
+        "theory_tags": ["platform_power", "infrastructure_competition"],
+        "significance": "Microsoft·Meta의 대서양 사설 케이블. 당시 단일 케이블 최대 용량(160Tbps). 국가 기간망 의존에서 벗어난 빅테크 독립 인프라 전략의 상징.",
+        "theory_ref": "Platform Power: 빅테크가 국가 수준의 통신 인프라 구축·독점 경향"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [115.8, -31.9], [106.0, -18.0], [103.8, 1.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_indigo",
+        "name": "INDIGO Central",
+        "name_en": "INDIGO Central Cable",
+        "owners": ["Telstra", "SubPartners", "Indosat Ooredoo"],
+        "rfs_year": 2019,
+        "length_km": 4600,
+        "landing_countries": ["호주", "인도네시아", "싱가포르"],
+        "strategic_risk": "low",
+        "theory_tags": ["indo_pacific_strategy", "infrastructure_competition"],
+        "significance": "호주 정부 지원 아래 구축된 호주-싱가포르 직결 케이블. 호주의 인도-태평양 디지털 연결 전략의 핵심. 화웨이 장비 배제.",
+        "theory_ref": "인도-태평양 전략: 호주의 쿼드(Quad) 파트너십 내 디지털 인프라 협력"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [241.6, 33.9], [202.1, 21.3], [180.0, 19.0],
+          [155.0, 17.0], [144.8, 13.5], [120.9, 14.6]
+        ]
+      },
+      "properties": {
+        "id": "cable_plcn",
+        "name": "PLCN",
+        "name_en": "Pacific Light Cable Network",
+        "owners": ["Google", "Meta"],
+        "rfs_year": 2021,
+        "length_km": 12900,
+        "landing_countries": ["미국", "괌", "필리핀"],
+        "strategic_risk": "low",
+        "theory_tags": ["digital_iron_curtain", "techno_nationalism", "decoupling"],
+        "significance": "원래 홍콩 상륙 예정이었으나 미국 FCC가 안보 우려로 홍콩 구간 허가 거부. 중국 데이터 접근 차단 정책의 첫 사례. 현재는 미국-필리핀 구간만 운용.",
+        "theory_ref": "Techno-nationalism: 물리 인프라를 통한 데이터 국경 통제, 디지털 주권 경쟁"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [238.1, 37.0], [202.1, 21.3], [180.0, 15.0],
+          [144.8, 13.5], [120.9, 14.6], [121.5, 25.0], [139.8, 35.7], [103.8, 1.3]
+        ]
+      },
+      "properties": {
+        "id": "cable_apricot",
+        "name": "Apricot",
+        "name_en": "Apricot Cable System",
+        "owners": ["Google", "Meta", "KDDI", "Chunghwa Telecom", "Globe Telecom", "SingTel"],
+        "rfs_year": 2024,
+        "length_km": 12000,
+        "landing_countries": ["미국", "괌", "필리핀", "대만", "일본", "싱가포르"],
+        "strategic_risk": "low",
+        "theory_tags": ["decoupling", "indo_pacific_strategy", "techno_nationalism"],
+        "significance": "중국 본토를 완전히 우회한 미국·일본·대만·싱가포르 연결 케이블. PLCN 홍콩 차단 이후 확산된 '중국 배제 설계' 케이블의 전형.",
+        "theory_ref": "Decoupling: 중국을 배제한 인도-태평양 동맹 디지털 인프라 구축 가속화"
+      }
+    }
+  ]
+}

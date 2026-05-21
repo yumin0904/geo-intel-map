@@ -13,9 +13,11 @@ const TILE_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
   '&copy; <a href="https://carto.com/">CARTO</a>';
 
-// 초기 뷰: 한반도 중심 — 대한민국·북한·일본·중국 동해안을 한 화면에
-const INITIAL_CENTER = [36.0, 128.0];
-const INITIAL_ZOOM   = 5;
+// 초기 뷰: 경도 175° — 날짜변경선 기준
+// 진주만(-157° = 203°)이 중심 기준 +28° 우측, 일본(140°)이 -35° 좌측
+// 태평양 케이블 전체 가시 + 아시아-하와이 균형
+const INITIAL_CENTER = [20.0, 175.0];
+const INITIAL_ZOOM   = 3;
 
 export class MapController {
   constructor(containerId) {
