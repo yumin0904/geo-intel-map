@@ -1,0 +1,215 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "malacca",
+        "name": "말라카 해협",
+        "name_en": "Strait of Malacca",
+        "region_code": "malacca",
+        "importance": "critical",
+        "severity": 92,
+        "throughput": "일 8만 5천 척, 전 세계 해상무역 25%, 중국·일본 원유 수입의 80%",
+        "controlling_power": ["Singapore", "Malaysia", "Indonesia"],
+        "chokepoint_width_km": 2.8,
+        "theory_tags": ["sea_power", "SLOC", "chokepoint", "Mahan"],
+        "theory_ref": "Mahan (1890) — 해상교통로(SLOC) 통제가 해상패권을 결정. 말라카는 인도양-태평양을 잇는 가장 좁은 목이다.",
+        "significance": "인도-태평양 전략의 핵심 연결고리. 중국은 '말라카 딜레마'를 극복하기 위해 미얀마-파키스탄 우회 파이프라인을 추진 중이다."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[99.5, 1.3], [99.0, 5.5], [101.5, 6.0], [104.5, 1.5], [103.2, 1.0], [99.5, 1.3]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "hormuz",
+        "name": "호르무즈 해협",
+        "name_en": "Strait of Hormuz",
+        "region_code": "hormuz",
+        "importance": "critical",
+        "severity": 95,
+        "throughput": "일 2,100만 배럴, 전 세계 원유 해상운송의 20%",
+        "controlling_power": ["Iran", "Oman", "UAE"],
+        "chokepoint_width_km": 56.0,
+        "theory_tags": ["resource_weaponization", "sea_power", "chokepoint", "SLOC"],
+        "theory_ref": "Hirschman (1945) → Drezner (2015) — 자원무기화(Resource Weaponization). 이란은 군사긴장 시 해협 봉쇄로 유가 급등을 위협한다.",
+        "significance": "이란이 봉쇄 시 글로벌 유가는 즉각 급등. Cascade 룰: 호르무즈 긴장 → 유가(CL=F) 상승의 핵심 연결고리."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[55.5, 25.8], [55.5, 27.2], [57.8, 27.0], [57.8, 25.5], [55.5, 25.8]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "bab_el_mandeb",
+        "name": "바브엘만데브",
+        "name_en": "Bab-el-Mandeb Strait",
+        "region_code": "bab_el_mandeb",
+        "importance": "high",
+        "severity": 80,
+        "throughput": "일 700만 배럴 원유, 연간 2만 척 이상",
+        "controlling_power": ["Djibouti", "Yemen", "Eritrea"],
+        "chokepoint_width_km": 29.0,
+        "theory_tags": ["gray_zone", "hybrid_warfare", "chokepoint", "resource_weaponization"],
+        "theory_ref": "Gray Zone Strategy — 후티 반군의 상선 공격(2023~)은 국가 행위자(이란) 지원 하의 비전통 안보 위협 사례.",
+        "significance": "2023년 후티의 홍해 상선 공격으로 수에즈 경유 물동량 60% 감소. 선박들이 아프리카 남단 우회 → 운송비 급등."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[42.5, 11.8], [42.5, 13.2], [44.0, 13.2], [44.0, 11.8], [42.5, 11.8]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "taiwan_strait",
+        "name": "대만 해협",
+        "name_en": "Taiwan Strait",
+        "region_code": "taiwan_strait",
+        "importance": "critical",
+        "severity": 93,
+        "throughput": "일 200척 이상, 글로벌 컨테이너 물동량의 약 48% 통과",
+        "controlling_power": ["China (PLA)", "Taiwan", "USA (7th Fleet)"],
+        "chokepoint_width_km": 180.0,
+        "theory_tags": ["A2AD", "sea_power", "techno_nationalism", "chokepoint"],
+        "theory_ref": "Weaponized Interdependence (Farrell & Newman 2019) — TSMC 반도체 공급망 집중이 대만 해협 긴장을 글로벌 경제 충격으로 전환.",
+        "significance": "Cascade 핵심: 군용기 출격(ADS-B) → 대만 긴장 상승 → TSMC 주가(TSM) 하락. 제1열도선의 전략적 요충지."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[118.5, 21.5], [118.5, 27.0], [121.5, 27.0], [121.5, 21.5], [118.5, 21.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "luzon_strait",
+        "name": "루손 해협",
+        "name_en": "Luzon Strait",
+        "region_code": "luzon_strait",
+        "importance": "high",
+        "severity": 75,
+        "throughput": "중국 핵잠수함의 태평양 진출 핵심 경로",
+        "controlling_power": ["Philippines", "Taiwan", "USA (7th Fleet)"],
+        "chokepoint_width_km": 380.0,
+        "theory_tags": ["A2AD", "sea_power", "first_island_chain", "chokepoint"],
+        "theory_ref": "제1열도선(First Island Chain) 이론 — 미국이 설정한 중국 해군력 봉쇄선의 핵심 구간.",
+        "significance": "중국 핵잠수함이 서태평양으로 나오려면 반드시 통과해야 하는 지점. 미 7함대 감시 핵심 구역."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[120.5, 18.5], [120.5, 21.5], [123.5, 21.5], [123.5, 18.5], [120.5, 18.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "suez_canal",
+        "name": "수에즈 운하",
+        "name_en": "Suez Canal",
+        "region_code": "suez",
+        "importance": "high",
+        "severity": 78,
+        "throughput": "연간 2만 척, 전 세계 해상무역의 12~15%",
+        "controlling_power": ["Egypt (SCA)"],
+        "chokepoint_width_km": 0.3,
+        "theory_tags": ["sea_power", "SLOC", "chokepoint", "resource_weaponization"],
+        "theory_ref": "Mahan의 해상교통로 이론 적용 — 지중해-홍해를 잇는 인공 해협. 2021년 에버기번 좌초로 약 400억 달러 물류 차질.",
+        "significance": "2023년 바브엘만데브 위기로 우회 급증 → 수에즈 통항료 수입 급감. 이집트의 전략 자산."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[32.2, 29.5], [32.2, 31.5], [33.0, 31.5], [33.0, 29.5], [32.2, 29.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "lombok_strait",
+        "name": "룸복 해협",
+        "name_en": "Lombok Strait",
+        "region_code": "lombok_strait",
+        "importance": "medium",
+        "severity": 58,
+        "throughput": "중국 원유 탱커의 말라카 우회 대체경로",
+        "controlling_power": ["Indonesia"],
+        "chokepoint_width_km": 40.0,
+        "theory_tags": ["sea_power", "SLOC", "chokepoint"],
+        "theory_ref": "말라카 딜레마(Malacca Dilemma) 해소 전략 — 중국이 말라카 의존도를 줄이기 위해 개발한 대체 항로 중 하나.",
+        "significance": "수심이 깊어 대형 선박과 잠수함 통과 가능. 말라카 봉쇄 시 주요 우회로로 기능."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[115.3, -9.0], [115.3, -6.8], [116.3, -6.8], [116.3, -9.0], [115.3, -9.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sunda_strait",
+        "name": "순다 해협",
+        "name_en": "Sunda Strait",
+        "region_code": "sunda_strait",
+        "importance": "medium",
+        "severity": 52,
+        "throughput": "말라카 우회 대체경로 (수심 얕아 소형 선박 위주)",
+        "controlling_power": ["Indonesia"],
+        "chokepoint_width_km": 24.0,
+        "theory_tags": ["sea_power", "SLOC", "chokepoint"],
+        "theory_ref": "복수 SLOC 전략 — 단일 해협 의존도를 낮춰 봉쇄 리스크를 분산하는 해양전략.",
+        "significance": "수심이 얕아 대형 탱커보다 소형 선박 위주. 룸복보다 덜 중요하나 말라카 봉쇄 시 활성화."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[104.5, -6.8], [104.5, -5.0], [106.2, -5.0], [106.2, -6.8], [104.5, -6.8]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "korea_strait",
+        "name": "대한해협 (쓰시마 해협)",
+        "name_en": "Korea Strait (Tsushima Strait)",
+        "region_code": "korea_strait",
+        "importance": "medium",
+        "severity": 62,
+        "throughput": "동해 접근 통제, 러시아 태평양 함대 출구",
+        "controlling_power": ["South Korea", "Japan", "USA (7th Fleet)"],
+        "chokepoint_width_km": 180.0,
+        "theory_tags": ["sea_power", "A2AD", "chokepoint", "first_island_chain"],
+        "theory_ref": "동맹이론 (Alliance Theory) — 한미일 3각 동맹의 해상 방어선. 러시아 블라디보스토크 함대의 태평양 진출 통제.",
+        "significance": "러시아 태평양함대가 동해에서 태평양으로 나오는 주요 경로. 유사 시 한미일이 봉쇄 가능한 핵심 해협."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[128.0, 33.0], [128.0, 35.5], [131.0, 35.5], [131.0, 33.0], [128.0, 33.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "la_perouse_strait",
+        "name": "라페루즈 해협 (소야 해협)",
+        "name_en": "La Pérouse Strait (Soya Strait)",
+        "region_code": "la_perouse_strait",
+        "importance": "medium",
+        "severity": 55,
+        "throughput": "사할린-홋카이도 사이 오호츠크해 접근 통로",
+        "controlling_power": ["Russia", "Japan"],
+        "chokepoint_width_km": 43.0,
+        "theory_tags": ["sea_power", "chokepoint", "gray_zone"],
+        "theory_ref": "북방 SLOC 이론 — 러시아 태평양함대의 오호츠크해 잠수함 기지 접근 경로. 일본이 감시를 강화 중.",
+        "significance": "러시아 핵잠수함 기지(캄차카)의 보호 수역인 오호츠크해로 통하는 관문. 겨울 결빙으로 전략 가치가 계절별로 변동."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[141.5, 45.3], [141.5, 46.5], [143.0, 46.5], [143.0, 45.3], [141.5, 45.3]]]
+      }
+    }
+  ]
+}

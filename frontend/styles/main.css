@@ -225,3 +225,116 @@ body {
 
 .filter-btn:hover  { opacity: 0.65; }
 .filter-btn.is-active { opacity: 1; }
+
+/* ── 분쟁 이벤트 필터 바 (하단 중앙 고정) ─────────────────────── */
+#conflict-filter-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--panel-radius);
+  padding: 9px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  pointer-events: all;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.filter-bar__title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.5px;
+}
+
+.filter-bar__divider {
+  width: 1px;
+  height: 16px;
+  background: var(--color-border);
+}
+
+.filter-bar__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-bar__label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.filter-bar__value {
+  font-size: 11px;
+  color: var(--color-text-primary);
+  min-width: 52px;
+}
+
+/* Range 슬라이더 다크 테마 */
+input[type=range].severity-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 130px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-border);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range].severity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 4px rgba(88,166,255,0.5);
+}
+
+.period-btn {
+  padding: 3px 9px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.period-btn:hover      { background: rgba(255,255,255,0.04); }
+.period-btn.is-active  {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: rgba(88,166,255,0.1);
+}
+
+/* ── 해상 초점 구역 레이블 (폴리곤 중심 이름 표시) ─────────────── */
+.chokepoint-label {
+  background: none !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+.chokepoint-label__inner {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow:
+    0 0 6px rgba(0,0,0,0.9),
+    0 1px 3px rgba(0,0,0,1);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  letter-spacing: 0.4px;
+  text-align: center;
+}

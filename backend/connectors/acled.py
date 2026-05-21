@@ -102,7 +102,7 @@ class AcledConnector(BaseConnector):
             "event_date":       date_range,
             "event_date_where": "BETWEEN",
             "country":          "|".join(INDO_PACIFIC_COUNTRIES),
-            "limit":            200,  # 500→200: 전송량 60% 감소, 30일 인도-태평양 충분
+            "limit":            1500, # 7/30일 토글 의미 있으려면 ~50건/일 × 30일 = 1500 필요
         }
 
         resp = await self._get_with_retry(token, params)

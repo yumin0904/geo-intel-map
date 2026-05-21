@@ -79,10 +79,12 @@ function buildPopup(props) {
 export class ConflictEventsLayer {
   /** @param {L.Map} map */
   constructor(map) {
-    this.map        = map;
-    this._features  = [];
+    this.map         = map;
+    this._features   = [];
     this._layerGroup = null;
-    this._onZoomEnd = () => this._applyZoomFilter();
+    this._minSeverity = 0;   // 슬라이더가 설정하는 최소 심각도
+    this._periodDays  = 30;  // 기간 필터 (7 or 30)
+    this._onZoomEnd   = () => this._applyFilter();
   }
 
   async load() {
@@ -96,26 +98,40 @@ export class ConflictEventsLayer {
 
     this._features = geojson.features ?? [];
 
+    // 기간 필터 기준: 데이터 내 최신 타임스탬프 (과거 데이터에서도 정상 동작)
+    const timestamps = this._features
+      .map(f => f.properties.timestamp ? Date.parse(f.properties.timestamp) : 0)
+      .filter(Boolean);
+    this._latestTs = timestamps.length ? Math.max(...timestamps) : Date.now();
+
     this._layerGroup = this._features.length >= CLUSTER_THRESHOLD
       ? L.markerClusterGroup({ chunkedLoading: true, maxClusterRadius: 50 })
       : L.layerGroup();
 
-    this._applyZoomFilter();
+    this._applyFilter();
     this._layerGroup.addTo(this.map);
     this.map.on('zoomend', this._onZoomEnd);
 
     console.info(`[ConflictEventsLayer] ${this._features.length}개 이벤트 로드 완료`);
   }
 
-  _applyZoomFilter() {
+  _applyFilter() {
     if (!this._layerGroup) return;
-    const zoom        = this.map.getZoom();
-    const minSeverity = zoom <= ZOOM_HIGH_SEVERITY_CUTOFF ? MIN_SEVERITY_LOW_ZOOM : 0;
+    const zoom    = this.map.getZoom();
+    // 줌 기반 최소 심각도와 슬라이더 값 중 큰 쪽을 적용
+    const zoomMin = zoom <= ZOOM_HIGH_SEVERITY_CUTOFF ? MIN_SEVERITY_LOW_ZOOM : 0;
+    const minSev  = Math.max(zoomMin, this._minSeverity);
+    // 기간 필터: 데이터 내 최신 이벤트 기준 → 과거 데이터도 정상 동작
+    const cutoff  = this._latestTs - this._periodDays * 86_400_000;
 
     this._layerGroup.clearLayers();
 
     this._features
-      .filter(f => (f.properties.severity ?? 0) >= minSeverity)
+      .filter(f => {
+        if ((f.properties.severity ?? 0) < minSev) return false;
+        const ts = f.properties.timestamp ? Date.parse(f.properties.timestamp) : 0;
+        return ts >= cutoff;
+      })
       .forEach(feature => {
         const [lon, lat] = feature.geometry.coordinates;
         const props      = feature.properties;
@@ -136,6 +152,18 @@ export class ConflictEventsLayer {
 
         this._layerGroup.addLayer(marker);
       });
+  }
+
+  /** 슬라이더 값 변경 시 호출 — 서버 재요청 없이 클라이언트 필터링 */
+  setSeverityMin(n) {
+    this._minSeverity = n;
+    this._applyFilter();
+  }
+
+  /** 기간 토글 버튼 변경 시 호출 (7 or 30) */
+  setPeriod(days) {
+    this._periodDays = days;
+    this._applyFilter();
   }
 
   setVisible(visible) {

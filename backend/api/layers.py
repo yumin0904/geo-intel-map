@@ -123,3 +123,13 @@ async def get_energy_pipelines():
     연관 이론: Weaponized Interdependence (Farrell & Newman), Resource Weaponization
     """
     return _load_geojson("energy_pipelines.geojson")
+
+
+@router.get("/chokepoints")
+async def get_chokepoints():
+    """
+    전략적 해상 초점(Chokepoints) GeoJSON 반환 (정적 폴리곤 데이터).
+    10개 — 말라카·호르무즈·바브엘만데브·대만해협·루손·수에즈 등.
+    연관 이론: Mahan 해양력 이론, SLOC 통제, Resource Weaponization
+    """
+    return _load_geojson("chokepoints.geojson")

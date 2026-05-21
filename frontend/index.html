@@ -18,6 +18,22 @@
   <!-- 좌측 사이드바 — LayerPanel이 마운트 -->
   <div id="layer-panel"></div>
 
+  <!-- 분쟁 이벤트 필터 바 (하단 중앙 고정) -->
+  <div id="conflict-filter-bar">
+    <span class="filter-bar__title">◈ 분쟁 이벤트</span>
+    <div class="filter-bar__row">
+      <span class="filter-bar__label">심각도</span>
+      <input type="range" id="severity-slider" class="severity-slider" min="0" max="100" value="0" step="5" />
+      <span id="severity-label" class="filter-bar__value">0 이상</span>
+    </div>
+    <div class="filter-bar__divider"></div>
+    <div class="filter-bar__row">
+      <span class="filter-bar__label">기간</span>
+      <button class="period-btn is-active" data-days="30">30일</button>
+      <button class="period-btn" data-days="7">7일</button>
+    </div>
+  </div>
+
   <!-- 우측 상단 정보 패널 -->
   <div class="info-panel">
     <span class="info-title">geo-intel-map</span>
@@ -34,12 +50,14 @@
     import { MilitaryBasesLayer }   from './src/layers/MilitaryBasesLayer.js';
     import { ConflictEventsLayer }  from './src/layers/ConflictEventsLayer.js';
     import { EnergyPipelinesLayer } from './src/layers/EnergyPipelinesLayer.js';
+    import { ChokepointsLayer }     from './src/layers/ChokepointsLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
 
-    const ctrl      = new MapController('map').init();
-    const bases     = new MilitaryBasesLayer(ctrl.map);
-    const conflict  = new ConflictEventsLayer(ctrl.map);
-    const pipelines = new EnergyPipelinesLayer(ctrl.map);
+    const ctrl        = new MapController('map').init();
+    const bases       = new MilitaryBasesLayer(ctrl.map);
+    const conflict    = new ConflictEventsLayer(ctrl.map);
+    const pipelines   = new EnergyPipelinesLayer(ctrl.map);
+    const chokepoints = new ChokepointsLayer(ctrl.map);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -71,8 +89,34 @@
       defaultVisible: true,
     });
 
+    ctrl.layerManager.register('chokepoints', chokepoints, {
+      name: '해상 초점',
+      icon: '◉',
+      defaultVisible: true,
+    });
+
     const panel = new LayerPanel(ctrl.layerManager, ctrl.eventBus);
     panel.mount('layer-panel');
+
+    // ── 분쟁 이벤트 필터 바 핸들러 ──────────────────────────────
+    const slider       = document.getElementById('severity-slider');
+    const severityLabel = document.getElementById('severity-label');
+    const periodBtns   = document.querySelectorAll('.period-btn');
+
+    // 슬라이더: 서버 재요청 없이 클라이언트 필터 (CLAUDE.md 성능 원칙)
+    slider.addEventListener('input', () => {
+      const val = Number(slider.value);
+      severityLabel.textContent = `${val} 이상`;
+      conflict.setSeverityMin(val);
+    });
+
+    periodBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        periodBtns.forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        conflict.setPeriod(Number(btn.dataset.days));
+      });
+    });
   </script>
 </body>
 </html>
