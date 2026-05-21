@@ -1,0 +1,34 @@
+# regions.yaml — 자체 지역(region) 정의
+#
+# Cascade 룰의 trigger/response는 좌표가 아니라 "지역 코드"로 매칭된다.
+# 예: 호르무즈 해협 근처에서 발생한 분쟁 이벤트 → region_code="hormuz".
+#
+# bbox는 [min_lon, min_lat, max_lon, max_lat] 순서 (GeoJSON 경도-우선 관례).
+# center는 시각화에서 시장(market) 응답처럼 좌표 없는 이벤트를 앵커링할 대표점 [lon, lat].
+#
+# 정치외교학 연결: 각 region은 SLOC(해상교통로) 통제·자원무기화 이론의 분석 단위다.
+
+hormuz:
+  name: "호르무즈 해협"
+  # 이란-오만-UAE 사이 해협 + 걸프 진입부. 인근 분쟁 이벤트를 트리거로 포착하기 위해 넓게 잡음.
+  bbox: [53.0, 23.0, 60.0, 30.0]
+  center: [56.5, 26.5]
+  theory: "Resource Weaponization (Hirschman 1945) — 글로벌 원유 해상운송의 약 20%가 통과"
+
+bab_el_mandeb:
+  name: "바브엘만데브 해협"
+  bbox: [42.0, 11.0, 45.5, 14.5]
+  center: [43.3, 12.6]
+  theory: "SLOC 통제 — 수에즈-홍해 경로의 남쪽 관문, 후티 위협 노출"
+
+malacca:
+  name: "말라카 해협"
+  bbox: [98.0, 1.0, 104.0, 6.5]
+  center: [100.5, 3.0]
+  theory: "Mahan 해양력 — 동아시아 에너지 수입의 핵심 길목(말라카 딜레마)"
+
+taiwan_strait:
+  name: "대만 해협"
+  bbox: [118.0, 22.0, 122.0, 26.0]
+  center: [120.0, 24.0]
+  theory: "A2/AD·제1열도선 — 반도체 공급망 집중과 결합된 군사 긴장축"

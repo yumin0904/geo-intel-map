@@ -6,6 +6,7 @@ FastAPI 앱을 초기화하고 기본 엔드포인트를 등록한다.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.cascade import router as cascade_router
 from api.layers import router as layers_router
 
 # ── 앱 인스턴스 생성 ──────────────────────────────────────────────
@@ -33,6 +34,7 @@ app.add_middleware(
 )
 
 app.include_router(layers_router)
+app.include_router(cascade_router)
 
 # ── 엔드포인트 ───────────────────────────────────────────────────
 # @app.get("/...") : HTTP GET 요청을 처리하는 함수 등록

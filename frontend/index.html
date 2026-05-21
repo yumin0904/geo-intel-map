@@ -52,6 +52,7 @@
     import { EnergyPipelinesLayer } from './src/layers/EnergyPipelinesLayer.js';
     import { ChokepointsLayer }      from './src/layers/ChokepointsLayer.js';
     import { SubmarineCablesLayer }  from './src/layers/SubmarineCablesLayer.js';
+    import { CascadeLayer }          from './src/layers/CascadeLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
 
     const ctrl        = new MapController('map').init();
@@ -60,6 +61,7 @@
     const pipelines   = new EnergyPipelinesLayer(ctrl.map);
     const chokepoints = new ChokepointsLayer(ctrl.map);
     const cables      = new SubmarineCablesLayer(ctrl.map);
+    const cascade     = new CascadeLayer(ctrl.map);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -100,6 +102,13 @@
     ctrl.layerManager.register('chokepoints', chokepoints, {
       name: '해상 초점',
       icon: '◉',
+      defaultVisible: true,
+    });
+
+    // ★ Cascade(연쇄 분석) — 분쟁 → 시장 인과 점선 화살표 (Phase 2 핵심 차별 기능)
+    ctrl.layerManager.register('cascade', cascade, {
+      name: '인과 연쇄',
+      icon: '⛓',
       defaultVisible: true,
     });
 

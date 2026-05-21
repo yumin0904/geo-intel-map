@@ -1,0 +1,49 @@
+# cascade_rules.yaml — 인과 룰북 (★ 프로젝트 핵심 차별 기능)
+#
+# 룰은 코드가 아니라 이 YAML로 관리된다. 룰만 추가하면 새 인과관계가 등록된다.
+# 각 룰은 models/cascade.py의 CascadeRule 스키마로 검증된다.
+#
+# 동작: trigger 조건에 맞는 이벤트 발생 → window_hours 동안 expected_response 관찰
+#       → threshold_pct 이상 변동 시 CascadeLink 생성.
+
+# ── 활성 룰 (실제 데이터로 동작 확인됨) ─────────────────────────────
+- id: bab_el_mandeb_tension_to_oil
+  name: "바브엘만데브 긴장 → 유가 상승"
+  trigger:
+    source_type: conflict      # ACLED 후티 공격 이벤트를 해상 위협 신호로 사용
+    region: bab_el_mandeb
+    severity_min: 60           # 전투/원격폭력 등 고강도 이벤트만
+  expected_response:
+    source_type: market
+    ticker: "CL=F"             # WTI 원유 선물 (yfinance)
+    direction: up
+    window_hours: 48           # 시장이 지정학 충격을 반영하는 데 통상 1~2 거래일
+    threshold_pct: 1.5
+  theory:
+    framework: "SLOC Interdiction (Gray Zone)"
+    reference: "Mahan 해양력; 후티 홍해 공격 (2023~24)"
+    learning_note: >-
+      바브엘만데브는 홍해-수에즈 경로의 남쪽 관문으로 글로벌 해상교역의 약 12%가 통과한다.
+      후티의 비국가 해상 위협(회색지대 전술)이 선박 우회(희망봉)와 위험 프리미엄을 통해
+      유가로 전이되는 메커니즘을 관찰한다. 국가가 아닌 행위자도 SLOC를 무기화할 수 있음이 핵심.
+
+# ── 대기 룰 (해군/AIS 데이터 도입 시 자동 동작, 현재 트리거 0개) ──────
+- id: hormuz_tension_to_oil
+  name: "호르무즈 긴장 → 유가 상승"
+  trigger:
+    source_type: conflict      # Phase 2: 해군 커넥터 도입 전까지 ACLED 대용 (강 안의 고강도 분쟁 없음)
+    region: hormuz
+    severity_min: 60
+  expected_response:
+    source_type: market
+    ticker: "CL=F"
+    direction: up
+    window_hours: 48
+    threshold_pct: 1.5
+  theory:
+    framework: "Resource Weaponization"
+    reference: "Hirschman (1945), 현대화 Drezner (2015)"
+    learning_note: >-
+      호르무즈는 글로벌 원유 해상운송의 약 20%가 통과하는 단일 길목이다.
+      이 지점의 군사적 긴장이 공급 차질 우려를 통해 유가로 전이되는 메커니즘을 관찰한다.
+      상호의존(에너지 수입)이 어떻게 정치적 충격의 전달 통로가 되는지가 핵심.

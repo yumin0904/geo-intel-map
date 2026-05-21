@@ -35,6 +35,13 @@ INDO_PACIFIC_COUNTRIES = [
     "India", "Bangladesh",
 ]
 
+# 호르무즈 해협 인근 — Cascade 트리거(자원무기화)용 걸프 국가
+# 해군 커넥터가 아직 없어 ACLED 분쟁 이벤트를 해상긴장 대용으로 사용한다(Phase 2).
+GULF_COUNTRIES = [
+    "Iran", "Iraq", "Saudi Arabia", "United Arab Emirates",
+    "Oman", "Qatar", "Bahrain", "Kuwait", "Yemen",
+]
+
 # event_type별 severity 기본점수 (0-100 스케일)
 # 전투(Battles)가 가장 높고, 시위(Protests)가 가장 낮다
 _SEVERITY_BASE: dict[str, int] = {
@@ -80,12 +87,15 @@ class AcledConnector(BaseConnector):
     OAuth Resource Owner Password Credentials Grant 방식 사용.
     """
 
-    async def fetch(self) -> list[Event]:
-        """최근 30일, 인도-태평양 분쟁 이벤트를 Event 리스트로 반환한다.
+    async def fetch(self, countries: list[str] | None = None) -> list[Event]:
+        """최근 30일 분쟁 이벤트를 Event 리스트로 반환한다.
 
+        countries: 조회 대상 국가 목록. 미지정 시 인도-태평양(기존 레이어 동작 유지).
+                   Cascade 엔진은 GULF_COUNTRIES를 넘겨 호르무즈 트리거를 수집한다.
         _ref_date_cache로 probe 호출을 24시간에 1회로 줄인다.
         ACLED v2 API: fields 파라미터 지정 시 [[],[]] 형식이므로 사용 금지.
         """
+        countries = countries or INDO_PACIFIC_COUNTRIES
         token = await self._get_token()
         acled_today_str = await self._get_ref_date(token)
 
@@ -102,7 +112,7 @@ class AcledConnector(BaseConnector):
         params = {
             "event_date":       date_range,
             "event_date_where": "BETWEEN",
-            "country":          "|".join(INDO_PACIFIC_COUNTRIES),
+            "country":          "|".join(countries),
             "limit":            1500, # 7/30일 토글 의미 있으려면 ~50건/일 × 30일 = 1500 필요
         }
 
