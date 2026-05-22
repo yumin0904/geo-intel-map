@@ -6,6 +6,11 @@
  * EventBus 이벤트:
  *   수신: marker:click { theory_tags, title, timestamp, severity, ... }
  *   수신: marker:close  (지도 클릭, ESC 등)
+ *
+ * 추천 자료 원칙 (한양대 정치외교학과 학부생 기준):
+ *   1. 한국어 자료 우선 — KIMS, EAI, KIEP, KIDA, KINU, KREI 등
+ *   2. 무료 접근 가능 우선 — 기관 공개 보고서, Gutenberg, 정부 사이트
+ *   3. 학부 수준 — 대학원 전문 논문보다 정책 브리핑·단행본 우선
  */
 
 // ── 이론 데이터베이스 ────────────────────────────────────────────────
@@ -19,9 +24,14 @@ const THEORY_DB = {
     detail: '국가·비국가 행위자가 군사적 충돌 임계점 직하에서 심리전·경제압박·해상민병대를 조합해 상대방의 대응을 어렵게 만드는 전략. 후티의 홍해 공격이 전형적 사례.',
     cascade_rules: ['bab_el_mandeb_tension_to_oil'],
     reading: [
-      { title: 'Hoffman (2007) — Conflict in the 21st Century', url: 'https://www.potomacinstitute.org/images/stories/publications/potomac_hybridwar_0108.pdf' },
-      { title: 'Mazarr (2015) — Mastering the Gray Zone', url: 'https://press.armywarcollege.edu/cgi/viewcontent.cgi?article=1090&context=monographs' },
+      { title: '🔗 국방연구원(KIDA) — 회색지대·비전통안보 연구', url: 'https://www.kida.re.kr' },
+      { title: '🔗 RAND Korea — 회색지대 전략 분석', url: 'https://www.rand.org/topics/korea.html' },
+      { title: '🔗 Hoffman (2007) — Conflict in the 21st Century (무료)', url: 'https://www.potomacinstitute.org/images/stories/publications/potomac_hybridwar_0108.pdf' },
     ],
+    library_tip: {
+      riss:  "'회색지대 전략' 또는 '하이브리드 위협' 검색",
+      dbpia: "'비국가행위자 강압전략 SLOC' 검색",
+    },
   },
 
   hybrid_warfare: {
@@ -31,8 +41,14 @@ const THEORY_DB = {
     detail: '러시아의 2014 우크라이나 개입과 2022 전면전이 대표 사례. 군사력·경제·선전을 혼합해 상대방의 대응 수단을 무력화한다. 식량·에너지 무기화와 연결.',
     cascade_rules: ['ukraine_conflict_to_wheat'],
     reading: [
-      { title: 'Gerasimov (2013) — The Value of Science Is in the Foresight', url: 'https://www.armyupress.army.mil/Portals/7/military-review/Archives/English/MilitaryReview_20160228_art008.pdf' },
+      { title: '🔗 국방연구원(KIDA) — 복합전·하이브리드전 연구', url: 'https://www.kida.re.kr' },
+      { title: '🔗 RAND — Hybrid Warfare 보고서', url: 'https://www.rand.org/topics/hybrid-warfare.html' },
+      { title: '🔗 Gerasimov (2013) — The Value of Science (무료)', url: 'https://www.armyupress.army.mil/Portals/7/military-review/Archives/English/MilitaryReview_20160228_art008.pdf' },
     ],
+    library_tip: {
+      riss:  "'하이브리드 전쟁 러시아 우크라이나' 검색",
+      dbpia: "'복합전 사이버 정보전' 검색",
+    },
   },
 
   A2AD: {
@@ -40,12 +56,17 @@ const THEORY_DB = {
     scholars: 'Krepinevich (2010), CSBA',
     summary: '적 전력이 특정 해역·공역에 접근하거나 작전하지 못하도록 막는 군사전략.',
     detail: '중국의 DF-21D 대함탄도미사일·잠수함·해상민병대가 미군의 제1열도선 내 자유항행을 차단하는 것이 전형적 사례. 대만해협·남중국해가 핵심 마찰 공간.',
-    // 해양 접근거부 전략 — 내륙 분쟁(미얀마·우크라이나 등)에서는 카드 숨김
     geo_filter: ['taiwan_strait', 'south_china_sea', 'east_china_sea'],
     cascade_rules: ['taiwan_strait_to_tsm', 'taiwan_strait_to_soxx', 'south_china_sea_to_defense'],
     reading: [
-      { title: 'CSBA — AirSea Battle (2010)', url: 'https://csbaonline.org/research/publications/airsea-battle-a-point-of-departure-operational-concept' },
+      { title: '🔗 한국해양전략연구소(KIMS) — 해양안보 보고서', url: 'https://kims.or.kr' },
+      { title: '🔗 EAI 동아시아연구원 — 인도태평양 이슈브리핑', url: 'https://www.eai.or.kr' },
+      { title: '🔗 CSBA — AirSea Battle (2010, 무료)', url: 'https://csbaonline.org/research/publications/airsea-battle-a-point-of-departure-operational-concept' },
     ],
+    library_tip: {
+      riss:  "'A2AD 중국 군사전략 제1열도선' 검색",
+      dbpia: "'반접근 지역거부 대만해협' 검색",
+    },
   },
 
   conventional_warfare: {
@@ -53,10 +74,15 @@ const THEORY_DB = {
     scholars: 'Clausewitz (1832)',
     summary: '국가 간 선포된 정규 군사력 충돌.',
     detail: '규칙과 국제법 틀 안에서 군대 간 직접 교전. 현대에는 순수 재래전은 드물며, 회색지대·하이브리드전과 혼합되는 경우가 많다.',
-    cascade_rules: [],   // 재래전 자체는 지역 무관 — 좌표 기반 필터로 해당 지역 룰이 있으면 자동 표시
+    cascade_rules: [],
     reading: [
-      { title: 'Clausewitz — On War (1832)', url: 'https://www.gutenberg.org/ebooks/1946' },
+      { title: '🔗 Clausewitz — On War (1832, Project Gutenberg 무료)', url: 'https://www.gutenberg.org/ebooks/1946' },
+      { title: '🔗 국방연구원(KIDA) — 분쟁연구', url: 'https://www.kida.re.kr' },
     ],
+    library_tip: {
+      riss:  "'재래전 국제인도법 전쟁론' 검색",
+      dbpia: "'클라우제비츠 정규전 현대전쟁' 검색",
+    },
   },
 
   irregular_warfare: {
@@ -64,10 +90,15 @@ const THEORY_DB = {
     scholars: 'Galula (1964), Kilcullen (2009)',
     summary: '비정규 전투원이 참여하는 비전통적 무력분쟁.',
     detail: '게릴라전·반란진압·테러 등이 포함. ACLED 데이터의 상당 부분이 이 유형. 약소 행위자가 강대국에 비대칭적으로 대응하는 방식이다.',
-    cascade_rules: [],   // 비정규전도 지역 무관 — 좌표 기반 필터가 해당 지역 룰 자동 선택
+    cascade_rules: [],
     reading: [
-      { title: 'Kilcullen (2009) — The Accidental Guerrilla', url: null },
+      { title: '🔗 국방연구원(KIDA) — 비정규전·테러리즘 연구', url: 'https://www.kida.re.kr' },
+      { title: '🔗 RAND — Counterinsurgency 연구', url: 'https://www.rand.org/topics/counterinsurgency.html' },
     ],
+    library_tip: {
+      riss:  "'비정규전 반란진압 COIN' 검색",
+      dbpia: "'게릴라 테러리즘 비국가행위자' 검색",
+    },
   },
 
   political_instability: {
@@ -75,10 +106,15 @@ const THEORY_DB = {
     scholars: 'Rotberg (2004), Fund for Peace (FSI)',
     summary: '정권 정당성 약화·경제 위기·사회 분열로 국가 기능이 붕괴하는 과정.',
     detail: 'ACLED 분쟁 데이터와 높은 상관관계. 취약국은 강대국의 대리전 무대가 되기 쉽고, 지역 패권 경쟁의 진공 지대를 형성한다.',
-    cascade_rules: [],   // 정치 불안도 지역 무관 — 좌표가 ukraine/middle_east bbox 안이면 자동 연결
+    cascade_rules: [],
     reading: [
-      { title: 'Fund for Peace — Fragile States Index', url: 'https://fragilestatesindex.org/' },
+      { title: '🔗 Fund for Peace — Fragile States Index (무료)', url: 'https://fragilestatesindex.org/' },
+      { title: '🔗 통일연구원(KINU) — 북한·불안정국가 연구', url: 'https://www.kinu.or.kr' },
     ],
+    library_tip: {
+      riss:  "'국가취약성 실패국가 FSI' 검색",
+      dbpia: "'정치불안정 분쟁 대리전' 검색",
+    },
   },
 
   // ── 미래 확장 태그 (현재 ACLED 이벤트엔 없지만 룰북과 연결됨) ───
@@ -88,12 +124,17 @@ const THEORY_DB = {
     scholars: 'Mahan (1890), Till (2004)',
     summary: '해상교통로(SLOC) 통제권이 국가 패권의 핵심 조건.',
     detail: '호르무즈·바브엘만데브·말라카·수에즈 등 초크포인트가 전략적 가치를 갖는 이유. 통제하거나 차단하면 세계 무역·에너지 흐름을 좌우할 수 있다.',
-    // 해양 이론 — 내륙 분쟁에서는 카드 숨김
     geo_filter: ['taiwan_strait', 'south_china_sea', 'east_china_sea', 'hormuz', 'bab_el_mandeb', 'suez', 'malacca'],
     cascade_rules: ['bab_el_mandeb_tension_to_oil', 'hormuz_tension_to_oil', 'suez_tension_to_shipping'],
     reading: [
-      { title: 'Mahan (1890) — The Influence of Sea Power upon History', url: 'https://www.gutenberg.org/ebooks/13529' },
+      { title: '🔗 한국해양전략연구소(KIMS) — 해상교통로 보고서', url: 'https://kims.or.kr' },
+      { title: '🔗 해양수산부 — 해양안보 자료', url: 'https://www.mof.go.kr' },
+      { title: '🔗 Mahan — The Influence of Sea Power (1890, Gutenberg 무료)', url: 'https://www.gutenberg.org/ebooks/13529' },
     ],
+    library_tip: {
+      riss:  "'해상교통로 SLOC 초크포인트' 검색",
+      dbpia: "'말라카 딜레마 해양력 마한' 검색",
+    },
   },
 
   resource_weaponization: {
@@ -103,8 +144,14 @@ const THEORY_DB = {
     detail: '러시아의 가스 외교, 중국의 희토류 수출 제한이 대표 사례. 수입국의 취약성이 높을수록 무기화 효과가 크다.',
     cascade_rules: ['hormuz_tension_to_oil', 'ukraine_conflict_to_wheat', 'south_china_sea_to_lng'],
     reading: [
-      { title: 'Hirschman (1945) — National Power and the Structure of Foreign Trade', url: 'https://www.amazon.com/National-Power-Structure-Foreign-Trade/dp/0520015398' },
+      { title: '🔗 KIEP 대외경제정책연구원 — 에너지안보·경제제재 연구', url: 'https://www.kiep.go.kr' },
+      { title: '🔗 에너지경제연구원(KEEI) — 국제에너지 보고서', url: 'https://www.keei.re.kr' },
+      { title: '🔗 Hirschman (1945) — National Power and Foreign Trade', url: 'https://www.amazon.com/National-Power-Structure-Foreign-Trade/dp/0520015398' },
     ],
+    library_tip: {
+      riss:  "'자원무기화 에너지안보 경제제재' 검색",
+      dbpia: "'상호의존 경제강압 희토류' 검색",
+    },
   },
 
   weaponized_interdependence: {
@@ -114,8 +161,14 @@ const THEORY_DB = {
     detail: '달러 결제망(SWIFT), 반도체 공급망, 클라우드 인프라 등이 특정 국가에 집중될 때 그 국가가 갖는 비대칭적 권력.',
     cascade_rules: ['taiwan_strait_to_tsm', 'taiwan_strait_to_soxx'],
     reading: [
-      { title: 'Farrell & Newman (2019) — Weaponized Interdependence', url: 'https://doi.org/10.1162/isec_a_00351' },
+      { title: '🔗 KIEP 대외경제정책연구원 — 공급망·기술패권 연구', url: 'https://www.kiep.go.kr' },
+      { title: '🔗 EAI 동아시아연구원 — 무기화된 상호의존 이슈브리핑', url: 'https://www.eai.or.kr' },
+      { title: '🔗 Farrell & Newman (2019) — Weaponized Interdependence (DOI)', url: 'https://doi.org/10.1162/isec_a_00351' },
     ],
+    library_tip: {
+      riss:  "'무기화된 상호의존 반도체 공급망' 검색",
+      dbpia: "'기술패권 SWIFT 디지털경제안보' 검색",
+    },
   },
 
   safe_haven: {
@@ -125,8 +178,13 @@ const THEORY_DB = {
     detail: '금·미국채·스위스프랑이 대표적 안전자산. "Risk-off" 심리가 강해지면 주식·이머징 자산에서 자금이 이탈한다.',
     cascade_rules: ['middle_east_conflict_to_gold'],
     reading: [
-      { title: 'Baur & Lucey (2010) — Is Gold a Hedge or a Safe Haven?', url: null },
+      { title: '🔗 한국은행 — 경제연구·국제금융 자료', url: 'https://www.bok.or.kr' },
+      { title: '🔗 국제금융센터 — 지정학 리스크 보고서', url: 'https://www.kcif.or.kr' },
     ],
+    library_tip: {
+      riss:  "'안전자산 금 지정학 리스크' 검색",
+      dbpia: "'리스크오프 투자 지정학 프리미엄' 검색",
+    },
   },
 
   korea_discount: {
@@ -136,8 +194,13 @@ const THEORY_DB = {
     detail: '미국 핵우산(확장억제) 신뢰성이 흔들릴 때마다 원화 약세·KOSPI 하락이 동반된다.',
     cascade_rules: ['north_korea_missile_to_krw', 'korean_tension_to_kospi'],
     reading: [
-      { title: 'Cha (2002) — Korea\'s Place in the Axis', url: null },
+      { title: '🔗 통일연구원(KINU) — 한반도 안보·확장억제 연구', url: 'https://www.kinu.or.kr' },
+      { title: '🔗 세종연구소 — 한미동맹·핵억제 보고서', url: 'https://www.sejong.org' },
     ],
+    library_tip: {
+      riss:  "'코리아 디스카운트 지정학 리스크' 검색",
+      dbpia: "'한국증시 북한리스크 확장억제' 검색",
+    },
   },
 
   food_security: {
@@ -147,8 +210,13 @@ const THEORY_DB = {
     detail: '우크라이나·러시아가 세계 밀 28% 담당. 봉쇄 시 식량 수입 의존국에서 정치 불안 발생 (아랍의 봄 패턴).',
     cascade_rules: ['ukraine_conflict_to_wheat'],
     reading: [
-      { title: 'FAO — 흑해 곡물협정 보고서 (2022)', url: 'https://www.fao.org/newsroom/detail/ukraine-war-imposes-heavy-costs-on-world-food-systems/en' },
+      { title: '🔗 한국농촌경제연구원(KREI) — 국제식량 보고서', url: 'https://www.krei.re.kr' },
+      { title: '🔗 FAO — 흑해 곡물협정 보고서 (2022, 무료)', url: 'https://www.fao.org/newsroom/detail/ukraine-war-imposes-heavy-costs-on-world-food-systems/en' },
     ],
+    library_tip: {
+      riss:  "'식량안보 우크라이나 밀 수출' 검색",
+      dbpia: "'식량위기 지정학 아랍의봄' 검색",
+    },
   },
 
   forward_deployment: {
@@ -158,8 +226,13 @@ const THEORY_DB = {
     detail: '미국의 괌·오키나와·한국 주둔이 대표 사례. 신속 대응 능력을 높이지만 현지 사회·정치적 마찰을 유발한다.',
     cascade_rules: ['south_china_sea_to_defense', 'taiwan_strait_to_tsm'],
     reading: [
-      { title: 'Posen (2003) — Command of the Commons', url: 'https://www.jstor.org/stable/3092069' },
+      { title: '🔗 한국해양전략연구소(KIMS) — 미군 전진배치 연구', url: 'https://kims.or.kr' },
+      { title: '🔗 RAND — Forward Presence 보고서', url: 'https://www.rand.org/topics/military-presence.html' },
     ],
+    library_tip: {
+      riss:  "'전진배치 주한미군 억제전략' 검색",
+      dbpia: "'해외군사기지 전력투사 인도태평양' 검색",
+    },
   },
 
   alliance_theory: {
@@ -169,8 +242,13 @@ const THEORY_DB = {
     detail: '세력균형(Waltz): 강대국 부상에 대항해 연합. 위협균형(Walt): 능력뿐 아니라 의도·인접성도 고려. 비대칭 동맹에서 안보-자율성 교환 딜레마가 핵심.',
     cascade_rules: ['south_china_sea_to_defense', 'korean_tension_to_kospi'],
     reading: [
-      { title: 'Walt (1987) — The Origins of Alliances', url: null },
+      { title: '🔗 통일연구원(KINU) — 한미동맹·동맹이론 연구', url: 'https://www.kinu.or.kr' },
+      { title: '🔗 EAI 동아시아연구원 — 동맹 이슈브리핑', url: 'https://www.eai.or.kr' },
     ],
+    library_tip: {
+      riss:  "'동맹이론 한미동맹 세력균형' 검색",
+      dbpia: "'위협균형 안보자율성 비대칭동맹' 검색",
+    },
   },
 };
 
@@ -251,7 +329,6 @@ export class TheoryPanel {
     this._eventBus.on('marker:click', (props) => this._show(props));
     this._eventBus.on('marker:close', ()       => this._hide());
 
-    // ESC 키로 닫기
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this._hide();
     });
@@ -264,44 +341,33 @@ export class TheoryPanel {
       const data = await fetch('/api/cascade/links').then(r => r.json());
       this._cascadeLinks = data.links ?? [];
     } catch {
-      // 서버 미응답 시 빈 배열 유지 — 패널은 정상 표시
       this._cascadeLinks = [];
     }
   }
 
   _show(props) {
-    const tags     = props.theory_tags ?? [];
-    const lon      = props._lon ?? null;
-    const lat      = props._lat ?? null;
+    const tags = props.theory_tags ?? [];
+    const lon  = props._lon ?? null;
+    const lat  = props._lat ?? null;
+
     const theories = tags
       .map(t => THEORY_DB[t])
       .filter(Boolean)
       .filter(t => {
-        // geo_filter가 없으면 항상 표시 (비지역 한정 이론)
         if (!t.geo_filter) return true;
-        // 좌표 없으면 일단 표시 (군사기지 등 좌표 누락 방어)
         if (lon == null || lat == null) return true;
-        // 좌표가 geo_filter 지역 중 하나라도 포함되면 표시
         return isInAnyTheoryRegion(lon, lat, t.geo_filter);
       });
 
-    // 이 이벤트의 이론 태그 cascade_rules + 좌표가 region bbox 안에 있는 모든 룰 수집
-    // 두 가지 소스를 합산: (1) 이론 태그 직접 연결, (2) 좌표 기반 자동 매핑
-    const tagRuleIds = new Set(theories.flatMap(t => t.cascade_rules ?? []));
-
+    const tagRuleIds   = new Set(theories.flatMap(t => t.cascade_rules ?? []));
     const coordRuleIds = (lon != null && lat != null)
       ? new Set(Object.keys(RULE_REGIONS).filter(id => isInRegion(lon, lat, id)))
       : new Set();
-
-    // 합집합 — 이론 태그 기반 + 좌표 기반
-    const allRuleIds = new Set([...tagRuleIds, ...coordRuleIds]);
-
-    // 실제 API에서 확인된 cascade 링크 중 관련 룰만
+    const allRuleIds   = new Set([...tagRuleIds, ...coordRuleIds]);
     const matchedLinks = this._cascadeLinks.filter(l => allRuleIds.has(l.rule_id));
 
     this._el.innerHTML = this._buildHTML(props, theories, matchedLinks, allRuleIds, lon, lat);
     this._el.classList.add('is-open');
-
     this._el.querySelector('.theory-panel__close')
       ?.addEventListener('click', () => this._hide());
   }
@@ -317,7 +383,6 @@ export class TheoryPanel {
       ? theories.map(t => this._buildCard(t, matchedLinks, lon, lat)).join('')
       : `<p class="theory-panel__empty">이 이벤트에 매핑된 이론이 없습니다.<br>theory_tags: ${(props.theory_tags ?? []).join(', ') || '(없음)'}</p>`;
 
-    // 좌표 기반으로 추가된 cascade rule 섹션 (이론 카드에 없는 것)
     const cascadeHTML = this._buildCascadeSection(allRuleIds, matchedLinks);
 
     return `
@@ -329,7 +394,7 @@ export class TheoryPanel {
         <div class="theory-panel__event-title">${props.title ?? '이벤트'}</div>
         <div class="theory-panel__event-meta">
           ${props.country ? `<span>${props.country}</span>` : ''}
-          ${date ? `<span>${date}</span>` : ''}
+          ${date         ? `<span>${date}</span>`           : ''}
           ${props.severity != null ? `<span class="theory-panel__sev">sev ${props.severity}</span>` : ''}
         </div>
       </div>
@@ -341,22 +406,15 @@ export class TheoryPanel {
   }
 
   _buildCard(theory, matchedLinks, lon, lat) {
-    // 이 이론의 cascade_rules 중 이벤트 좌표가 해당 region 안에 있는 것만
     const locationFilteredRules = (theory.cascade_rules ?? []).filter(id =>
       lon == null || isInRegion(lon, lat, id)
     );
-
-    // 그 중 실제 API에서 확인된 링크
     const linkedMatches = matchedLinks.filter(l =>
       locationFilteredRules.includes(l.rule_id)
     );
-
-    const readingHTML = theory.reading
-      .map(r => r.url
-        ? `<a class="theory-card__link" href="${r.url}" target="_blank" rel="noopener">${r.title}</a>`
-        : `<span class="theory-card__link-text">${r.title}</span>`
-      )
-      .join('');
+    const pendingRuleIds = locationFilteredRules.filter(id =>
+      !matchedLinks.some(l => l.rule_id === id)
+    );
 
     const confirmedHTML = linkedMatches.map(l => {
       const ev    = l.evidence ?? {};
@@ -365,13 +423,27 @@ export class TheoryPanel {
       return `<div class="theory-card__confirmed">⛓ ${label} <span class="theory-card__pct">${pct}</span></div>`;
     }).join('');
 
-    // 잠재 룰: 좌표 필터를 통과했지만 아직 실제 데이터가 없는 룰
-    const pendingRuleIds = locationFilteredRules.filter(id =>
-      !matchedLinks.some(l => l.rule_id === id)
-    );
     const pendingHTML = pendingRuleIds
       .map(id => `<div class="theory-card__pending">◌ ${RULE_LABEL[id] ?? id} <span class="theory-card__pending-note">대기</span></div>`)
       .join('');
+
+    const readingHTML = theory.reading
+      .map(r => r.url
+        ? `<a class="theory-card__link" href="${r.url}" target="_blank" rel="noopener">${r.title}</a>`
+        : `<span class="theory-card__link-text">${r.title}</span>`
+      )
+      .join('');
+
+    // 도서관 검색 팁 — <details>로 접어두어 패널 공간 절약
+    const tipHTML = theory.library_tip ? `
+      <details class="theory-card__tip">
+        <summary class="theory-card__tip-summary">💡 도서관 검색 팁</summary>
+        <div class="theory-card__tip-body">
+          ${theory.library_tip.riss  ? `<div><span class="theory-card__tip-db">RISS</span>${theory.library_tip.riss}</div>`  : ''}
+          ${theory.library_tip.dbpia ? `<div><span class="theory-card__tip-db">DBpia</span>${theory.library_tip.dbpia}</div>` : ''}
+        </div>
+      </details>
+    ` : '';
 
     return `
       <div class="theory-card">
@@ -397,16 +469,13 @@ export class TheoryPanel {
             ${readingHTML}
           </div>
         ` : ''}
+        ${tipHTML}
       </div>
     `;
   }
 
   _buildCascadeSection(allRuleIds, matchedLinks) {
-    if (allRuleIds.size === 0) return '';
-
-    // 이미 _buildCard에서 각 카드에 표시했으므로
-    // 여기선 실제 확인된 링크만 요약 섹션으로 표시
-    if (matchedLinks.length === 0) return '';
+    if (allRuleIds.size === 0 || matchedLinks.length === 0) return '';
 
     const items = matchedLinks.map(l => {
       const ev    = l.evidence ?? {};

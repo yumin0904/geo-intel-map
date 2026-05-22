@@ -635,3 +635,54 @@ input[type=range].severity-slider::-webkit-slider-thumb {
 .cascade-summary__result.is-up   { color: var(--color-danger);  font-weight: 700; }
 .cascade-summary__result.is-down { color: var(--color-success); font-weight: 700; }
 .cascade-summary__score { font-size: 9.5px; color: var(--color-text-secondary); }
+
+/* ── 도서관 검색 팁 (details/summary 접이식) ─────────────────────── */
+.theory-card__tip {
+  border-top: 1px solid var(--color-border);
+  padding-top: 7px;
+}
+.theory-card__tip-summary {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;   /* Safari에서 기본 삼각형 제거 */
+  user-select: none;
+  transition: color 0.15s;
+}
+.theory-card__tip-summary::-webkit-details-marker { display: none; }
+.theory-card__tip-summary::before {
+  content: '▶ ';
+  font-size: 7px;
+  vertical-align: middle;
+}
+details[open] .theory-card__tip-summary::before { content: '▼ '; }
+.theory-card__tip-summary:hover { color: var(--color-accent); }
+
+.theory-card__tip-body {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.theory-card__tip-body > div {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  display: flex;
+  gap: 6px;
+}
+/* RISS / DBpia 배지 */
+.theory-card__tip-db {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: rgba(88,166,255,0.10);
+  border: 1px solid rgba(88,166,255,0.25);
+  border-radius: 3px;
+  padding: 1px 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
