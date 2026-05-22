@@ -81,6 +81,7 @@
     import { CascadeLayer }          from './src/layers/CascadeLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
+    import { NotebookPanel }        from './src/panels/NotebookPanel.js';
     import { TimelineView }         from './src/views/TimelineView.js';
 
     const ctrl        = new MapController('map').init();
@@ -144,6 +145,7 @@
     panel.mount('layer-panel');
 
     const theoryPanel = new TheoryPanel(ctrl.eventBus);
+    theoryPanel.setNotebook(new NotebookPanel());
     theoryPanel.mount('theory-panel');
 
     // Phase 2: Cascade 타임라인 — cascade:loaded 이벤트 구독, 하단 패널에 렌더

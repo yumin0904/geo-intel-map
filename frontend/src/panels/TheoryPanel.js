@@ -413,7 +413,14 @@ export class TheoryPanel {
     this._eventBus    = eventBus;
     this._el          = null;
     this._cascadeLinks = [];  // /api/cascade/links 캐시
+    this._notebook    = null; // NotebookPanel (선택적) — setNotebook()으로 주입
   }
+
+  /**
+   * Study Mode 노트 패널 주입.
+   * @param {import('./NotebookPanel.js').NotebookPanel} nb
+   */
+  setNotebook(nb) { this._notebook = nb; }
 
   mount(containerId) {
     this._el = document.getElementById(containerId);
@@ -463,10 +470,17 @@ export class TheoryPanel {
     this._el.classList.add('is-open');
     this._el.querySelector('.theory-panel__close')
       ?.addEventListener('click', () => this._hide());
+
+    // Study Mode: 노트 패널 초기화 (Study Mode CSS로 show/hide)
+    // props.id(UUID) 우선, 없으면 source_id, 둘 다 없으면 좌표 key로 fallback
+    const noteKey = props.id ?? props.source_id ?? (lon != null ? `${lon},${lat}` : null);
+    const slotEl  = this._el.querySelector('.notebook-slot');
+    if (noteKey) this._notebook?.show(noteKey, slotEl);
   }
 
   _hide() {
     this._el?.classList.remove('is-open');
+    this._notebook?.hide();
   }
 
   _buildHTML(props, theories, matchedLinks, allRuleIds, lon, lat) {
@@ -494,6 +508,7 @@ export class TheoryPanel {
       <div class="theory-panel__body">
         ${theoriesHTML}
         ${cascadeHTML}
+        <div class="notebook-slot"></div>
       </div>
     `;
   }

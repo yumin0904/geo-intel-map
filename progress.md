@@ -193,6 +193,21 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 - AFTER (vs 군부 inter2=1): `['asymmetric_warfare', 'guerrilla_tactics', 'insurgency']`
 - AFTER (vs 반군  inter2=2): `['civil_war', 'guerrilla_tactics']`
 
+### ✅ Study Mode 2단계 — 노트 입력창 (2026-05-22)
+
+- Study Mode 켜지면 TheoryPanel 하단에 노트 입력창 슬라이드인
+- 이벤트 id(UUID) 기준 SQLite 자동 저장 (1초 debounce), "저장됨 ✓" 피드백
+- Study Mode 꺼지면 CSS `display:none` 토글 (재렌더링 없음)
+- 기존 저장된 노트는 패널 열 때 자동 불러오기
+
+구현 파일:
+- `backend/api/study.py` — `GET/PUT /api/study/notes/{event_id}`, SQLite upsert
+- `backend/db/study.db` — 자동 생성 (notes 테이블)
+- `frontend/src/panels/NotebookPanel.js` — 노트 UI + fetch 저장
+- `frontend/src/panels/TheoryPanel.js` — `setNotebook()` + `.notebook-slot` 삽입
+- `frontend/index.html` — NotebookPanel import + wire-up
+- `frontend/styles/main.css` — `.notebook` 스타일 + Study Mode CSS 토글
+
 ### ✅ Study Mode 1단계 — 이론 태그 뱃지 토글 (2026-05-22)
 
 - 좌측 사이드바 하단 `STUDY MODE` 버튼 추가 (`LayerPanel.js`)
@@ -209,7 +224,7 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 **대기 중**:
 - 실시간 레이어 (ADS-B / AIS / FIRMS) — 대기 중인 룰들이 자동 활성화
 - CascadeGraphView (Cytoscape) — 인과 그래프 뷰
-- Study Mode 2단계 — 노트 입력창 상시 표시
+- ~~Study Mode 2단계 — 노트 입력창 상시 표시~~ ✅
 
 **Phase 3 예정**:
 - **GDELT 실시간 데이터 파이프라인 (3단계 교차 검증)**
