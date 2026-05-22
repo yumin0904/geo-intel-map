@@ -636,6 +636,42 @@ input[type=range].severity-slider::-webkit-slider-thumb {
 .cascade-summary__result.is-down { color: var(--color-success); font-weight: 700; }
 .cascade-summary__score { font-size: 9.5px; color: var(--color-text-secondary); }
 
+/* ── 한국 관련도 배지 ─────────────────────────────────────────────── */
+.theory-card__korea {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 6px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.theory-card__korea-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.theory-card__korea-flag { font-size: 13px; line-height: 1; }
+.theory-card__korea-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  flex: 1;
+}
+.theory-card__korea-stars {
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.theory-card__korea-reason {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  padding-left: 1px;
+}
+
 /* ── 도서관 검색 팁 (details/summary 접이식) ─────────────────────── */
 .theory-card__tip {
   border-top: 1px solid var(--color-border);

@@ -313,6 +313,93 @@ const RULE_LABEL = {
   korean_tension_to_kospi:       '한반도 → KOSPI(^KS11)',
 };
 
+// ── 한국 관련도 (지역별) ─────────────────────────────────────────────
+// 이벤트 좌표 기반으로 자동 판별. stars: 1-5, bbox: [minLon, minLat, maxLon, maxLat].
+// 한국이 각 지역 분쟁에 얼마나 직접·간접 영향을 받는지를 나타냄.
+const KOREA_RELEVANCE = {
+  korean_peninsula: {
+    stars: 5,
+    reason: '직접 안보 위협, KOSPI·원화 직결, 주한미군',
+    bbox: [124.0, 33.5, 130.5, 43.0],
+  },
+  taiwan_strait: {
+    stars: 5,
+    reason: 'TSMC→삼성 반도체 공급망, 주한미군 연동, 한국 수출 1위국(중국) 직결',
+    bbox: [118.0, 22.0, 122.0, 26.0],
+  },
+  hormuz: {
+    stars: 5,
+    reason: '한국 원유 수입 70%+ 통과, 중동 의존도 세계 최고 수준',
+    bbox: [53.0, 23.0, 60.0, 30.0],
+  },
+  south_china_sea: {
+    stars: 5,
+    reason: '한국 수출입 물동량 30% 통과, 말라카 해협 경유 원유 수입',
+    bbox: [105.0, 3.0, 122.0, 22.0],
+  },
+  malacca: {
+    stars: 5,
+    reason: '동아시아 에너지·물류 핵심 길목, 한국 원유·LNG 수입 주요 경유',
+    bbox: [98.0, 1.0, 104.0, 6.5],
+  },
+  bab_el_mandeb: {
+    stars: 4,
+    reason: '한국 원유 수입 경로, 현대·삼성 선박 통과, 해운비 직결',
+    bbox: [42.0, 11.0, 45.5, 14.5],
+  },
+  suez: {
+    stars: 4,
+    reason: '유럽향 수출 경로, 우회 시 해운비 급등',
+    bbox: [31.5, 28.0, 34.5, 32.5],
+  },
+  east_china_sea: {
+    stars: 4,
+    reason: '제1열도선·센카쿠 긴장이 한미일 협력 직결, 한국 해운 항로 인접',
+    bbox: [118.0, 24.0, 132.0, 40.0],
+  },
+  middle_east: {
+    stars: 4,
+    reason: '원유 의존도, 건설·플랜트 수주 시장',
+    bbox: [35.0, 15.0, 65.0, 37.0],
+  },
+  ukraine: {
+    stars: 3,
+    reason: '에너지 가격 간접 영향, 방산 수출 기회',
+    bbox: [22.0, 44.0, 40.5, 52.5],
+  },
+  myanmar: {
+    stars: 2,
+    reason: '간접적 지역 불안정',
+    bbox: [92.0, 9.5, 101.5, 28.5],
+  },
+};
+
+// 좁은 bbox를 먼저 검사해야 정확도가 높음 (middle_east는 겹치므로 마지막에)
+const KOREA_RELEVANCE_ORDER = [
+  'korean_peninsula', 'taiwan_strait', 'bab_el_mandeb', 'hormuz',
+  'suez', 'malacca', 'east_china_sea', 'south_china_sea',
+  'ukraine', 'myanmar', 'middle_east',
+];
+
+/** 별점 색상 — 5·4 고위험은 warm color, 3 보통, 2 이하 흐림 */
+const STAR_COLOR = { 5: '#f85149', 4: '#e07b33', 3: '#d29922', 2: '#8b949e', 1: '#8b949e' };
+
+/** n개 채운별 + (5-n)개 빈별 */
+function starsLabel(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
+
+/** 이벤트 좌표에서 한국 관련도 객체를 반환. 매칭 없으면 null. */
+function getKoreaRelevance(lon, lat) {
+  if (lon == null || lat == null) return null;
+  for (const key of KOREA_RELEVANCE_ORDER) {
+    const entry = KOREA_RELEVANCE[key];
+    const [minLon, minLat, maxLon, maxLat] = entry.bbox;
+    if (lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat) {
+      return { key, ...entry };
+    }
+  }
+  return null;
+}
+
 // ── 패널 컴포넌트 ────────────────────────────────────────────────────
 export class TheoryPanel {
   /** @param {import('../core/EventBus.js').EventBus} eventBus */
@@ -434,6 +521,8 @@ export class TheoryPanel {
       )
       .join('');
 
+    const koreaHTML = this._buildKoreaRelevanceHTML(lon, lat);
+
     // 도서관 검색 팁 — <details>로 접어두어 패널 공간 절약
     const tipHTML = theory.library_tip ? `
       <details class="theory-card__tip">
@@ -454,6 +543,7 @@ export class TheoryPanel {
             <div class="theory-card__scholars">${theory.scholars}</div>
           </div>
         </div>
+        ${koreaHTML}
         <p class="theory-card__summary">${theory.summary}</p>
         <p class="theory-card__detail">${theory.detail}</p>
         ${confirmedHTML || pendingHTML ? `
@@ -470,6 +560,23 @@ export class TheoryPanel {
           </div>
         ` : ''}
         ${tipHTML}
+      </div>
+    `;
+  }
+
+  /** 이벤트 좌표 기반 한국 관련도 배지 HTML */
+  _buildKoreaRelevanceHTML(lon, lat) {
+    const r = getKoreaRelevance(lon, lat);
+    if (!r) return '';
+    const color = STAR_COLOR[r.stars] ?? '#8b949e';
+    return `
+      <div class="theory-card__korea">
+        <div class="theory-card__korea-row">
+          <span class="theory-card__korea-flag">🇰🇷</span>
+          <span class="theory-card__korea-label">한국 관련도</span>
+          <span class="theory-card__korea-stars" style="color:${color}">${starsLabel(r.stars)}</span>
+        </div>
+        <div class="theory-card__korea-reason">${r.reason}</div>
       </div>
     `;
   }
