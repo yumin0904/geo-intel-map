@@ -404,3 +404,229 @@ input[type=range].severity-slider::-webkit-slider-thumb {
   line-height: 1.5;
   border-radius: 0 4px 4px 0;
 }
+
+/* ── Theory Panel (우측 슬라이드인) ──────────────────────────────── */
+.theory-panel {
+  position: fixed;
+  top: 0; right: 0;
+  width: 320px;
+  height: 100vh;
+  z-index: 1001;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  overflow: hidden;  /* body는 숨김, 내부 스크롤은 __body에서 처리 */
+}
+.theory-panel.is-open { transform: translateX(0); }
+
+.theory-panel__header {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.theory-panel__header-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.theory-panel__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-accent);
+  text-transform: uppercase;
+}
+.theory-panel__close {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+.theory-panel__close:hover {
+  color: var(--color-text-primary);
+  background: var(--color-border);
+}
+.theory-panel__event-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  margin-bottom: 5px;
+  /* 긴 제목은 2줄로 제한 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.theory-panel__event-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+.theory-panel__sev {
+  color: var(--color-warning);
+  font-weight: 600;
+}
+.theory-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* 스크롤바 다크 테마 */
+.theory-panel__body::-webkit-scrollbar       { width: 5px; }
+.theory-panel__body::-webkit-scrollbar-track  { background: var(--color-bg); }
+.theory-panel__body::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 3px; }
+
+.theory-panel__empty {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  padding: 12px;
+  text-align: center;
+}
+
+/* ── Theory Card ─────────────────────────────────────────────────── */
+.theory-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--panel-radius);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.theory-card__header {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.theory-card__icon { font-size: 15px; flex-shrink: 0; }
+.theory-card__name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1.3;
+}
+.theory-card__scholars {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  margin-top: 1px;
+}
+.theory-card__summary {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+.theory-card__detail {
+  font-size: 10.5px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Cascade Rule 연결 */
+.theory-card__cascade {
+  border-top: 1px solid var(--color-border);
+  padding-top: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.theory-card__cascade-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.theory-card__confirmed {
+  font-size: 10.5px;
+  color: #ffe566;   /* cascade 기준색 */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.theory-card__pct {
+  font-weight: 700;
+  font-size: 11px;
+}
+.theory-card__pending {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.theory-card__pending-note {
+  font-size: 9px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+/* 추천 자료 */
+.theory-card__reading {
+  border-top: 1px solid var(--color-border);
+  padding-top: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.theory-card__reading-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.theory-card__link {
+  font-size: 10px;
+  color: var(--color-accent);
+  text-decoration: none;
+  line-height: 1.5;
+  word-break: break-all;
+}
+.theory-card__link:hover { text-decoration: underline; }
+
+/* ── Cascade 요약 섹션 ───────────────────────────────────────────── */
+.cascade-summary {
+  background: rgba(255, 229, 102, 0.06);
+  border: 1px solid rgba(255, 229, 102, 0.25);
+  border-radius: var(--panel-radius);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cascade-summary__title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffe566;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+.cascade-summary__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+}
+.cascade-summary__rule  { color: var(--color-text-secondary); flex: 1; }
+.cascade-summary__result.is-up   { color: var(--color-danger);  font-weight: 700; }
+.cascade-summary__result.is-down { color: var(--color-success); font-weight: 700; }
+.cascade-summary__score { font-size: 9.5px; color: var(--color-text-secondary); }

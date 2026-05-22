@@ -77,11 +77,16 @@ function buildPopup(props) {
 }
 
 export class ConflictEventsLayer {
-  /** @param {L.Map} map */
-  constructor(map) {
-    this.map         = map;
-    this._features   = [];
-    this._layerGroup = null;
+  /**
+   * @param {L.Map} map
+   * @param {import('../core/EventBus.js').EventBus|null} eventBus
+   *   마커 클릭 시 'marker:click' 이벤트를 emit — TheoryPanel이 수신
+   */
+  constructor(map, eventBus = null) {
+    this.map          = map;
+    this._eventBus    = eventBus;
+    this._features    = [];
+    this._layerGroup  = null;
     this._minSeverity = 0;   // 슬라이더가 설정하는 최소 심각도
     this._periodDays  = 30;  // 기간 필터 (7 or 30)
     this._onZoomEnd   = () => this._applyFilter();
@@ -142,8 +147,12 @@ export class ConflictEventsLayer {
           permanent: false, direction: 'top', className: 'geo-tooltip',
         });
 
-        // 팝업: 클릭 시 최초 1회만 생성
+        // 팝업 + TheoryPanel 연동
+        // function() 안에서 this = marker, eb는 클로저로 캡처
+        const eb = this._eventBus;
         marker.on('click', function () {
+          // _lon/_lat: TheoryPanel이 cascade rule의 trigger region 안에 있는지 판정하는 데 사용
+          eb?.emit('marker:click', { ...props, _lon: lon, _lat: lat });
           if (!this._popup) {
             this.bindPopup(buildPopup(props), { maxWidth: 360, className: 'geo-popup' });
           }

@@ -40,6 +40,9 @@
     <span class="info-version">v0.1.0</span>
   </div>
 
+  <!-- 우측 슬라이드인 이론 패널 — TheoryPanel.js가 마운트 -->
+  <div id="theory-panel" class="theory-panel"></div>
+
   <!-- Leaflet JS (CDN) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -54,10 +57,11 @@
     import { SubmarineCablesLayer }  from './src/layers/SubmarineCablesLayer.js';
     import { CascadeLayer }          from './src/layers/CascadeLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
+    import { TheoryPanel }          from './src/panels/TheoryPanel.js';
 
     const ctrl        = new MapController('map').init();
-    const bases       = new MilitaryBasesLayer(ctrl.map);
-    const conflict    = new ConflictEventsLayer(ctrl.map);
+    const bases       = new MilitaryBasesLayer(ctrl.map, ctrl.eventBus);
+    const conflict    = new ConflictEventsLayer(ctrl.map, ctrl.eventBus);
     const pipelines   = new EnergyPipelinesLayer(ctrl.map);
     const chokepoints = new ChokepointsLayer(ctrl.map);
     const cables      = new SubmarineCablesLayer(ctrl.map);
@@ -114,6 +118,9 @@
 
     const panel = new LayerPanel(ctrl.layerManager, ctrl.eventBus);
     panel.mount('layer-panel');
+
+    const theoryPanel = new TheoryPanel(ctrl.eventBus);
+    theoryPanel.mount('theory-panel');
 
     // ── 분쟁 이벤트 필터 바 핸들러 ──────────────────────────────
     const slider       = document.getElementById('severity-slider');

@@ -63,11 +63,23 @@
 추가된 regions: `south_china_sea`, `north_korea`, `suez`, `ukraine`, `middle_east`, `korean_peninsula`
 이론 커버리지: Weaponized Interdependence, A2/AD, Gray Zone, SLOC, Food Security, Safe Haven, Korea Discount
 
+### ✅ Theory Panel 완성 (2026-05-22)
+
+- `frontend/src/panels/TheoryPanel.js` 신규 — 이론 DB 14개 내장
+- 마커 클릭 → 우측 슬라이드인 패널 (transition 0.25s)
+- theory_tags 기반 이론 카드: 이론명·학자·한 줄 요약·설명·추천 자료 링크
+- **좌표 기반 Cascade Rule 필터링**: 이벤트 좌표가 rule trigger region bbox 안에 있을 때만 표시
+  - 미얀마 내전 → cascade rule 없음 ✓ (A2AD/대만해협 룰 오표시 수정)
+  - 바브엘만데브 → `bab_el_mandeb_tension_to_oil` 자동 연결 ✓
+- 실제 확인된 cascade 링크(CL=F +1.77%)는 ⛓ 배지로 표시
+- MilitaryBasesLayer도 eventBus 연동 — 군사기지 마커 클릭 시 이론 패널 동작
+- ESC / ✕ 버튼으로 닫기
+
 ### 🔜 다음 작업 (Phase 2)
+- **TimelineView** — vis-timeline 기반 시간순 이벤트 배열
+- **Study Mode** — 이론 태그 강조 + 노트 입력창 상시 표시
 - 실시간 레이어 (ADS-B / AIS / FIRMS) — 대기 중인 룰들이 자동 활성화
 - CascadeGraphView (Cytoscape) — 인과 그래프 뷰
-- TimelineView — 시간순 이벤트 배열
-- Theory Panel / Study Mode
 
 ---
 

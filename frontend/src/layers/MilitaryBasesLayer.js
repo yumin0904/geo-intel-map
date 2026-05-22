@@ -48,9 +48,12 @@ function buildPopup(props) {
 export class MilitaryBasesLayer {
   /**
    * @param {L.Map} map - MapController.map 인스턴스
+   * @param {import('../core/EventBus.js').EventBus|null} eventBus
+   *   클릭 시 'marker:click' emit → TheoryPanel 연동
    */
-  constructor(map) {
+  constructor(map, eventBus = null) {
     this.map = map;
+    this._eventBus = eventBus;
     // 레이어 그룹으로 관리 — 토글 시 레이어 전체를 한번에 숨김/표시 가능
     this._layerGroup = L.layerGroup();
     // setFilter에서 개별 마커 스타일 제어를 위해 보관
@@ -98,6 +101,13 @@ export class MilitaryBasesLayer {
           permanent: false,
           direction: 'top',
           className: 'geo-tooltip',
+        });
+
+        // TheoryPanel 연동 — 좌표를 함께 emit해 cascade rule 지역 판정에 사용
+        const eb  = this._eventBus;
+        const [lon, lat] = feature.geometry.coordinates;
+        layer.on('click', () => {
+          eb?.emit('marker:click', { ...feature.properties, _lon: lon, _lat: lat });
         });
       },
     }).addTo(this._layerGroup);
