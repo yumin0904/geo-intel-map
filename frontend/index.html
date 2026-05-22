@@ -53,6 +53,14 @@
       <span class="timeline-panel__count" id="timeline-count">로딩 중…</span>
       <button id="timeline-toggle" class="timeline-panel__toggle">▼</button>
     </div>
+    <!-- 날짜 이동 툴바 — 패널 열릴 때만 보임(overflow:hidden) -->
+    <div class="timeline-panel__toolbar">
+      <select id="tl-year"  class="tl-select"></select><span class="tl-sep">년</span>
+      <select id="tl-month" class="tl-select"></select><span class="tl-sep">월</span>
+      <select id="tl-day"   class="tl-select"></select><span class="tl-sep">일</span>
+      <button id="tl-goto" class="tl-btn">이동</button>
+      <button id="tl-fit"  class="tl-btn tl-btn--fit">📅 데이터 보기</button>
+    </div>
     <div id="timeline-vis"></div>
   </div>
 

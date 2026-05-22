@@ -688,7 +688,7 @@ input[type=range].severity-slider::-webkit-slider-thumb {
   user-select: none;
 }
 
-#timeline-panel.is-open { height: 216px; }
+#timeline-panel.is-open { height: 30vh; min-height: 120px; }
 
 .timeline-panel__header {
   display: flex;
@@ -733,14 +733,71 @@ input[type=range].severity-slider::-webkit-slider-thumb {
   border-color: var(--color-accent);
 }
 
-#timeline-vis { height: 180px; }
+/* 날짜 이동 툴바 */
+.timeline-panel__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 36px;
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+}
+.tl-select {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 2px 4px;
+  height: 22px;
+  cursor: pointer;
+}
+.tl-sep {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+.tl-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.tl-btn:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-accent);
+}
+.tl-btn--fit { margin-left: auto; }
+
+/* header(36) + toolbar(36) = 72px */
+#timeline-vis { height: calc(30vh - 72px); }
+
+/* 패널 상단 드래그 리사이즈 핸들 */
+.timeline-resize-handle {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  cursor: ns-resize;
+  z-index: 2;
+}
+.timeline-resize-handle:hover,
+.timeline-resize-handle.is-dragging {
+  background: rgba(255, 229, 102, 0.18);
+}
 
 /* 타임라인이 열릴 때 분쟁 필터 바를 위로 올려 겹침 방지 */
 #conflict-filter-bar {
   transition: bottom 0.25s ease;
 }
 #conflict-filter-bar.timeline-raised {
-  bottom: 230px;
+  bottom: calc(30vh + 14px);
 }
 
 /* ── vis-timeline 다크 테마 오버라이드 ───────────────────────────── */
@@ -753,6 +810,7 @@ input[type=range].severity-slider::-webkit-slider-thumb {
 #timeline-vis .vis-panel.vis-left {
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
+  overflow-y: auto;
 }
 
 #timeline-vis .vis-label {

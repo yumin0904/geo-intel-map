@@ -36,6 +36,14 @@ const VIS_EL     = document.getElementById('timeline-vis');
 const TOGGLE_BTN = document.getElementById('timeline-toggle');
 const COUNT_EL   = document.getElementById('timeline-count');
 const FILTER_BAR = document.getElementById('conflict-filter-bar');
+const YEAR_SEL   = document.getElementById('tl-year');
+const MONTH_SEL  = document.getElementById('tl-month');
+const DAY_SEL    = document.getElementById('tl-day');
+const GOTO_BTN   = document.getElementById('tl-goto');
+const FIT_BTN    = document.getElementById('tl-fit');
+
+// 패널의 고정 오버헤드(header 36px + toolbar 36px) — vis 높이 계산에 사용
+const _OVERHEAD = 72;
 
 export class TimelineView {
   /** @param {EventBus} eventBus */
@@ -44,20 +52,78 @@ export class TimelineView {
     this._timeline = null;
     this._linkMap  = new Map(); // link.id → { link, src, tgt }
     this._isOpen   = false;
+    this._dragH    = null;     // 드래그로 설정한 패널 높이(px). null이면 CSS 30vh 사용
 
+    this._initResizeHandle();
+    this._initControls();
     TOGGLE_BTN.addEventListener('click', () => this._toggle());
 
     // CascadeLayer가 load 완료 후 emit — 같은 데이터를 재사용해 이중 fetch 방지
     this._eventBus.on('cascade:loaded', data => this._render(data));
   }
 
+  _initResizeHandle() {
+    const handle = document.createElement('div');
+    handle.className = 'timeline-resize-handle';
+    PANEL_EL.prepend(handle);
+
+    let startY = 0, startH = 0;
+
+    const onMove = (e) => {
+      // 위로 드래그(dy > 0)하면 패널이 커짐
+      const dy = startY - e.clientY;
+      const newH = Math.max(120, Math.min(window.innerHeight * 0.8, startH + dy));
+      PANEL_EL.style.height = newH + 'px';
+      VIS_EL.style.height   = (newH - _OVERHEAD) + 'px';
+      if (FILTER_BAR) FILTER_BAR.style.bottom = (newH + 14) + 'px';
+    };
+
+    const onEnd = () => {
+      PANEL_EL.style.transition = '';
+      handle.classList.remove('is-dragging');
+      this._dragH = PANEL_EL.offsetHeight;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      // vis-timeline이 새 컨테이너 크기를 인식하도록 강제 재계산
+      if (this._timeline) {
+        this._timeline.setOptions({ height: (this._dragH - _OVERHEAD) + 'px' });
+        this._timeline.redraw();
+      }
+    };
+
+    handle.addEventListener('mousedown', (e) => {
+      if (!this._isOpen) return;
+      e.preventDefault();
+      startY = e.clientY;
+      startH = PANEL_EL.offsetHeight;
+      // 드래그 중 CSS transition 비활성화 (즉각 반응)
+      PANEL_EL.style.transition = 'none';
+      handle.classList.add('is-dragging');
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onEnd);
+    });
+  }
+
   _toggle() {
     this._isOpen = !this._isOpen;
     PANEL_EL.classList.toggle('is-open', this._isOpen);
     TOGGLE_BTN.textContent = this._isOpen ? '▲' : '▼';
-    // 분쟁 필터 바가 타임라인 패널과 겹치지 않도록 위로 이동
+
+    if (!this._isOpen) {
+      // 닫힘: 인라인 스타일 제거 → CSS height: 36px 적용
+      PANEL_EL.style.height = '';
+      VIS_EL.style.height   = '';
+      if (FILTER_BAR) FILTER_BAR.style.bottom = '';
+    } else if (this._dragH) {
+      // 다시 열 때 사용자가 드래그로 설정한 높이 복원
+      PANEL_EL.style.height = this._dragH + 'px';
+      VIS_EL.style.height   = (this._dragH - _OVERHEAD) + 'px';
+      if (FILTER_BAR) FILTER_BAR.style.bottom = (this._dragH + 14) + 'px';
+    }
+
+    // 분쟁 필터 바가 타임라인 패널과 겹치지 않도록 위로 이동 (30vh 기본값)
     FILTER_BAR?.classList.toggle('timeline-raised', this._isOpen);
-    // 패널 높이 변경 후 레이아웃 재계산 — overflow hidden 안에서 초기화된 경우 필요
+    // 패널 높이 변경 후 레이아웃 재계산
     if (this._timeline) this._timeline.redraw();
   }
 
@@ -107,9 +173,12 @@ export class TimelineView {
     );
     const items = new vis.DataSet(itemsData);
 
-    // 이미 생성된 타임라인이면 데이터만 교체 (DOM 재사용)
+    const hasItems = itemsData.length > 0;
+
+    // 이미 생성된 타임라인이면 데이터만 교체 후 구간 재조정 (DOM 재사용)
     if (this._timeline) {
       this._timeline.setData({ groups, items });
+      this._fitOrDefault(hasItems);
       return;
     }
 
@@ -117,8 +186,12 @@ export class TimelineView {
     const thirtyAgo  = new Date(now - 30 * 24 * 3_600_000);
     const twoDaysOut = new Date(now +  2 * 24 * 3_600_000);
 
+    // 패널 높이(30vh)에서 오버헤드(header+toolbar=72px)를 뺀 값으로 초기화
+    const openH    = Math.max(120, Math.round(window.innerHeight * 0.3));
+    const visHeight = (openH - _OVERHEAD) + 'px';
+
     this._timeline = new vis.Timeline(VIS_EL, items, groups, {
-      height:          '180px',
+      height:          visHeight,
       stack:           true,
       showMajorLabels: true,
       showMinorLabels: true,
@@ -130,12 +203,59 @@ export class TimelineView {
       tooltip:         { followMouse: true, overflowMethod: 'cap' },
     });
 
-    // 아이템 클릭 → TheoryPanel 연동 (기존 marker:click 이벤트 재사용)
-    // TheoryPanel은 Event 객체의 theory_tags 기반으로 이론 카드를 표시함
+    // 아이템 클릭 → trigger 날짜로 뷰 이동 + TheoryPanel 연동
     this._timeline.on('select', ({ items: selected }) => {
       if (!selected.length) return;
       const entry = this._linkMap.get(selected[0]);
-      if (entry) this._eventBus.emit('marker:click', entry.src);
+      if (!entry) return;
+      // trigger 이벤트 날짜 중앙으로 이동
+      this._timeline.moveTo(new Date(entry.src.timestamp), {
+        animation: { duration: 300, easingFunction: 'easeInOutQuad' },
+      });
+      this._eventBus.emit('marker:click', entry.src);
     });
+
+    this._fitOrDefault(hasItems);
+  }
+
+  _initControls() {
+    // 연도: 2020 ~ 내년
+    const curYear = new Date().getFullYear();
+    for (let y = 2020; y <= curYear + 1; y++) {
+      YEAR_SEL.add(new Option(y, y));
+    }
+    // 월: 1~12
+    for (let m = 1; m <= 12; m++) {
+      MONTH_SEL.add(new Option(m + '월', m));
+    }
+    // 일: 1~31
+    for (let d = 1; d <= 31; d++) {
+      DAY_SEL.add(new Option(d, d));
+    }
+    // 오늘 날짜로 초기화
+    const today = new Date();
+    YEAR_SEL.value  = today.getFullYear();
+    MONTH_SEL.value = today.getMonth() + 1;
+    DAY_SEL.value   = today.getDate();
+
+    GOTO_BTN.addEventListener('click', () => {
+      const date = new Date(+YEAR_SEL.value, +MONTH_SEL.value - 1, +DAY_SEL.value);
+      if (this._timeline) {
+        this._timeline.moveTo(date, { animation: { duration: 300, easingFunction: 'easeInOutQuad' } });
+      }
+    });
+
+    FIT_BTN.addEventListener('click', () => {
+      if (this._timeline) {
+        this._timeline.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+      }
+    });
+  }
+
+  // 링크가 있으면 실제 데이터 구간으로 줌인, 없으면 기본 30일 창 유지
+  _fitOrDefault(hasItems) {
+    if (hasItems) {
+      this._timeline.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+    }
   }
 }
