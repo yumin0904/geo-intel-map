@@ -15,6 +15,7 @@
 
 // ── 이론 데이터베이스 ────────────────────────────────────────────────
 // theory_tag → 카드 데이터. 새 이론 추가 시 여기에만 추가하면 됨.
+// reading 링크 원칙: RISS/DBpia 검색 결과 URL 우선 (항상 유효), 고전 원문은 Gutenberg/DOI 직링크.
 const THEORY_DB = {
 
   gray_zone: {
@@ -24,9 +25,9 @@ const THEORY_DB = {
     detail: '국가·비국가 행위자가 군사적 충돌 임계점 직하에서 심리전·경제압박·해상민병대를 조합해 상대방의 대응을 어렵게 만드는 전략. 후티의 홍해 공격이 전형적 사례.',
     cascade_rules: ['bab_el_mandeb_tension_to_oil'],
     reading: [
-      { title: '🔗 국방연구원(KIDA) — 회색지대·비전통안보 연구', url: 'https://www.kida.re.kr' },
-      { title: '🔗 RAND Korea — 회색지대 전략 분석', url: 'https://www.rand.org/topics/korea.html' },
-      { title: '🔗 Hoffman (2007) — Conflict in the 21st Century (무료)', url: 'https://www.potomacinstitute.org/images/stories/publications/potomac_hybridwar_0108.pdf' },
+      { title: '🔍 RISS에서 "회색지대 전략" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=회색지대+전략&searchGubun=true' },
+      { title: '🔍 DBpia에서 "회색지대전략" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=회색지대전략' },
+      { title: '🔗 Hoffman (2007) — Conflict in the 21st Century (무료 PDF)', url: 'https://www.potomacinstitute.org/images/stories/publications/potomac_hybridwar_0108.pdf' },
     ],
     library_tip: {
       riss:  "'회색지대 전략' 또는 '하이브리드 위협' 검색",
@@ -41,9 +42,9 @@ const THEORY_DB = {
     detail: '러시아의 2014 우크라이나 개입과 2022 전면전이 대표 사례. 군사력·경제·선전을 혼합해 상대방의 대응 수단을 무력화한다. 식량·에너지 무기화와 연결.',
     cascade_rules: ['ukraine_conflict_to_wheat'],
     reading: [
-      { title: '🔗 국방연구원(KIDA) — 복합전·하이브리드전 연구', url: 'https://www.kida.re.kr' },
-      { title: '🔗 RAND — Hybrid Warfare 보고서', url: 'https://www.rand.org/topics/hybrid-warfare.html' },
-      { title: '🔗 Gerasimov (2013) — The Value of Science (무료)', url: 'https://www.armyupress.army.mil/Portals/7/military-review/Archives/English/MilitaryReview_20160228_art008.pdf' },
+      { title: '🔍 RISS에서 "하이브리드 전쟁 러시아" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=하이브리드+전쟁+러시아&searchGubun=true' },
+      { title: '🔍 DBpia에서 "복합전 사이버 정보전" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=복합전+사이버+정보전' },
+      { title: '🔗 Gerasimov (2013) — The Value of Science (무료 PDF)', url: 'https://www.armyupress.army.mil/Portals/7/military-review/Archives/English/MilitaryReview_20160228_art008.pdf' },
     ],
     library_tip: {
       riss:  "'하이브리드 전쟁 러시아 우크라이나' 검색",
@@ -59,8 +60,8 @@ const THEORY_DB = {
     geo_filter: ['taiwan_strait', 'south_china_sea', 'east_china_sea'],
     cascade_rules: ['taiwan_strait_to_tsm', 'taiwan_strait_to_soxx', 'south_china_sea_to_defense'],
     reading: [
-      { title: '🔗 한국해양전략연구소(KIMS) — 해양안보 보고서', url: 'https://kims.or.kr' },
-      { title: '🔗 EAI 동아시아연구원 — 인도태평양 이슈브리핑', url: 'https://www.eai.or.kr' },
+      { title: '🔍 RISS에서 "A2AD 중국" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=A2AD+중국&searchGubun=true' },
+      { title: '🔍 DBpia에서 "반접근 지역거부" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=반접근+지역거부' },
       { title: '🔗 CSBA — AirSea Battle (2010, 무료)', url: 'https://csbaonline.org/research/publications/airsea-battle-a-point-of-departure-operational-concept' },
     ],
     library_tip: {
@@ -76,8 +77,9 @@ const THEORY_DB = {
     detail: '규칙과 국제법 틀 안에서 군대 간 직접 교전. 현대에는 순수 재래전은 드물며, 회색지대·하이브리드전과 혼합되는 경우가 많다.',
     cascade_rules: [],
     reading: [
+      { title: '🔍 RISS에서 "재래전 국제인도법" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=재래전+국제인도법&searchGubun=true' },
+      { title: '🔍 DBpia에서 "클라우제비츠 정규전" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=클라우제비츠+정규전' },
       { title: '🔗 Clausewitz — On War (1832, Project Gutenberg 무료)', url: 'https://www.gutenberg.org/ebooks/1946' },
-      { title: '🔗 국방연구원(KIDA) — 분쟁연구', url: 'https://www.kida.re.kr' },
     ],
     library_tip: {
       riss:  "'재래전 국제인도법 전쟁론' 검색",
@@ -92,8 +94,8 @@ const THEORY_DB = {
     detail: '게릴라전·반란진압·테러 등이 포함. ACLED 데이터의 상당 부분이 이 유형. 약소 행위자가 강대국에 비대칭적으로 대응하는 방식이다.',
     cascade_rules: [],
     reading: [
-      { title: '🔗 국방연구원(KIDA) — 비정규전·테러리즘 연구', url: 'https://www.kida.re.kr' },
-      { title: '🔗 RAND — Counterinsurgency 연구', url: 'https://www.rand.org/topics/counterinsurgency.html' },
+      { title: '🔍 RISS에서 "비정규전 반란진압" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=비정규전+반란진압&searchGubun=true' },
+      { title: '🔍 DBpia에서 "게릴라 테러리즘 비국가행위자" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=게릴라+테러리즘+비국가행위자' },
     ],
     library_tip: {
       riss:  "'비정규전 반란진압 COIN' 검색",
@@ -108,8 +110,9 @@ const THEORY_DB = {
     detail: 'ACLED 분쟁 데이터와 높은 상관관계. 취약국은 강대국의 대리전 무대가 되기 쉽고, 지역 패권 경쟁의 진공 지대를 형성한다.',
     cascade_rules: [],
     reading: [
+      { title: '🔍 RISS에서 "국가취약성 실패국가" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=국가취약성+실패국가&searchGubun=true' },
+      { title: '🔍 DBpia에서 "정치불안정 분쟁 대리전" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=정치불안정+분쟁+대리전' },
       { title: '🔗 Fund for Peace — Fragile States Index (무료)', url: 'https://fragilestatesindex.org/' },
-      { title: '🔗 통일연구원(KINU) — 북한·불안정국가 연구', url: 'https://www.kinu.or.kr' },
     ],
     library_tip: {
       riss:  "'국가취약성 실패국가 FSI' 검색",
@@ -127,8 +130,8 @@ const THEORY_DB = {
     geo_filter: ['taiwan_strait', 'south_china_sea', 'east_china_sea', 'hormuz', 'bab_el_mandeb', 'suez', 'malacca'],
     cascade_rules: ['bab_el_mandeb_tension_to_oil', 'hormuz_tension_to_oil', 'suez_tension_to_shipping'],
     reading: [
-      { title: '🔗 한국해양전략연구소(KIMS) — 해상교통로 보고서', url: 'https://kims.or.kr' },
-      { title: '🔗 해양수산부 — 해양안보 자료', url: 'https://www.mof.go.kr' },
+      { title: '🔍 RISS에서 "해상교통로 안보" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=해상교통로+안보&searchGubun=true' },
+      { title: '🔍 KIMS에서 "해상교통로" 검색', url: 'https://kims.or.kr/?s=해상교통로' },
       { title: '🔗 Mahan — The Influence of Sea Power (1890, Gutenberg 무료)', url: 'https://www.gutenberg.org/ebooks/13529' },
     ],
     library_tip: {
@@ -144,9 +147,9 @@ const THEORY_DB = {
     detail: '러시아의 가스 외교, 중국의 희토류 수출 제한이 대표 사례. 수입국의 취약성이 높을수록 무기화 효과가 크다.',
     cascade_rules: ['hormuz_tension_to_oil', 'ukraine_conflict_to_wheat', 'south_china_sea_to_lng'],
     reading: [
-      { title: '🔗 KIEP 대외경제정책연구원 — 에너지안보·경제제재 연구', url: 'https://www.kiep.go.kr' },
-      { title: '🔗 에너지경제연구원(KEEI) — 국제에너지 보고서', url: 'https://www.keei.re.kr' },
-      { title: '🔗 Hirschman (1945) — National Power and Foreign Trade', url: 'https://www.amazon.com/National-Power-Structure-Foreign-Trade/dp/0520015398' },
+      { title: '🔍 RISS에서 "에너지 무기화" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=에너지+무기화&searchGubun=true' },
+      { title: '🔍 KIEP에서 "에너지안보" 검색', url: 'https://www.kiep.go.kr/search/total.es?mid=a30000000000&query=에너지안보' },
+      { title: '🔍 DBpia에서 "상호의존 경제강압 희토류" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=상호의존+경제강압+희토류' },
     ],
     library_tip: {
       riss:  "'자원무기화 에너지안보 경제제재' 검색",
@@ -161,8 +164,8 @@ const THEORY_DB = {
     detail: '달러 결제망(SWIFT), 반도체 공급망, 클라우드 인프라 등이 특정 국가에 집중될 때 그 국가가 갖는 비대칭적 권력.',
     cascade_rules: ['taiwan_strait_to_tsm', 'taiwan_strait_to_soxx'],
     reading: [
-      { title: '🔗 KIEP 대외경제정책연구원 — 공급망·기술패권 연구', url: 'https://www.kiep.go.kr' },
-      { title: '🔗 EAI 동아시아연구원 — 무기화된 상호의존 이슈브리핑', url: 'https://www.eai.or.kr' },
+      { title: '🔍 RISS에서 "무기화된 상호의존" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=무기화된+상호의존&searchGubun=true' },
+      { title: '🔍 EAI에서 "상호의존" 검색', url: 'https://www.eai.or.kr/new/ko/search/index.asp?q=상호의존' },
       { title: '🔗 Farrell & Newman (2019) — Weaponized Interdependence (DOI)', url: 'https://doi.org/10.1162/isec_a_00351' },
     ],
     library_tip: {
@@ -178,8 +181,8 @@ const THEORY_DB = {
     detail: '금·미국채·스위스프랑이 대표적 안전자산. "Risk-off" 심리가 강해지면 주식·이머징 자산에서 자금이 이탈한다.',
     cascade_rules: ['middle_east_conflict_to_gold'],
     reading: [
-      { title: '🔗 한국은행 — 경제연구·국제금융 자료', url: 'https://www.bok.or.kr' },
-      { title: '🔗 국제금융센터 — 지정학 리스크 보고서', url: 'https://www.kcif.or.kr' },
+      { title: '🔍 RISS에서 "안전자산 지정학" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=안전자산+지정학&searchGubun=true' },
+      { title: '🔍 DBpia에서 "리스크오프 투자 지정학" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=리스크오프+투자+지정학' },
     ],
     library_tip: {
       riss:  "'안전자산 금 지정학 리스크' 검색",
@@ -194,8 +197,9 @@ const THEORY_DB = {
     detail: '미국 핵우산(확장억제) 신뢰성이 흔들릴 때마다 원화 약세·KOSPI 하락이 동반된다.',
     cascade_rules: ['north_korea_missile_to_krw', 'korean_tension_to_kospi'],
     reading: [
-      { title: '🔗 통일연구원(KINU) — 한반도 안보·확장억제 연구', url: 'https://www.kinu.or.kr' },
-      { title: '🔗 세종연구소 — 한미동맹·핵억제 보고서', url: 'https://www.sejong.org' },
+      { title: '🔍 통일연구원(KINU)에서 "한반도 안보" 검색', url: 'https://www.kinu.or.kr/search?query=한반도+안보' },
+      { title: '🔍 RISS에서 "코리아 디스카운트" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=코리아+디스카운트&searchGubun=true' },
+      { title: '🔍 DBpia에서 "코리아디스카운트" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=코리아디스카운트' },
     ],
     library_tip: {
       riss:  "'코리아 디스카운트 지정학 리스크' 검색",
@@ -210,8 +214,9 @@ const THEORY_DB = {
     detail: '우크라이나·러시아가 세계 밀 28% 담당. 봉쇄 시 식량 수입 의존국에서 정치 불안 발생 (아랍의 봄 패턴).',
     cascade_rules: ['ukraine_conflict_to_wheat'],
     reading: [
-      { title: '🔗 한국농촌경제연구원(KREI) — 국제식량 보고서', url: 'https://www.krei.re.kr' },
-      { title: '🔗 FAO — 흑해 곡물협정 보고서 (2022, 무료)', url: 'https://www.fao.org/newsroom/detail/ukraine-war-imposes-heavy-costs-on-world-food-systems/en' },
+      { title: '🔍 RISS에서 "식량안보 지정학" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=식량안보+지정학&searchGubun=true' },
+      { title: '🔍 KREI에서 "식량안보" 검색', url: 'https://www.krei.re.kr/krei/searchList.do?query=식량안보' },
+      { title: '🔍 DBpia에서 "식량위기 지정학" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=식량위기+지정학' },
     ],
     library_tip: {
       riss:  "'식량안보 우크라이나 밀 수출' 검색",
@@ -226,8 +231,8 @@ const THEORY_DB = {
     detail: '미국의 괌·오키나와·한국 주둔이 대표 사례. 신속 대응 능력을 높이지만 현지 사회·정치적 마찰을 유발한다.',
     cascade_rules: ['south_china_sea_to_defense', 'taiwan_strait_to_tsm'],
     reading: [
-      { title: '🔗 한국해양전략연구소(KIMS) — 미군 전진배치 연구', url: 'https://kims.or.kr' },
-      { title: '🔗 RAND — Forward Presence 보고서', url: 'https://www.rand.org/topics/military-presence.html' },
+      { title: '🔍 RISS에서 "전진배치 주한미군" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=전진배치+주한미군&searchGubun=true' },
+      { title: '🔍 DBpia에서 "해외군사기지 전력투사" 검색', url: 'https://www.dbpia.co.kr/search/searchResult?searchStr=해외군사기지+전력투사' },
     ],
     library_tip: {
       riss:  "'전진배치 주한미군 억제전략' 검색",
@@ -242,8 +247,9 @@ const THEORY_DB = {
     detail: '세력균형(Waltz): 강대국 부상에 대항해 연합. 위협균형(Walt): 능력뿐 아니라 의도·인접성도 고려. 비대칭 동맹에서 안보-자율성 교환 딜레마가 핵심.',
     cascade_rules: ['south_china_sea_to_defense', 'korean_tension_to_kospi'],
     reading: [
-      { title: '🔗 통일연구원(KINU) — 한미동맹·동맹이론 연구', url: 'https://www.kinu.or.kr' },
-      { title: '🔗 EAI 동아시아연구원 — 동맹 이슈브리핑', url: 'https://www.eai.or.kr' },
+      { title: '🔍 RISS에서 "동맹이론 한미동맹" 검색', url: 'https://www.riss.kr/search/Search.do?queryText=동맹이론+한미동맹&searchGubun=true' },
+      { title: '🔍 EAI에서 "동맹이론" 검색', url: 'https://www.eai.or.kr/new/ko/search/index.asp?q=동맹이론' },
+      { title: '🔍 통일연구원(KINU)에서 "한미동맹" 검색', url: 'https://www.kinu.or.kr/search?query=한미동맹+동맹이론' },
     ],
     library_tip: {
       riss:  "'동맹이론 한미동맹 세력균형' 검색",
