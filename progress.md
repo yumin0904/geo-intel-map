@@ -102,6 +102,23 @@
 acled.py: `MIDDLE_EAST_COUNTRIES`, `SOUTH_CHINA_SEA_COUNTRIES`, `SUEZ_COUNTRIES` 상수 추가  
 engine.py: 신규 3개 region 매핑 + 비활성 region 사유 주석
 
+비활성 3개 판단: 버그 아님, 데이터 소스 한계
+- `hormuz` — ACLED bbox 내 고강도 분쟁 없음 → AIS 도입 시 자동 동작
+- `taiwan_strait` — 군사 도발은 ACLED에 전투 이벤트 없음 → ADS-B 도입 시 자동 동작
+- `north_korea` — ACLED 데이터 극도 희박(11건, sev<40) → Phase 3 NCNK 데이터 도입 시 활성화
+
+### ✅ Cascade Engine 단계별 Trace (2026-05-22)
+
+`bab_el_mandeb_tension_to_oil` 룰에 후티 공격 이벤트가 통과하는 5단계 게이트 확인:
+1. source_type == "conflict" 체크
+2. `_TRIGGER_COUNTRIES["bab_el_mandeb"]` → Yemen·Djibouti·Eritrea ACLED 조회
+3. `region_for_point(lat, lon)` 지오펜스 통과
+4. severity >= 60 임계치
+5. `evaluate_response()` — 48h 내 CL=F 1.5% 이상 상승 → `CascadeLink` 생성
+
+correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`  
+(임계치 정확히 맞으면 0.5, 2배 변동 시 1.0)
+
 ### ✅ Theory Panel 완성 (2026-05-22)
 
 - `frontend/src/panels/TheoryPanel.js` 신규 — 이론 DB 14개 내장

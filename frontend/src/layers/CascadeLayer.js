@@ -57,9 +57,13 @@ function buildPopup(link, src, tgt) {
 }
 
 export class CascadeLayer {
-  /** @param {L.Map} map */
-  constructor(map) {
+  /**
+   * @param {L.Map}    map
+   * @param {EventBus} eventBus  — cascade:loaded 이벤트로 TimelineView 등 구독자에게 데이터 공유
+   */
+  constructor(map, eventBus) {
     this.map = map;
+    this._eventBus = eventBus;
     this._layerGroup = L.layerGroup();
     // 화살촉 갱신용: { marker, src:[lat,lon], tgt:[lat,lon] }
     this._arrows = [];
@@ -89,6 +93,10 @@ export class CascadeLayer {
     this.map.on('zoomend', this._onZoom);
     this._updateArrowheads();
     console.info(`[CascadeLayer] ${(data.links ?? []).length}개 인과 링크 로드 완료`);
+
+    // API 응답을 EventBus로 브로드캐스트 — TimelineView 등 구독자가 재사용
+    // (동일 엔드포인트 이중 호출 방지: 1h 서버 캐시 + 이 단일 발화)
+    this._eventBus?.emit('cascade:loaded', data);
   }
 
   _renderLink(link, src, tgt) {

@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <link rel="stylesheet" href="styles/main.css" />
+  <!-- vis-timeline: Cascade 타임라인 패널 (CLAUDE.md 3.4) -->
+  <!-- standalone 빌드 = vis-data(DataSet) 포함, 별도 import 불필요 -->
+  <link rel="stylesheet" href="https://unpkg.com/vis-timeline@7.7.3/styles/vis-timeline-graph2d.min.css" />
 </head>
 <body>
   <!-- 지도가 그려질 div — MapController가 이 id를 사용 -->
@@ -43,11 +46,23 @@
   <!-- 우측 슬라이드인 이론 패널 — TheoryPanel.js가 마운트 -->
   <div id="theory-panel" class="theory-panel"></div>
 
+  <!-- 하단 Cascade 타임라인 패널 — TimelineView.js가 마운트 -->
+  <div id="timeline-panel">
+    <div class="timeline-panel__header">
+      <span class="timeline-panel__title">⛓ CASCADE TIMELINE</span>
+      <span class="timeline-panel__count" id="timeline-count">로딩 중…</span>
+      <button id="timeline-toggle" class="timeline-panel__toggle">▼</button>
+    </div>
+    <div id="timeline-vis"></div>
+  </div>
+
   <!-- Leaflet JS (CDN) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <!-- vis-timeline JS — global `vis` 객체(vis.Timeline, vis.DataSet) 노출 -->
+  <script src="https://unpkg.com/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
 
-  <!-- 진입점 — Phase 1: LayerManager + LayerPanel -->
+  <!-- 진입점 — Phase 1: LayerManager + LayerPanel / Phase 2: Cascade + Timeline -->
   <script type="module">
     import { MapController }        from './src/core/MapController.js';
     import { MilitaryBasesLayer }   from './src/layers/MilitaryBasesLayer.js';
@@ -58,6 +73,7 @@
     import { CascadeLayer }          from './src/layers/CascadeLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
+    import { TimelineView }         from './src/views/TimelineView.js';
 
     const ctrl        = new MapController('map').init();
     const bases       = new MilitaryBasesLayer(ctrl.map, ctrl.eventBus);
@@ -65,7 +81,7 @@
     const pipelines   = new EnergyPipelinesLayer(ctrl.map);
     const chokepoints = new ChokepointsLayer(ctrl.map);
     const cables      = new SubmarineCablesLayer(ctrl.map);
-    const cascade     = new CascadeLayer(ctrl.map);
+    const cascade     = new CascadeLayer(ctrl.map, ctrl.eventBus);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -121,6 +137,9 @@
 
     const theoryPanel = new TheoryPanel(ctrl.eventBus);
     theoryPanel.mount('theory-panel');
+
+    // Phase 2: Cascade 타임라인 — cascade:loaded 이벤트 구독, 하단 패널에 렌더
+    new TimelineView(ctrl.eventBus);
 
     // ── 분쟁 이벤트 필터 바 핸들러 ──────────────────────────────
     const slider       = document.getElementById('severity-slider');
