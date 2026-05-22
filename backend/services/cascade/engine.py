@@ -57,6 +57,10 @@ _TRIGGER_COUNTRIES: dict[str, list[str]] = {
 async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
     """모든 룰을 평가해 CascadeLink + 관련 이벤트를 반환한다.
 
+    같은 region을 가진 룰이 여러 개여도 ACLED HTTP 호출은 region당 1회만 수행한다.
+    (예: south_china_sea_to_defense + south_china_sea_to_lng → ACLED 1회)
+    region fetch는 asyncio.gather로 병렬 실행해 대기 시간을 최소화한다.
+
     Returns:
         {"links": [...], "events": [...], "metadata": {...}}
         프론트엔드가 trigger→response 점선 화살표를 그리는 데 필요한 모든 데이터.
@@ -65,12 +69,19 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
     links: list[CascadeLink] = []
     events_by_id: dict[str, Event] = {}
 
-    for rule in rules:
-        if rule.trigger.source_type != "conflict":
-            logger.info(f"[cascade] 룰 {rule.id}: source_type={rule.trigger.source_type} 미지원(Phase 2 시작), 건너뜀")
-            continue
+    conflict_rules = [r for r in rules if r.trigger.source_type == "conflict"]
+    skipped = len(rules) - len(conflict_rules)
+    if skipped:
+        logger.info(f"[cascade] source_type!=conflict 룰 {skipped}개 건너뜀 (Phase 2 시작)")
 
-        triggers = await _fetch_conflict_triggers(rule)
+    # region별 고유 집합 → 병렬 ACLED fetch (중복 HTTP 호출 제거)
+    unique_regions = list({r.trigger.region for r in conflict_rules})
+    fetched = await asyncio.gather(*[_fetch_region_events(region) for region in unique_regions])
+    region_raw: dict[str, list[Event]] = dict(zip(unique_regions, fetched))
+
+    for rule in conflict_rules:
+        raw_events = region_raw.get(rule.trigger.region, [])
+        triggers = _sample_triggers(raw_events, rule.trigger.severity_min)
         logger.info(f"[cascade] 룰 {rule.id}: 조건 충족 트리거 {len(triggers)}개")
 
         for trig in triggers:
@@ -93,38 +104,45 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
     }
 
 
-async def _fetch_conflict_triggers(rule: CascadeRule) -> list[Event]:
-    """룰의 trigger 조건(지역·심각도)을 만족하는 분쟁 이벤트를 수집한다.
+async def _fetch_region_events(region: str) -> list[Event]:
+    """region에 속하는 ACLED 이벤트를 fetch하고 지오펜스 필터만 적용해 반환한다.
 
-    ACLED에서 해당 지역 국가의 이벤트를 가져와 region/severity로 필터링한 뒤
-    **날짜별 최고심각도 1개**를 샘플링해 반환한다.
-
-    날짜별 1개 전략을 쓰는 이유:
-      단순 severity 상위 N개 방식은 특정 일자(예: 대규모 전투가 집중된 날)에
-      평가가 몰려 다른 날의 시장 반응을 놓친다. 날짜를 분산시키면 30일 창 전체를
-      고르게 탐색하므로 "조용한 날 이후 시장 급반응" 같은 지연 연쇄를 포착할 수 있다.
+    severity 필터는 룰마다 다르므로 여기서 적용하지 않는다(_sample_triggers가 담당).
+    같은 region의 여러 룰이 이 함수를 공유해 ACLED HTTP 호출을 region당 1회로 줄인다.
     """
-    countries = _TRIGGER_COUNTRIES.get(rule.trigger.region)
+    countries = _TRIGGER_COUNTRIES.get(region)
     if not countries:
-        logger.warning(f"[cascade] region={rule.trigger.region}에 대한 ACLED 국가 매핑 없음")
+        logger.warning(f"[cascade] region={region}에 대한 ACLED 국가 매핑 없음")
         return []
 
     connector = AcledConnector()
     try:
         events = await connector.fetch(countries=countries)
     except Exception as e:
-        logger.warning(f"[cascade] ACLED 조회 실패(region={rule.trigger.region}): {e}")
+        logger.warning(f"[cascade] ACLED 조회 실패(region={region}): {e}")
         return []
 
-    qualifying: list[Event] = []
+    result: list[Event] = []
     for e in events:
         lat, lon = e.location
         code = region_for_point(lat, lon)
-        if code == rule.trigger.region and e.severity >= rule.trigger.severity_min:
+        if code == region:
             e.region_code = code
-            qualifying.append(e)
+            result.append(e)
 
-    # 날짜별 최고 심각도 1개 선택 → 전체 30일 창을 균일하게 샘플링
+    logger.info(f"[cascade] region={region}: ACLED {len(events)}건 → 지오펜스 통과 {len(result)}건")
+    return result
+
+
+def _sample_triggers(raw_events: list[Event], severity_min: int) -> list[Event]:
+    """severity_min 이상 이벤트를 날짜별 최고심각도 1개로 샘플링한다.
+
+    날짜별 1개 전략을 쓰는 이유:
+      단순 severity 상위 N개 방식은 특정 일자에 평가가 몰려 다른 날의 시장 반응을 놓친다.
+      날짜를 분산시키면 30일 창 전체를 고르게 탐색하므로 지연 연쇄를 포착할 수 있다.
+    """
+    qualifying = [e for e in raw_events if e.severity >= severity_min]
+
     by_date: dict = {}
     for e in qualifying:
         d = e.timestamp.date()

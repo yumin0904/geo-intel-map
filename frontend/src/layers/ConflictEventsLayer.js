@@ -37,14 +37,17 @@ function getSeverityStyle(severity) {
 
 /**
  * DivIcon 생성 — CSS 변수로 색상·크기·펄스 속도를 주입한다.
- * className: '' 로 Leaflet 기본 배경/테두리 제거 후 .conflict-icon으로 덮어씀.
+ * tags: theory_tags 뱃지 — 기본은 숨김, body.study-mode 클래스 시 CSS로 표시.
  */
-function buildIcon(severity) {
+function buildIcon(severity, tags = []) {
   const { radius, color, duration } = getSeverityStyle(severity);
-  const size = radius * 2;
+  const size    = radius * 2;
+  const badgeHtml = tags.length
+    ? `<div class="conflict-tags">${tags.map(t => `<span class="conflict-tag-badge">${t}</span>`).join('')}</div>`
+    : '';
   return L.divIcon({
     className:   'conflict-icon',
-    html:        `<div class="conflict-dot" style="--cdot-color:${color};--cdot-duration:${duration}s"></div>`,
+    html:        `<div class="conflict-dot" style="--cdot-color:${color};--cdot-duration:${duration}s"></div>${badgeHtml}`,
     iconSize:    [size, size],
     iconAnchor:  [radius, radius],    // 마커 중심을 좌표에 정확히 맞춤
     popupAnchor: [0, -(radius + 4)],  // 팝업이 마커 위에 열리도록
@@ -141,7 +144,7 @@ export class ConflictEventsLayer {
         const [lon, lat] = feature.geometry.coordinates;
         const props      = feature.properties;
 
-        const marker = L.marker([lat, lon], { icon: buildIcon(props.severity ?? 0) });
+        const marker = L.marker([lat, lon], { icon: buildIcon(props.severity ?? 0, props.theory_tags ?? []) });
 
         marker.bindTooltip(props.title, {
           permanent: false, direction: 'top', className: 'geo-tooltip',

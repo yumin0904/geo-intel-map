@@ -131,11 +131,117 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 - MilitaryBasesLayer도 eventBus 연동 — 군사기지 마커 클릭 시 이론 패널 동작
 - ESC / ✕ 버튼으로 닫기
 
+### ✅ TimelineView 완성 + Cascade 24개 링크 복구 (2026-05-22)
+
+**문제**: TimelineView에 1개 링크만 표시됨 (24개 예상).
+
+**원인 진단**:
+- `build_cascade()`가 룰당 개별 ACLED HTTP 호출 → 6회 중 1회만 성공(rate-limit 추정)
+- south_china_sea_to_defense + south_china_sea_to_lng가 동일 국가셋으로 2회 호출
+- 서버 캐시(1h)가 1개 링크 결과를 고정시켜 TimelineView에 반영됨
+
+**수정 내용** (`backend/services/cascade/engine.py`):
+- `_fetch_conflict_triggers(rule)` → `_fetch_region_events(region)` + `_sample_triggers(events, sev_min)` 분리
+- `build_cascade()`: unique region 추출 → `asyncio.gather()` 병렬 fetch → 룰별 재사용
+- ACLED HTTP 호출: 6회 → 5회 (unique region 수 기준)
+- 서버 재시작 후 API 24개 링크 정상 반환 확인
+
+**TimelineView 현황**:
+- 6개 룰 × 시간순 range 바 (시작=trigger, 끝=response)
+- 그룹별 표시 (rule_id 기준), ticker + 등락률 + 상관도 레이블
+- 아이템 클릭 → TheoryPanel 연동 (trigger 이벤트의 theory_tags 기반)
+
+### ✅ TimelineView UI 개선 (2026-05-22)
+
+- 패널 높이: 고정 216px → **30vh** (화면 비례)
+- **드래그 리사이즈**: 패널 상단 핸들(6px)로 높이 자유 조절, 닫기/열기 시 복원
+- **날짜 이동 툴바**: 년/월/일 select + "이동" 버튼 → `moveTo()` 애니메이션
+- **아이템 클릭 → 날짜 이동**: 선택한 링크의 trigger 날짜 중앙으로 자동 이동
+- **"📅 데이터 보기" 버튼**: 전체 링크 구간으로 `fit()` (애니메이션 400ms)
+- 그룹 영역 `overflow-y: auto` 적용
+- `_OVERHEAD = 72` 상수로 header+toolbar 높이 일원화
+
+구현 파일: `frontend/src/views/TimelineView.js`, `frontend/styles/main.css`, `frontend/index.html`
+
+### ✅ theory_tags 다차원 분류 로직 구현 (2026-05-22)
+
+**문제**: 미얀마 ACDF 매복 사건에 `conventional_warfare + A2AD` 오배정.
+
+**원인**: `_THEORY_TAGS["Battles"]` = event_type만으로 배정 → 지역·행위자 무관.
+
+**수정** (`backend/connectors/acled.py`):
+- `_THEORY_TAGS` dict 제거 → `_build_theory_tags(event_type, sub_event_type, inter1, inter2, region_code)` 함수
+- inter1/inter2: ACLED API가 문자열로 반환("External/Other forces") → `_INTER_CODE` + `_inter_code()` 로 정수 변환 (대소문자 무관)
+- `region_for_point()` import: normalize 시점에 region_code 즉시 결정 + Event에 저장
+
+**배정 기준 (3계층)**:
+
+| 계층 | 조건 | 태그 |
+|------|------|------|
+| inter1/inter2 | 1 vs 1 (국가군) | `conventional_warfare` |
+| inter1/inter2 | 1 vs 2 또는 2 vs 1 | `insurgency, asymmetric_warfare` |
+| inter1/inter2 | 2 vs 2 (반군) | `civil_war` |
+| sub_event_type | "Ambush" | `guerrilla_tactics` |
+| sub_event_type | "Air/drone strike" + inter1=2 | `gray_zone` |
+| sub_event_type | shelling/artillery/missile | `conventional_warfare` |
+| region | taiwan_strait, south_china_sea | `A2AD` |
+| region | bab_el_mandeb, suez, hormuz | `SLOC_disruption` |
+| region | hormuz | `resource_weaponization` |
+
+**Myanmar ACDF 사건 before/after** (inter1=2, sub="Ambush"):
+- BEFORE: `['conventional_warfare']`
+- AFTER (vs 군부 inter2=1): `['asymmetric_warfare', 'guerrilla_tactics', 'insurgency']`
+- AFTER (vs 반군  inter2=2): `['civil_war', 'guerrilla_tactics']`
+
+### ✅ Study Mode 1단계 — 이론 태그 뱃지 토글 (2026-05-22)
+
+- 좌측 사이드바 하단 `STUDY MODE` 버튼 추가 (`LayerPanel.js`)
+- 클릭 시 `body.study-mode` CSS 클래스 토글 → 마커 재렌더링 없이 뱃지 표시/숨김
+- 분쟁 이벤트 마커 DivIcon에 `.conflict-tags` 포함 (`buildIcon` 확장)
+- `body.study-mode .conflict-tags { display: flex }` CSS로 on/off 처리
+
+구현 파일: `frontend/src/layers/ConflictEventsLayer.js`, `frontend/src/panels/LayerPanel.js`, `frontend/styles/main.css`
+
+---
+
 ### 🔜 다음 작업 (Phase 2)
-- **TimelineView** — vis-timeline 기반 시간순 이벤트 배열
-- **Study Mode** — 이론 태그 강조 + 노트 입력창 상시 표시
+
+**대기 중**:
 - 실시간 레이어 (ADS-B / AIS / FIRMS) — 대기 중인 룰들이 자동 활성화
 - CascadeGraphView (Cytoscape) — 인과 그래프 뷰
+- Study Mode 2단계 — 노트 입력창 상시 표시
+
+**Phase 3 예정**:
+- **GDELT 실시간 데이터 파이프라인 (3단계 교차 검증)**
+
+  배경: ACLED 데이터 한계(2025년 5월까지) 보완, 실시간성 확보하되 노이즈 필터링 필수
+
+  아키텍처 (3-Stage Funnel):
+  1. GDELT 자체 필터링 (QuadClass 3/4, GoldsteinScale ≤-5, NumMentions ≥20)
+  2. 외부 뉴스 RSS/NewsAPI 교차 검증 (24h 내 2개 이상 매체)
+  3. confidence_score 산출 (0.0~1.0)
+
+  데이터 모델 변경:
+  - Event 모델에 `confidence_score`, `is_verified` 필드 추가
+  - ACLED=1.0, 미검증 GDELT=0.5, 교차검증 GDELT=0.8
+
+  신규 모듈:
+  - `backend/connectors/gdelt_verifier.py`
+  - `backend/connectors/news_cross_validator.py`
+
+  프론트엔드:
+  - `confidence_score < 0.8` → 점선 테두리, 60% 투명도
+  - "⚠️ 실시간 속보 (교차 검증 중)" 뱃지
+
+  착수 조건 (게이트):
+  - Phase 2 완료 후
+  - 실시간 레이어 (ADS-B/AIS/FIRMS) 구현 이후
+  - 시스템 프롬프트 Phase 2 11번(시장 지표) 다음 우선순위
+
+  알려진 리스크:
+  - GDELT 좌표 부정확성 → cascade region 매칭 false positive 우려
+  - NewsAPI 무료 티어 일 100건 제한
+  - Event 모델 변경 시 cascade engine/frontend 광범위 영향
 
 ---
 

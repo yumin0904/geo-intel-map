@@ -29,11 +29,18 @@ export class LayerPanel {
     this._el.innerHTML = `
       <div class="layer-panel__title">LAYERS</div>
       <div class="layer-panel__list"></div>
+      <button class="study-mode-btn" title="이론 태그를 마커에 표시">STUDY MODE</button>
     `;
     const list = this._el.querySelector('.layer-panel__list');
     for (const layer of this._lm.getAll()) {
       list.appendChild(this._buildItem(layer));
     }
+
+    this._el.querySelector('.study-mode-btn').addEventListener('click', e => {
+      const active = document.body.classList.toggle('study-mode');
+      e.currentTarget.classList.toggle('is-active', active);
+      this._bus.emit('studymode:changed', { active });
+    });
   }
 
   _buildItem({ id, meta, status, visible }) {

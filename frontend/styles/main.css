@@ -111,6 +111,34 @@ body {
   100% { transform: scale(3.2); opacity: 0;    }
 }
 
+/* ── Study Mode: 이론 태그 뱃지 (마커 아래) ─────────────────── */
+/* body.study-mode 시에만 표시 — 재렌더링 없이 CSS 토글로 처리 */
+.conflict-tags {
+  display: none;
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 500;
+}
+body.study-mode .conflict-tags { display: flex; }
+
+.conflict-tag-badge {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  background: rgba(88,166,255,0.15);
+  color: var(--color-accent);
+  border: 1px solid rgba(88,166,255,0.4);
+  border-radius: 3px;
+  padding: 1px 4px;
+  line-height: 1.4;
+}
+
 /* ── Leaflet 툴팁 오버라이드 ─────────────────────────────────── */
 .geo-tooltip {
   background: var(--color-surface);
@@ -144,6 +172,29 @@ body {
   color: var(--color-text-secondary);
   text-transform: uppercase;
   margin-bottom: 10px;
+}
+
+.study-mode-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 5px 0;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.study-mode-btn:hover { color: var(--color-accent); border-color: var(--color-accent); }
+.study-mode-btn.is-active {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: rgba(88,166,255,0.08);
 }
 
 .layer-item {
