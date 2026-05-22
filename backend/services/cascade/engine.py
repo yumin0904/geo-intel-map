@@ -26,15 +26,17 @@ from services.region import region_center, region_for_point
 
 logger = logging.getLogger(__name__)
 
-# 룰당 평가할 트리거 이벤트 상한 — yfinance 호출/응답 시간을 제한하기 위함.
-# 심각도 내림차순으로 상위 N개만 평가한다(가장 의미 있는 충격 우선).
-_MAX_TRIGGERS_PER_RULE = 8
+# 룰당 평가할 트리거 이벤트 상한.
+# "날짜별 최고 심각도 1개" 전략을 쓰므로 30일 창 날짜 수(≤30)보다 약간 여유 있게 설정.
+_MAX_TRIGGERS_PER_RULE = 15
 
 # region_code별 트리거 → ACLED 조회 국가 매핑. 새 region 추가 시 여기에 등록.
 # 바브엘만데브: 예멘(후티)·지부티·에리트레아가 해협을 둘러쌈.
 _TRIGGER_COUNTRIES: dict[str, list[str]] = {
-    "hormuz": GULF_COUNTRIES,
+    "hormuz":       GULF_COUNTRIES,
     "bab_el_mandeb": ["Yemen", "Djibouti", "Eritrea"],
+    # 우크라이나-러시아 분쟁 → 밀 선물(ZW=F) 룰 (food_security / resource_weaponization)
+    "ukraine":       ["Ukraine"],
 }
 
 
@@ -80,8 +82,13 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
 async def _fetch_conflict_triggers(rule: CascadeRule) -> list[Event]:
     """룰의 trigger 조건(지역·심각도)을 만족하는 분쟁 이벤트를 수집한다.
 
-    ACLED에서 해당 지역 국가의 이벤트를 가져와 region/severity로 필터링한 뒤,
-    심각도 상위 _MAX_TRIGGERS_PER_RULE개만 반환한다.
+    ACLED에서 해당 지역 국가의 이벤트를 가져와 region/severity로 필터링한 뒤
+    **날짜별 최고심각도 1개**를 샘플링해 반환한다.
+
+    날짜별 1개 전략을 쓰는 이유:
+      단순 severity 상위 N개 방식은 특정 일자(예: 대규모 전투가 집중된 날)에
+      평가가 몰려 다른 날의 시장 반응을 놓친다. 날짜를 분산시키면 30일 창 전체를
+      고르게 탐색하므로 "조용한 날 이후 시장 급반응" 같은 지연 연쇄를 포착할 수 있다.
     """
     countries = _TRIGGER_COUNTRIES.get(rule.trigger.region)
     if not countries:
@@ -100,11 +107,18 @@ async def _fetch_conflict_triggers(rule: CascadeRule) -> list[Event]:
         lat, lon = e.location
         code = region_for_point(lat, lon)
         if code == rule.trigger.region and e.severity >= rule.trigger.severity_min:
-            e.region_code = code  # Phase 2: 트리거 이벤트에 지역 코드 할당
+            e.region_code = code
             qualifying.append(e)
 
-    qualifying.sort(key=lambda ev: ev.severity, reverse=True)
-    return qualifying[:_MAX_TRIGGERS_PER_RULE]
+    # 날짜별 최고 심각도 1개 선택 → 전체 30일 창을 균일하게 샘플링
+    by_date: dict = {}
+    for e in qualifying:
+        d = e.timestamp.date()
+        if d not in by_date or e.severity > by_date[d].severity:
+            by_date[d] = e
+
+    sampled = sorted(by_date.values(), key=lambda ev: ev.severity, reverse=True)
+    return sampled[:_MAX_TRIGGERS_PER_RULE]
 
 
 async def _evaluate_trigger(
