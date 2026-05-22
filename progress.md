@@ -233,11 +233,22 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
   - `_buildMiniCard()`: 이론 카드 + 활성 cascade rule 배지 + 추천 자료 + 도서관 팁
   - 일반 모드 노드 클릭 → 글로벌 TheoryPanel 동작 유지
 
-### 🔜 다음 작업 (Phase 2)
+### 🔜 다음 작업 (Phase 2 마지막)
 
-**대기 중**:
-- 실시간 레이어 (ADS-B / AIS / FIRMS) — 대기 중인 룰들이 자동 활성화
-- ~~Study Mode 2단계 — 노트 입력창 상시 표시~~ ✅
+**Phase 2 완료 현황**:
+| 항목 | 상태 |
+|------|------|
+| Cascade Rule 6개 활성 (24링크) | ✅ |
+| Theory Panel | ✅ |
+| TimelineView (드래그 리사이즈, 날짜 이동) | ✅ |
+| Study Mode (태그 뱃지 + 노트 저장) | ✅ |
+| CascadeGraphView (Cytoscape, 전체화면, 이론 패널) | ✅ |
+| **실시간 레이어 (ADS-B / AIS / FIRMS)** | 🔜 다음 |
+
+**실시간 레이어 착수 순서**:
+1. **FIRMS (NASA 위성 화재/열점)** — 난이도 ★★☆, API 무료, cascade와 즉시 연동 가능
+2. **AIS (AISStream.io 선박)** — 난이도 ★★★, 호르무즈·대만해협 룰 자동 활성화
+3. **ADS-B (OpenSky 군용기)** — 난이도 ★★★, 대만해협 룰 자동 활성화
 
 **Phase 3 예정**:
 - **GDELT 실시간 데이터 파이프라인 (3단계 교차 검증)**
@@ -277,5 +288,5 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 
 - ✅ Phase 0: 기반 (FastAPI + Leaflet + 군사기지)
 - ✅ Phase 1: MVP (5개 레이어 + LayerManager)
-- 🔄 Phase 2: 핵심 차별화 — 첫 Cascade Rule 동작 ✅ / 실시간 레이어·룰 확장 진행 예정
+- 🔄 Phase 2: 핵심 차별화 — 3-View 시스템 ✅ / Study Mode ✅ / **실시간 레이어만 남음**
 - ⬜ Phase 3: 학습 도구 완성
