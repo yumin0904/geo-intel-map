@@ -602,6 +602,11 @@ input[type=range].severity-slider::-webkit-slider-thumb {
   word-break: break-all;
 }
 .theory-card__link:hover { text-decoration: underline; }
+.theory-card__link-text {
+  font-size: 10px;
+  color: var(--color-text-secondary);   /* 링크 없음 = 흐린 텍스트로 구분 */
+  line-height: 1.5;
+}
 
 /* ── Cascade 요약 섹션 ───────────────────────────────────────────── */
 .cascade-summary {

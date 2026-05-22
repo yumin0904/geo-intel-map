@@ -103,7 +103,7 @@ const THEORY_DB = {
     detail: '러시아의 가스 외교, 중국의 희토류 수출 제한이 대표 사례. 수입국의 취약성이 높을수록 무기화 효과가 크다.',
     cascade_rules: ['hormuz_tension_to_oil', 'ukraine_conflict_to_wheat', 'south_china_sea_to_lng'],
     reading: [
-      { title: 'Hirschman (1945) — National Power and the Structure of Foreign Trade', url: null },
+      { title: 'Hirschman (1945) — National Power and the Structure of Foreign Trade', url: 'https://www.amazon.com/National-Power-Structure-Foreign-Trade/dp/0520015398' },
     ],
   },
 
@@ -114,7 +114,7 @@ const THEORY_DB = {
     detail: '달러 결제망(SWIFT), 반도체 공급망, 클라우드 인프라 등이 특정 국가에 집중될 때 그 국가가 갖는 비대칭적 권력.',
     cascade_rules: ['taiwan_strait_to_tsm', 'taiwan_strait_to_soxx'],
     reading: [
-      { title: 'Farrell & Newman (2019) — Weaponized Interdependence', url: 'https://www.journals.uchicago.edu/doi/10.1086/703642' },
+      { title: 'Farrell & Newman (2019) — Weaponized Interdependence', url: 'https://doi.org/10.1162/isec_a_00351' },
     ],
   },
 
@@ -352,8 +352,10 @@ export class TheoryPanel {
     );
 
     const readingHTML = theory.reading
-      .filter(r => r.url)
-      .map(r => `<a class="theory-card__link" href="${r.url}" target="_blank" rel="noopener">${r.title}</a>`)
+      .map(r => r.url
+        ? `<a class="theory-card__link" href="${r.url}" target="_blank" rel="noopener">${r.title}</a>`
+        : `<span class="theory-card__link-text">${r.title}</span>`
+      )
       .join('');
 
     const confirmedHTML = linkedMatches.map(l => {
