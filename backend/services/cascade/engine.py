@@ -17,7 +17,13 @@ import logging
 import uuid
 from datetime import datetime, timezone
 
-from connectors.acled import AcledConnector, GULF_COUNTRIES
+from connectors.acled import (
+    AcledConnector,
+    GULF_COUNTRIES,
+    MIDDLE_EAST_COUNTRIES,
+    SOUTH_CHINA_SEA_COUNTRIES,
+    SUEZ_COUNTRIES,
+)
 from connectors.yfinance_adapter import evaluate_response
 from models.cascade import CascadeLink, CascadeRule
 from models.event import Event
@@ -33,10 +39,18 @@ _MAX_TRIGGERS_PER_RULE = 15
 # region_code별 트리거 → ACLED 조회 국가 매핑. 새 region 추가 시 여기에 등록.
 # 바브엘만데브: 예멘(후티)·지부티·에리트레아가 해협을 둘러쌈.
 _TRIGGER_COUNTRIES: dict[str, list[str]] = {
-    "hormuz":       GULF_COUNTRIES,
-    "bab_el_mandeb": ["Yemen", "Djibouti", "Eritrea"],
-    # 우크라이나-러시아 분쟁 → 밀 선물(ZW=F) 룰 (food_security / resource_weaponization)
-    "ukraine":       ["Ukraine"],
+    # ── 활성 룰 ──────────────────────────────────────────────────────────
+    "bab_el_mandeb":  ["Yemen", "Djibouti", "Eritrea"],   # → CL=F ↑ (동작 확인)
+    "ukraine":        ["Ukraine"],                         # → ZW=F ↑ (동작 확인)
+    # ── 신규 활성 룰 (ACLED 데이터 확인 완료) ──────────────────────────
+    "middle_east":    MIDDLE_EAST_COUNTRIES,               # → GLD ↑ (안전자산)
+    "south_china_sea": SOUTH_CHINA_SEA_COUNTRIES,          # → ITA ↑, NG=F ↑
+    "suez":           SUEZ_COUNTRIES,                      # → ZIM ↑ (해운주)
+    # ── 대기 — 현재 ACLED bbox 내 severity 부족, 해군·ADS-B 도입 시 자동 동작 ──
+    "hormuz":         GULF_COUNTRIES,                      # → CL=F ↑ (걸프 고강도 분쟁 없음)
+    # "taiwan_strait": 전술적 군사 도발 → ACLED에 전투 이벤트 없음, ADS-B 필요
+    # "north_korea":   ACLED 데이터 극도 희박(11건, sev<40)
+    # "korean_peninsula": 남한 시위 위주(sev≤20), 북한 도발 이벤트 없음
 }
 
 

@@ -42,6 +42,23 @@ GULF_COUNTRIES = [
     "Oman", "Qatar", "Bahrain", "Kuwait", "Yemen",
 ]
 
+# 중동 분쟁 → 금(GLD) 안전자산 룰용.
+# 레반트(이스라엘·레바논·시리아)와 이라크·이란 포함. 호르무즈/바브엘만데브는 별도 region으로 분리됨.
+MIDDLE_EAST_COUNTRIES = [
+    "Israel", "Lebanon", "Syria", "Iraq", "Iran",
+    "Saudi Arabia", "Yemen",
+]
+
+# 남중국해 — 방산주(ITA)·천연가스(NG=F) 룰용.
+# 영유권 분쟁 주체: 필리핀·베트남·말레이시아·중국. ACLED에 전술적 충돌·해상민병대 이벤트 포함.
+SOUTH_CHINA_SEA_COUNTRIES = [
+    "Philippines", "Vietnam", "Malaysia", "China",
+]
+
+# 수에즈 운하 인근 — 해운주(ZIM) 룰용.
+# 운하 본체(이집트)와 인근 이스라엘이 ACLED 이벤트의 주 발원지.
+SUEZ_COUNTRIES = ["Egypt", "Israel"]
+
 # event_type별 severity 기본점수 (0-100 스케일)
 # 전투(Battles)가 가장 높고, 시위(Protests)가 가장 낮다
 _SEVERITY_BASE: dict[str, int] = {
