@@ -5,6 +5,12 @@
 #
 # 동작: trigger 조건에 맞는 이벤트 발생 → window_hours 동안 expected_response 관찰
 #       → threshold_pct 이상 변동 시 CascadeLink 생성.
+#
+# chain 필드 (engine.py 체이닝 로직이 사용):
+#   chainable:      true이면 이 룰의 결과를 다음 룰의 트리거 신호로 연결 가능
+#   chain_output:   이 룰이 생성하는 시장 신호 타입 (룰 간 연결 키)
+#   next_rule_hint: 이 결과가 트리거할 가능성이 높은 다음 룰 ID
+#                   (아직 미구현 룰은 미래 예약 ID로 기록)
 
 # ── 활성 룰 (실제 데이터로 동작 확인됨) ─────────────────────────────
 - id: bab_el_mandeb_tension_to_oil
@@ -19,6 +25,9 @@
     direction: up
     window_hours: 48           # 시장이 지정학 충격을 반영하는 데 통상 1~2 거래일
     threshold_pct: 1.5
+  chainable: true
+  chain_output: "oil_price_spike"
+  next_rule_hint: "oil_spike_to_inflation"   # 미래 룰: 유가 급등 → 글로벌 CPI 상승 → 금리 인상 기대
   theory:
     framework: "SLOC Interdiction (Gray Zone)"
     reference: "Mahan 해양력; 후티 홍해 공격 (2023~24)"
@@ -27,7 +36,8 @@
       후티의 비국가 해상 위협(회색지대 전술)이 선박 우회(희망봉)와 위험 프리미엄을 통해
       유가로 전이되는 메커니즘을 관찰한다. 국가가 아닌 행위자도 SLOC를 무기화할 수 있음이 핵심.
 
-# ── 대기 룰 (해군/AIS 데이터 도입 시 자동 동작, 현재 트리거 0개) ──────
+# ── 대기 룰 (해군/AIS·군용기 ADS-B 데이터 도입 시 자동 동작) ───────────
+
 - id: hormuz_tension_to_oil
   name: "호르무즈 긴장 → 유가 상승"
   trigger:
@@ -40,6 +50,9 @@
     direction: up
     window_hours: 48
     threshold_pct: 1.5
+  chainable: true
+  chain_output: "oil_price_spike"
+  next_rule_hint: "oil_spike_to_inflation"   # bab_el_mandeb 룰과 동일 체인 — 유가 충격 원인을 비교 가능
   theory:
     framework: "Resource Weaponization"
     reference: "Hirschman (1945), 현대화 Drezner (2015)"
@@ -47,3 +60,210 @@
       호르무즈는 글로벌 원유 해상운송의 약 20%가 통과하는 단일 길목이다.
       이 지점의 군사적 긴장이 공급 차질 우려를 통해 유가로 전이되는 메커니즘을 관찰한다.
       상호의존(에너지 수입)이 어떻게 정치적 충격의 전달 통로가 되는지가 핵심.
+
+- id: taiwan_strait_to_tsm
+  name: "대만해협 군사긴장 → TSMC 주가 하락"
+  trigger:
+    source_type: conflict      # Phase 2+: ADS-B 군용기 도입 시 source_type: military_flight 으로 교체 예정
+    region: taiwan_strait
+    severity_min: 50
+  expected_response:
+    source_type: market
+    ticker: "TSM"              # TSMC ADR (NYSE). 대만 파운드리 90%+ 집중 위험의 직접 지표
+    direction: down
+    window_hours: 24           # 기술주는 지정학 뉴스에 1거래일 내 반응
+    threshold_pct: 1.0
+  chainable: true
+  chain_output: "semiconductor_supply_risk"
+  next_rule_hint: "semiconductor_to_chips_act"   # 미래 룰: 공급 위기 → CHIPS Act 수혜주(인텔·마이크론) 반등
+  theory:
+    framework: "Weaponized Interdependence"
+    reference: "Farrell & Newman (2019), CSIS 반도체 공급망 보고서 (2023)"
+    learning_note: >-
+      TSMC는 전 세계 첨단 반도체(5nm 이하)의 약 90%를 대만에서 생산한다.
+      이 지리적 집중이 군사 긴장의 전달 통로가 되어 주가 변동으로 나타나는 메커니즘을 관찰한다.
+      Farrell & Newman의 '무기화된 상호의존' 핵심 사례: 공급망 허브 통제권이 지정학 레버리지로 전환된다.
+
+- id: taiwan_strait_to_soxx
+  name: "대만해협 긴장 → 반도체 ETF(SOXX) 하락"
+  trigger:
+    source_type: conflict
+    region: taiwan_strait
+    severity_min: 50
+  expected_response:
+    source_type: market
+    ticker: "SOXX"             # iShares 반도체 ETF. TSM룰과 함께 관찰하면 개별주 vs 섹터 반응 비교 가능
+    direction: down
+    window_hours: 24
+    threshold_pct: 0.8         # ETF는 단일주보다 충격 흡수, 임계치를 낮게 설정
+  chainable: true
+  chain_output: "semiconductor_sector_decline"
+  next_rule_hint: "semiconductor_decline_to_tech_selloff"   # 미래 룰: 반도체 섹터 하락 → 나스닥 전반 하락
+  theory:
+    framework: "Techno-nationalism / Supply Chain Concentration Risk"
+    reference: "White House Supply Chain Report (2021), SIA 반도체 리포트"
+    learning_note: >-
+      대만해협 긴장은 TSMC(TSM)뿐 아니라 ASML·퀄컴·엔비디아 등 대만 의존 기업 전체에 전이된다.
+      TSM vs SOXX 두 룰을 동시에 관찰하면, 지정학 충격이 개별 기업을 넘어 섹터 전체로 확산되는
+      '공급망 전염(supply chain contagion)' 현상을 학습할 수 있다.
+
+- id: south_china_sea_to_defense
+  name: "남중국해 분쟁 → 방산주(ITA) 상승"
+  trigger:
+    source_type: conflict
+    region: south_china_sea
+    severity_min: 50
+  expected_response:
+    source_type: market
+    ticker: "ITA"              # iShares 미국 항공우주·방산 ETF (LMT·RTX·NOC 포함)
+    direction: up
+    window_hours: 48
+    threshold_pct: 0.8
+  chainable: true
+  chain_output: "defense_spending_surge"
+  next_rule_hint: "defense_surge_to_nato_budget"   # 미래 룰: 방산 지출 급증 → NATO 회원국 국방예산 압박
+  theory:
+    framework: "Alliance Theory / Security Dilemma"
+    reference: "Waltz (1979), Mearsheimer 공격적 현실주의"
+    learning_note: >-
+      남중국해 긴장 상승은 미국의 대중 억제 전략 강화 기대를 낳고 방산 지출 증가 전망으로 이어진다.
+      개별 기업(LMT·RTX) 대신 ETF를 사용하면 섹터 전체의 '안보 기대' 반응을 더 깨끗하게 관찰할 수 있다.
+      안보 딜레마: 한 행위자의 군비 증강이 타방의 위협 인식을 높여 군비 경쟁을 촉발하는 구조.
+
+- id: south_china_sea_to_lng
+  name: "남중국해 긴장 → 천연가스(NG=F) 상승"
+  trigger:
+    source_type: conflict
+    region: south_china_sea
+    severity_min: 50
+  expected_response:
+    source_type: market
+    ticker: "NG=F"             # Henry Hub 천연가스 선물. LNG 직접 선물 없어 근사치로 사용
+    direction: up
+    window_hours: 48
+    threshold_pct: 1.5
+  chainable: true
+  chain_output: "lng_price_spike"
+  next_rule_hint: "lng_spike_to_energy_security"   # 미래 룰: LNG 급등 → 에너지 안보 정책 강화 (유럽 탈러 가속)
+  theory:
+    framework: "Resource Weaponization / SLOC Control"
+    reference: "EIA 남중국해 에너지 보고서 (2013), Tonnesson (2022)"
+    learning_note: >-
+      남중국해는 동아시아향 LNG 운반선의 주요 통항로이자 베트남·브루나이 가스전 영유권 분쟁 지역이다.
+      해상 긴장 → 운항 위험 프리미엄 → 에너지 가격 상승 경로를 관찰한다.
+      NG=F는 Henry Hub 기준으로 LNG와 100% 일치하지 않지만 단기 연동성은 유효하다.
+
+- id: north_korea_missile_to_krw
+  name: "북한 도발 → 원/달러 환율 상승(원화 약세)"
+  trigger:
+    source_type: conflict
+    region: north_korea
+    severity_min: 70           # 미사일 발사·핵실험 등 고강도 이벤트만 트리거 (ACLED 포함 시)
+  expected_response:
+    source_type: market
+    ticker: "KRW=X"            # USD/KRW 환율. 상승 = 달러 강세/원화 약세
+    direction: up
+    window_hours: 12           # FX 시장은 지정학 뉴스에 수시간 내 반응
+    threshold_pct: 0.5         # 환율은 변동폭이 작아 임계치를 낮게 설정
+  chainable: true
+  chain_output: "krw_depreciation"
+  next_rule_hint: "korean_tension_to_kospi"   # 기존 룰로 직접 체인: 원화 약세 → 외국인 자금 이탈 → KOSPI 하락
+  theory:
+    framework: "Extended Deterrence / Korea Discount"
+    reference: "Cha (2002) 동맹 딜레마, 한국은행 지정학 리스크 분석 보고서"
+    learning_note: >-
+      북한 핵·미사일 도발은 한국 자산에 '지정학 리스크 프리미엄'을 부과한다.
+      원화 약세(환율 상승)는 이 프리미엄이 FX 시장에 즉각 반영되는 신호다.
+      코리아 디스카운트(한국 증시 저평가)의 구조적 원인 중 하나로, 억제력이 흔들릴 때마다 나타난다.
+
+- id: suez_tension_to_shipping
+  name: "수에즈 운하 긴장 → 해운주(ZIM) 상승"
+  trigger:
+    source_type: conflict
+    region: suez
+    severity_min: 50
+  expected_response:
+    source_type: market
+    ticker: "ZIM"              # ZIM 인티그레이티드 쉬핑 (이스라엘). 수에즈 경유 노선 직격
+    direction: up
+    window_hours: 72           # 해운 운임은 선박 우회 결정 후 2~3일 시차
+    threshold_pct: 2.0         # ZIM은 변동성이 높아 임계치를 높게 설정
+  chainable: true
+  chain_output: "shipping_cost_spike"
+  next_rule_hint: "shipping_to_inflation"   # 미래 룰: 운임 급등 → 소비재 가격 상승 → CPI 압박
+  theory:
+    framework: "SLOC Interdiction — Suez Canal Dependency"
+    reference: "에버기븐 좌초 사례 (2021), Notteboom et al. 해운경제학"
+    learning_note: >-
+      수에즈 운하 차단 시 아시아↔유럽 선박은 희망봉 우회(약 9,000km 추가)를 강제받아
+      운임·보험료·연료비가 급등한다. ZIM은 이 경로 의존도가 높아 민감지표로 사용한다.
+      바브엘만데브 룰과 함께 보면 '홍해-수에즈 축' 전체의 SLOC 차단 메커니즘을 관찰할 수 있다.
+
+- id: ukraine_conflict_to_wheat
+  name: "우크라이나 분쟁 → 밀 선물(ZW=F) 상승"
+  trigger:
+    source_type: conflict
+    region: ukraine
+    severity_min: 40           # 우크라이나는 상시 교전 중 → 낮은 임계치로 에스컬레이션 포착
+  expected_response:
+    source_type: market
+    ticker: "ZW=F"             # CBOT 밀 선물 (소맥). 우크라이나 항구 봉쇄 시 즉각 반응
+    direction: up
+    window_hours: 48
+    threshold_pct: 1.5
+  chainable: true
+  chain_output: "food_price_spike"
+  next_rule_hint: "food_spike_to_political_instability"   # 미래 룰: 식량가격 급등 → 중동·아프리카 정치 불안 (아랍의 봄 패턴)
+  theory:
+    framework: "Food Security as Geopolitical Weapon"
+    reference: "Patel & Moore (2009), UN 식량농업기구 흑해 곡물협정 보고서 (2022)"
+    learning_note: >-
+      우크라이나+러시아는 세계 밀 수출의 약 28%, 해바라기유 약 60%를 담당한다.
+      오데사 항 봉쇄나 교전 激화는 글로벌 식량 공급 차질 우려로 선물 가격에 즉각 반영된다.
+      '자원무기화'가 에너지를 넘어 식량 안보로 확장되는 현대 지정학의 핵심 사례.
+
+- id: middle_east_conflict_to_gold
+  name: "중동 분쟁 확대 → 금(GLD) 상승"
+  trigger:
+    source_type: conflict
+    region: middle_east
+    severity_min: 60
+  expected_response:
+    source_type: market
+    ticker: "GLD"              # SPDR 금 ETF. 안전자산 선호도의 가장 직접적인 지표
+    direction: up
+    window_hours: 24           # 금은 지정학 뉴스에 수시간~1거래일 내 반응
+    threshold_pct: 0.5         # 금은 일변동이 작아 임계치 낮게 설정
+  chainable: true
+  chain_output: "risk_off_sentiment"
+  next_rule_hint: "risk_off_to_treasury_surge"   # 미래 룰: 리스크 오프 → 미국채 수요 급증 → 금리 하락
+  theory:
+    framework: "Safe Haven Theory / Risk-off Dynamics"
+    reference: "Baur & Lucey (2010) 금의 헤지 기능, Erb & Harvey (2013)"
+    learning_note: >-
+      중동 분쟁은 유가 불안·달러 가치·지정학 리스크 프리미엄을 동시에 자극해 금 수요를 끌어올린다.
+      금은 국가 신용리스크에 노출되지 않는 실물자산이므로 '리스크 오프(risk-off)' 국면의 선행지표다.
+      호르무즈·바브엘만데브 룰의 유가 반응과 금 반응을 비교하면 시장의 공포 구조를 입체적으로 관찰 가능.
+
+- id: korean_tension_to_kospi
+  name: "한반도 긴장 → KOSPI 하락"
+  trigger:
+    source_type: conflict
+    region: korean_peninsula
+    severity_min: 60
+  expected_response:
+    source_type: market
+    ticker: "^KS11"            # KOSPI 종합지수. 한국 증시 전체의 지정학 반응 지표
+    direction: down
+    window_hours: 12           # 한국 증시는 당일 개장과 함께 반응
+    threshold_pct: 0.5
+  chainable: true
+  chain_output: "korean_market_decline"
+  next_rule_hint: "korean_decline_to_krw_depreciation"   # 순환 체인: KOSPI 하락 → 외국인 매도 → KRW 추가 약세
+  theory:
+    framework: "Korea Discount / Extended Deterrence"
+    reference: "Kim (2014) 코리아 디스카운트 분석, 국제금융센터 보고서"
+    learning_note: >-
+      한국 증시는 북한 도발, 한미 훈련, DMZ 충돌 등 한반도 긴장에 구조적으로 민감하다.
+      이를 '코리아 디스카운트'라 부르며, 한국 기업의 펀더멘털과 무관하게 지정학 리스크가
+      밸류에이션을 낮추는 메커니즘을 관찰한다. KRW=X 룰과 함께 보면 FX-주식 동시 충격 경로를 확인 가능.

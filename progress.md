@@ -44,9 +44,27 @@
 
 ✅ 시각 확인 완료 — 노랑 점선 화살표(weight 7.5px, 3배), 도착점 "유가 +1.77%" 레이블, 팝업 헤드라인 개선
 
+### ✅ Cascade Rule Book 11개 확장 (2026-05-22)
+
+| # | 룰 ID | 요약 | 상태 |
+|---|-------|------|------|
+| 1 | bab_el_mandeb_tension_to_oil | 바브엘만데브 → CL=F ↑ | ✅ 활성 (동작 확인) |
+| 2 | hormuz_tension_to_oil | 호르무즈 → CL=F ↑ | ⏳ 해군 데이터 대기 |
+| 3 | taiwan_strait_to_tsm | 대만해협 → TSM ↓ | ⏳ ADS-B 도입 시 활성 |
+| 4 | taiwan_strait_to_soxx | 대만해협 → SOXX ↓ | ⏳ |
+| 5 | south_china_sea_to_defense | 남중국해 → ITA ↑ | ⏳ |
+| 6 | south_china_sea_to_lng | 남중국해 → NG=F ↑ | ⏳ |
+| 7 | north_korea_missile_to_krw | 북한 도발 → KRW=X ↑ | ⏳ ACLED 북한 포함 시 |
+| 8 | suez_tension_to_shipping | 수에즈 → ZIM ↑ | ⏳ |
+| 9 | ukraine_conflict_to_wheat | 우크라이나 → ZW=F ↑ | ⏳ |
+| 10 | middle_east_conflict_to_gold | 중동 → GLD ↑ | ⏳ |
+| 11 | korean_tension_to_kospi | 한반도 → ^KS11 ↓ | ⏳ |
+
+추가된 regions: `south_china_sea`, `north_korea`, `suez`, `ukraine`, `middle_east`, `korean_peninsula`
+이론 커버리지: Weaponized Interdependence, A2/AD, Gray Zone, SLOC, Food Security, Safe Haven, Korea Discount
+
 ### 🔜 다음 작업 (Phase 2)
-- 실시간 레이어 (ADS-B / AIS / FIRMS)
-- Cascade Rule Book 10개 이상으로 확장
+- 실시간 레이어 (ADS-B / AIS / FIRMS) — 대기 중인 룰들이 자동 활성화
 - CascadeGraphView (Cytoscape) — 인과 그래프 뷰
 - TimelineView — 시간순 이벤트 배열
 - Theory Panel / Study Mode

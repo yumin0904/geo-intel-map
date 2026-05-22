@@ -7,7 +7,7 @@ CLAUDE.md 3.2 Rule Book + 3.1 CascadeLink 기준.
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel
 
@@ -41,6 +41,10 @@ class CascadeRule(BaseModel):
     name: str
     trigger: RuleTrigger
     expected_response: RuleResponse
+    # chain 필드: engine.py 체이닝 로직이 2단계 인과관계를 구성할 때 사용
+    chainable: bool = False
+    chain_output: Optional[str] = None    # 이 룰이 생성하는 시장 신호 타입 (룰 간 연결 키)
+    next_rule_hint: Optional[str] = None  # 체인될 가능성이 높은 다음 룰 ID
     theory: RuleTheory
 
 
