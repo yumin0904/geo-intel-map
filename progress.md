@@ -52,13 +52,13 @@
 | 2 | hormuz_tension_to_oil | 호르무즈 → CL=F ↑ | ⏳ 해군 데이터 대기 |
 | 3 | taiwan_strait_to_tsm | 대만해협 → TSM ↓ | ⏳ ADS-B 도입 시 활성 |
 | 4 | taiwan_strait_to_soxx | 대만해협 → SOXX ↓ | ⏳ |
-| 5 | south_china_sea_to_defense | 남중국해 → ITA ↑ | ⏳ |
-| 6 | south_china_sea_to_lng | 남중국해 → NG=F ↑ | ⏳ |
-| 7 | north_korea_missile_to_krw | 북한 도발 → KRW=X ↑ | ⏳ ACLED 북한 포함 시 |
-| 8 | suez_tension_to_shipping | 수에즈 → ZIM ↑ | ⏳ |
+| 5 | south_china_sea_to_defense | 남중국해 → ITA ↑ | ✅ 활성 (2026-05-22) |
+| 6 | south_china_sea_to_lng | 남중국해 → NG=F ↑ | ✅ 활성 (2026-05-22) |
+| 7 | north_korea_missile_to_krw | 북한 도발 → KRW=X ↑ | ❌ ACLED 북한 데이터 희박 |
+| 8 | suez_tension_to_shipping | 수에즈 → ZIM ↑ | ✅ 활성 (2026-05-22) |
 | 9 | ukraine_conflict_to_wheat | 우크라이나 → ZW=F ↑ | ✅ 활성 (2026-05-22) |
-| 10 | middle_east_conflict_to_gold | 중동 → GLD ↑ | ⏳ |
-| 11 | korean_tension_to_kospi | 한반도 → ^KS11 ↓ | ⏳ |
+| 10 | middle_east_conflict_to_gold | 중동 → GLD ↑ | ✅ 활성 (2026-05-22) |
+| 11 | korean_tension_to_kospi | 한반도 → ^KS11 ↓ | ❌ ACLED sev<40 (시위 위주) |
 
 추가된 regions: `south_china_sea`, `north_korea`, `suez`, `ukraine`, `middle_east`, `korean_peninsula`
 이론 커버리지: Weaponized Interdependence, A2/AD, Gray Zone, SLOC, Food Security, Safe Haven, Korea Discount
@@ -80,6 +80,27 @@
   (`_MAX_TRIGGERS_PER_RULE`: 8→15, 30일 창 균일 탐색)
 
 관련 이론: Food Security as Geopolitical Weapon (Patel & Moore 2009)
+
+### ✅ _TRIGGER_COUNTRIES 전수 점검 + 신규 3개 룰 활성화 (2026-05-22)
+
+전수 진단 결과 (11개 룰):
+
+| region | ACLED 30일 | bbox 내 | sev≥60 | 결론 |
+|---|---|---|---|---|
+| bab_el_mandeb | 1453 | 652 | 179 | ✅ 이미 활성 |
+| ukraine | 1500 | 1500 | 1462 | ✅ 이미 활성 |
+| middle_east | 1500 | 1062 | 294 | ✅ 신규 활성 |
+| south_china_sea | 338 | 69 | 5 | ✅ 신규 활성 (sev≥40 기준) |
+| suez | 199 | 9 | 1 | ✅ 신규 활성 |
+| hormuz | 1500 | 17 | 0 | ❌ bbox 내 고강도 분쟁 없음 |
+| taiwan_strait | 265 | 93 | 0 | ❌ 군사 도발만, ACLED 전투 없음 |
+| north_korea | 11 | 11 | 0 | ❌ 데이터 극도 희박 |
+| korean_peninsula | 607 | 354 | 0 | ❌ 남한 시위 위주 (sev≤20) |
+
+**전체 Cascade 링크: 24개 (6개 룰 활성)**
+
+acled.py: `MIDDLE_EAST_COUNTRIES`, `SOUTH_CHINA_SEA_COUNTRIES`, `SUEZ_COUNTRIES` 상수 추가  
+engine.py: 신규 3개 region 매핑 + 비활성 region 사유 주석
 
 ### ✅ Theory Panel 완성 (2026-05-22)
 
