@@ -11,6 +11,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 
 from connectors.acled import AcledConnector
+from connectors.nasa_firms import NasaFirmsConnector
 from models.event import Event
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
@@ -20,6 +21,13 @@ _CONFLICT_TTL = timedelta(hours=1)
 _conflict_cache: dict = {
     "geojson":     None,
     "expires_at":  datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
+# FIRMS NRT는 위성 주기마다 갱신(~3시간). 10분 캐시로 불필요한 중복 API 호출 방지.
+_FIRE_TTL = timedelta(minutes=10)
+_fire_cache: dict = {
+    "geojson":    None,
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
 }
 
 # 프로젝트 루트 기준으로 data/ 폴더 경로 계산
@@ -100,6 +108,71 @@ def _events_to_geojson(events: list[Event]) -> dict:
         "metadata": {
             "count":     len(features),
             "source":    "ACLED",
+            "generated": datetime.now(timezone.utc).isoformat(),
+        },
+    }
+
+
+@router.get("/fire")
+async def get_fire_hotspots():
+    """
+    NASA FIRMS VIIRS S-NPP NRT 위성 화재/열점 GeoJSON 반환.
+    분쟁 지역 9개 bbox 병렬 조회, 10분 캐시.
+    연관 이론: Resource Weaponization (Hirschman), Food Security, Gray Zone Strategy
+    """
+    now = datetime.now(timezone.utc)
+    if _fire_cache["geojson"] is not None and now < _fire_cache["expires_at"]:
+        return _fire_cache["geojson"]
+
+    try:
+        connector = NasaFirmsConnector()
+    except ValueError as e:
+        # FIRMS_MAP_KEY 미설정 — 빈 레이어 반환(키 없어도 앱 전체가 죽으면 안 됨)
+        raise HTTPException(status_code=503, detail=str(e)) from e
+
+    try:
+        events = await connector.fetch()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"NASA FIRMS API 연결 실패: {e}") from e
+
+    result = _fire_events_to_geojson(events)
+    _fire_cache["geojson"] = result
+    _fire_cache["expires_at"] = now + _FIRE_TTL
+    return result
+
+
+def _fire_events_to_geojson(events: list[Event]) -> dict:
+    """화재 Event 리스트 → GeoJSON FeatureCollection.
+
+    기존 _events_to_geojson과 달리 region_code를 properties에 포함한다
+    (프론트엔드 TheoryPanel이 지역 필터링에 사용).
+    """
+    features = []
+    for e in events:
+        lat, lon = e.location
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [lon, lat]},
+            "properties": {
+                "id":          e.id,
+                "timestamp":   e.timestamp.isoformat(),
+                "source_type": e.source_type,
+                "source_id":   e.source_id,
+                "region_code": e.region_code,
+                "severity":    e.severity,
+                "title":       e.title,
+                "description": e.description,
+                "theory_tags": e.theory_tags,
+                **e.payload,
+            },
+        })
+
+    return {
+        "type":     "FeatureCollection",
+        "features": features,
+        "metadata": {
+            "count":     len(features),
+            "source":    "NASA FIRMS VIIRS_SNPP_NRT",
             "generated": datetime.now(timezone.utc).isoformat(),
         },
     }

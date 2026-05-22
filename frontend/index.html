@@ -101,6 +101,7 @@
     import { ChokepointsLayer }      from './src/layers/ChokepointsLayer.js';
     import { SubmarineCablesLayer }  from './src/layers/SubmarineCablesLayer.js';
     import { CascadeLayer }          from './src/layers/CascadeLayer.js';
+    import { FireHotspotsLayer }     from './src/layers/FireHotspotsLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
@@ -114,6 +115,7 @@
     const chokepoints = new ChokepointsLayer(ctrl.map);
     const cables      = new SubmarineCablesLayer(ctrl.map);
     const cascade     = new CascadeLayer(ctrl.map, ctrl.eventBus);
+    const fire        = new FireHotspotsLayer(ctrl.map, ctrl.eventBus);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -162,6 +164,14 @@
       name: '인과 연쇄',
       icon: '⛓',
       defaultVisible: true,
+    });
+
+    // ★ 실시간 위성 화재/열점 — VIIRS S-NPP NRT (Phase 2 실시간 레이어 1번)
+    // defaultVisible: false — 레이어 패널에서 수동으로 켜야 함 (초기 로드 비용 절감)
+    ctrl.layerManager.register('fire-hotspots', fire, {
+      name: '화재/열점',
+      icon: '🔥',
+      defaultVisible: false,
     });
 
     const panel = new LayerPanel(ctrl.layerManager, ctrl.eventBus);
