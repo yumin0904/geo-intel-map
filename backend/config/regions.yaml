@@ -74,3 +74,31 @@ korean_peninsula:
   bbox: [124.0, 33.5, 130.5, 43.0]
   center: [127.5, 37.5]
   theory: "Extended Deterrence — 미국 핵우산의 신뢰성 변동이 한국 리스크 프리미엄(코리아 디스카운트)으로 즉각 전이"
+
+east_china_sea:
+  name: "동중국해"
+  # 중국 동안·대만 북방·일본 규슈·오키나와·한반도 남단을 아우르는 해역.
+  # 센카쿠/댜오위다오 분쟁, 중국 ADIZ 선포(2013) 등 A2/AD 마찰 공간.
+  bbox: [118.0, 24.0, 132.0, 40.0]
+  center: [125.0, 30.0]
+  theory: "A2/AD + Forward Deployment — 중일 영토 분쟁과 미 제7함대 전진배치가 교차하는 제1열도선 북방 구역"
+
+# ── 이론별 적용 가능 지역 (theory_geo_filters) ──────────────────────
+# 이 목록의 이론 태그는 해당 지역의 이벤트에만 Theory Panel 카드를 표시한다.
+# 내륙 분쟁(미얀마, 우크라이나 등)에서 해양 이론이 오표시되는 것을 방지.
+# 프론트엔드 TheoryPanel.js THEORY_DB의 geo_filter 필드와 항상 동기화할 것.
+#
+# A2AD_applicable_regions: A2/AD는 해양 접근거부 전략 — 내륙 분쟁과 무관.
+theory_geo_filters:
+  A2AD:
+    - taiwan_strait
+    - south_china_sea
+    - east_china_sea
+  sloc:
+    - taiwan_strait
+    - south_china_sea
+    - east_china_sea
+    - hormuz
+    - bab_el_mandeb
+    - suez
+    - malacca

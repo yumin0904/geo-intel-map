@@ -40,6 +40,8 @@ const THEORY_DB = {
     scholars: 'Krepinevich (2010), CSBA',
     summary: '적 전력이 특정 해역·공역에 접근하거나 작전하지 못하도록 막는 군사전략.',
     detail: '중국의 DF-21D 대함탄도미사일·잠수함·해상민병대가 미군의 제1열도선 내 자유항행을 차단하는 것이 전형적 사례. 대만해협·남중국해가 핵심 마찰 공간.',
+    // 해양 접근거부 전략 — 내륙 분쟁(미얀마·우크라이나 등)에서는 카드 숨김
+    geo_filter: ['taiwan_strait', 'south_china_sea', 'east_china_sea'],
     cascade_rules: ['taiwan_strait_to_tsm', 'taiwan_strait_to_soxx', 'south_china_sea_to_defense'],
     reading: [
       { title: 'CSBA — AirSea Battle (2010)', url: 'https://csbaonline.org/research/publications/airsea-battle-a-point-of-departure-operational-concept' },
@@ -86,6 +88,8 @@ const THEORY_DB = {
     scholars: 'Mahan (1890), Till (2004)',
     summary: '해상교통로(SLOC) 통제권이 국가 패권의 핵심 조건.',
     detail: '호르무즈·바브엘만데브·말라카·수에즈 등 초크포인트가 전략적 가치를 갖는 이유. 통제하거나 차단하면 세계 무역·에너지 흐름을 좌우할 수 있다.',
+    // 해양 이론 — 내륙 분쟁에서는 카드 숨김
+    geo_filter: ['taiwan_strait', 'south_china_sea', 'east_china_sea', 'hormuz', 'bab_el_mandeb', 'suez', 'malacca'],
     cascade_rules: ['bab_el_mandeb_tension_to_oil', 'hormuz_tension_to_oil', 'suez_tension_to_shipping'],
     reading: [
       { title: 'Mahan (1890) — The Influence of Sea Power upon History', url: 'https://www.gutenberg.org/ebooks/13529' },
@@ -170,6 +174,28 @@ const THEORY_DB = {
   },
 };
 
+// 이론 카드의 geo_filter에서 사용하는 지역 bbox [minLon, minLat, maxLon, maxLat]
+// regions.yaml의 theory_geo_filters와 동기화. RULE_REGIONS에 없는 지역도 포함.
+const THEORY_GEO_BBOXES = {
+  taiwan_strait:   [118.0, 22.0, 122.0, 26.0],
+  south_china_sea: [105.0,  3.0, 122.0, 22.0],
+  east_china_sea:  [118.0, 24.0, 132.0, 40.0],  // 동중국해 — A2AD 마찰 공간 북방
+  hormuz:          [ 53.0, 23.0,  60.0, 30.0],
+  bab_el_mandeb:   [ 42.0, 11.0,  45.5, 14.5],
+  suez:            [ 31.5, 28.0,  34.5, 32.5],
+  malacca:         [ 98.0,  1.0, 104.0,  6.5],
+};
+
+/** 좌표가 geo_filter 지역 중 하나라도 안에 있는지 판정 */
+function isInAnyTheoryRegion(lon, lat, regionIds) {
+  return regionIds.some(id => {
+    const bbox = THEORY_GEO_BBOXES[id];
+    if (!bbox) return false;
+    const [minLon, minLat, maxLon, maxLat] = bbox;
+    return lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat;
+  });
+}
+
 // cascade rule별 trigger region bbox [minLon, minLat, maxLon, maxLat]
 // regions.yaml과 동기화 — 이벤트 좌표가 이 안에 있을 때만 rule을 표시
 const RULE_REGIONS = {
@@ -247,7 +273,17 @@ export class TheoryPanel {
     const tags     = props.theory_tags ?? [];
     const lon      = props._lon ?? null;
     const lat      = props._lat ?? null;
-    const theories = tags.map(t => THEORY_DB[t]).filter(Boolean);
+    const theories = tags
+      .map(t => THEORY_DB[t])
+      .filter(Boolean)
+      .filter(t => {
+        // geo_filter가 없으면 항상 표시 (비지역 한정 이론)
+        if (!t.geo_filter) return true;
+        // 좌표 없으면 일단 표시 (군사기지 등 좌표 누락 방어)
+        if (lon == null || lat == null) return true;
+        // 좌표가 geo_filter 지역 중 하나라도 포함되면 표시
+        return isInAnyTheoryRegion(lon, lat, t.geo_filter);
+      });
 
     // 이 이벤트의 이론 태그 cascade_rules + 좌표가 region bbox 안에 있는 모든 룰 수집
     // 두 가지 소스를 합산: (1) 이론 태그 직접 연결, (2) 좌표 기반 자동 매핑
