@@ -56,12 +56,30 @@
 | 6 | south_china_sea_to_lng | 남중국해 → NG=F ↑ | ⏳ |
 | 7 | north_korea_missile_to_krw | 북한 도발 → KRW=X ↑ | ⏳ ACLED 북한 포함 시 |
 | 8 | suez_tension_to_shipping | 수에즈 → ZIM ↑ | ⏳ |
-| 9 | ukraine_conflict_to_wheat | 우크라이나 → ZW=F ↑ | ⏳ |
+| 9 | ukraine_conflict_to_wheat | 우크라이나 → ZW=F ↑ | ✅ 활성 (2026-05-22) |
 | 10 | middle_east_conflict_to_gold | 중동 → GLD ↑ | ⏳ |
 | 11 | korean_tension_to_kospi | 한반도 → ^KS11 ↓ | ⏳ |
 
 추가된 regions: `south_china_sea`, `north_korea`, `suez`, `ukraine`, `middle_east`, `korean_peninsula`
 이론 커버리지: Weaponized Interdependence, A2/AD, Gray Zone, SLOC, Food Security, Safe Haven, Korea Discount
+
+### ✅ 2번째 Cascade Rule 동작 — ukraine_conflict_to_wheat (2026-05-22)
+
+**우크라이나 분쟁 → 밀 선물(ZW=F) 상승** 인과 연쇄 3개 링크 생성.
+
+| trigger 날짜 | sev | ZW=F 반응 | score |
+|---|---|---|---|
+| 2025-04-30 | 100 | +1.88% | 0.63 |
+| 2025-05-01 | 70  | +2.63% | 0.88 |
+| 2025-05-02 | 70  | +2.18% | 0.73 |
+
+진단·수정 내용:
+- 원인 ①: `_TRIGGER_COUNTRIES`에 ukraine 키 없어 ACLED 조회 건너뜀
+- 원인 ②: severity 상위 8개(4/22~25)가 ZW=F 무반응 기간에 집중
+- 수정: ukraine 매핑 추가 + 평가 전략 → 날짜별 최고심각도 1개 샘플링
+  (`_MAX_TRIGGERS_PER_RULE`: 8→15, 30일 창 균일 탐색)
+
+관련 이론: Food Security as Geopolitical Weapon (Patel & Moore 2009)
 
 ### ✅ Theory Panel 완성 (2026-05-22)
 
