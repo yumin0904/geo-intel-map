@@ -46,6 +46,26 @@
   <!-- 우측 슬라이드인 이론 패널 — TheoryPanel.js가 마운트 -->
   <div id="theory-panel" class="theory-panel"></div>
 
+  <!-- 우측 하단 Cascade 그래프 패널 — CascadeGraphView.js가 마운트 -->
+  <!-- bottom: 44px — 타임라인 헤더 바로 위, z-index 1000 (타임라인 위, 이론패널 아래) -->
+  <div id="cascade-graph-panel">
+    <div class="cgraph__header">
+      <span class="cgraph__title">⬡ CASCADE GRAPH</span>
+      <span class="cgraph__count" id="cascade-graph-count">로딩 중…</span>
+      <button id="cascade-graph-fit" class="cgraph__btn" title="전체 그래프 보기">⊞ 전체</button>
+      <button id="cascade-graph-fullscreen" class="cgraph__btn" title="전체화면 전환">⛶</button>
+      <button id="cascade-graph-toggle" class="cgraph__btn">▲</button>
+    </div>
+    <!-- cgraph__body: 그래프(70%) + 이론 패널(30%) — 전체화면 시 flex-row로 분할 -->
+    <div class="cgraph__body">
+      <div id="cascade-graph-cy"></div>
+      <!-- 전체화면 전용 이론 분석 패널 — 일반 모드에서는 display:none -->
+      <div class="cgraph__inner-theory" id="cascade-graph-inner-theory">
+        <p class="cgraph__inner-theory-hint">노드를 클릭하면<br>이론 분석이 표시됩니다.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- 하단 Cascade 타임라인 패널 — TimelineView.js가 마운트 -->
   <div id="timeline-panel">
     <div class="timeline-panel__header">
@@ -69,6 +89,8 @@
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <!-- vis-timeline JS — global `vis` 객체(vis.Timeline, vis.DataSet) 노출 -->
   <script src="https://unpkg.com/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
+  <!-- Cytoscape.js — Cascade 인과 그래프 뷰 (CLAUDE.md 3.4) -->
+  <script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
 
   <!-- 진입점 — Phase 1: LayerManager + LayerPanel / Phase 2: Cascade + Timeline -->
   <script type="module">
@@ -83,6 +105,7 @@
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
     import { TimelineView }         from './src/views/TimelineView.js';
+    import { CascadeGraphView }     from './src/views/CascadeGraphView.js';
 
     const ctrl        = new MapController('map').init();
     const bases       = new MilitaryBasesLayer(ctrl.map, ctrl.eventBus);
@@ -150,6 +173,9 @@
 
     // Phase 2: Cascade 타임라인 — cascade:loaded 이벤트 구독, 하단 패널에 렌더
     new TimelineView(ctrl.eventBus);
+
+    // Phase 2: Cascade 그래프 뷰 — cascade:loaded 재사용, marker:click 연동
+    new CascadeGraphView(ctrl.eventBus);
 
     // ── 분쟁 이벤트 필터 바 핸들러 ──────────────────────────────
     const slider       = document.getElementById('severity-slider');

@@ -16,7 +16,7 @@
 // ── 이론 데이터베이스 ────────────────────────────────────────────────
 // theory_tag → 카드 데이터. 새 이론 추가 시 여기에만 추가하면 됨.
 // reading 링크 원칙: RISS/DBpia 검색 결과 URL 우선 (항상 유효), 고전 원문은 Gutenberg/DOI 직링크.
-const THEORY_DB = {
+export const THEORY_DB = {
 
   gray_zone: {
     name: 'Gray Zone Strategy',
@@ -305,7 +305,7 @@ function isInRegion(lon, lat, ruleId) {
 }
 
 // cascade_rules.yaml rule_id → 한국어 요약 (API 응답 보조)
-const RULE_LABEL = {
+export const RULE_LABEL = {
   bab_el_mandeb_tension_to_oil: '바브엘만데브 → 유가(CL=F)',
   hormuz_tension_to_oil:         '호르무즈 → 유가(CL=F)',
   taiwan_strait_to_tsm:          '대만해협 → TSMC(TSM)',

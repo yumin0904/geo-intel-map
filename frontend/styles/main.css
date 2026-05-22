@@ -1046,3 +1046,124 @@ body:not(.study-mode) .notebook { display: none; }
   color: var(--color-text-secondary);
   font-style: italic;
 }
+
+/* ── Cascade Graph Panel (인과 그래프 뷰, Cytoscape.js) ───────────────── */
+/* 타임라인 헤더(44px) 바로 위에 위치 — 우측 하단 플로팅 패널 */
+#cascade-graph-panel {
+  position: fixed;
+  right: 0;
+  bottom: 44px;
+  width: 480px;
+  height: 44px;     /* 닫힌 상태: 헤더만 노출 */
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--panel-radius) 0 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: height 0.25s ease;
+  z-index: 1000;
+}
+#cascade-graph-panel.is-open {
+  height: 45vh;
+  min-height: 200px;
+}
+
+.cgraph__header {
+  height: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+}
+#cascade-graph-panel.is-open .cgraph__header {
+  border-bottom-color: var(--color-border);
+}
+
+.cgraph__title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+.cgraph__count {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.cgraph__btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: 11px;
+  padding: 2px 7px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.cgraph__btn:hover { background: var(--color-border); }
+
+/* 그래프 + 이론 패널 컨테이너 — 전체화면에서 flex-row로 분할 */
+.cgraph__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+/* Cytoscape 렌더링 영역 */
+#cascade-graph-cy {
+  flex: 1;
+  min-height: 0;
+  background: var(--color-bg);
+}
+
+/* 전체화면 전용 내부 이론 패널 — 일반 모드에서는 숨김 */
+.cgraph__inner-theory {
+  display: none;
+}
+.cgraph__inner-theory-hint {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  text-align: center;
+  padding: 40px 16px;
+  line-height: 1.8;
+}
+
+/* 전체화면 상태 — 모든 패널 위에 그래프 최대화 */
+#cascade-graph-panel.is-fullscreen {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: none;
+  z-index: 9999;
+}
+
+/* 전체화면: 그래프(flex:7) + 이론 패널(flex:3) 좌우 분할 */
+#cascade-graph-panel.is-fullscreen #cascade-graph-cy {
+  flex: 7;
+}
+#cascade-graph-panel.is-fullscreen .cgraph__inner-theory {
+  display: flex;
+  flex-direction: column;
+  flex: 3;
+  min-width: 280px;
+  max-width: 420px;
+  border-left: 1px solid var(--color-border);
+  background: var(--color-surface);
+  overflow-y: auto;
+}
+/* 내부 이론 패널 스크롤바 — TheoryPanel과 동일 스타일 */
+#cascade-graph-panel.is-fullscreen .cgraph__inner-theory::-webkit-scrollbar { width: 5px; }
+#cascade-graph-panel.is-fullscreen .cgraph__inner-theory::-webkit-scrollbar-track { background: var(--color-bg); }
+#cascade-graph-panel.is-fullscreen .cgraph__inner-theory::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }

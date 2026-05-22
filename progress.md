@@ -219,11 +219,24 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 
 ---
 
+### ✅ CascadeGraphView (Cytoscape.js) — 인과 그래프 뷰 (2026-05-23)
+
+- `frontend/src/views/CascadeGraphView.js` 신규 — 집계 양분 그래프(region→ticker)
+- Cytoscape.js `breadthfirst directed` 레이아웃 — 원인(좌) → 결과(우) 배치
+- 17개 elements: 분쟁 지역 5개(타원·빨강) + 시장 지표 6개(다이아몬드·황금) + 엣지 6개
+- `cascade:loaded` EventBus 재사용 (API 이중 호출 없음)
+- 분쟁 마커 클릭 → 해당 region 노드 하이라이트 + 패널 자동 열기
+- **전체화면 토글** (⛶/✕): `100vw×100vh`, z-index 9999, setTimeout 300ms 1회 fit()
+- **전체화면 내부 이론 패널** (70% 그래프 + 30% 이론): Cytoscape 노드 클릭 시
+  글로벌 TheoryPanel 대신 내부 우측 패널에 theory-card 렌더 (기존 CSS 재사용)
+  - `TheoryPanel.js`: `THEORY_DB`, `RULE_LABEL` export 추가
+  - `_buildMiniCard()`: 이론 카드 + 활성 cascade rule 배지 + 추천 자료 + 도서관 팁
+  - 일반 모드 노드 클릭 → 글로벌 TheoryPanel 동작 유지
+
 ### 🔜 다음 작업 (Phase 2)
 
 **대기 중**:
 - 실시간 레이어 (ADS-B / AIS / FIRMS) — 대기 중인 룰들이 자동 활성화
-- CascadeGraphView (Cytoscape) — 인과 그래프 뷰
 - ~~Study Mode 2단계 — 노트 입력창 상시 표시~~ ✅
 
 **Phase 3 예정**:
