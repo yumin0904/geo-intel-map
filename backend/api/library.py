@@ -18,6 +18,7 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
+from services.library import deep_link as _deep_link
 from services.library.deep_link import (
     build_region_index,
     get_theory_link,
@@ -158,5 +159,6 @@ async def get_region_index():
 @router.post("/reindex")
 async def reindex():
     """library/ 디렉토리를 스캔하여 FTS5 인덱스를 재구축한다. 개발용."""
+    _deep_link.reload()          # theory_library.yaml lru_cache 갱신
     result = build_fts_index()
     return result

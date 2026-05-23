@@ -7,16 +7,20 @@ CLAUDE.md 3.2 Rule Book + 3.1 CascadeLink 기준.
 """
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Literal, Optional
+from uuid import uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RuleTrigger(BaseModel):
     """룰의 발동 조건 — 어떤 이벤트가 들어오면 cascade를 검사할지."""
-    source_type: str          # "conflict" | "naval_activity" | ...
+    source_type: str          # "conflict" | "naval_activity" | "chain_signal" | ...
     region: str               # regions.yaml의 region_code (예: "hormuz")
     severity_min: int = 0     # 이 값 이상일 때만 트리거로 인정
+    # Phase 3 체이닝: 이전 단계의 chain_output 값을 이 룰의 입력으로 받을 때 지정
+    chain_input: Optional[str] = None
 
 
 class RuleResponse(BaseModel):
@@ -54,7 +58,7 @@ class CascadeLink(BaseModel):
     CLAUDE.md 3.1 데이터 모델 기준. 시각화 레이어(지도 점선 화살표,
     타임라인, Cytoscape 그래프)가 이 구조를 소비한다.
     """
-    id: str
+    id: str = Field(default_factory=lambda: str(uuid4()))
     source_event_id: str            # 트리거가 된 이벤트 id
     target_event_id: str            # 반응(시장 변동) 이벤트 id
     time_delta_seconds: int
@@ -63,3 +67,9 @@ class CascadeLink(BaseModel):
     rule_id: str | None = None
     evidence: dict                  # 근거: 지역 매칭, 관찰된 변동률 등
     theory_ref: str | None = None   # 관련 이론 한 줄 (학습 노트)
+    # Phase 3: 다단계 체이닝 필드
+    depth: int = 1                          # 1단계=1, 2단계=2, ...
+    parent_link_id: Optional[str] = None    # 체인 트리 구조용
+    chain_output: Optional[str] = None      # 다음 단계 룰의 chain_input과 매핑
+    region_code: Optional[str] = None       # 지역 컨텍스트 (시각화용)
+    target_timestamp: Optional[datetime] = None  # response 이벤트 발생 시각

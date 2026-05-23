@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.cascade import router as cascade_router
 from api.layers import router as layers_router
 from api.library import router as library_router
+from api.sandbox import router as sandbox_router
 from api.study import router as study_router
 from api.version import router as version_router
 
@@ -39,6 +40,7 @@ app.add_middleware(
 app.include_router(layers_router)
 app.include_router(cascade_router)
 app.include_router(library_router)
+app.include_router(sandbox_router)
 app.include_router(study_router)
 app.include_router(version_router)
 

@@ -47,6 +47,9 @@ logger = logging.getLogger(__name__)
 # "날짜별 최고 심각도 1개" 전략을 쓰므로 30일 창 날짜 수(≤30)보다 약간 여유 있게 설정.
 _MAX_TRIGGERS_PER_RULE = 15
 
+# Phase 3: 체이닝 최대 깊이. 룰 100개 환경에서도 안전한 상한.
+_MAX_CHAIN_DEPTH = 4
+
 # region_code별 트리거 → ACLED 조회 국가 매핑. 새 region 추가 시 여기에 등록.
 # 바브엘만데브: 예멘(후티)·지부티·에리트레아가 해협을 둘러쌈.
 _TRIGGER_COUNTRIES: dict[str, list[str]] = {
@@ -133,12 +136,36 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
             events_by_id[trig.id] = trig
             events_by_id[response_event.id] = response_event
 
+    # ── Phase 3: 다단계 체이닝 ──────────────────────────────────────────────────
+    # 1단계 링크 중 chain_output을 가진 것에 한해 후속 룰 평가
+    rules_dict = {r.id: r for r in rules}
+    rules_by_input = _index_rules_by_input(rules)
+    first_level_snapshot = list(links)  # 체이닝 중 links가 변경되므로 스냅샷
+
+    for link in first_level_snapshot:
+        rule = rules_dict.get(link.rule_id or "")
+        if not rule or not rule.chain_output:
+            continue
+        # link 자체에 chain_output 기록 (serialization용)
+        link.chain_output = rule.chain_output
+        descendants = await _evaluate_chain_step(
+            parent_link=link,
+            rules_by_input=rules_by_input,
+            visited_rule_ids={link.rule_id} if link.rule_id else set(),
+            depth=1,
+        )
+        links.extend(descendants)
+
+    chain_count = len(links) - len(first_level_snapshot)
+    logger.info(f"[cascade] 체이닝 링크 {chain_count}개 추가 (총 {len(links)}개)")
+
     return {
         "links": [l.model_dump() for l in links],
         "events": [e.model_dump() for e in events_by_id.values()],
         "metadata": {
             "rule_count": len(rules),
             "link_count": len(links),
+            "chain_count": chain_count,
             "generated": datetime.now(timezone.utc).isoformat(),
         },
     }
@@ -281,6 +308,147 @@ def _pick_military_trigger(
     adjusted = best.model_copy()
     adjusted.timestamp = datetime.now(timezone.utc) - timedelta(hours=window_hours)
     return adjusted
+
+
+# ===================================================================
+# Phase 3 신설: 체이닝 핵심 로직
+# ===================================================================
+
+def _index_rules_by_input(rules: list[CascadeRule]) -> dict[str, list[CascadeRule]]:
+    """chain_input 값을 키로 후속 룰들을 인덱싱.
+
+    예: 'semiconductor_supply_risk' → [chips_act_rule, china_retaliation_rule]
+    룰북 로드 시 1회 호출, 이후 O(1) 룩업.
+    """
+    index: dict[str, list[CascadeRule]] = {}
+    for rule in rules:
+        chain_input = rule.trigger.chain_input
+        if chain_input:
+            index.setdefault(chain_input, []).append(rule)
+    return index
+
+
+async def _evaluate_response(event: Event, rule: CascadeRule) -> dict | None:
+    """단일 룰의 expected_response를 평가하고 결과 dict 또는 None을 반환한다.
+
+    _evaluate_trigger()와 달리 CascadeLink/Event 생성 없이 순수 평가만 담당.
+    체이닝에서 synthetic_event를 입력으로 받을 수 있도록 분리된 함수.
+    """
+    resp = rule.expected_response
+    if resp.source_type != "market":
+        # 현재는 시장 지표 응답만 지원. 향후 정책/외교 응답 추가 시 분기.
+        return None
+
+    result = await asyncio.to_thread(
+        evaluate_response,
+        resp.ticker,
+        resp.direction,
+        event.timestamp,
+        resp.window_hours,
+        resp.threshold_pct,
+    )
+    if result is None or not result["matched"]:
+        return None
+
+    score = min(1.0, abs(result["pct_change"]) / (resp.threshold_pct * 2))
+    target_ts = datetime.fromisoformat(result["extreme_date"])
+
+    return {
+        "target_id": f"{resp.ticker}-{target_ts.isoformat()}",
+        "time_delta": int((target_ts - event.timestamp).total_seconds()),
+        "score": round(score, 2),
+        "target_timestamp": target_ts,
+        "evidence": {
+            "ticker": resp.ticker,
+            "pct_change": result["pct_change"],
+            "threshold_pct": resp.threshold_pct,
+            "direction": resp.direction,
+            "region": rule.trigger.region,
+        },
+    }
+
+
+async def _evaluate_chain_step(
+    parent_link: CascadeLink,
+    rules_by_input: dict[str, list[CascadeRule]],
+    visited_rule_ids: set[str],
+    depth: int,
+) -> list[CascadeLink]:
+    """parent_link의 chain_output을 받아 다음 단계 룰들을 평가.
+
+    재귀적으로 호출되며, _MAX_CHAIN_DEPTH 또는 매칭 룰 부재 시 종료.
+    visited_rule_ids로 사이클 방지 (A→B→A 무한 체인 차단).
+    """
+    if depth >= _MAX_CHAIN_DEPTH:
+        logger.debug(
+            "체이닝 최대 깊이 %d 도달 (parent=%s) — 중단",
+            _MAX_CHAIN_DEPTH,
+            parent_link.id,
+        )
+        return []
+
+    chain_output = parent_link.chain_output
+    if not chain_output:
+        return []
+
+    candidate_rules = rules_by_input.get(chain_output, [])
+    if not candidate_rules:
+        return []
+
+    new_links: list[CascadeLink] = []
+
+    for rule in candidate_rules:
+        if rule.id in visited_rule_ids:
+            logger.warning("체이닝 사이클 감지: rule=%s 건너뜀", rule.id)
+            continue
+
+        # parent_link의 target(시장 지표)이 다음 단계의 가상 트리거가 됨.
+        # 실제 새 이벤트 fetch 대신 "이전 결과를 입력으로" 평가.
+        synthetic_event = Event(
+            id=f"chain-{parent_link.id}",
+            timestamp=parent_link.target_timestamp or datetime.now(timezone.utc),
+            source_type="chain_signal",
+            source_id=parent_link.id,
+            location=(0.0, 0.0),  # 체인 신호는 지리적 좌표 없음
+            region_code=parent_link.region_code,
+            severity=int(parent_link.correlation_score * 100),
+            title=f"Chain: {chain_output}",
+            description=f"이전 단계 {parent_link.rule_id} 결과로부터 파생",
+            payload={"parent_link_id": parent_link.id},
+            theory_tags=[],
+        )
+
+        response = await _evaluate_response(synthetic_event, rule)
+        if response is None:
+            continue
+
+        child_link = CascadeLink(
+            source_event_id=synthetic_event.id,
+            target_event_id=response["target_id"],
+            time_delta_seconds=response["time_delta"],
+            correlation_score=response["score"],
+            link_type="rule",
+            rule_id=rule.id,
+            depth=depth + 1,
+            parent_link_id=parent_link.id,
+            chain_output=rule.chain_output,
+            region_code=synthetic_event.region_code,
+            target_timestamp=response["target_timestamp"],
+            evidence=response["evidence"],
+            theory_ref=rule.theory.reference if rule.theory else None,
+        )
+        new_links.append(child_link)
+
+        # 재귀: 이 자식이 또 다른 chain_output을 갖는다면 계속
+        descendants = await _evaluate_chain_step(
+            child_link,
+            rules_by_input,
+            visited_rule_ids | {rule.id},
+            depth + 1,
+        )
+        new_links.extend(descendants)
+
+    return new_links
 
 
 def _build_response_event(rule: CascadeRule, trigger: Event, result: dict) -> Event:

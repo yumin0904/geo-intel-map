@@ -122,25 +122,6 @@
 
 # ── 4. 인도-태평양 군사 대치 ─────────────────────────────────────────────────
 
-- theory_id: indo_pacific_a2ad
-  display_name: "A2/AD 전략 (반접근·지역거부)"
-  sector_tag: indo_pacific
-  # 제1열도선(오키나와~대만~필리핀)을 중심 좌표로 설정
-  map_focus:
-    lat: 20.0
-    lon: 122.0
-    zoom: 5
-    layers:
-      - military-bases
-      - adsb
-      - naval
-    region_code: south_china_sea
-  related_regions:
-    - taiwan_strait
-    - south_china_sea
-    - east_china_sea
-    - korean_peninsula
-
 - theory_id: indo_pacific_alliance_theory
   display_name: "동맹 이론 (확장 억제·QUAD·AUKUS)"
   sector_tag: indo_pacific
@@ -178,6 +159,73 @@
     - ukraine
     - taiwan_strait
     - korean_peninsula
+
+- theory_id: energy_resource_curse
+  display_name: "자원의 저주 (Resource Curse)"
+  sector_tag: energy
+  map_focus:
+    lat: 26.0
+    lon: 54.0
+    zoom: 5
+    layers:
+      - energy-pipelines
+      - conflict-events
+    region_code: hormuz
+  related_regions:
+    - hormuz
+    - middle_east
+    - bab_el_mandeb
+
+- theory_id: techno_techno_nationalism
+  display_name: "기술 민족주의 (Techno-Nationalism)"
+  sector_tag: techno
+  map_focus:
+    lat: 24.0
+    lon: 121.0
+    zoom: 6
+    layers:
+      - military-bases
+      - adsb
+    region_code: taiwan_strait
+  related_regions:
+    - taiwan_strait
+    - south_china_sea
+    - east_china_sea
+
+- theory_id: indo_pacific_a2ad_strategy
+  display_name: "반접근/지역거부 전략 (A2/AD)"
+  sector_tag: indo_pacific
+  map_focus:
+    lat: 20.0
+    lon: 120.0
+    zoom: 5
+    layers:
+      - military-bases
+      - adsb
+      - naval
+    region_code: south_china_sea
+  related_regions:
+    - taiwan_strait
+    - south_china_sea
+    - east_china_sea
+    - korean_peninsula
+
+- theory_id: gray_zone_gray_zone_strategy
+  display_name: "회색지대 전략 (Gray Zone Strategy)"
+  sector_tag: gray_zone
+  map_focus:
+    lat: 12.0
+    lon: 114.0
+    zoom: 5
+    layers:
+      - conflict-events
+      - naval
+    region_code: south_china_sea
+  related_regions:
+    - south_china_sea
+    - taiwan_strait
+    - east_china_sea
+    - bab_el_mandeb
 
 - theory_id: gray_zone_information_warfare
   display_name: "정보전·인지전 (비전통 안보)"
