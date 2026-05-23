@@ -395,8 +395,8 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 3. [x] backend/api/library.py
 4. [x] frontend/src/core/StateStore.js (library 슬라이스)
 5. [x] frontend/src/views/TheoryLibraryView.js
-6. [ ] backend/services/cascade/sandbox_solver.py
-7. [ ] frontend/src/views/SandboxLabView.js
+6. [x] backend/services/cascade/sandbox_solver.py
+7. [x] frontend/src/views/SandboxLabView.js
 8. [ ] GDELT/RSS/Sanctions
 
 ### ✅ 이론 라이브러리 뷰 완성 (2026-05-23)
@@ -426,3 +426,45 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 - region_index API → TheoryPanel에서 O(1) 이론 조회 (향후 통합)
 
 version.json: 3.0.0 → 3.1.0
+
+### ✅ Sandbox Lab 완성 (2026-05-23)
+
+**구현 파일:**
+- `backend/services/cascade/sandbox_solver.py` 신규
+  - `verify_sandbox_hypothesis()`: 사용자 캔버스 가설을 cascade_rules과 비교
+  - BFS 그래프 매칭: trigger 지역 노드 → response 지표 노드 경로 탐색
+  - 점수 산출: 경로 길이 패널티 + 이론 태그 오버랩
+  - 빠진 노드 진단: 룰에는 있지만 사용자 그래프에 없는 중간 단계 제안
+- `backend/api/sandbox.py` 확장
+  - `POST /api/sandbox/canvases/{canvas_id}/verify` 엔드포인트 추가
+  - 요청: SandboxCanvasFull(노드+엣지)
+  - 응답: total_score, num_matches, confidence_level, gaps, all_matches
+- `frontend/src/views/SandboxLabView.js` 신규
+  - Cytoscape.js 기반 인터랙티브 노드·엣지 캔버스
+  - 기능: 노드 추가(modal), 엣지 그리기(shift+drag), 레이아웃 정렬(cose)
+  - 가설 검증 버튼 → 서버 검증 결과를 우측 패널에 표시
+  - 결과 UI: 점수 원형 게이지, 최고 매칭 규칙, 개선 제안, 전체 매칭 목록
+- `frontend/index.html`
+  - `#sandbox-panel` div 추가, SandboxLabView import + 초기화
+- `frontend/src/panels/LayerPanel.js`
+  - `🔬 분석실` 버튼 추가 (sandbox:toggle emit)
+- `frontend/styles/main.css`
+  - `.sandbox-panel` 슬라이드인 우측 500px 패널 (z-index 1001)
+  - `.cytoscape-container` 그래프 렌더링 영역
+  - `.verification-panel` 검증 결과 표시 영역
+  - `.modal`, `.modal-overlay` 노드 추가 다이얼로그
+
+**작동 흐름:**
+1. LayerPanel "🔬 분석실" 클릭 → `sandbox:toggle` → SandboxLabView 우측 슬라이드
+2. "+ 새로 만들기" → SandboxCanvas 생성 (title, id auto-generated)
+3. "+ 노드" → 모달: label + type 입력 → POST /api/sandbox/canvases/{id}/nodes
+4. Shift+drag → 엣지 연결 (Cytoscape 기본 동작)
+5. "✓ 검증" → GET /api/sandbox/canvases/{id} → POST /verify → 점수 + 매칭 규칙 표시
+
+**점수 산출 알고리즘:**
+- BFS로 trigger region 노드에서 indicator 노드까지 경로 탐색
+- 각 경로마다: depth_penalty(1.0 → 0.85 → 0.7) × theory_overlap(0.7 + 0.3×IOU)
+- 상위 3개 규칙 평균 = total_score
+- 신뢰도: high(2개+ 규칙 ∧ score≥0.7) / medium(1개 ∨ score≥0.5) / low
+
+version.json: 3.1.0 → 3.2.0
