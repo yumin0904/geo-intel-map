@@ -8,11 +8,11 @@
  * - 가설 검증 (서버 검증)
  */
 
-import cytoscape from "https://cdn.jsdelivr.net/npm/cytoscape@3.24.0/dist/cytoscape.min.js";
-import cose from "https://cdn.jsdelivr.net/npm/cytoscape-cose-bilkent@4.1.0/dist/cytoscape-cose-bilkent.min.js";
+import cytoscape from "https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js";
+import dagre from "https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/dist/cytoscape-dagre.min.js";
 
-// cytoscape-cose-bilkent 플러그인 등록
-cytoscape.use(cose);
+// cytoscape-dagre 플러그인 등록
+cytoscape.use(dagre);
 
 export class SandboxLabView {
   constructor(mapController, eventBus) {
@@ -238,7 +238,7 @@ export class SandboxLabView {
           },
         },
       ],
-      layout: { name: "cose" },
+      layout: { name: "dagre" },
       wheelSensitivity: 0.1,
     });
 
@@ -362,7 +362,7 @@ export class SandboxLabView {
   }
 
   runLayout() {
-    this.cy.layout({ name: "cose", animate: true, animationDuration: 500 }).run();
+    this.cy.layout({ name: "dagre", animate: true, animationDuration: 500 }).run();
   }
 
   async verifyHypothesis() {

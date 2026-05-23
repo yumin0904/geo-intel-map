@@ -16,7 +16,7 @@ from dataclasses import dataclass
 
 from models.cascade import CascadeRule
 from models.sandbox import SandboxCanvas, SandboxCanvasFull, SandboxEdge, SandboxNode
-from services.cascade.rule_loader import load_cascade_rules
+from services.cascade.rule_loader import load_rules
 
 
 @dataclass
@@ -50,7 +50,7 @@ def verify_sandbox_hypothesis(canvas: SandboxCanvasFull | dict) -> VerificationR
     3단계: 매칭도 + 이론 일관성 점수 계산
     4단계: 빠진 경로 제안
     """
-    rules = load_cascade_rules()
+    rules = load_rules()
 
     # 사용자 캔버스 구조화
     user_graph = _build_graph(canvas.nodes, canvas.edges)
