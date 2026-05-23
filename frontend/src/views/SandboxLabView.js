@@ -1,454 +1,414 @@
 /**
- * SandboxLabView — 분석실(Sandbox Lab) 노드·엣지 기반 가설 구성 도구.
+ * SandboxLabView — 분석실(Sandbox Lab) 풀스크린 오버레이.
  *
- * Cytoscape.js로 인터랙티브 캔버스 제공:
- * - 노드 추가/삭제 (drag-place)
- * - 엣지 그리기 (shift+drag)
- * - 노드 편집 (더블클릭)
- * - 가설 검증 (서버 검증)
+ * 레이아웃: 좌측 20% 캔버스 목록 | 중앙 60% Cytoscape | 우측 20% 검증 결과
+ * 열기/닫기: EventBus 'sandbox:toggle' 또는 ✕ 버튼
+ *
+ * cytoscape, cytoscape-dagre는 index.html에서 전역 로드됨
  */
 
-// cytoscape, cytoscape-dagre는 index.html에서 전역 로드됨
 const cytoscape = window.cytoscape;
 
 export class SandboxLabView {
-  constructor(mapController, eventBus) {
-    this.map = mapController;
-    this.eventBus = eventBus;
-    this.currentCanvasId = null;
-    this.cy = null; // Cytoscape 인스턴스
-    this.editingNode = null;
+  /**
+   * @param {L.Map}    map
+   * @param {EventBus} eventBus
+   */
+  constructor(map, eventBus) {
+    this._map  = map;
+    this._bus  = eventBus;
+    this._el   = null;
+    this._cy   = null;          // Cytoscape 인스턴스
+    this._open = false;
+    this._currentCanvasId = null;
+    this._canvases = [];
 
-    // DOM 초기화
-    this.initDOM();
-    this.bindEvents();
+    this._mount();
+    this._bindEvents();
   }
 
-  initDOM() {
-    // 메인 패널
-    this.panel = document.getElementById("sandbox-panel") || (() => {
-      const p = document.createElement("div");
-      p.id = "sandbox-panel";
-      p.className = "sandbox-panel";
-      document.body.appendChild(p);
-      return p;
-    })();
+  // ── 마운트 ──────────────────────────────────────────────────────────────────
 
-    this.panel.innerHTML = `
-      <div class="sandbox-header">
-        <h2>🔬 분석실</h2>
-        <div class="sandbox-controls">
-          <select id="canvas-select" class="canvas-select">
-            <option value="">— 새 가설 —</option>
-          </select>
-          <button id="create-canvas-btn" class="btn-primary">+ 새로 만들기</button>
-          <button id="delete-canvas-btn" class="btn-danger" style="display:none">삭제</button>
+  _mount() {
+    this._el = document.getElementById('sandbox-panel');
+    if (!this._el) {
+      console.error('[SandboxLabView] #sandbox-panel 요소 없음');
+      return;
+    }
+    this._el.innerHTML = this._template();
+    this._bindPanelEvents();
+  }
+
+  _template() {
+    return `
+      <div class="sandbox__header">
+        <span class="sandbox__title">🔬 분석실</span>
+        <div class="sandbox__header-actions">
+          <button class="sandbox__new-btn">+ 새 가설</button>
+          <button class="sandbox__close-btn" title="닫기">✕</button>
         </div>
       </div>
 
-      <div class="sandbox-toolbar">
-        <button id="add-node-btn" class="btn-tool" title="노드 추가 (더블클릭)">
-          + 노드
-        </button>
-        <button id="draw-edge-btn" class="btn-tool" title="엣지 그리기 (Shift+Drag)">
-          ↗ 엣지
-        </button>
-        <button id="layout-btn" class="btn-tool">
-          ⚙ 정렬
-        </button>
-        <button id="verify-btn" class="btn-tool btn-accent">
-          ✓ 검증
-        </button>
-        <button id="close-sandbox-btn" class="btn-close">✕</button>
-      </div>
+      <div class="sandbox__body">
 
-      <div id="cytoscape-container" class="cytoscape-container"></div>
+        <!-- 좌측 20%: 캔버스 목록 -->
+        <aside class="sandbox__sidebar">
+          <div class="sandbox__sidebar-title">저장된 가설</div>
+          <div class="sandbox__canvas-list"></div>
 
-      <div id="verification-panel" class="verification-panel" style="display:none">
-        <h3>검증 결과</h3>
-        <div id="verification-result"></div>
+          <div class="sandbox__node-toolbar">
+            <div class="sandbox__sidebar-title" style="margin-top:12px">노드 추가</div>
+            <button class="sandbox__add-node-btn" data-type="event">＋ 사건</button>
+            <button class="sandbox__add-node-btn" data-type="indicator">＋ 지표</button>
+            <button class="sandbox__add-node-btn" data-type="outcome">＋ 결과</button>
+            <div class="sandbox__sidebar-title" style="margin-top:12px">레이아웃</div>
+            <button class="sandbox__layout-btn">⚙ 자동 정렬</button>
+          </div>
+        </aside>
+
+        <!-- 중앙 60%: Cytoscape 그래프 -->
+        <main class="sandbox__graph">
+          <div class="sandbox__graph-hint" id="sandbox-hint">
+            ← 좌측에서 가설을 선택하거나 새로 만드세요.
+          </div>
+          <div id="sandbox-cy" class="sandbox__cy"></div>
+        </main>
+
+        <!-- 우측 20%: 검증 결과 -->
+        <aside class="sandbox__result">
+          <div class="sandbox__sidebar-title">검증 결과</div>
+          <div class="sandbox__result-empty" id="sandbox-result-empty">
+            "✓ 검증" 버튼을 눌러<br>가설을 검증하세요.
+          </div>
+          <div class="sandbox__result-body" id="sandbox-result-body" style="display:none"></div>
+          <button class="sandbox__verify-btn" id="sandbox-verify-btn" disabled>✓ 검증</button>
+        </aside>
+
       </div>
     `;
   }
 
-  bindEvents() {
-    document.getElementById("create-canvas-btn").addEventListener("click", () =>
-      this.createNewCanvas()
-    );
-    document.getElementById("delete-canvas-btn").addEventListener("click", () =>
-      this.deleteCurrentCanvas()
-    );
-    document.getElementById("canvas-select").addEventListener("change", (e) =>
-      this.loadCanvas(e.target.value)
-    );
-    document.getElementById("close-sandbox-btn").addEventListener("click", () =>
-      this.toggle()
-    );
-    document.getElementById("add-node-btn").addEventListener("click", () =>
-      this.showAddNodeDialog()
-    );
-    document.getElementById("draw-edge-btn").addEventListener("click", () =>
-      this.toggleEdgeDrawMode()
-    );
-    document.getElementById("layout-btn").addEventListener("click", () =>
-      this.runLayout()
-    );
-    document.getElementById("verify-btn").addEventListener("click", () =>
-      this.verifyHypothesis()
-    );
+  // ── 이벤트 바인딩 ────────────────────────────────────────────────────────────
 
-    this.eventBus.on("sandbox:toggle", () => this.toggle());
+  _bindPanelEvents() {
+    this._el.querySelector('.sandbox__close-btn')
+      .addEventListener('click', () => this.close());
+
+    this._el.querySelector('.sandbox__new-btn')
+      .addEventListener('click', () => this._createCanvas());
+
+    this._el.querySelectorAll('.sandbox__add-node-btn').forEach(btn => {
+      btn.addEventListener('click', () => this._promptAddNode(btn.dataset.type));
+    });
+
+    this._el.querySelector('.sandbox__layout-btn')
+      .addEventListener('click', () => this._runLayout());
+
+    document.getElementById('sandbox-verify-btn')
+      .addEventListener('click', () => this._verify());
   }
 
-  toggle() {
-    this.panel.classList.toggle("active");
-    if (this.panel.classList.contains("active") && this.cy) {
-      setTimeout(() => this.cy.fit(), 300);
+  _bindEvents() {
+    this._bus.on('sandbox:toggle', () => this._open ? this.close() : this.open());
+  }
+
+  // ── 열기/닫기 ────────────────────────────────────────────────────────────────
+
+  async open() {
+    this._el.classList.add('is-open');
+    this._open = true;
+    await this._loadCanvasList();
+  }
+
+  close() {
+    this._el.classList.remove('is-open');
+    this._open = false;
+  }
+
+  // ── 캔버스 목록 ──────────────────────────────────────────────────────────────
+
+  async _loadCanvasList() {
+    try {
+      const res = await fetch('/api/sandbox/canvases');
+      this._canvases = await res.json();
+    } catch {
+      this._canvases = [];
     }
+    this._renderCanvasList();
   }
 
-  async createNewCanvas() {
-    const title = prompt("가설 이름을 입력하세요:");
-    if (!title) return;
-
-    const response = await fetch("/api/sandbox/canvases", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        hypothesis: "",
-        sector_tag: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }),
-    });
-
-    const canvas = await response.json();
-    this.currentCanvasId = canvas.id;
-    await this.loadCanvasList();
-    await this.loadCanvas(canvas.id);
-    this.initCytoscape(canvas.id, [], []);
-  }
-
-  async deleteCurrentCanvas() {
-    if (!this.currentCanvasId) return;
-    if (!confirm("이 가설을 삭제하시겠습니까?")) return;
-
-    await fetch(`/api/sandbox/canvases/${this.currentCanvasId}`, {
-      method: "DELETE",
-    });
-
-    this.currentCanvasId = null;
-    await this.loadCanvasList();
-    this.cy?.destroy();
-    this.cy = null;
-  }
-
-  async loadCanvasList() {
-    const response = await fetch("/api/sandbox/canvases");
-    const canvases = await response.json();
-
-    const select = document.getElementById("canvas-select");
-    select.innerHTML = '<option value="">— 새 가설 —</option>';
-
-    canvases.forEach((c) => {
-      const opt = document.createElement("option");
-      opt.value = c.id;
-      opt.textContent = c.title;
-      select.appendChild(opt);
-    });
-  }
-
-  async loadCanvas(canvasId) {
-    if (!canvasId) {
-      this.currentCanvasId = null;
-      document.getElementById("delete-canvas-btn").style.display = "none";
+  _renderCanvasList() {
+    const list = this._el.querySelector('.sandbox__canvas-list');
+    if (this._canvases.length === 0) {
+      list.innerHTML = '<div class="sandbox__canvas-empty">가설 없음</div>';
       return;
     }
+    list.innerHTML = this._canvases.map(c => `
+      <div class="sandbox__canvas-item${this._currentCanvasId === c.id ? ' is-active' : ''}"
+           data-id="${c.id}">
+        <span class="sandbox__canvas-name">${c.title}</span>
+        <button class="sandbox__canvas-del" data-id="${c.id}" title="삭제">✕</button>
+      </div>
+    `).join('');
 
-    const response = await fetch(`/api/sandbox/canvases/${canvasId}`);
-    const data = await response.json();
-    this.currentCanvasId = data.canvas.id;
+    list.querySelectorAll('.sandbox__canvas-item').forEach(el => {
+      el.addEventListener('click', e => {
+        if (e.target.classList.contains('sandbox__canvas-del')) return;
+        this._selectCanvas(el.dataset.id);
+      });
+    });
 
-    document.getElementById("delete-canvas-btn").style.display = "inline-block";
-    document.getElementById("canvas-select").value = canvasId;
-
-    this.initCytoscape(canvasId, data.nodes, data.edges);
+    list.querySelectorAll('.sandbox__canvas-del').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        this._deleteCanvas(btn.dataset.id);
+      });
+    });
   }
 
-  initCytoscape(canvasId, nodes, edges) {
-    const container = document.getElementById("cytoscape-container");
-    if (this.cy) this.cy.destroy();
+  async _createCanvas() {
+    const title = prompt('가설 이름:');
+    if (!title?.trim()) return;
 
-    // 노드/엣지 요소 변환
+    const now = new Date().toISOString();
+    const res = await fetch('/api/sandbox/canvases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title.trim(), hypothesis: '', sector_tag: null,
+                             created_at: now, updated_at: now }),
+    });
+    const canvas = await res.json();
+    await this._loadCanvasList();
+    this._selectCanvas(canvas.id);
+  }
+
+  async _deleteCanvas(canvasId) {
+    if (!confirm('이 가설을 삭제하시겠습니까?')) return;
+    await fetch(`/api/sandbox/canvases/${canvasId}`, { method: 'DELETE' });
+    if (this._currentCanvasId === canvasId) {
+      this._currentCanvasId = null;
+      this._cy?.destroy();
+      this._cy = null;
+      document.getElementById('sandbox-hint').style.display = 'flex';
+      document.getElementById('sandbox-cy').style.display = 'none';
+      document.getElementById('sandbox-verify-btn').disabled = true;
+    }
+    await this._loadCanvasList();
+  }
+
+  async _selectCanvas(canvasId) {
+    this._currentCanvasId = canvasId;
+    this._renderCanvasList(); // active 상태 갱신
+
+    const res = await fetch(`/api/sandbox/canvases/${canvasId}`);
+    const data = await res.json();
+    this._initCy(data.nodes, data.edges);
+
+    document.getElementById('sandbox-hint').style.display = 'none';
+    document.getElementById('sandbox-cy').style.display = 'block';
+    document.getElementById('sandbox-verify-btn').disabled = false;
+    this._clearResult();
+  }
+
+  // ── Cytoscape ────────────────────────────────────────────────────────────────
+
+  _initCy(nodes, edges) {
+    const container = document.getElementById('sandbox-cy');
+    this._cy?.destroy();
+
     const elements = [
-      ...nodes.map((n) => ({
-        data: {
-          id: n.id,
-          label: n.label,
-          type: n.node_type,
-          canvasId: n.canvas_id,
-        },
+      ...nodes.map(n => ({
+        data: { id: n.id, label: n.label, type: n.node_type },
         position: { x: n.x, y: n.y },
       })),
-      ...edges.map((e) => ({
-        data: {
-          id: e.id,
-          source: e.source_node_id,
-          target: e.target_node_id,
-          kind: e.kind,
-        },
+      ...edges.map(e => ({
+        data: { id: e.id, source: e.source_node_id, target: e.target_node_id, kind: e.kind },
       })),
     ];
 
-    this.cy = cytoscape({
+    this._cy = cytoscape({
       container,
       elements,
       style: [
         {
-          selector: "node",
+          selector: 'node',
           style: {
-            "background-color": (n) => this.getNodeColor(n.data("type")),
-            label: "data(label)",
-            "text-valign": "center",
-            "text-halign": "center",
-            "font-size": 11,
-            width: 60,
-            height: 60,
-            "border-width": 2,
-            "border-color": "#333",
+            'background-color': ele => this._nodeColor(ele.data('type')),
+            label: 'data(label)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            color: '#e6edf3',
+            'font-size': 11,
+            'text-wrap': 'wrap',
+            'text-max-width': 70,
+            width: 70,
+            height: 70,
+            'border-width': 2,
+            'border-color': '#30363d',
           },
         },
         {
-          selector: "node.selected",
-          style: { "border-color": "#00f", "border-width": 3 },
+          selector: 'node:selected',
+          style: { 'border-color': '#58a6ff', 'border-width': 3 },
         },
         {
-          selector: "edge",
+          selector: 'edge',
           style: {
-            "target-arrow-shape": "triangle",
-            "target-arrow-color": "#999",
-            "line-color": "#999",
+            'target-arrow-shape': 'triangle',
+            'target-arrow-color': '#8b949e',
+            'line-color': '#8b949e',
             width: 2,
-            label: "data(kind)",
-            "font-size": 9,
+            label: 'data(kind)',
+            'font-size': 9,
+            color: '#8b949e',
+            'curve-style': 'bezier',
           },
         },
       ],
-      layout: { name: "dagre" },
+      layout: nodes.length > 0 ? { name: 'dagre' } : { name: 'preset' },
       wheelSensitivity: 0.1,
     });
 
-    // 이벤트
-    this.cy.on("tap", (e) => {
-      if (e.target === this.cy) this.cy.$().removeClass("selected");
-      else e.target.addClass("selected");
-    });
-
-    this.cy.on("dbltap", "node", (e) => this.editNode(e.target.id()));
-    this.cy.on("free", (e) => {
-      if (e.target.isNode()) this.saveNodePosition(e.target.id());
-    });
+    this._cy.on('dbltap', 'node', e => this._editNode(e.target));
+    this._cy.on('free', 'node', e => this._saveNodePosition(e.target));
   }
 
-  getNodeColor(type) {
-    const colors = {
-      event: "#e74c3c", // 빨강: 사건
-      indicator: "#f39c12", // 주황: 지표
-      outcome: "#3498db", // 파랑: 결과
-    };
-    return colors[type] || "#95a5a6";
+  _nodeColor(type) {
+    return { event: '#c0392b', indicator: '#d68910', outcome: '#1a5276' }[type] || '#5d6d7e';
   }
 
-  showAddNodeDialog() {
-    const dialog = document.createElement("div");
-    dialog.className = "modal-overlay";
-    dialog.innerHTML = `
-      <div class="modal">
-        <h3>노드 추가</h3>
-        <input type="text" id="node-label" placeholder="노드 이름 (예: 대만해협 긴장)" />
-        <select id="node-type">
-          <option value="event">사건</option>
-          <option value="indicator">지표</option>
-          <option value="outcome">결과</option>
-        </select>
-        <div class="modal-buttons">
-          <button class="btn-primary" id="confirm-node">추가</button>
-          <button class="btn-secondary" id="cancel-node">취소</button>
-        </div>
-      </div>
-    `;
+  async _promptAddNode(type) {
+    if (!this._currentCanvasId) { alert('먼저 가설을 선택하세요.'); return; }
+    const label = prompt(`${type === 'event' ? '사건' : type === 'indicator' ? '지표' : '결과'} 이름:`);
+    if (!label?.trim()) return;
 
-    document.body.appendChild(dialog);
-
-    document.getElementById("confirm-node").addEventListener("click", () => {
-      const label = document.getElementById("node-label").value;
-      const type = document.getElementById("node-type").value;
-      if (label) {
-        this.addNode(label, type);
-        dialog.remove();
-      }
-    });
-
-    document.getElementById("cancel-node").addEventListener("click", () => {
-      dialog.remove();
-    });
-  }
-
-  async addNode(label, type) {
-    if (!this.currentCanvasId) {
-      alert("먼저 가설을 만들어주세요");
-      return;
-    }
-
+    const now = new Date().toISOString();
     const node = {
-      canvas_id: this.currentCanvasId,
+      canvas_id: this._currentCanvasId,
       node_type: type,
-      label,
-      x: Math.random() * 400 - 200,
-      y: Math.random() * 400 - 200,
-      event_ref: null,
-      region_code: null,
-      theory_tags: [],
-      note: "",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      label: label.trim(),
+      x: Math.random() * 300,
+      y: Math.random() * 200,
+      event_ref: null, region_code: null, theory_tags: [], note: '',
+      created_at: now, updated_at: now,
     };
 
-    const response = await fetch(
-      `/api/sandbox/canvases/${this.currentCanvasId}/nodes`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(node),
-      }
-    );
+    const res = await fetch(`/api/sandbox/canvases/${this._currentCanvasId}/nodes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(node),
+    });
+    const saved = await res.json();
 
-    const saved = await response.json();
+    this._cy.add({ data: { id: saved.id, label: saved.label, type: saved.node_type },
+                   position: { x: saved.x, y: saved.y } });
+  }
 
-    // Cytoscape에 추가
-    this.cy.add({
-      data: {
-        id: saved.id,
-        label: saved.label,
-        type: saved.node_type,
-      },
-      position: { x: saved.x, y: saved.y },
+  _editNode(target) {
+    const label = prompt('노드 이름 변경:', target.data('label'));
+    if (label?.trim()) target.data('label', label.trim());
+  }
+
+  async _saveNodePosition(target) {
+    if (!this._currentCanvasId) return;
+    const pos = target.position();
+    // 위치만 업데이트 — payload 전체를 PUT하는 대신 REPLACE upsert 재사용
+    const now = new Date().toISOString();
+    await fetch(`/api/sandbox/canvases/${this._currentCanvasId}/nodes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: target.id(),
+        canvas_id: this._currentCanvasId,
+        node_type: target.data('type'),
+        label: target.data('label'),
+        x: pos.x, y: pos.y,
+        event_ref: null, region_code: null, theory_tags: [], note: '',
+        created_at: now, updated_at: now,
+      }),
     });
   }
 
-  editNode(nodeId) {
-    const node = this.cy.getElementById(nodeId);
-    const label = prompt("노드 이름 변경:", node.data("label"));
-    if (label) {
-      node.data("label", label);
-      // 서버 업데이트 (간단화: 정보는 캔버스 자체에만 저장)
-    }
+  _runLayout() {
+    this._cy?.layout({ name: 'dagre', animate: true, animationDuration: 400 }).run();
   }
 
-  toggleEdgeDrawMode() {
-    // Shift+drag로 엣지 그리기 (Cytoscape 기본 에할손들러 사용)
-    alert("Shift+클릭&드래그로 엣지를 그립니다");
-  }
+  // ── 가설 검증 ────────────────────────────────────────────────────────────────
 
-  async saveNodePosition(nodeId) {
-    if (!this.currentCanvasId) return;
-    const node = this.cy.getElementById(nodeId);
-    const pos = node.position();
-    // 위치 저장 (간단화: fetch 호출 생략)
-  }
+  async _verify() {
+    if (!this._currentCanvasId) return;
 
-  runLayout() {
-    this.cy.layout({ name: "dagre", animate: true, animationDuration: 500 }).run();
-  }
+    const btn = document.getElementById('sandbox-verify-btn');
+    btn.textContent = '검증 중…';
+    btn.disabled = true;
 
-  async verifyHypothesis() {
-    if (!this.currentCanvasId) {
-      alert("먼저 가설을 만들어주세요");
-      return;
-    }
+    try {
+      const res = await fetch(`/api/sandbox/canvases/${this._currentCanvasId}`);
+      const canvasFull = await res.json();
 
-    // 현재 그래프 상태 조회
-    const response = await fetch(
-      `/api/sandbox/canvases/${this.currentCanvasId}`
-    );
-    const canvasFull = await response.json();
-
-    // 검증 호출
-    const verifyResponse = await fetch(
-      `/api/sandbox/canvases/${this.currentCanvasId}/verify`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const vRes = await fetch(`/api/sandbox/canvases/${this._currentCanvasId}/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(canvasFull),
-      }
-    );
-
-    const result = await verifyResponse.json();
-    this.showVerificationResult(result);
+      });
+      const result = await vRes.json();
+      this._renderResult(result);
+    } catch (err) {
+      console.error('[SandboxLabView] 검증 실패:', err);
+    } finally {
+      btn.textContent = '✓ 검증';
+      btn.disabled = false;
+    }
   }
 
-  showVerificationResult(result) {
-    const panel = document.getElementById("verification-panel");
-    const resultDiv = document.getElementById("verification-result");
+  _clearResult() {
+    document.getElementById('sandbox-result-empty').style.display = 'block';
+    document.getElementById('sandbox-result-body').style.display = 'none';
+  }
 
-    const html = `
-      <div class="result-score">
-        <div class="score-circle" style="opacity: ${Math.max(0.3, result.total_score)}">
-          ${(result.total_score * 100).toFixed(0)}
-        </div>
-        <div class="score-text">
-          <p><strong>${result.confidence_level === "high" ? "✓ 높은" : result.confidence_level === "medium" ? "◐ 중간" : "✗ 낮은"} 신뢰도</strong></p>
-          <p>${result.num_matches}개 규칙 매칭</p>
+  _renderResult(result) {
+    document.getElementById('sandbox-result-empty').style.display = 'none';
+    const body = document.getElementById('sandbox-result-body');
+    body.style.display = 'block';
+
+    const pct     = Math.round(result.total_score * 100);
+    const confMap = { high: '✅ 높음', medium: '◐ 중간', low: '✗ 낮음' };
+    const conf    = confMap[result.confidence_level] || result.confidence_level;
+
+    body.innerHTML = `
+      <div class="sandbox__score">
+        <div class="sandbox__score-circle"
+             style="--score-pct:${pct}">${pct}</div>
+        <div class="sandbox__score-meta">
+          <strong>${conf}</strong><br>
+          ${result.num_matches}개 규칙 매칭
         </div>
       </div>
 
-      ${
-        result.top_match
-          ? `
-        <div class="top-match">
-          <h4>⭐ 최고 매칭</h4>
-          <p><strong>${result.top_match.rule_name}</strong></p>
-          <p>점수: ${(result.top_match.match_score * 100).toFixed(0)}%</p>
-          <p>이론: ${result.top_match.theory_framework}</p>
-          ${
-            result.top_match.missing_nodes.length > 0
-              ? `<p class="missing">❌ ${result.top_match.missing_nodes[0]}</p>`
-              : ""
-          }
-        </div>
-      `
-          : ""
-      }
+      ${result.top_match ? `
+        <div class="sandbox__match-card">
+          <div class="sandbox__match-label">⭐ 최고 매칭</div>
+          <div class="sandbox__match-name">${result.top_match.rule_name}</div>
+          <div class="sandbox__match-score">${Math.round(result.top_match.match_score * 100)}%</div>
+          <div class="sandbox__match-theory">${result.top_match.theory_framework}</div>
+          ${result.top_match.missing_nodes.map(m =>
+            `<div class="sandbox__match-gap">❌ ${m}</div>`).join('')}
+        </div>` : ''}
 
-      ${
-        result.gaps.length > 0
-          ? `
-        <div class="gaps">
-          <h4>💡 개선 제안</h4>
-          <ul>
-            ${result.gaps.map((g) => `<li>${g}</li>`).join("")}
-          </ul>
-        </div>
-      `
-          : ""
-      }
+      ${result.gaps.length > 0 ? `
+        <div class="sandbox__gaps">
+          <div class="sandbox__sidebar-title">💡 개선 제안</div>
+          ${result.gaps.map(g => `<div class="sandbox__gap-item">${g}</div>`).join('')}
+        </div>` : ''}
 
-      <div class="all-matches">
-        <h4>모든 매칭 (${result.all_matches.length})</h4>
-        ${result.all_matches
-          .map(
-            (m) =>
-              `<div class="match-item">
+      <div class="sandbox__all-matches">
+        <div class="sandbox__sidebar-title">전체 매칭 (${result.all_matches.length})</div>
+        ${result.all_matches.map(m => `
+          <div class="sandbox__match-row">
             <span>${m.rule_name}</span>
-            <span class="score">${(m.match_score * 100).toFixed(0)}%</span>
-          </div>`
-          )
-          .join("")}
+            <span class="sandbox__match-pct">${Math.round(m.match_score * 100)}%</span>
+          </div>`).join('')}
       </div>
     `;
-
-    resultDiv.innerHTML = html;
-    panel.style.display = "block";
   }
 }
