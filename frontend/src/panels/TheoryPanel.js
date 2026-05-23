@@ -13,6 +13,8 @@
  *   3. 학부 수준 — 대학원 전문 논문보다 정책 브리핑·단행본 우선
  */
 
+import { api } from '../services/api.js';
+
 // ── 이론 데이터베이스 ────────────────────────────────────────────────
 // theory_tag → 카드 데이터. 새 이론 추가 시 여기에만 추가하면 됨.
 // reading 링크 원칙: RISS/DBpia 검색 결과 URL 우선 (항상 유효), 고전 원문은 Gutenberg/DOI 직링크.
@@ -438,7 +440,7 @@ export class TheoryPanel {
 
   async _loadCascadeLinks() {
     try {
-      const data = await fetch('/api/cascade/links').then(r => r.json());
+      const data = await api.get('/api/cascade/links');
       this._cascadeLinks = data.links ?? [];
     } catch {
       this._cascadeLinks = [];
