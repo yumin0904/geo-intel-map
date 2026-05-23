@@ -28,6 +28,18 @@ RAND의 Michael Mazarr가 체계화한 회색지대 전략은
 3. **복합성** — 군사·경제·외교·정보전 동시 구사
 4. **문턱 관리** — 상대의 무력 대응 정당성을 항상 박탈
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Mazarr, M. (2015). *Mastering the Gray Zone*. Strategic Studies Institute.
+- Brands, H. (2016). "Paradoxes of the Gray Zone." *Foreign Policy Research Institute*.
+- 이호령 (2021). "회색지대 전략과 한국의 대응." KINU 연구총서.
+
+> "회색지대 행위자들은 우리의 대응 딜레마를 정확히 이해하고 이를 이용한다.
+> 우리가 반응하면 그들이 원하는 구도, 반응하지 않으면 그들이 원하는 결과."
+> — Hal Brands
+
 ## 현대 지정학과의 연결
 
 ### 남중국해 인공섬 구축

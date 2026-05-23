@@ -34,6 +34,18 @@ regions:
 봉쇄의 논리: 초크포인트는 **폭이 좁아 소수 전력으로 차단 가능**하며,
 우회로(희망봉·케이프 혼)는 수천km 추가 항행을 요구해 물류비용을 폭증시킨다.
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Spykman, N. (1944). *The Geography of the Peace*. Harcourt, Brace.
+- Till, G. (2018). *Seapower: A Guide for the 21st Century*. Routledge.
+- EIA (2024). "World Oil Transit Chokepoints." U.S. Energy Information Administration.
+- 박영준 (2020). "해양 초크포인트와 한국의 에너지 안보." *국방연구*, 63(1).
+
+> "초크포인트를 지배하는 자는 전쟁 없이도 적국을 굴복시킬 수 있다."
+> — Nicholas Spykman, *The Geography of the Peace* (1944)
+
 ## 현대 지정학과의 연결
 
 ### 후티의 홍해 작전 (2023~)

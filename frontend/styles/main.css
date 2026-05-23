@@ -1304,56 +1304,68 @@ body:not(.study-mode) .notebook { display: none; }
   backdrop-filter: blur(2px);
 }
 
-/* ── Phase 3: 이론 라이브러리 패널 ──────────────────────────────────────── */
+/* ── Phase 3: 이론 라이브러리 풀스크린 오버레이 ──────────────────────────── */
 
 .library-panel {
   position: fixed;
-  top: 0;
-  right: -380px;
-  width: 380px;
-  height: 100vh;
-  background: var(--color-surface);
-  border-left: 1px solid var(--color-border);
-  z-index: 1002; /* theory-panel(1001)보다 위 */
-  display: flex;
+  inset: 0;
+  z-index: 2000;
+  display: none;
   flex-direction: column;
-  transition: right 0.25s ease;
-  overflow: hidden;
+  background: rgba(13, 17, 23, 0.97);
+  backdrop-filter: blur(4px);
 }
-.library-panel.is-open { right: 0; }
+.library-panel.is-open { display: flex; }
 
 /* 헤더 */
-.lib-header {
+.lib__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 0 20px;
+  height: 48px;
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
-.lib-header__title {
-  font-size: 12px;
+.lib__header-title {
+  font-size: 13px;
   font-family: var(--font-mono);
   font-weight: 700;
   color: #ffd700;
   letter-spacing: 0.5px;
 }
-.lib-close {
+.lib__close {
   background: none;
   border: none;
   color: var(--color-text-secondary);
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
-  line-height: 1;
-  padding: 2px 4px;
-  border-radius: 3px;
+  padding: 4px 6px;
+  border-radius: 4px;
   transition: color 0.15s, background 0.15s;
 }
-.lib-close:hover { color: var(--color-text-primary); background: var(--color-border); }
+.lib__close:hover { color: var(--color-text-primary); background: var(--color-border); }
 
-/* 검색 */
+/* 바디 — 2컬럼 */
+.lib__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── 좌측 30%: 목록 사이드바 ────────────────────────────────────── */
+.lib__sidebar {
+  width: 30%;
+  min-width: 260px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
 .lib-search {
-  padding: 8px 14px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
@@ -1365,14 +1377,13 @@ body:not(.study-mode) .notebook { display: none; }
   color: var(--color-text-primary);
   font-size: 11px;
   font-family: var(--font-mono);
-  padding: 5px 8px;
+  padding: 6px 10px;
   box-sizing: border-box;
   outline: none;
 }
 .lib-search__input:focus { border-color: var(--color-accent); }
 .lib-search__input::placeholder { color: var(--color-text-secondary); }
 
-/* 섹터 탭 */
 .lib-sectors {
   display: flex;
   flex-wrap: wrap;
@@ -1401,14 +1412,13 @@ body:not(.study-mode) .notebook { display: none; }
   background: rgba(255,215,0,0.08);
 }
 
-/* 목록 */
 .lib-list {
   flex: 1;
   overflow-y: auto;
   padding: 8px 10px;
 }
 .lib-list::-webkit-scrollbar       { width: 5px; }
-.lib-list::-webkit-scrollbar-track  { background: var(--color-bg); }
+.lib-list::-webkit-scrollbar-track  { background: transparent; }
 .lib-list::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 3px; }
 
 .lib-loading, .lib-empty {
@@ -1425,10 +1435,15 @@ body:not(.study-mode) .notebook { display: none; }
   border: 1px solid var(--color-border);
   border-radius: var(--panel-radius);
   padding: 10px 12px;
-  margin-bottom: 8px;
-  transition: border-color 0.15s;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
 }
 .lib-card:hover { border-color: var(--color-text-secondary); }
+.lib-card.is-active {
+  border-color: #ffd700;
+  background: rgba(255,215,0,0.05);
+}
 
 .lib-card__header {
   display: flex;
@@ -1448,7 +1463,7 @@ body:not(.study-mode) .notebook { display: none; }
   flex-shrink: 0;
 }
 .lib-card__name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--color-text-primary);
   line-height: 1.3;
@@ -1460,33 +1475,219 @@ body:not(.study-mode) .notebook { display: none; }
   margin-bottom: 4px;
 }
 .lib-card__summary {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin: 3px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── 우측 70%: 상세 뷰 ──────────────────────────────────────────── */
+.lib__detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lib__detail-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  opacity: 0.5;
+}
+
+.lib__detail-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 상단: 이론명 + 배지 + 지도 버튼 */
+.lib__detail-header {
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.lib__detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.lib__detail-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+.lib__detail-meta {
+  margin-top: 6px;
   font-size: 11px;
   color: var(--color-text-secondary);
-  line-height: 1.5;
-  margin: 4px 0;
-}
-.lib-card__layers {
-  font-size: 9px;
-  color: var(--color-text-secondary);
   font-family: var(--font-mono);
-  margin-bottom: 6px;
-  opacity: 0.7;
 }
-.lib-card__focus-btn {
-  display: inline-block;
-  margin-top: 4px;
-  padding: 3px 10px;
-  font-size: 10px;
+.lib__focus-btn {
+  padding: 5px 14px;
+  font-size: 11px;
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--color-accent);
   background: transparent;
   border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.lib__focus-btn:hover { background: rgba(88,166,255,0.12); }
+
+/* 중앙: .md 본문 스크롤 영역 */
+.lib__detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px;
+}
+.lib__detail-body::-webkit-scrollbar       { width: 6px; }
+.lib__detail-body::-webkit-scrollbar-track  { background: transparent; }
+.lib__detail-body::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 3px; }
+
+/* 하단: AI 버튼 + 결과 */
+.lib__detail-footer {
+  border-top: 1px solid var(--color-border);
+  padding: 12px 24px;
+  flex-shrink: 0;
+}
+
+/* ── marked.js 렌더링 (lib__detail-body 내부) ────────────────────── */
+.lib-detail-md {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--color-text-primary, #e6edf3);
+}
+.lib-detail-md h2 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #58a6ff;
+  border-bottom: 1px solid var(--color-border, #30363d);
+  padding-bottom: 5px;
+  margin: 24px 0 10px;
+}
+.lib-detail-md h2:first-child { margin-top: 0; }
+.lib-detail-md h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary, #e6edf3);
+  margin: 16px 0 8px;
+}
+.lib-detail-md p    { margin: 0 0 10px; }
+.lib-detail-md ul,
+.lib-detail-md ol   { padding-left: 20px; margin: 0 0 10px; }
+.lib-detail-md li   { margin-bottom: 4px; }
+.lib-detail-md blockquote {
+  border-left: 3px solid #ffd700;
+  padding: 8px 14px;
+  margin: 10px 0;
+  color: var(--color-text-secondary, #8b949e);
+  font-style: italic;
+  font-size: 12px;
+  background: rgba(255,215,0,0.03);
+}
+.lib-detail-md table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 10px 0;
+}
+.lib-detail-md th {
+  background: rgba(255,255,255,0.06);
+  padding: 6px 10px;
+  text-align: left;
+  border: 1px solid var(--color-border, #30363d);
+}
+.lib-detail-md td {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border, #30363d);
+}
+.lib-detail-md code {
+  background: rgba(255,255,255,0.08);
   border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+.lib-detail-md strong { color: #e6edf3; }
+.lib-detail-md em     { color: #a5d6ff; }
+.lib-detail-md a      { color: #58a6ff; text-decoration: none; }
+.lib-detail-md a:hover { text-decoration: underline; }
+.lib-detail-md hr {
+  border: none;
+  border-top: 1px solid var(--color-border, #30363d);
+  margin: 16px 0;
+}
+
+/* ── AI 설명 ────────────────────────────────────────────────────── */
+.lib-ai-btn {
+  padding: 8px 20px;
+  background: rgba(88, 166, 255, 0.08);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  border-radius: 5px;
+  color: #58a6ff;
+  font-size: 12px;
   cursor: pointer;
   transition: background 0.15s;
 }
-.lib-card__focus-btn:hover { background: rgba(88,166,255,0.12); }
+.lib-ai-btn:hover:not(:disabled) { background: rgba(88,166,255,0.15); }
+.lib-ai-btn:disabled { opacity: 0.5; cursor: default; }
+
+.lib-ai-result {
+  margin-top: 12px;
+  max-height: 260px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.lib-ai-result::-webkit-scrollbar      { width: 4px; }
+.lib-ai-result::-webkit-scrollbar-track { background: transparent; }
+.lib-ai-result::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+
+.lib-ai-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.lib-ai-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.lib-ai-badge--gemini { background: rgba(66,133,244,0.2); color: #4285f4; }
+.lib-ai-badge--cached { background: rgba(52,199,89,0.2);  color: #34c759; }
+
+.lib-ai-content { color: var(--color-text-primary, #e6edf3); font-size: 12px; line-height: 1.7; }
+.lib-ai-content h2 { font-size: 12px; font-weight: 700; color: #58a6ff; margin: 10px 0 5px; }
+.lib-ai-content p  { margin: 0 0 6px; }
+.lib-ai-content ul { padding-left: 16px; margin: 0 0 6px; }
+.lib-ai-content li { margin-bottom: 2px; }
+.lib-ai-content strong { color: #e6edf3; }
+
+.lib-ai-cursor {
+  display: inline-block;
+  animation: blink 0.8s step-end infinite;
+  color: #58a6ff;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.lib-ai-loading { color: var(--color-text-secondary, #8b949e); font-size: 12px; }
+.lib-ai-error   { color: #f85149; font-size: 12px; }
 
 /* ── Sandbox Lab Fullscreen Overlay ──────────────────────────────── */
 .sandbox-panel {

@@ -27,6 +27,19 @@ Albert Hirschman의 1945년 저작 *National Power and the Structure of Foreign 
 3. **위협의 신뢰성**: 실제 차단보다 **차단 가능성**만으로도 외교적 양보를 끌어낼 수 있음
 4. **역반응 위험**: 지나친 무기화는 상대방의 다변화 투자를 촉진해 장기 시장 손실 유발
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Hirschman, A.O. (1945). *National Power and the Structure of Foreign Trade*. University of California Press.
+- Drezner, D.W. (2015). "Targeted Sanctions in a World of Global Finance." *International Interactions*, 41(4).
+- Mastanduno, M. (2019). "Hegemony and Fear: The National Security Determinants of Weaponized Interdependence." *Henry Farrell & Abraham Newman (eds.).*
+- 이재승 (2022). "러시아-우크라이나 전쟁과 에너지 무기화." KIEP 세계경제 이슈.
+
+> "무역 관계는 단순히 경제적 교류가 아니다.
+> 그것은 권력 관계의 표현이며, 의존하는 자는 약자가 된다."
+> — Albert Hirschman, *National Power and the Structure of Foreign Trade* (1945)
+
 ## 현대 지정학과의 연결
 
 ### 러시아의 유럽 가스 무기화

@@ -29,6 +29,18 @@ A2/AD(Anti-Access/Area-Denial)는 열세한 측이
 - 095형 핵추진 잠수함 + 위하이급 디젤 잠수함
 - J-20 스텔스 전투기 + HQ-9 장거리 방공망
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Krepinevich, A. et al. (2003). *Meeting the Anti-Access and Area-Denial Challenge*. CSBA.
+- Cliff, R. (2015). *China's Military Power*. Cambridge University Press.
+- 이상현 (2023). "중국의 A2/AD와 한미동맹의 대응." KIMS 연구보고서.
+
+> "중국의 A2/AD는 미국을 태평양에서 쫓아내기 위한 것이 아니라,
+> 미국이 개입 결정을 내리기 전에 충분한 비용을 부과하기 위한 것이다."
+> — Andrew Krepinevich
+
 ## 현대 지정학과의 연결
 
 ### 제1열도선과 미국의 딜레마

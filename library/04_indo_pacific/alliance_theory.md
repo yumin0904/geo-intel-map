@@ -26,6 +26,17 @@ Glenn Snyder의 **동맹 안보 딜레마**:
 - **방기(Abandonment)**: 동맹국이 위기 시 자국을 버리는 위험
 - 두 위험은 역비례 — 동맹을 강화할수록 연루 위험 증가, 약화할수록 방기 위험 증가
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Walt, S. (1987). *The Origins of Alliances*. Cornell University Press.
+- Snyder, G. (1997). *Alliance Politics*. Cornell University Press.
+- 김태현 (2019). "한미동맹의 연루-방기 딜레마." *국제정치논총*, 59(4).
+
+> "동맹은 공통 이익이 아니라 공통 위협을 바탕으로 형성된다."
+> — Stephen Walt, *The Origins of Alliances* (1987)
+
 ## 현대 지정학과의 연결
 
 ### 미·일·한 삼각동맹의 딜레마

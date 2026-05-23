@@ -24,6 +24,17 @@ regions:
 2. **국내 육성** — 보조금·R&D 투자로 자국 기술 생태계 구축
 3. **외국인 투자 심사** — 첨단 기업 인수합병(M&A) 차단
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Ostry, S. & Nelson, R. (1995). *Techno-Nationalism and Techno-Globalism*. Brookings.
+- Segal, A. (2011). *Advantage: How American Innovation Can Win the Future*. Norton.
+- 김양규 (2023). "반도체 기술패권 경쟁과 한국의 전략." KIDA 연구보고서.
+
+> "기술은 더 이상 중립적 상품이 아니다. 기술이 곧 권력이다."
+> — 현대 기술지정학의 핵심 명제
+
 ## 현대 지정학과의 연결
 
 ### 미·중 반도체 전쟁

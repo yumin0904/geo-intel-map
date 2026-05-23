@@ -27,6 +27,17 @@ Farrell & Newman은 2019년 *International Security*에 발표한 논문에서
 핵심 논리: 경제적 상호의존이 반드시 평화를 보장하지 않는다.
 오히려 의존도가 높은 국가는 더 큰 강압에 노출된다.
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Farrell, H. & Newman, A. (2019). "Weaponized Interdependence." *International Security*, 44(1).
+- Drezner, D. (2015). *The System Worked*. Oxford University Press.
+- 이승주 (2021). "경제적 상호의존과 국가안보." *국제정치논총*, 61(2). (EAI)
+
+> "경제적 상호의존은 평화의 보증이 아니라 강압의 수단이 될 수 있다."
+> — Farrell & Newman (2019)
+
 ## 현대 지정학과의 연결
 
 ### 러시아의 가스 무기화

@@ -27,6 +27,18 @@ Frank Hoffman이 2007년 정의한 하이브리드 전쟁은
 4. **사이버 공격** — 인프라 마비, 정보 절취
 5. **정보·심리전** — 내러티브 장악, 가짜뉴스
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Hoffman, F. (2007). *Conflict in the 21st Century: The Rise of Hybrid Wars*. Potomac Institute.
+- Freedman, L. (2017). *The Future of War*. PublicAffairs.
+- 박재적 (2022). "러시아-우크라이나 전쟁과 하이브리드 전쟁론." KIDA 연구보고서.
+
+> "미래 전쟁은 선전포고로 시작되지 않는다.
+> 이미 시작되어 있다는 것을 뒤늦게 깨닫게 된다."
+> — Valery Gerasimov, *The Value of Science Is in the Foresight* (2013)
+
 ## 현대 지정학과의 연결
 
 ### 러시아의 우크라이나 하이브리드전

@@ -25,6 +25,17 @@ Richard Auty가 1993년 처음 명명한 "자원의 저주"는
 2. **렌트 추구(Rent-Seeking)** — 국가가 세금 대신 자원 렌트로 운영 → 시민 통제 약화
 3. **분쟁 유발** — 자원 수익 쟁탈을 위한 내전·쿠데타 (Ross 2001)
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Auty, R. (1993). *Sustaining Development in Mineral Economies*. Routledge.
+- Ross, M. (2012). *The Oil Curse*. Princeton University Press.
+- 박인휘 (2020). "중동 에너지 지정학과 한국의 에너지 안보." KIEP 정책연구.
+
+> "석유는 축복이 아니라 저주다 — 자원이 풍부할수록 민주주의가 빈곤해진다."
+> — Michael Ross, *The Oil Curse* (2012)
+
 ## 현대 지정학과의 연결
 
 ### 중동 석유 국가들

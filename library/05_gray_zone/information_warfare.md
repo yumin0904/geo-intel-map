@@ -29,6 +29,19 @@ P.W. Singer & Brooking의 **LikeWar** 개념:
 소셜미디어 알고리즘이 바이럴 콘텐츠를 증폭시키는 구조를 이용해
 저비용으로 수백만 명의 인식을 조작할 수 있다.
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Rid, T. (2020). *Active Measures: The Secret History of Disinformation and Political Warfare*. FSG.
+- Singer, P.W. & Brooking, E.T. (2018). *LikeWar: The Weaponization of Social Media*. Eamon Dolan.
+- NATO (2021). "Cognitive Warfare." NATO Innovation Hub Report.
+- 장노순 (2023). "북한의 사이버·정보전과 한국의 대응." KIDA 연구보고서.
+
+> "정보전의 목표는 진실을 퍼뜨리는 것이 아니라
+> 진실과 거짓의 경계를 흐려 상대방이 아무것도 믿지 못하게 만드는 것이다."
+> — Thomas Rid, *Active Measures* (2020)
+
 ## 현대 지정학과의 연결
 
 ### 러시아의 우크라이나 전 인지전

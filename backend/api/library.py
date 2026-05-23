@@ -17,8 +17,10 @@ import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import StreamingResponse
 
 from services.library import deep_link as _deep_link
+from services.library.ai_explain import stream_ai_explain
 from services.library.deep_link import (
     build_region_index,
     get_theory_link,
@@ -162,3 +164,37 @@ async def reindex():
     _deep_link.reload()          # theory_library.yaml lru_cache 갱신
     result = build_fts_index()
     return result
+
+
+@router.post("/theories/{theory_id}/ai-explain")
+async def ai_explain(theory_id: str):
+    """
+    Gemini 1.5 Flash로 이론의 추가 사례 + 현재 지정학적 함의를 스트리밍 생성.
+
+    응답: text/event-stream (SSE)
+      data: {"text": "...", "done": false}   — 누적 텍스트 청크
+      data: {"done": true, "cached": bool}   — 완료 신호
+
+    GEMINI_API_KEY 없으면 fallback 안내 메시지를 동일 포맷으로 반환.
+    동일 theory_id 재호출 시 캐시에서 즉시 반환 (API 비용 0).
+    """
+    link = get_theory_link(theory_id)
+    if not link:
+        raise HTTPException(404, f"이론을 찾을 수 없습니다: {theory_id}")
+
+    db_row = get_db_theory(theory_id)
+    summary = (db_row.get("summary") or "") if db_row else link.display_name
+
+    return StreamingResponse(
+        stream_ai_explain(
+            theory_id=theory_id,
+            display_name=link.display_name,
+            summary=summary,
+            sector_tag=link.sector_tag,
+        ),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",   # nginx 버퍼링 비활성화
+        },
+    )

@@ -7,6 +7,7 @@
 const BASE_URL = 'http://localhost:8000';
 
 export const api = {
+  BASE_URL,
   /**
    * GET 요청 — JSON 파싱 후 반환
    * @param {string} path - '/api/layers/military-bases' 등

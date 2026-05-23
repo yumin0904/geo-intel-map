@@ -34,6 +34,20 @@ A2/AD(Anti-Access / Area-Denial, 반접근·지역거부)는
 | DF-17 (극초음속) | 2,000km | 지상 기지 |
 | 095형 핵추진 잠수함 | 무제한 | 수상함대 |
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Krepinevich, A. et al. (2010). *Why AirSea Battle?* CSBA.
+- Friedberg, A. (2011). *A Contest for Supremacy*. W. W. Norton.
+- van Tol, J. et al. (2010). *AirSea Battle: A Point-of-Departure Operational Concept*. CSBA.
+- 이상현 (2023). "중국의 A2/AD와 한미동맹." KIMS 연구보고서.
+
+> "A2/AD의 목표는 미국을 태평양에서 영구 추방하는 것이 아니다.
+> 미국이 개입 결정을 내리기 전에 충분한 비용을 치르게 만들어
+> 개입 의지 자체를 꺾는 것이다."
+> — Aaron Friedberg, *A Contest for Supremacy* (2011)
+
 ## 현대 지정학과의 연결
 
 ### 제1열도선과 미국의 딜레마

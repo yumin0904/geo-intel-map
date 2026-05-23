@@ -28,6 +28,18 @@ regions:
 - 러시아 루넷(Runet): 외부 트래픽 차단 가능한 자체 인터넷 구축
 - 이란 할랄넷: 국가 통제 내부망
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- MacKinnon, R. (2012). *Consent of the Networked*. Basic Books.
+- Morozov, E. (2011). *The Net Delusion*. PublicAffairs.
+- 배영자 (2022). "사이버 공간의 지정학과 디지털 권위주의." EAI 이슈브리핑.
+
+> "인터넷은 자유의 도구가 될 수도, 통제의 도구가 될 수도 있다.
+> 문제는 누가 인프라를 소유하느냐다."
+> — Rebecca MacKinnon, *Consent of the Networked* (2012)
+
 ## 현대 지정학과의 연결
 
 ### 화웨이 5G 배제 논쟁

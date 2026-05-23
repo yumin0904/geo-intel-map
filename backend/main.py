@@ -3,6 +3,8 @@ geo-intel-map 백엔드 진입점 (Entry Point)
 FastAPI 앱을 초기화하고 기본 엔드포인트를 등록한다.
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -10,8 +12,17 @@ from api.cascade import router as cascade_router
 from api.layers import router as layers_router
 from api.library import router as library_router
 from api.sandbox import router as sandbox_router
+from api.sandbox import seed_tutorial_canvas
 from api.study import router as study_router
 from api.version import router as version_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """앱 시작 시 sandbox.db가 비어있으면 튜토리얼 캔버스를 자동 생성한다."""
+    seed_tutorial_canvas()
+    yield
+
 
 # ── 앱 인스턴스 생성 ──────────────────────────────────────────────
 # FastAPI()는 전체 백엔드 앱의 "몸통"이다.
@@ -20,6 +31,7 @@ app = FastAPI(
     title="geo-intel-map API",
     description="지정학 인텔리전스 지도 백엔드",
     version="0.0.1",
+    lifespan=lifespan,
 )
 
 # ── CORS 미들웨어 ────────────────────────────────────────────────

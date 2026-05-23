@@ -28,6 +28,19 @@ Chris Miller의 2022년 저작 *Chip War*는
 - 반도체 생산 네트워크의 허브(TSMC, ASML, 삼성)를 장악한 국가는
   해당 네트워크를 통해 정보를 수집하거나 접근을 차단하는 레버리지를 획득한다
 
+## 주요 학자 및 저작
+
+이 이론의 핵심 기여자와 대표 저작:
+
+- Miller, C. (2022). *Chip War: The Fight for the World's Most Critical Technology*. Scribner.
+- Farrell, H. & Newman, A. (2019). "Weaponized Interdependence." *International Security*, 44(1).
+- CSIS (2023). "Semiconductors and National Security." Center for Strategic and International Studies.
+- 정인교 (2023). "반도체 공급망 재편과 한국의 전략." KIEP 연구보고서.
+
+> "반도체는 21세기의 석유다. 차이점은, 석유 없으면 차가 멈추지만
+> 반도체 없으면 현대 문명 자체가 멈춘다."
+> — Chris Miller, *Chip War* (2022)
+
 ## 현대 지정학과의 연결
 
 ### 미국의 CHIPS Act (2022)
