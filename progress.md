@@ -233,6 +233,50 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
   - `_buildMiniCard()`: 이론 카드 + 활성 cascade rule 배지 + 추천 자료 + 도서관 팁
   - 일반 모드 노드 클릭 → 글로벌 TheoryPanel 동작 유지
 
+### ✅ NASA FIRMS 화재/열점 레이어 (2026-05-23)
+
+- `backend/connectors/nasa_firms.py` — VIIRS S-NPP NRT 커넥터
+  - 분쟁 지역 9개 bbox 병렬 조회 (`asyncio.gather`)
+  - FRP(MW) + 신뢰도(h/n/l) → severity 0-100 산출
+  - 겹치는 bbox 중복 열점 `source_id` 기준 제거
+- `backend/api/layers.py` — `GET /api/layers/fire` (10분 캐시)
+- `frontend/src/layers/FireHotspotsLayer.js` — circleMarker, severity→색상/크기, TheoryPanel 연동
+- `frontend/index.html` — 레이어 패널 🔥 토글 추가 (`defaultVisible: false`)
+
+**열점 색상 체계**: 노랑(소규모 <10 MW) → 주황 → 딥오렌지 → 빨강(극대 200+ MW)
+
+관련 이론: Resource Weaponization (Hirschman 1945), Food Security (Patel & Moore 2009), Gray Zone Strategy
+
+### ✅ AIS 선박 실시간 레이어 (2026-05-23)
+
+- `backend/connectors/aisstream.py` — AISStream.io WebSocket 커넥터
+  - 45초 수집 창 (`asyncio.timeout`), MMSI 기준 최신 위치 dedup
+  - PositionReport + ShipStaticData 병합 (선박명·유형·IMO·목적지)
+  - severity: 선박 유형(군함70·LNG65·유조선50·화물선35) × 지역 가중치 × 정박 상태
+- `backend/api/layers.py` — `GET /api/layers/naval` (5분 캐시)
+- `frontend/src/layers/NavalLayer.js` — ▲삼각형 마커(COG 방향 회전), MarkerCluster
+  - 선박 유형별 색상: 군함(빨강)·LNG(파랑)·유조선(주황)·화물선(녹색)·미분류(회색)
+  - 클릭 → 팝업(속력·침로·목적지·IMO) + TheoryPanel 연동
+- `frontend/index.html` — `⚓ 선박 (AIS)` 레이어 토글 (`defaultVisible: false`)
+- `frontend/styles/main.css` — `.ship-marker` / `.ship-cluster` 스타일
+
+**AISStream 무료 티어 실측 커버리지 (2026-05-23 진단)**:
+
+| 해역 | 수신 | 비고 |
+|------|------|------|
+| 말라카 | ✅ 27척/15초 | 싱가포르 지상국 밀집 |
+| 대만해협 | ✅ 2척/15초 | 동아시아 지상국 커버 |
+| 호르무즈 | ❌ 0척/30초 | 걸프만 = 위성 AIS 필요 ($29+/월) |
+| 바브엘만데브 | ❌ 0척/20초 | 홍해 = 위성 AIS 필요 |
+| 남중국해 | ❌ 0척/20초 | 지상국 없음 |
+
+**대응 조치**:
+- `_NAVAL_REGIONS`: malacca + taiwan_strait 2개로 축소 (나머지 주석 처리)
+- `cascade_rules.yaml` — hormuz 룰 `source_type: conflict` 복원 (ACLED 대용 유지)
+- 미커버 3개 해역은 유료 업그레이드 시 주석 해제만으로 즉시 활성화 가능
+
+관련 이론: Mahan 해양력(SLOC 통제), Weaponized Interdependence (말라카 딜레마)
+
 ### 🔜 다음 작업 (Phase 2 마지막)
 
 **Phase 2 완료 현황**:
@@ -243,11 +287,13 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 | TimelineView (드래그 리사이즈, 날짜 이동) | ✅ |
 | Study Mode (태그 뱃지 + 노트 저장) | ✅ |
 | CascadeGraphView (Cytoscape, 전체화면, 이론 패널) | ✅ |
-| **실시간 레이어 (ADS-B / AIS / FIRMS)** | 🔜 다음 |
+| FIRMS 화재/열점 | ✅ |
+| AIS 선박 (말라카·대만해협) | ✅ |
+| **ADS-B (군용기)** | 🔜 다음 |
 
 **실시간 레이어 착수 순서**:
-1. **FIRMS (NASA 위성 화재/열점)** — 난이도 ★★☆, API 무료, cascade와 즉시 연동 가능
-2. **AIS (AISStream.io 선박)** — 난이도 ★★★, 호르무즈·대만해협 룰 자동 활성화
+1. ~~**FIRMS (NASA 위성 화재/열점)**~~ ✅
+2. ~~**AIS (AISStream.io 선박)**~~ ✅ (말라카·대만해협 동작, 나머지 유료 한계)
 3. **ADS-B (OpenSky 군용기)** — 난이도 ★★★, 대만해협 룰 자동 활성화
 
 **Phase 3 예정**:

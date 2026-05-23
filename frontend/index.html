@@ -102,6 +102,7 @@
     import { SubmarineCablesLayer }  from './src/layers/SubmarineCablesLayer.js';
     import { CascadeLayer }          from './src/layers/CascadeLayer.js';
     import { FireHotspotsLayer }     from './src/layers/FireHotspotsLayer.js';
+    import { NavalLayer }            from './src/layers/NavalLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
@@ -116,6 +117,7 @@
     const cables      = new SubmarineCablesLayer(ctrl.map);
     const cascade     = new CascadeLayer(ctrl.map, ctrl.eventBus);
     const fire        = new FireHotspotsLayer(ctrl.map, ctrl.eventBus);
+    const naval       = new NavalLayer(ctrl.map, ctrl.eventBus);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -171,6 +173,15 @@
     ctrl.layerManager.register('fire-hotspots', fire, {
       name: '화재/열점',
       icon: '🔥',
+      defaultVisible: false,
+    });
+
+    // ★ 실시간 선박 AIS — AISStream.io (Phase 2 실시간 레이어 2번)
+    // 호르무즈·바브엘만데브·말라카·대만해협·남중국해 초크포인트 선박 추적
+    // defaultVisible: false — 45초 수집 지연 있음, 수동 활성화
+    ctrl.layerManager.register('naval', naval, {
+      name: '선박 (AIS)',
+      icon: '⚓',
       defaultVisible: false,
     });
 

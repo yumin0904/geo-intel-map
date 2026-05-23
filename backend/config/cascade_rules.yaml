@@ -41,7 +41,8 @@
 - id: hormuz_tension_to_oil
   name: "호르무즈 긴장 → 유가 상승"
   trigger:
-    source_type: conflict      # Phase 2: 해군 커넥터 도입 전까지 ACLED 대용 (강 안의 고강도 분쟁 없음)
+    source_type: conflict      # AISStream 무료 티어 걸프만 미커버 → ACLED 대용 유지
+                               # AISStream 유료 업그레이드 시 → source_type: naval 으로 교체
     region: hormuz
     severity_min: 60
   expected_response:

@@ -11,6 +11,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 
 from connectors.acled import AcledConnector
+from connectors.aisstream import AISStreamConnector
 from connectors.nasa_firms import NasaFirmsConnector
 from models.event import Event
 
@@ -26,6 +27,13 @@ _conflict_cache: dict = {
 # FIRMS NRT는 위성 주기마다 갱신(~3시간). 10분 캐시로 불필요한 중복 API 호출 방지.
 _FIRE_TTL = timedelta(minutes=10)
 _fire_cache: dict = {
+    "geojson":    None,
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
+# AIS는 45초 수집 + 처리. 5분 캐시 — 초크포인트 선박 밀집도는 수분 단위로 충분.
+_NAVAL_TTL = timedelta(minutes=5)
+_naval_cache: dict = {
     "geojson":    None,
     "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
 }
@@ -173,6 +181,73 @@ def _fire_events_to_geojson(events: list[Event]) -> dict:
         "metadata": {
             "count":     len(features),
             "source":    "NASA FIRMS VIIRS_SNPP_NRT",
+            "generated": datetime.now(timezone.utc).isoformat(),
+        },
+    }
+
+
+@router.get("/naval")
+async def get_naval_vessels():
+    """
+    전략 해역 실시간 선박 AIS 데이터 GeoJSON 반환.
+    AISStream.io WebSocket에서 45초 수집 후 정규화, 5분 캐시.
+    대상 해역: 호르무즈·바브엘만데브·말라카·대만해협·남중국해
+
+    연관 이론: Mahan 해양력 이론 — SLOC 통제 = 해양 패권.
+    유조선·LNG선 밀집도가 Resource Weaponization의 실시간 지표가 된다.
+    호르무즈 룰 자동 활성화 (source_type: naval).
+    """
+    now = datetime.now(timezone.utc)
+    if _naval_cache["geojson"] is not None and now < _naval_cache["expires_at"]:
+        return _naval_cache["geojson"]
+
+    try:
+        connector = AISStreamConnector()
+    except ValueError as e:
+        raise HTTPException(status_code=503, detail=str(e)) from e
+
+    try:
+        events = await connector.fetch()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"AISStream 연결 실패: {e}") from e
+
+    result = _naval_events_to_geojson(events)
+    _naval_cache["geojson"] = result
+    _naval_cache["expires_at"] = now + _NAVAL_TTL
+    return result
+
+
+def _naval_events_to_geojson(events: list[Event]) -> dict:
+    """선박 Event 리스트 → GeoJSON FeatureCollection.
+
+    프론트엔드가 선박 유형별 마커 스타일·필터링에 필요한 필드를 포함한다.
+    """
+    features = []
+    for e in events:
+        lat, lon = e.location
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [lon, lat]},
+            "properties": {
+                "id":          e.id,
+                "timestamp":   e.timestamp.isoformat(),
+                "source_type": e.source_type,
+                "source_id":   e.source_id,
+                "region_code": e.region_code,
+                "severity":    e.severity,
+                "title":       e.title,
+                "description": e.description,
+                "theory_tags": e.theory_tags,
+                **e.payload,
+            },
+        })
+
+    return {
+        "type":     "FeatureCollection",
+        "features": features,
+        "metadata": {
+            "count":     len(features),
+            "source":    "AISStream.io",
             "generated": datetime.now(timezone.utc).isoformat(),
         },
     }
