@@ -31,6 +31,7 @@ export class LayerPanel {
       <div class="layer-panel__list"></div>
       <button class="study-mode-btn" title="이론 태그를 마커에 표시">STUDY MODE</button>
       <button class="library-btn" title="이론 라이브러리 열기">📚 이론 라이브러리</button>
+      <button class="sandbox-btn" title="분석실 열기">🔬 분석실</button>
     `;
     const list = this._el.querySelector('.layer-panel__list');
     for (const layer of this._lm.getAll()) {
@@ -45,6 +46,10 @@ export class LayerPanel {
 
     this._el.querySelector('.library-btn').addEventListener('click', () => {
       this._bus.emit('library:toggle');
+    });
+
+    this._el.querySelector('.sandbox-btn').addEventListener('click', () => {
+      this._bus.emit('sandbox:toggle');
     });
   }
 
