@@ -8,11 +8,8 @@
  * - 가설 검증 (서버 검증)
  */
 
-import cytoscape from "https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js";
-import dagre from "https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.4.0/cytoscape-dagre.min.js";
-
-// cytoscape-dagre 플러그인 등록
-cytoscape.use(dagre);
+// cytoscape, cytoscape-dagre는 index.html에서 전역 로드됨
+const cytoscape = window.cytoscape;
 
 export class SandboxLabView {
   constructor(mapController, eventBus) {
