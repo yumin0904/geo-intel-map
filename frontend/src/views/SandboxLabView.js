@@ -9,7 +9,7 @@
  */
 
 import cytoscape from "https://cdn.jsdelivr.net/npm/cytoscape@3.30.2/dist/cytoscape.min.js";
-import dagre from "https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/dist/cytoscape-dagre.min.js";
+import dagre from "https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.4.0/cytoscape-dagre.min.js";
 
 // cytoscape-dagre 플러그인 등록
 cytoscape.use(dagre);
