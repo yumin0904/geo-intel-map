@@ -391,10 +391,38 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 
 ### 구현 순서 (확정)
 1. [x] backend/services/library/md_indexer.py
-2. [ ] backend/services/library/deep_link.py + theory_library.yaml
-3. [ ] backend/api/library.py
-4. [ ] frontend/src/core/StateStore.js (library 슬라이스)
-5. [ ] frontend/src/views/TheoryLibraryView.js
+2. [x] backend/services/library/deep_link.py + theory_library.yaml
+3. [x] backend/api/library.py
+4. [x] frontend/src/core/StateStore.js (library 슬라이스)
+5. [x] frontend/src/views/TheoryLibraryView.js
 6. [ ] backend/services/cascade/sandbox_solver.py
 7. [ ] frontend/src/views/SandboxLabView.js
 8. [ ] GDELT/RSS/Sanctions
+
+### ✅ 이론 라이브러리 뷰 완성 (2026-05-23)
+
+**구현 파일:**
+- `backend/services/library/md_indexer.py` — `get_db_theory()` / `list_db_theories()` 헬퍼 추가
+- `backend/api/library.py` 신규 — 6개 엔드포인트
+  - `GET /api/library/theories` (sector 필터), `GET /api/library/theories/{id}` (본문 포함)
+  - `GET /api/library/theories/{id}/focus` (MapFocusTarget)
+  - `GET /api/library/search?q=...` (FTS5 전문 검색)
+  - `GET /api/library/region-index` ({ region_code: [theory_id, ...] })
+  - `POST /api/library/reindex` (library/ 디렉토리 재스캔)
+- `backend/main.py` — `library_router` 등록
+- `frontend/src/core/StateStore.js` 신규 — 경량 반응형 상태 저장소 (library 슬라이스)
+- `frontend/src/views/TheoryLibraryView.js` 신규
+  - 우측 슬라이드인 패널 (380px, z-index 1002)
+  - 5대 섹터 탭 필터 + 검색 (300ms debounce)
+  - 이론 카드 목록: sector 배지·이론가·요약·권장 레이어·"지도에서 보기" 버튼
+  - "지도에서 보기" → `map.flyTo()` + 권장 레이어 자동 활성화
+- `frontend/src/panels/LayerPanel.js` — `📚 이론 라이브러리` 토글 버튼 추가 (library:toggle emit)
+- `frontend/index.html` — `#library-panel` div + import + `new TheoryLibraryView()` init
+- `frontend/styles/main.css` — `.library-panel` / `.lib-card` 스타일 추가
+
+**데이터 흐름:**
+- theory_library.yaml(권위 소스) + library/ .md FTS5 인덱스(SQLite) 병합
+- SQLite 비어있어도 기본 정보 반환 (graceful degradation)
+- region_index API → TheoryPanel에서 O(1) 이론 조회 (향후 통합)
+
+version.json: 3.0.0 → 3.1.0

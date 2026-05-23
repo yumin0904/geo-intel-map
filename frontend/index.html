@@ -45,6 +45,8 @@
 
   <!-- 우측 슬라이드인 이론 패널 — TheoryPanel.js가 마운트 -->
   <div id="theory-panel" class="theory-panel"></div>
+  <!-- Phase 3: 이론 라이브러리 패널 — TheoryLibraryView.js가 마운트 -->
+  <div id="library-panel" class="library-panel"></div>
 
   <!-- 우측 하단 Cascade 그래프 패널 — CascadeGraphView.js가 마운트 -->
   <!-- bottom: 44px — 타임라인 헤더 바로 위, z-index 1000 (타임라인 위, 이론패널 아래) -->
@@ -109,6 +111,7 @@
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
     import { TimelineView }         from './src/views/TimelineView.js';
     import { CascadeGraphView }     from './src/views/CascadeGraphView.js';
+    import { TheoryLibraryView }    from './src/views/TheoryLibraryView.js';
     import { api }                  from './src/services/api.js';
 
     // 우상단 버전 뱃지를 백엔드 config/version.json 기준으로 동적 표시
@@ -219,6 +222,9 @@
 
     // Phase 2: Cascade 그래프 뷰 — cascade:loaded 재사용, marker:click 연동
     new CascadeGraphView(ctrl.eventBus);
+
+    // Phase 3: 이론 라이브러리 뷰 — library:toggle 이벤트로 열기/닫기
+    new TheoryLibraryView(ctrl.map, ctrl.eventBus, ctrl.layerManager);
 
     // ── 분쟁 이벤트 필터 바 핸들러 ──────────────────────────────
     const slider       = document.getElementById('severity-slider');

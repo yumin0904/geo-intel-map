@@ -197,6 +197,25 @@ body.study-mode .conflict-tags { display: flex; }
   background: rgba(88,166,255,0.08);
 }
 
+/* 이론 라이브러리 토글 버튼 (LayerPanel 하단) */
+.library-btn {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 5px 0;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #ffd700;
+  background: transparent;
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.library-btn:hover { background: rgba(255,215,0,0.08); border-color: #ffd700; }
+
 .layer-item {
   margin-bottom: 6px;
 }
@@ -1245,3 +1264,187 @@ body:not(.study-mode) .notebook { display: none; }
   text-align: center;
   backdrop-filter: blur(2px);
 }
+
+/* ── Phase 3: 이론 라이브러리 패널 ──────────────────────────────────────── */
+
+.library-panel {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 380px;
+  height: 100vh;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  z-index: 1002; /* theory-panel(1001)보다 위 */
+  display: flex;
+  flex-direction: column;
+  transition: right 0.25s ease;
+  overflow: hidden;
+}
+.library-panel.is-open { right: 0; }
+
+/* 헤더 */
+.lib-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.lib-header__title {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #ffd700;
+  letter-spacing: 0.5px;
+}
+.lib-close {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+.lib-close:hover { color: var(--color-text-primary); background: var(--color-border); }
+
+/* 검색 */
+.lib-search {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.lib-search__input {
+  width: 100%;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 5px 8px;
+  box-sizing: border-box;
+  outline: none;
+}
+.lib-search__input:focus { border-color: var(--color-accent); }
+.lib-search__input::placeholder { color: var(--color-text-secondary); }
+
+/* 섹터 탭 */
+.lib-sectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.lib-sector-tab {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-secondary);
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.lib-sector-tab:hover { color: var(--color-text-primary); border-color: var(--color-text-secondary); }
+.lib-sector-tab.is-active {
+  color: #ffd700;
+  border-color: #ffd700;
+  background: rgba(255,215,0,0.08);
+}
+
+/* 목록 */
+.lib-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 10px;
+}
+.lib-list::-webkit-scrollbar       { width: 5px; }
+.lib-list::-webkit-scrollbar-track  { background: var(--color-bg); }
+.lib-list::-webkit-scrollbar-thumb  { background: var(--color-border); border-radius: 3px; }
+
+.lib-loading, .lib-empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 30px 0;
+}
+
+/* 이론 카드 */
+.lib-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--panel-radius);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.lib-card:hover { border-color: var(--color-text-secondary); }
+
+.lib-card__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.lib-card__sector {
+  font-size: 8px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--sector-color, #888);
+  border: 1px solid var(--sector-color, #888);
+  border-radius: 10px;
+  padding: 1px 6px;
+  flex-shrink: 0;
+}
+.lib-card__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+.lib-card__meta {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  margin-bottom: 4px;
+}
+.lib-card__summary {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 4px 0;
+}
+.lib-card__layers {
+  font-size: 9px;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+.lib-card__focus-btn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-accent);
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lib-card__focus-btn:hover { background: rgba(88,166,255,0.12); }

@@ -226,6 +226,45 @@ def search_theories(query: str, limit: int = 20) -> list[dict]:
         conn.close()
 
 
+def get_db_theory(theory_id: str) -> dict | None:
+    """
+    SQLite에서 단일 이론을 반환한다. body 마크다운 본문 포함.
+
+    theory_library.yaml에 없는 theory_id라도 SQLite에 직접 조회한다.
+    없으면 None 반환.
+    """
+    conn = _get_conn()
+    try:
+        row = conn.execute(
+            "SELECT * FROM theories WHERE theory_id = ?", (theory_id,)
+        ).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def list_db_theories(sector_tag: str | None = None) -> list[dict]:
+    """
+    SQLite에서 이론 목록을 반환한다. body 제외 (리스트 뷰 성능 최적화).
+
+    DB가 비어있으면 빈 리스트 반환 — library/ 디렉토리에 .md 파일이 없을 때 정상.
+    """
+    conn = _get_conn()
+    try:
+        sql = (
+            "SELECT theory_id, title, sector_tag, theorists, year, "
+            "summary, regions, file_path FROM theories"
+        )
+        params: tuple = ()
+        if sector_tag:
+            sql += " WHERE sector_tag = ?"
+            params = (sector_tag,)
+        rows = conn.execute(sql, params).fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+
 if __name__ == "__main__":
     # python -m backend.services.library.md_indexer 로 직접 실행 시 인덱스 재구축
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
