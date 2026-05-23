@@ -394,9 +394,9 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 2. ✅ backend/services/library/deep_link.py + theory_library.yaml
 3. ✅ backend/api/library.py
 4. ✅ frontend/src/core/StateStore.js (library 슬라이스)
-5. ✅ frontend/src/views/TheoryLibraryView.js
+5. ✅ frontend/src/views/TheoryLibraryView.js (풀스크린 + 상세뷰)
 6. ✅ backend/services/cascade/sandbox_solver.py
-7. ✅ frontend/src/views/SandboxLabView.js
+7. ✅ frontend/src/views/SandboxLabView.js (풀스크린 + 튜토리얼 캔버스)
 8. [ ] GDELT/RSS/Sanctions
 
 ### ✅ 이론 라이브러리 뷰 완성 (2026-05-23)
@@ -471,16 +471,43 @@ version.json: 3.1.0 → 3.2.0
 
 ---
 
-## Phase 3 — 오늘 완료 (2026-05-23)
+## Phase 3 — 업데이트 (2026-05-23)
 
-### ✅ Steps 1-7 완료, 학습 도구 기반 구축 완료
+### ✅ Steps 1-7 완료 + 이론 라이브러리 대규모 확장
 
-**오늘 구현:**
-- Step 6: `sandbox_solver.py` — BFS 그래프 매칭으로 사용자 가설을 cascade_rules과 검증
-- Step 7: `SandboxLabView.js` — Cytoscape.js 인터랙티브 캔버스 (노드 추가·엣지 연결·가설 검증)
-- 추가: `gemini_translator.py` 스켈레톤 — on-demand 이벤트 번역 (Gemini API, SQLite 캐시)
+**추가 구현:**
 
-**현재 Phase 3 상태:**
-- Theory Library: ✅ 5대 섹터 탭 + 검색 + 지도 deep-link (step 1-5)
-- Sandbox Lab: ✅ 노드·엣지 기반 가설 구성 + 규칙 매칭 검증 (step 6-7)
-- 다음: Step 8 GDELT/RSS/Sanctions 파이프라인 (미시작)
+#### 이론 .md 라이브러리 완성
+- `library/` 전체 14개 .md 파일 완비 (5대 섹터 커버)
+  - `01_maritime`: mahan_sea_power, chokepoint_sloc
+  - `02_energy`: resource_weaponization, resource_curse, weaponized_interdependence
+  - `03_techno`: digital_iron_curtain, techno_nationalism, semiconductor_supply_chain
+  - `04_indo_pacific`: a2ad, a2ad_strategy, alliance_theory
+  - `05_gray_zone`: hybrid_warfare, gray_zone_strategy, information_warfare
+- 모든 파일에 `## 주요 학자 및 저작` 섹션 자동 삽입 (스크립트 처리)
+- `indo_pacific_a2ad` 중복 제거 → `indo_pacific_a2ad_strategy` 로 통합, korean_peninsula 추가
+- `POST /api/library/reindex` → `deep_link.reload()` 포함 (서버 재시작 없이 YAML 변경 반영)
+
+#### 이론 라이브러리 상세뷰 (Step 5 대폭 개선)
+- **풀스크린 오버레이** 전환 (슬라이드인 380px → `position:fixed; inset:0`)
+- **2컬럼 레이아웃**: 좌측 30% 카드 목록 | 우측 70% 상세뷰
+- 카드 클릭 → 우측에 `.md` 본문 `marked.js` 렌더링 (표·인용·코드 스타일 포함)
+- `GET /api/library/theories/{id}` body 필드 lazy-load
+- **AI 설명 스트리밍**: `POST /api/library/theories/{id}/ai-explain`
+  - Gemini 1.5 Flash SSE 스트리밍 → 타이핑 커서 효과
+  - `db/ai_cache.db` SQLite 캐싱 (동일 이론 재호출 시 비용 0)
+  - GEMINI_API_KEY 미설정 시 graceful fallback (설정 안내 + AI Studio 링크)
+
+#### 튜토리얼 캔버스 자동 생성 (Step 7 보완)
+- `seed_tutorial_canvas()` — sandbox.db 비어있을 때 앱 시작 시 자동 삽입
+- 제목: "🎓 튜토리얼: 홍해 긴장 → 유가 연쇄"
+- 노드 4개 (event→indicator→indicator→outcome) + 엣지 3개
+- Weaponized Interdependence 이론 태그 연결
+- FastAPI `lifespan` 훅으로 서버 시작 시 1회 실행
+
+version.json: 3.2.0 → 3.3.0
+
+**내일 수정 필요:**
+- [ ] 분석실 새 가설 생성 후 목록 미갱신 버그
+- [ ] 튜토리얼 캔버스 자동생성 미작동 버그 (확인 필요)
+- [ ] 버전 뱃지 `v...` 완성 (LayerPanel 하단 또는 지도 우하단)
