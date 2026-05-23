@@ -277,56 +277,104 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 
 관련 이론: Mahan 해양력(SLOC 통제), Weaponized Interdependence (말라카 딜레마)
 
-### 🔜 다음 작업 (Phase 2 마지막)
+### ✅ ADS-B 군용기 레이어 — OpenSky Network (2026-05-23)
 
-**Phase 2 완료 현황**:
-| 항목 | 상태 |
-|------|------|
-| Cascade Rule 6개 활성 (24링크) | ✅ |
-| Theory Panel | ✅ |
-| TimelineView (드래그 리사이즈, 날짜 이동) | ✅ |
-| Study Mode (태그 뱃지 + 노트 저장) | ✅ |
-| CascadeGraphView (Cytoscape, 전체화면, 이론 패널) | ✅ |
-| FIRMS 화재/열점 | ✅ |
-| AIS 선박 (말라카·대만해협) | ✅ |
-| **ADS-B (군용기)** | 🔜 다음 |
+- `backend/connectors/opensky.py` 신규 — OpenSky REST API 군용기 커넥터
+  - 대만해협·남중국해·동중국해 bbox 병렬 조회 (`asyncio.gather`)
+  - ICAO24 블록(AE0000-AFFFFF 미군 블록) + 콜사인 접두사로 군용기 필터링
+  - severity 산출: ISR(QUID/JAKE 등, +20) · 폭격기(FORTE/B-52, +25) · 급유기(+8) + 대만해협 ×1.2
+  - icao24 기준 중복 제거 (복수 bbox 경계 포함 항공기)
+  - Event 정규화: `source_type: "military_flight"`, `theory_tags: ["A2AD", ...]`
 
-**실시간 레이어 착수 순서**:
-1. ~~**FIRMS (NASA 위성 화재/열점)**~~ ✅
-2. ~~**AIS (AISStream.io 선박)**~~ ✅ (말라카·대만해협 동작, 나머지 유료 한계)
-3. **ADS-B (OpenSky 군용기)** — 난이도 ★★★, 대만해협 룰 자동 활성화
+- `backend/config/cascade_rules.yaml` — taiwan_strait 두 룰 source_type 교체
+  - `taiwan_strait_to_tsm`: `conflict` → `military_flight` (활성화)
+  - `taiwan_strait_to_soxx`: `conflict` → `military_flight` (활성화)
 
-**Phase 3 예정**:
-- **GDELT 실시간 데이터 파이프라인 (3단계 교차 검증)**
+- `backend/services/cascade/engine.py` — military_flight 룰 지원 추가
+  - `conflict_rules` / `military_rules` 분리 처리
+  - `_fetch_military_events()`: OpenSky 커넥터 호출 (미설정 시 graceful skip)
+  - `_pick_military_trigger()`: region+severity_min 필터 후 최고심각도 1개 선택
+  - 트리거 timestamp 소급 (지금 - window_hours) → yfinance 최근 시장 변동 평가
 
-  배경: ACLED 데이터 한계(2025년 5월까지) 보완, 실시간성 확보하되 노이즈 필터링 필수
+**단위 테스트 결과**:
+- QUID01 (RC-135) 군용기 판별: ✅ (ICAO24 AE1234)
+- severity (QUID + taiwan_strait): 84 → severity_min=50 즉시 트리거
+- FORTE01 (B-52) severity: 90
+- UAL123 민항기 판별: ✅ False (필터 정상)
+- military_flight 룰 2개 로드 확인: taiwan_strait_to_tsm, taiwan_strait_to_soxx
 
-  아키텍처 (3-Stage Funnel):
-  1. GDELT 자체 필터링 (QuadClass 3/4, GoldsteinScale ≤-5, NumMentions ≥20)
-  2. 외부 뉴스 RSS/NewsAPI 교차 검증 (24h 내 2개 이상 매체)
-  3. confidence_score 산출 (0.0~1.0)
+### ✅ ADS-B 프론트엔드 레이어 + API 엔드포인트 (2026-05-23)
 
-  데이터 모델 변경:
-  - Event 모델에 `confidence_score`, `is_verified` 필드 추가
-  - ACLED=1.0, 미검증 GDELT=0.5, 교차검증 GDELT=0.8
+- `backend/api/layers.py` — `GET /api/layers/adsb` 추가 (5분 캐시)
+- `frontend/src/layers/AdsbLayer.js` 신규
+  - ✈ 마커 + `rotate(track - 45)deg` COG 방향 회전
+  - 임무 유형별 색상: ISR(빨강)·폭격기(보라)·급유기(주황)·초계(딥오렌지)·공수(청색)·VIP(금색)
+  - 클러스터: 사각형 적색 (선박 원형 청색과 시각적 구분)
+  - 툴팁: callsign·유형·고도·속도 / 팝업: 국적·고도·속도·침로·스쿼크·위치소스·severity
+  - zoom ≤ 5에서 severity ≥ 60만 표시 (고성능 유지)
+  - EventBus `marker:click` → TheoryPanel 연동
+- `frontend/styles/main.css` — `.adsb-marker` 유형별 색상 + `.adsb-cluster` 추가
+- `frontend/index.html` — import + `new AdsbLayer()` + `register('adsb', ...)` 추가
+- `main.py` 변경 없음 — `layers_router`에 `/api/layers/adsb` 자동 포함
 
-  신규 모듈:
-  - `backend/connectors/gdelt_verifier.py`
-  - `backend/connectors/news_cross_validator.py`
+---
 
-  프론트엔드:
-  - `confidence_score < 0.8` → 점선 테두리, 60% 투명도
-  - "⚠️ 실시간 속보 (교차 검증 중)" 뱃지
+## Phase 2 최종 완료 (2026-05-23)
 
-  착수 조건 (게이트):
-  - Phase 2 완료 후
-  - 실시간 레이어 (ADS-B/AIS/FIRMS) 구현 이후
-  - 시스템 프롬프트 Phase 2 11번(시장 지표) 다음 우선순위
+| 항목 | 상태 | 비고 |
+|------|------|------|
+| Cascade Rule 6개 활성 (24링크) | ✅ | bab_el_mandeb·ukraine·middle_east·south_china_sea·suez + military_flight 2개 |
+| Theory Panel | ✅ | 이론 DB 14개, 좌표 기반 룰 필터링 |
+| TimelineView | ✅ | 드래그 리사이즈, 날짜 이동 툴바 |
+| Study Mode | ✅ | 이론 태그 뱃지 + 노트 저장 (SQLite) |
+| CascadeGraphView | ✅ | Cytoscape.js, 전체화면, 내부 이론 패널 |
+| FIRMS 화재/열점 | ✅ | NASA VIIRS S-NPP NRT, 10분 캐시 |
+| AIS 선박 | ✅ | 말라카·대만해협 (공해상 3개 해역 유료 한계) |
+| ADS-B 군용기 | ✅ | OpenSky Network, ✈ COG 방향 회전 마커 |
 
-  알려진 리스크:
-  - GDELT 좌표 부정확성 → cascade region 매칭 false positive 우려
-  - NewsAPI 무료 티어 일 100건 제한
-  - Event 모델 변경 시 cascade engine/frontend 광범위 영향
+**실시간 레이어 커버리지 한계 (무료 티어)**:
+
+| 레이어 | 동작 해역 | 미커버 이유 |
+|--------|-----------|------------|
+| AIS 선박 | 말라카·대만해협 | 호르무즈·바브엘만데브·남중국해 = 위성 AIS 필요 ($29+/월) |
+| ADS-B 군용기 | 지상국 인근 | 공해 상공 군용기는 지상국 없으면 미수신 — 실제 통과 시 자동 감지 |
+| FIRMS 열점 | 전 지역 | 커버리지 제한 없음 (위성) |
+
+---
+
+## Phase 3 계획 (검토 중)
+
+**다음 세션 시작 전 확인 필요**:
+- [ ] 시스템 프롬프트(CLAUDE.md) Phase 3 항목 재검토
+- [ ] ACLED 데이터 한계(2025-05까지) → GDELT 도입 타당성 재확인
+- [ ] Event 모델 변경(confidence_score 추가) 파급 범위 사전 평가
+
+**Phase 3 후보 작업 (우선순위 미확정)**:
+
+1. **GDELT 실시간 데이터 파이프라인** (난이도 ★★★★)
+   - 배경: ACLED는 현재 ~2025-05까지만 제공, 이후 실시간 보완 필요
+   - 아키텍처 (3-Stage Funnel):
+     1. GDELT 자체 필터링 (QuadClass 3/4, GoldsteinScale ≤-5, NumMentions ≥20)
+     2. 뉴스 RSS/NewsAPI 교차 검증 (24h 내 2개 이상 매체)
+     3. confidence_score 산출 (ACLED=1.0, 미검증=0.5, 교차검증=0.8)
+   - 신규 파일: `connectors/gdelt_verifier.py`, `connectors/news_cross_validator.py`
+   - 프론트엔드: `confidence_score < 0.8` → 점선 테두리 + ⚠️ 뱃지
+   - 알려진 리스크: GDELT 좌표 부정확 (cascade false positive), NewsAPI 일 100건 제한
+
+2. **CII 국가 불안정성 지수** (난이도 ★★★★)
+   - V-Dem 데이터 + 자체 가중 계산
+   - 레이어 패널 별도 항목, 코로플레스(Choropleth) 지도 표시
+
+3. **Case Study Library** (난이도 ★★)
+   - 대표 사례 사전 저장 (펠로시 대만 방문 2022, 홍해 후티 2023~)
+   - 클릭 시 해당 시점으로 지도 시간 이동 + cascade 자동 표시
+
+4. **노트 마크다운 내보내기** (난이도 ★)
+   - Study Mode 노트 → `.md` 파일 export
+
+5. **Cascade 통계적 상관분석** (난이도 ★★★★★)
+   - Granger 인과분석 (Phase 3 `services/cascade/correlation.py`)
+   - 최소 6개월치 이벤트 데이터 누적 후 착수
 
 ---
 
@@ -334,5 +382,5 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 
 - ✅ Phase 0: 기반 (FastAPI + Leaflet + 군사기지)
 - ✅ Phase 1: MVP (5개 레이어 + LayerManager)
-- 🔄 Phase 2: 핵심 차별화 — 3-View 시스템 ✅ / Study Mode ✅ / **실시간 레이어만 남음**
-- ⬜ Phase 3: 학습 도구 완성
+- ✅ Phase 2: 핵심 차별화 — 3-View ✅ / Study Mode ✅ / 실시간 레이어 3개 ✅
+- 🔜 Phase 3: 학습 도구 완성 (GDELT · CII · Case Study Library · Granger 분석)

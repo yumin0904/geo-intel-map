@@ -103,6 +103,7 @@
     import { CascadeLayer }          from './src/layers/CascadeLayer.js';
     import { FireHotspotsLayer }     from './src/layers/FireHotspotsLayer.js';
     import { NavalLayer }            from './src/layers/NavalLayer.js';
+    import { AdsbLayer }             from './src/layers/AdsbLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
@@ -118,6 +119,7 @@
     const cascade     = new CascadeLayer(ctrl.map, ctrl.eventBus);
     const fire        = new FireHotspotsLayer(ctrl.map, ctrl.eventBus);
     const naval       = new NavalLayer(ctrl.map, ctrl.eventBus);
+    const adsb        = new AdsbLayer(ctrl.map, ctrl.eventBus);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -182,6 +184,16 @@
     ctrl.layerManager.register('naval', naval, {
       name: '선박 (AIS)',
       icon: '⚓',
+      defaultVisible: false,
+    });
+
+    // ★ 실시간 군용기 ADS-B — OpenSky Network (Phase 2 실시간 레이어 3번)
+    // 대만해협·남중국해·동중국해 군용기 (ISR·폭격기·급유기 포함)
+    // cascade 룰 taiwan_strait_to_tsm · taiwan_strait_to_soxx 트리거 소스
+    // defaultVisible: false — OpenSky 크레딧 절약, 수동 활성화
+    ctrl.layerManager.register('adsb', adsb, {
+      name: '군용기 (ADS-B)',
+      icon: '✈',
       defaultVisible: false,
     });
 

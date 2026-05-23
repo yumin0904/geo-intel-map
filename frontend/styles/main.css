@@ -1204,3 +1204,44 @@ body:not(.study-mode) .notebook { display: none; }
   text-align: center;
   backdrop-filter: blur(2px);
 }
+
+/* ── ADS-B 군용기 마커 ────────────────────────────────────────────────────── */
+/* ✈(U+2708)를 COG 방향으로 회전 — transform-origin: center center 고정 */
+.adsb-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  text-shadow:
+    0 0 4px rgba(0,0,0,1),
+    0 0 8px rgba(0,0,0,0.8);
+  cursor: pointer;
+  transition: filter 0.15s;
+  line-height: 1;
+}
+.adsb-marker:hover { filter: brightness(1.5) drop-shadow(0 0 4px currentColor); }
+
+/* 임무 유형별 색상 */
+.adsb-marker--isr       { color: #ff1744; }  /* 정보·감시·정찰 — 가장 민감한 신호, 적색 */
+.adsb-marker--bomber    { color: #d500f9; }  /* 전략 폭격기 — 핵억제 시위, 보라 */
+.adsb-marker--tanker    { color: #ff9100; }  /* 공중급유기 — 작전 지속 지원, 주황 */
+.adsb-marker--patrol    { color: #ff6d00; }  /* 해상초계기 — 잠수함 추적, 딥오렌지 */
+.adsb-marker--transport { color: #448aff; }  /* 전략 공수 — 병력·물자 이동, 청색 */
+.adsb-marker--vip       { color: #ffd600; }  /* VIP 수송 — 고위 지휘부, 금색 */
+.adsb-marker--tiltrotor { color: #64ffda; }  /* MV-22 틸트로터 — 청록 */
+.adsb-marker--military  { color: #b0bec5; }  /* 미분류 군용기 — 회색 */
+
+/* 군용기 클러스터 — 선박과 구분: 사각형 + 적색 계열 */
+.adsb-cluster {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  background: rgba(255, 23, 68, 0.2);
+  border: 2px solid rgba(255, 23, 68, 0.7);
+  color: #ff1744;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 26px;
+  text-align: center;
+  backdrop-filter: blur(2px);
+}

@@ -4,11 +4,20 @@ engine.py — Cascade(연쇄 분석) 메인 엔진.
 새 이벤트(트리거)가 룰의 조건에 맞으면 expected_response 윈도우를 검사해
 실제 시장 변동이 임계치를 넘었는지 확인하고, 넘으면 CascadeLink를 생성한다.
 
-Phase 2 시작 단계: trigger.source_type="conflict"만 지원한다(해군 커넥터 미구현).
-ACLED 걸프 분쟁 이벤트를 호르무즈 해상긴장의 대용 신호로 사용한다.
+지원하는 trigger.source_type:
+  - "conflict"        : ACLED 분쟁 이벤트 (30일 과거 데이터)
+  - "military_flight" : OpenSky ADS-B 군용기 (실시간 현재 위치)
 
-정치외교학 연결: 룰 hormuz_tension_to_oil은 Hirschman(1945)의 자원무기화 이론을 적용한 것.
-호르무즈(원유 해상운송 ~20% 통과)의 군사 충격이 유가로 전이되는 메커니즘을 추적한다.
+military_flight 평가 방식:
+  OpenSky는 현재 항공기 위치만 제공한다.
+  트리거 timestamp를 (지금 - window_hours)로 설정해 yfinance가
+  최근 window_hours 동안의 시장 변동을 소급 평가하도록 한다.
+  의미: "지금 대만해협에 군용기가 있고, 최근 24h 동안 TSM이 1% 하락했는가?"
+
+정치외교학 연결:
+  - conflict 룰: Hirschman(1945) 자원무기화 — 분쟁→유가·안전자산
+  - military_flight 룰: Farrell & Newman(2019) 무기화된 상호의존 —
+    대만해협 군사 긴장이 반도체 공급망 집중을 통해 TSMC 주가로 전이
 """
 from __future__ import annotations
 
@@ -16,6 +25,8 @@ import asyncio
 import logging
 import uuid
 from datetime import datetime, timezone
+
+from datetime import timedelta
 
 from connectors.acled import (
     AcledConnector,
@@ -69,12 +80,13 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
     links: list[CascadeLink] = []
     events_by_id: dict[str, Event] = {}
 
-    conflict_rules = [r for r in rules if r.trigger.source_type == "conflict"]
-    skipped = len(rules) - len(conflict_rules)
-    if skipped:
-        logger.info(f"[cascade] source_type!=conflict 룰 {skipped}개 건너뜀 (Phase 2 시작)")
+    conflict_rules  = [r for r in rules if r.trigger.source_type == "conflict"]
+    military_rules  = [r for r in rules if r.trigger.source_type == "military_flight"]
+    other_count     = len(rules) - len(conflict_rules) - len(military_rules)
+    if other_count:
+        logger.info(f"[cascade] 미지원 source_type 룰 {other_count}개 건너뜀")
 
-    # region별 고유 집합 → 병렬 ACLED fetch (중복 HTTP 호출 제거)
+    # ── conflict 룰: ACLED 30일 과거 데이터 ────────────────────────────────
     unique_regions = list({r.trigger.region for r in conflict_rules})
     fetched = await asyncio.gather(*[_fetch_region_events(region) for region in unique_regions])
     region_raw: dict[str, list[Event]] = dict(zip(unique_regions, fetched))
@@ -85,6 +97,34 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
         logger.info(f"[cascade] 룰 {rule.id}: 조건 충족 트리거 {len(triggers)}개")
 
         for trig in triggers:
+            link_pair = await _evaluate_trigger(rule, trig)
+            if link_pair is None:
+                continue
+            link, response_event = link_pair
+            links.append(link)
+            events_by_id[trig.id] = trig
+            events_by_id[response_event.id] = response_event
+
+    # ── military_flight 룰: OpenSky 실시간 군용기 ──────────────────────────
+    if military_rules:
+        military_events = await _fetch_military_events()
+        for rule in military_rules:
+            trig = _pick_military_trigger(
+                military_events,
+                rule.trigger.region,
+                rule.trigger.severity_min,
+                rule.expected_response.window_hours,
+            )
+            if trig is None:
+                logger.info(
+                    f"[cascade] 룰 {rule.id}: 군용기 트리거 없음 "
+                    f"(region={rule.trigger.region}, sev_min={rule.trigger.severity_min})"
+                )
+                continue
+            logger.info(
+                f"[cascade] 룰 {rule.id}: 군용기 트리거 1개 "
+                f"(callsign={trig.payload.get('callsign','?')}, sev={trig.severity})"
+            )
             link_pair = await _evaluate_trigger(rule, trig)
             if link_pair is None:
                 continue
@@ -192,6 +232,55 @@ async def _evaluate_trigger(
         theory_ref=rule.theory.learning_note.strip(),
     )
     return link, response_event
+
+
+async def _fetch_military_events() -> list[Event]:
+    """OpenSky Network에서 현재 군용기 이벤트를 가져온다.
+
+    커넥터 미설정(환경변수 없음)이나 API 오류 시 빈 리스트를 반환해
+    conflict 룰 평가에 영향을 주지 않는다.
+    """
+    try:
+        from connectors.opensky import OpenSkyConnector
+        connector = OpenSkyConnector()
+    except (ValueError, ImportError) as e:
+        logger.warning(f"[cascade] OpenSky 커넥터 초기화 실패: {e}")
+        return []
+
+    try:
+        return await connector.fetch()
+    except Exception as e:
+        logger.warning(f"[cascade] OpenSky 조회 실패: {e}")
+        return []
+
+
+def _pick_military_trigger(
+    events: list[Event],
+    region: str,
+    severity_min: int,
+    window_hours: int,
+) -> Event | None:
+    """region 내 군용기 이벤트 중 severity_min 이상인 것을 1개 선택한다.
+
+    실시간 데이터이므로 timestamp를 (지금 - window_hours)로 소급 설정한다.
+    → yfinance evaluate_response()가 최근 window_hours 구간의 시장 변동을 검색할 수 있다.
+
+    의미: "지금 이 region에 군용기가 있고, 최근 window_hours 동안 시장이 반응했는가?"
+    여러 대가 감지되면 severity 최고 항공기 1개만 사용(중복 cascade 링크 방지).
+    """
+    qualifying = [
+        e for e in events
+        if e.region_code == region and e.severity >= severity_min
+    ]
+    if not qualifying:
+        return None
+
+    best = max(qualifying, key=lambda e: e.severity)
+
+    # 타임스탬프 소급: yfinance가 "과거" 기간을 평가하도록 이동
+    adjusted = best.model_copy()
+    adjusted.timestamp = datetime.now(timezone.utc) - timedelta(hours=window_hours)
+    return adjusted
 
 
 def _build_response_event(rule: CascadeRule, trigger: Event, result: dict) -> Event:

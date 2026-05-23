@@ -65,7 +65,7 @@
 - id: taiwan_strait_to_tsm
   name: "대만해협 군사긴장 → TSMC 주가 하락"
   trigger:
-    source_type: conflict      # Phase 2+: ADS-B 군용기 도입 시 source_type: military_flight 으로 교체 예정
+    source_type: military_flight  # OpenSky ADS-B 군용기 (2026-05-23 활성화)
     region: taiwan_strait
     severity_min: 50
   expected_response:
@@ -88,7 +88,7 @@
 - id: taiwan_strait_to_soxx
   name: "대만해협 긴장 → 반도체 ETF(SOXX) 하락"
   trigger:
-    source_type: conflict
+    source_type: military_flight  # OpenSky ADS-B 군용기 (2026-05-23 활성화)
     region: taiwan_strait
     severity_min: 50
   expected_response:
