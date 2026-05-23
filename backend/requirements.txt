@@ -20,3 +20,6 @@ aiosqlite==0.22.1
 
 # 시장 지표 — Cascade 룰의 response(유가 CL=F 등) 검증용 (무료, Phase 2)
 yfinance==1.3.0
+
+# TheoryLibrary — 마크다운 YAML front matter 파싱 (Phase 3)
+python-frontmatter==1.0.1

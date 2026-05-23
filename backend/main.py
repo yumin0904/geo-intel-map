@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.cascade import router as cascade_router
 from api.layers import router as layers_router
 from api.study import router as study_router
+from api.version import router as version_router
 
 # ── 앱 인스턴스 생성 ──────────────────────────────────────────────
 # FastAPI()는 전체 백엔드 앱의 "몸통"이다.
@@ -37,6 +38,7 @@ app.add_middleware(
 app.include_router(layers_router)
 app.include_router(cascade_router)
 app.include_router(study_router)
+app.include_router(version_router)
 
 # ── 엔드포인트 ───────────────────────────────────────────────────
 # @app.get("/...") : HTTP GET 요청을 처리하는 함수 등록

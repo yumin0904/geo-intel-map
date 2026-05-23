@@ -384,3 +384,17 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 - ✅ Phase 1: MVP (5개 레이어 + LayerManager)
 - ✅ Phase 2: 핵심 차별화 — 3-View ✅ / Study Mode ✅ / 실시간 레이어 3개 ✅
 - 🔜 Phase 3: 학습 도구 완성 (GDELT · CII · Case Study Library · Granger 분석)
+
+---
+
+## Phase 3 — 학습 도구 완성 (시작: 2026-05-23)
+
+### 구현 순서 (확정)
+1. [x] backend/services/library/md_indexer.py
+2. [ ] backend/services/library/deep_link.py + theory_library.yaml
+3. [ ] backend/api/library.py
+4. [ ] frontend/src/core/StateStore.js (library 슬라이스)
+5. [ ] frontend/src/views/TheoryLibraryView.js
+6. [ ] backend/services/cascade/sandbox_solver.py
+7. [ ] frontend/src/views/SandboxLabView.js
+8. [ ] GDELT/RSS/Sanctions

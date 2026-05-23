@@ -1,0 +1,195 @@
+# theory_library.yaml — 이론 ID ↔ 지도 포커스 매핑 (CLAUDE.md 5대 섹터 커버)
+#
+# 각 항목은 두 방향의 탐색을 지원한다:
+#   Forward : theory_id  → MapFocusTarget (이론 카드 클릭 → 지도 이동)
+#   Reverse : region_code → [theory_id, ...] (지도 지역 클릭 → 관련 이론 목록)
+#
+# map_focus.layers : 해당 이론을 볼 때 활성화를 권장하는 레이어 ID 목록
+#   → LayerManager에 등록된 키(CLAUDE.md 섹션 5 아키텍처)와 일치해야 한다.
+# map_focus.zoom   : 1(전세계) ~ 10(항구 수준). 지역 이론 5~6, 초크포인트 7~8.
+# related_regions  : regions.yaml 키와 반드시 일치해야 한다.
+
+# ── 1. 해양 초점주의 & SLOC ───────────────────────────────────────────────────
+
+- theory_id: maritime_mahan_sea_power
+  display_name: "마한의 해양력 이론"
+  sector_tag: maritime
+  map_focus:
+    lat: 3.0
+    lon: 100.5
+    zoom: 5
+    # 해상 교통로·군사 기지 레이어가 마한 이론을 가장 직관적으로 보여준다
+    layers:
+      - submarine-cables
+      - military-bases
+      - naval
+    region_code: malacca
+  related_regions:
+    - malacca
+    - taiwan_strait
+    - south_china_sea
+    - hormuz
+    - indian_ocean   # regions.yaml에 미정의 시 deep_link.py가 경고 후 스킵
+
+- theory_id: maritime_chokepoint_sloc
+  display_name: "SLOC 통제 이론 (초크포인트)"
+  sector_tag: maritime
+  map_focus:
+    lat: 12.6
+    lon: 43.3
+    zoom: 6
+    layers:
+      - chokepoints
+      - naval
+    region_code: bab_el_mandeb
+  related_regions:
+    - bab_el_mandeb
+    - hormuz
+    - malacca
+    - suez
+
+# ── 2. 에너지 지정학 & 인프라 ────────────────────────────────────────────────
+
+- theory_id: energy_resource_weaponization
+  display_name: "자원무기화 (Hirschman / Drezner)"
+  sector_tag: energy
+  map_focus:
+    lat: 26.5
+    lon: 56.5
+    zoom: 6
+    # 파이프라인·초크포인트 레이어로 에너지 흐름과 취약 지점을 동시에 시각화
+    layers:
+      - energy-pipelines
+      - chokepoints
+      - conflict-events
+    region_code: hormuz
+  related_regions:
+    - hormuz
+    - bab_el_mandeb
+    - ukraine
+    - middle_east
+
+- theory_id: energy_weaponized_interdependence
+  display_name: "상호의존의 무기화 (Farrell & Newman 2019)"
+  sector_tag: energy
+  map_focus:
+    lat: 48.5
+    lon: 31.0
+    zoom: 5
+    layers:
+      - energy-pipelines
+      - conflict-events
+    region_code: ukraine
+  related_regions:
+    - ukraine
+    - middle_east
+    - hormuz
+
+# ── 3. 기술 패권 & 보이지 않는 인프라 ───────────────────────────────────────
+
+- theory_id: techno_digital_iron_curtain
+  display_name: "디지털 철의 장막 / 기술 민족주의"
+  sector_tag: techno
+  # 해저 광케이블은 인터넷 트래픽의 약 95%를 전달 — 디지털 주권의 물리적 토대
+  map_focus:
+    lat: 24.0
+    lon: 120.0
+    zoom: 5
+    layers:
+      - submarine-cables
+      - military-bases
+    region_code: taiwan_strait
+  related_regions:
+    - taiwan_strait
+    - south_china_sea
+    - east_china_sea
+
+- theory_id: techno_semiconductor_supply_chain
+  display_name: "반도체 공급망 집중 리스크 (TSMC 딜레마)"
+  sector_tag: techno
+  map_focus:
+    lat: 24.0
+    lon: 120.5
+    zoom: 7
+    layers:
+      - military-bases
+      - adsb
+      - naval
+    region_code: taiwan_strait
+  related_regions:
+    - taiwan_strait
+    - south_china_sea
+
+# ── 4. 인도-태평양 군사 대치 ─────────────────────────────────────────────────
+
+- theory_id: indo_pacific_a2ad
+  display_name: "A2/AD 전략 (반접근·지역거부)"
+  sector_tag: indo_pacific
+  # 제1열도선(오키나와~대만~필리핀)을 중심 좌표로 설정
+  map_focus:
+    lat: 20.0
+    lon: 122.0
+    zoom: 5
+    layers:
+      - military-bases
+      - adsb
+      - naval
+    region_code: south_china_sea
+  related_regions:
+    - taiwan_strait
+    - south_china_sea
+    - east_china_sea
+    - korean_peninsula
+
+- theory_id: indo_pacific_alliance_theory
+  display_name: "동맹 이론 (확장 억제·QUAD·AUKUS)"
+  sector_tag: indo_pacific
+  map_focus:
+    lat: 15.0
+    lon: 115.0
+    zoom: 4
+    layers:
+      - military-bases
+      - naval
+    region_code: south_china_sea
+  related_regions:
+    - south_china_sea
+    - taiwan_strait
+    - korean_peninsula
+    - east_china_sea
+
+# ── 5. 회색지대 & 비전통 안보 ────────────────────────────────────────────────
+
+- theory_id: gray_zone_hybrid_warfare
+  display_name: "회색지대 전략 / 하이브리드 전쟁"
+  sector_tag: gray_zone
+  # 남중국해 도서 군사화가 회색지대 전략의 교과서적 사례
+  map_focus:
+    lat: 12.0
+    lon: 113.0
+    zoom: 5
+    layers:
+      - conflict-events
+      - military-bases
+      - naval
+    region_code: south_china_sea
+  related_regions:
+    - south_china_sea
+    - ukraine
+    - taiwan_strait
+    - korean_peninsula
+
+- theory_id: gray_zone_information_warfare
+  display_name: "정보전·인지전 (비전통 안보)"
+  sector_tag: gray_zone
+  map_focus:
+    lat: 35.0
+    lon: 127.5
+    zoom: 5
+    layers:
+      - conflict-events
+    region_code: korean_peninsula
+  related_regions:
+    - korean_peninsula
+    - taiwan_strait
+    - ukraine

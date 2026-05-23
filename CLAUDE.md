@@ -348,6 +348,29 @@ geomap/
 
 ---
 
+## 10-A. 버전 관리 규칙
+
+`backend/config/version.json` 은 **단일 진실 공급원(Single Source of Truth)** 이다.
+
+```json
+{ "version": "3.0.0", "phase": 3 }
+```
+
+### 업데이트 시점
+- **Phase 전환 시**: `phase` 번호 올림 + `version` 메이저 버전 올림 (예: 2.x.x → 3.0.0)
+- **주요 기능 완료 시**: `version` 마이너 올림 (예: 3.0.0 → 3.1.0)
+- **버그 수정 / 소규모 변경**: `version` 패치 올림 (예: 3.0.0 → 3.0.1)
+
+### 절대 하지 말 것
+- ❌ `index.html` 또는 JS 파일에 버전 문자열 하드코딩
+- ❌ `main.py` FastAPI 앱 `version=` 파라미터를 version.json과 따로 관리
+
+### progress.md 완료 기록 시 함께 할 것
+작업 완료를 progress.md에 기록할 때, 해당 작업이 마이너 이상 변경이라면
+`version.json`도 함께 bump한 뒤 두 파일을 같은 커밋에 포함한다.
+
+---
+
 ## 11. PHASE ROADMAP
 
 ### Phase 0 — 기반 (1주)
@@ -369,11 +392,26 @@ geomap/
 - [ ] Theory Panel
 - [ ] Study Mode
 
-### Phase 3 — 학습 도구 완성 (그 이후)
-- [ ] CII 자체 계산
-- [ ] Case Study Library
-- [ ] 노트 마크다운 내보내기
-- [ ] 통계적 상관분석
+### Phase 3 — 학습 도구 완성 (진행 중)
+
+**Veto 확정 (구현 금지)**
+- MapLibre 3D Globe → Phase 4 격리
+- 외교부 안전여행 API → Phase 4 후순위
+- Gemini 영상 자막 추출 → 완전 폐기
+- X(트위터) 임베드 → Mastodon/Bluesky 대체
+
+**신규 구현 항목 (우선순위 순)**
+1. md_indexer.py → TheoryLibrary 데이터 소스
+2. deep_link.py + theory_library.yaml → 이론↔지도 매핑
+3. api/library.py → 프론트 데이터 연결
+4. SandboxLab (Cytoscape.js 노드 캔버스)
+5. Sanctions 레이어 (GSDB/UN 안보리)
+6. GDELT 3-Stage Funnel + confidence_score
+
+**신규 데이터 필드**
+- CascadeLink: depth(int), parent_link_id, chain_output
+- Event: confidence_score (ACLED=1.0, GDELT미검증=0.5, 교차검증=0.8)
+- 무한루프 방지: _MAX_CHAIN_DEPTH=4
 
 ---
 

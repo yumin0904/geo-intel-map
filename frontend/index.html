@@ -40,7 +40,7 @@
   <!-- 우측 상단 정보 패널 -->
   <div class="info-panel">
     <span class="info-title">geo-intel-map</span>
-    <span class="info-version">v0.1.0</span>
+    <span id="version-badge" class="info-version">v…</span>
   </div>
 
   <!-- 우측 슬라이드인 이론 패널 — TheoryPanel.js가 마운트 -->
@@ -109,6 +109,16 @@
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
     import { TimelineView }         from './src/views/TimelineView.js';
     import { CascadeGraphView }     from './src/views/CascadeGraphView.js';
+    import { api }                  from './src/services/api.js';
+
+    // 우상단 버전 뱃지를 백엔드 config/version.json 기준으로 동적 표시
+    api.get('/api/version')
+      .then(({ version, phase }) => {
+        document.getElementById('version-badge').textContent = `v${version} · Phase ${phase}`;
+      })
+      .catch(() => {
+        document.getElementById('version-badge').textContent = 'v? (offline)';
+      });
 
     const ctrl        = new MapController('map').init();
     const bases       = new MilitaryBasesLayer(ctrl.map, ctrl.eventBus);
