@@ -390,13 +390,13 @@ correlation_score 계산식: `min(1.0, abs(pct_change) / (threshold_pct × 2))`
 ## Phase 3 — 학습 도구 완성 (시작: 2026-05-23)
 
 ### 구현 순서 (확정)
-1. [x] backend/services/library/md_indexer.py
-2. [x] backend/services/library/deep_link.py + theory_library.yaml
-3. [x] backend/api/library.py
-4. [x] frontend/src/core/StateStore.js (library 슬라이스)
-5. [x] frontend/src/views/TheoryLibraryView.js
-6. [x] backend/services/cascade/sandbox_solver.py
-7. [x] frontend/src/views/SandboxLabView.js
+1. ✅ backend/services/library/md_indexer.py
+2. ✅ backend/services/library/deep_link.py + theory_library.yaml
+3. ✅ backend/api/library.py
+4. ✅ frontend/src/core/StateStore.js (library 슬라이스)
+5. ✅ frontend/src/views/TheoryLibraryView.js
+6. ✅ backend/services/cascade/sandbox_solver.py
+7. ✅ frontend/src/views/SandboxLabView.js
 8. [ ] GDELT/RSS/Sanctions
 
 ### ✅ 이론 라이브러리 뷰 완성 (2026-05-23)
@@ -468,3 +468,19 @@ version.json: 3.0.0 → 3.1.0
 - 신뢰도: high(2개+ 규칙 ∧ score≥0.7) / medium(1개 ∨ score≥0.5) / low
 
 version.json: 3.1.0 → 3.2.0
+
+---
+
+## Phase 3 — 오늘 완료 (2026-05-23)
+
+### ✅ Steps 1-7 완료, 학습 도구 기반 구축 완료
+
+**오늘 구현:**
+- Step 6: `sandbox_solver.py` — BFS 그래프 매칭으로 사용자 가설을 cascade_rules과 검증
+- Step 7: `SandboxLabView.js` — Cytoscape.js 인터랙티브 캔버스 (노드 추가·엣지 연결·가설 검증)
+- 추가: `gemini_translator.py` 스켈레톤 — on-demand 이벤트 번역 (Gemini API, SQLite 캐시)
+
+**현재 Phase 3 상태:**
+- Theory Library: ✅ 5대 섹터 탭 + 검색 + 지도 deep-link (step 1-5)
+- Sandbox Lab: ✅ 노드·엣지 기반 가설 구성 + 규칙 매칭 검증 (step 6-7)
+- 다음: Step 8 GDELT/RSS/Sanctions 파이프라인 (미시작)
