@@ -113,7 +113,7 @@
     import { FireHotspotsLayer }     from './src/layers/FireHotspotsLayer.js';
     import { NavalLayer }            from './src/layers/NavalLayer.js';
     import { AdsbLayer }             from './src/layers/AdsbLayer.js';
-    import { SanctionsLayer }       from './src/layers/SanctionsLayer.js';
+    // SanctionsLayer: 지도 토글 제거, 라이브러리 아카이브(asset_type:norm)로 이전
     // GdeltLayer: ConflictEventsLayer에 내부 통합됨 — 별도 등록 불필요
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
@@ -143,7 +143,6 @@
     const fire        = new FireHotspotsLayer(ctrl.map, ctrl.eventBus);
     const naval       = new NavalLayer(ctrl.map, ctrl.eventBus);
     const adsb        = new AdsbLayer(ctrl.map, ctrl.eventBus);
-    const sanctions   = new SanctionsLayer(ctrl.map, ctrl.eventBus);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -218,15 +217,6 @@
     ctrl.layerManager.register('adsb', adsb, {
       name: '군용기 (ADS-B)',
       icon: '✈',
-      defaultVisible: false,
-    });
-
-    // ★ 제재 레짐 — UN SC·OFAC·EU 15개 레짐 (24시간 캐시)
-    // 국가 수준 버블 마커: UN 다자(보라) / 서방 다자(주황) / 단자(파랑)
-    // 연관 이론: Weaponized Interdependence, Economic Coercion
-    ctrl.layerManager.register('sanctions', sanctions, {
-      name: '제재 레짐',
-      icon: '⚖',
       defaultVisible: false,
     });
 
