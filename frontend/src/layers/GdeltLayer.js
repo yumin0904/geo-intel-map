@@ -10,8 +10,7 @@
  * QuadClass 4(물리적 충돌) → 빨강, QuadClass 3(언어) → 주황
  */
 
-import { api }      from '../services/api.js';
-import { eventBus } from '../core/EventBus.js';
+import { api } from '../services/api.js';
 
 const GDELT_COLOR_HIGH = '#ff4444';   // QuadClass 4: Material Conflict
 const GDELT_COLOR_LOW  = '#ff8800';   // QuadClass 3: Verbal Conflict
@@ -19,8 +18,9 @@ const UNVERIFIED_OPACITY = 0.55;
 const VERIFIED_OPACITY   = 0.85;
 
 export class GdeltLayer {
-  constructor(map) {
+  constructor(map, eventBus = null) {
     this._map     = map;
+    this._bus     = eventBus;
     this._layer   = null;
     this._visible = false;
     this._data    = null;
@@ -101,7 +101,7 @@ export class GdeltLayer {
       `).openPopup();
 
       // TheoryPanel 연동
-      eventBus.emit('marker:click', {
+      if (this._bus) this._bus.emit('marker:click', {
         source_type:      p.source_type,
         theory_tags:      p.theory_tags || [],
         region_code:      p.region_code,

@@ -143,7 +143,7 @@
     const fire        = new FireHotspotsLayer(ctrl.map, ctrl.eventBus);
     const naval       = new NavalLayer(ctrl.map, ctrl.eventBus);
     const adsb        = new AdsbLayer(ctrl.map, ctrl.eventBus);
-    const gdelt       = new GdeltLayer(ctrl.map);
+    const gdelt       = new GdeltLayer(ctrl.map, ctrl.eventBus);
     const sanctions   = new SanctionsLayer(ctrl.map, ctrl.eventBus);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
