@@ -15,6 +15,7 @@ from connectors.aisstream import AISStreamConnector
 from connectors.nasa_firms import NasaFirmsConnector
 from connectors.opensky import OpenSkyConnector
 from models.event import Event
+from services.gdelt_pipeline import run_gdelt_pipeline, to_geojson as gdelt_to_geojson
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
 
@@ -42,6 +43,13 @@ _naval_cache: dict = {
 # ADS-B 군용기: OpenSky 무료 크레딧 절약 + 항공기 위치는 수분 이내 이동이 미미.
 _ADSB_TTL = timedelta(minutes=5)
 _adsb_cache: dict = {
+    "geojson":    None,
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
+# GDELT: 15분 주기 갱신 소스에 맞춰 15분 캐시
+_GDELT_TTL = timedelta(minutes=15)
+_gdelt_cache: dict = {
     "geojson":    None,
     "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
 }
@@ -363,3 +371,32 @@ async def get_chokepoints():
     연관 이론: Mahan 해양력 이론, SLOC 통제, Resource Weaponization
     """
     return _load_geojson("chokepoints.geojson")
+
+
+@router.get("/gdelt")
+async def get_gdelt():
+    """
+    GDELT 3-Stage Funnel 결과 GeoJSON 반환 (15분 캐시).
+
+    Stage 1: QuadClass≥3·GoldsteinScale≤-5·NumMentions≥20 필터
+    Stage 2: RSS 교차검증 (≥2매체 → confidence_score 0.8)
+    confidence_score < 0.8 이벤트는 'unverified': true 프로퍼티 포함.
+
+    연관 이론: 정보전 (Information Warfare), Gray Zone Strategy
+    무검열 원칙: 정치적 민감성과 무관하게 필터 통과 데이터 그대로 반환.
+    """
+    now = datetime.now(timezone.utc)
+    if _gdelt_cache["geojson"] is not None and now < _gdelt_cache["expires_at"]:
+        return _gdelt_cache["geojson"]
+
+    try:
+        events = await run_gdelt_pipeline()
+        result = gdelt_to_geojson(events)
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning("[GDELT endpoint] 파이프라인 오류: %s", exc)
+        result = {"type": "FeatureCollection", "features": []}
+
+    _gdelt_cache["geojson"]    = result
+    _gdelt_cache["expires_at"] = now + _GDELT_TTL
+    return result

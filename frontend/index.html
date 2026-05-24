@@ -113,6 +113,7 @@
     import { FireHotspotsLayer }     from './src/layers/FireHotspotsLayer.js';
     import { NavalLayer }            from './src/layers/NavalLayer.js';
     import { AdsbLayer }             from './src/layers/AdsbLayer.js';
+    import { GdeltLayer }           from './src/layers/GdeltLayer.js';
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
@@ -141,6 +142,7 @@
     const fire        = new FireHotspotsLayer(ctrl.map, ctrl.eventBus);
     const naval       = new NavalLayer(ctrl.map, ctrl.eventBus);
     const adsb        = new AdsbLayer(ctrl.map, ctrl.eventBus);
+    const gdelt       = new GdeltLayer(ctrl.map);
 
     // 새 레이어 추가 = register() 한 줄로 패널 자동 반영
     ctrl.layerManager.register('military-bases', bases, {
@@ -215,6 +217,15 @@
     ctrl.layerManager.register('adsb', adsb, {
       name: '군용기 (ADS-B)',
       icon: '✈',
+      defaultVisible: false,
+    });
+
+    // ★ GDELT 3-Stage Funnel — 뉴스 기반 분쟁 이벤트 (15분 캐시)
+    // confidence_score: 0.8 교차검증 / 0.5 미검증 (⚠️ 점선 테두리)
+    // 연관 이론: Information Warfare, Gray Zone Strategy
+    ctrl.layerManager.register('gdelt', gdelt, {
+      name: 'GDELT 분쟁',
+      icon: '📰',
       defaultVisible: false,
     });
 

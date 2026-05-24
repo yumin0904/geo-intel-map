@@ -22,3 +22,4 @@ class Event(BaseModel):
     description: str               # 500자 이하 요약
     payload: dict                  # 소스별 원본 필드 보존 (Cascade 분석용)
     theory_tags: list[str]         # ["A2AD", "gray_zone", "hybrid_warfare", ...]
+    confidence_score: float = 1.0  # ACLED=1.0, 교차검증=0.8, GDELT 미검증=0.5
