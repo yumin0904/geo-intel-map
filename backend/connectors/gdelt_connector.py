@@ -41,6 +41,20 @@ _GOLDSTEIN_MAX    = -5.0  # 적대적 사건 하한
 # CLAUDE.md 기준 20은 일(日) 단위 데이터 기준값 — 향후 일별 파일 전환 시 재상향
 _NUM_MENTIONS_MIN = 3
 
+# ── 오피니언·분석 URL 패턴 블록리스트 ─────────────────────────────────────────
+# GDELT source_url이 오피니언/기고 섹션을 가리키면 Stage 1에서 거부한다.
+# 이유: 오피니언 기사의 지역 키워드(ukraine, taiwan 등)가 Stage 2에서
+#      Reuters·BBC 기사와 키워드 히트 → confidence 0.8로 오상향되는 오분류 방지.
+_OPINION_URL_PATTERNS: frozenset[str] = frozenset({
+    "forbes.com/sites/",          # Forbes 기고자·오피니언 섹션 (contributor model)
+    "forbes.com/advisor/",        # Forbes Advisor — 금융 분석, 실제 분쟁 이벤트 아님
+    "bloomberg.com/opinion/",     # Bloomberg Opinion
+    "nytimes.com/opinion/",       # NYT Op-Ed
+    "wsj.com/opinion/",           # WSJ Opinion
+    "theguardian.com/commentisfree/",  # Guardian 오피니언
+    "washingtonpost.com/opinions/",    # WaPo Opinions
+})
+
 # ── 5대 섹터 FIPS 10-4 국가 코드 ───────────────────────────────────────────
 # 인도-태평양·에너지·기술·SLOC 국가 중심
 _SECTOR_FIPS: frozenset[str] = frozenset({
@@ -189,6 +203,10 @@ def _to_event(
     url      = row[_COL["url"]].strip()
     sqldate  = row[_COL["sqldate"]].strip()
 
+    # 오피니언·분석 기사 URL 거부 — Stage 2에서 키워드 히트로 오상향되는 오분류 방지
+    if _is_opinion_url(url):
+        return None
+
     # 날짜 파싱 (YYYYMMDD)
     try:
         ts = datetime.strptime(sqldate, "%Y%m%d").replace(tzinfo=timezone.utc)
@@ -233,6 +251,12 @@ def _to_event(
         theory_tags=theory_tags,
         confidence_score=0.5,  # Stage 2 교차검증 전 미검증 기본값
     )
+
+
+def _is_opinion_url(url: str) -> bool:
+    """source_url이 오피니언·분석 섹션에 해당하면 True를 반환한다."""
+    url_lower = url.lower()
+    return any(pattern in url_lower for pattern in _OPINION_URL_PATTERNS)
 
 
 def _derive_tags(event_code: str, quad: int, region_code: str | None) -> list[str]:
