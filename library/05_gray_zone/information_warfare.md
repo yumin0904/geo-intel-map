@@ -7,6 +7,8 @@ theorists:
   - P.W. Singer
   - Emerson Brooking
 year: 2018
+asset_type: theory
+era: multipolar
 summary: "디지털 네트워크를 통해 상대방의 인식·판단·의지를 조작하는 비전통 전쟁. 총성 없이 사회 분열, 선거 개입, 전략적 내러티브 장악으로 국가 목표를 달성한다."
 regions:
   - korean_peninsula

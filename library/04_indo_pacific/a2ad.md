@@ -7,6 +7,8 @@ theorists:
   - Jan van Tol
   - Aaron Friedberg
 year: 2010
+asset_type: theory
+era: multipolar
 summary: "강대국의 군사력 투사를 거부하기 위해 미사일·잠수함·전자전 등 비대칭 전력으로 작전 접근 자체를 차단하는 전략. 중국의 제1열도선 방어 논리의 핵심."
 regions:
   - taiwan_strait

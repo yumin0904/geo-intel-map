@@ -6,6 +6,8 @@ theorists:
   - Henry Farrell
   - Abraham Newman
 year: 2019
+asset_type: theory
+era: multipolar
 summary: "글로벌 네트워크의 비대칭성을 이용해 의존 관계 자체를 강압 수단으로 전환하는 전략 — 에너지·금융·반도체 공급망이 주요 무기가 된다."
 regions:
   - hormuz

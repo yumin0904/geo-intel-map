@@ -7,6 +7,8 @@ theorists:
   - Sylvia Ostry
   - Richard Nelson
 year: 1995
+asset_type: theory
+era: unipolar
 summary: "기술 혁신 역량을 국가 경쟁력·안보의 핵심으로 보고, 핵심 기술의 자국 내 통제를 추구하는 전략적 기술 국유화 경향."
 regions:
   - taiwan_strait

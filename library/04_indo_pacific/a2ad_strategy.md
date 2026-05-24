@@ -7,6 +7,8 @@ theorists:
   - Jan van Tol
   - Roger Cliff
 year: 2003
+asset_type: theory
+era: multipolar
 summary: "강대국의 군사력 투사를 막기 위해 미사일·잠수함·사이버 등 비대칭 전력으로 접근 자체를 차단하는 전략 — 중국의 대미 억제 핵심."
 regions:
   - taiwan_strait

@@ -59,26 +59,30 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
     include_body=False 이면 body 필드를 제외 (목록 뷰 성능).
     """
     out = {
-        "theory_id":      theory_link.theory_id,
-        "display_name":   theory_link.display_name,
-        "sector_tag":     theory_link.sector_tag,
-        "map_focus":      theory_link.map_focus.model_dump(),
+        "theory_id":       theory_link.theory_id,
+        "display_name":    theory_link.display_name,
+        "sector_tag":      theory_link.sector_tag,
+        "map_focus":       theory_link.map_focus.model_dump(),
         "related_regions": theory_link.related_regions,
         # SQLite 보강 필드 — 없으면 빈 값
-        "theorists":  [],
-        "year":       None,
-        "summary":    "",
-        "file_path":  None,
+        "theorists":   [],
+        "year":        None,
+        "summary":     "",
+        "file_path":   None,
+        "asset_type":  "theory",
+        "era":         None,
     }
     if include_body:
         out["body"] = ""
 
     if db_row:
         out.update({
-            "theorists": _parse_json_field(db_row.get("theorists")),
-            "year":      db_row.get("year"),
-            "summary":   db_row.get("summary") or "",
-            "file_path": db_row.get("file_path"),
+            "theorists":  _parse_json_field(db_row.get("theorists")),
+            "year":       db_row.get("year"),
+            "summary":    db_row.get("summary") or "",
+            "file_path":  db_row.get("file_path"),
+            "asset_type": db_row.get("asset_type") or "theory",
+            "era":        db_row.get("era"),
         })
         if include_body:
             out["body"] = db_row.get("body") or ""
@@ -88,18 +92,40 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
 
 # ── 엔드포인트 ────────────────────────────────────────────────────────────────
 
-@router.get("/theories")
-async def list_theories(sector: Optional[str] = Query(None)):
+@router.get("/items")
+async def list_items(
+    sector:     Optional[str] = Query(None),
+    asset_type: Optional[str] = Query(None),
+    era:        Optional[str] = Query(None),
+    region:     Optional[str] = Query(None),
+):
     """
-    전체 이론 목록 반환. sector 파라미터로 5대 섹터 필터 가능.
+    통합 라이브러리 목록. 4축 필터(sector·asset_type·era·region) 지원.
 
-    theory_library.yaml이 권위 소스. SQLite에 .md가 없어도 기본 정보는 반환.
-    body 제외 (목록 뷰 성능).
+    body 제외 (목록 뷰 성능). theory_library.yaml 권위 소스 + SQLite 보강.
     """
     links = list_all(sector_tag=sector)
-    db_map = {r["theory_id"]: r for r in list_db_theories(sector_tag=sector)}
+    db_rows = list_db_theories(sector_tag=sector)
+    db_map  = {r["theory_id"]: r for r in db_rows}
 
-    return [_merge(link, db_map.get(link.theory_id), include_body=False) for link in links]
+    results = [_merge(link, db_map.get(link.theory_id)) for link in links]
+
+    if asset_type:
+        results = [r for r in results if r["asset_type"] == asset_type]
+    if era:
+        results = [r for r in results if r["era"] == era]
+    if region:
+        results = [r for r in results if region in (r.get("related_regions") or [])]
+
+    return results
+
+
+@router.get("/theories")
+async def list_theories(sector: Optional[str] = Query(None)):
+    """하위 호환 유지. /api/library/items 사용 권장."""
+    links  = list_all(sector_tag=sector)
+    db_map = {r["theory_id"]: r for r in list_db_theories(sector_tag=sector)}
+    return [_merge(link, db_map.get(link.theory_id)) for link in links]
 
 
 @router.get("/theories/{theory_id}/focus")

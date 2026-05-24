@@ -7,6 +7,8 @@ theorists:
   - Valery Gerasimov
   - Lawrence Freedman
 year: 2007
+asset_type: theory
+era: multipolar
 summary: "정규전·비정규전·사이버·정보전·경제압박을 동시 결합해 전쟁 선포 없이 전략 목표를 달성하는 복합 전쟁 방식 — 우크라이나·홍해가 현재 진행형 교과서."
 regions:
   - ukraine

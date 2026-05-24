@@ -7,6 +7,8 @@ theorists:
   - Rebecca MacKinnon
   - Evgeny Morozov
 year: 2011
+asset_type: theory
+era: multipolar
 summary: "인터넷 공간이 자유주의 진영과 권위주의 진영으로 분열되는 현상 — 중국의 만리방화벽, 러시아의 루넷이 '디지털 베스트팔렌' 질서를 형성한다."
 regions:
   - taiwan_strait

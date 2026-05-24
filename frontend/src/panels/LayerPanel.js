@@ -30,7 +30,7 @@ export class LayerPanel {
       <div class="layer-panel__title">LAYERS</div>
       <div class="layer-panel__list"></div>
       <button class="study-mode-btn" title="이론 태그를 마커에 표시">STUDY MODE</button>
-      <button class="library-btn" title="이론 라이브러리 열기">📚 이론 라이브러리</button>
+      <button class="library-btn" title="통합 라이브러리 열기">📚 라이브러리</button>
       <button class="sandbox-btn" title="분석실 열기">🔬 분석실</button>
     `;
     const list = this._el.querySelector('.layer-panel__list');

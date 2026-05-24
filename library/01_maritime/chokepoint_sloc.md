@@ -7,6 +7,8 @@ theorists:
   - Nicholas Spykman
   - Geoffrey Till
 year: 1944
+asset_type: theory
+era: cold_war
 summary: "해상 교통로(SLOC)와 그 병목인 초크포인트를 통제하는 국가가 글로벌 무역·에너지 흐름을 좌우한다. 평시엔 항행의 자유, 위기 시엔 봉쇄 카드로 전환된다."
 regions:
   - bab_el_mandeb

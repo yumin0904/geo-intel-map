@@ -7,6 +7,8 @@ theorists:
   - Henry Farrell
   - Abraham Newman
 year: 2022
+asset_type: theory
+era: multipolar
 summary: "첨단 반도체 생산이 대만(TSMC)에 극도로 집중되어, 대만해협 위기 시 글로벌 기술·경제 충격이 불가피한 구조적 취약성. 지정학과 기술 공급망의 교차점."
 regions:
   - taiwan_strait

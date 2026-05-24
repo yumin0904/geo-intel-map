@@ -24,6 +24,8 @@ DB_PATH = Path(__file__).parent.parent.parent / "db" / "library.db"
 # ── 도메인 상수 ────────────────────────────────────────────────────────────────
 # CLAUDE.md 5대 섹터와 1:1 매핑 — 이 범위 밖 태그는 거부
 ALLOWED_SECTOR_TAGS = frozenset({"maritime", "energy", "techno", "indo_pacific", "gray_zone"})
+ALLOWED_ASSET_TYPES = frozenset({"theory", "case_study", "profile", "norm"})
+ALLOWED_ERAS        = frozenset({"cold_war", "unipolar", "multipolar"})
 
 REQUIRED_FIELDS = ("theory_id", "title", "sector_tag", "theorists", "year", "summary", "regions")
 
@@ -39,7 +41,9 @@ CREATE TABLE IF NOT EXISTS theories (
     regions    TEXT NOT NULL,   -- JSON 배열 문자열 (["taiwan_strait", ...])
     body       TEXT DEFAULT '',
     file_path  TEXT,
-    updated_at TEXT NOT NULL
+    updated_at TEXT NOT NULL,
+    asset_type TEXT DEFAULT 'theory',
+    era        TEXT
 );
 
 -- FTS5 가상 테이블: theories 테이블을 content source로 사용
@@ -62,7 +66,13 @@ def _get_conn() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.executescript(_SCHEMA_SQL)
-    conn.commit()
+    # 기존 DB에 신규 컬럼이 없으면 추가 (마이그레이션)
+    for col, default in [("asset_type", "'theory'"), ("era", "NULL")]:
+        try:
+            conn.execute(f"ALTER TABLE theories ADD COLUMN {col} TEXT DEFAULT {default}")
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass  # 이미 존재하면 무시
     return conn
 
 
@@ -112,6 +122,19 @@ def parse_front_matter(path: Path) -> dict:
             f"허용값: {sorted(ALLOWED_SECTOR_TAGS)}"
         )
 
+    # asset_type / era: 선택 필드. 누락 시 기본값 적용
+    asset_type = meta.get("asset_type", "theory")
+    if asset_type not in ALLOWED_ASSET_TYPES:
+        logger.warning("[%s] 허용되지 않는 asset_type '%s', 'theory'로 대체", path.name, asset_type)
+        asset_type = "theory"
+    meta["asset_type"] = asset_type
+
+    era = meta.get("era")
+    if era and era not in ALLOWED_ERAS:
+        logger.warning("[%s] 허용되지 않는 era '%s', None으로 대체", path.name, era)
+        era = None
+    meta["era"] = era
+
     # list 타입 필드를 JSON 문자열로 직렬화 (SQLite TEXT 컬럼 저장용)
     for field in ("theorists", "regions"):
         val = meta[field]
@@ -159,20 +182,23 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                 """
                 INSERT OR REPLACE INTO theories
                     (theory_id, title, sector_tag, theorists, year,
-                     summary, regions, body, file_path, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     summary, regions, body, file_path, updated_at,
+                     asset_type, era)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     meta["theory_id"],
                     meta["title"],
                     meta["sector_tag"],
-                    meta["theorists"],       # JSON 배열 문자열
+                    meta["theorists"],
                     meta.get("year"),
                     meta["summary"],
-                    meta["regions"],         # JSON 배열 문자열
+                    meta["regions"],
                     body,
                     str(path.relative_to(_PROJECT_ROOT)),
                     now,
+                    meta["asset_type"],
+                    meta["era"],
                 ),
             )
             upserted += 1
@@ -253,12 +279,15 @@ def list_db_theories(sector_tag: str | None = None) -> list[dict]:
     try:
         sql = (
             "SELECT theory_id, title, sector_tag, theorists, year, "
-            "summary, regions, file_path FROM theories"
+            "summary, regions, file_path, asset_type, era FROM theories"
         )
-        params: tuple = ()
+        conditions: list[str] = []
+        params: list = []
         if sector_tag:
-            sql += " WHERE sector_tag = ?"
-            params = (sector_tag,)
+            conditions.append("sector_tag = ?")
+            params.append(sector_tag)
+        if conditions:
+            sql += " WHERE " + " AND ".join(conditions)
         rows = conn.execute(sql, params).fetchall()
         return [dict(row) for row in rows]
     finally:

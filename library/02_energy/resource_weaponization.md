@@ -7,6 +7,8 @@ theorists:
   - Daniel Drezner
   - Michael Mastanduno
 year: 1945
+asset_type: theory
+era: cold_war
 summary: "에너지·원자재 공급 의존도가 높은 상대국에게 공급 차단 위협을 전략 무기로 활용하는 현상. 비대칭 경제 관계가 클수록 무기화 효과가 크다."
 regions:
   - hormuz

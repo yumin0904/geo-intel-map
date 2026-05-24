@@ -5,6 +5,8 @@ sector_tag: maritime
 theorists:
   - Alfred Thayer Mahan
 year: 1890
+asset_type: theory
+era: cold_war
 summary: "해양을 지배하는 국가가 세계 패권을 장악한다. 해군력·상선대·해외기지의 삼위일체가 국가 번영의 핵심이다."
 regions:
   - taiwan_strait

@@ -7,6 +7,8 @@ theorists:
   - Hal Brands
   - Christopher Dougherty
 year: 2015
+asset_type: theory
+era: multipolar
 summary: "전쟁과 평화의 경계에서 분쟁 문턱 아래를 유지하면서 점진적으로 현상을 바꾸는 전략 — 상대의 대응을 억제하면서 기정사실을 축적한다."
 regions:
   - south_china_sea

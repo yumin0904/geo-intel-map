@@ -7,6 +7,8 @@ theorists:
   - Glenn Snyder
   - Thomas Christensen
 year: 1987
+asset_type: theory
+era: cold_war
 summary: "국가들은 위협에 맞서 동맹을 형성하며, 동맹 내부에서는 연루(entrapment)와 방기(abandonment)의 딜레마가 항상 존재한다."
 regions:
   - taiwan_strait
