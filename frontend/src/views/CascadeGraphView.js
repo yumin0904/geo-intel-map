@@ -158,7 +158,6 @@ const CYTOSCAPE_STYLE = [
 
 // DOM 참조 — 파일 상단 const (CLAUDE.md JS 원칙)
 const PANEL_EL        = document.getElementById('cascade-graph-panel');
-const TOGGLE_EL       = document.getElementById('cascade-graph-toggle');
 const COUNT_EL        = document.getElementById('cascade-graph-count');
 const CY_EL           = document.getElementById('cascade-graph-cy');
 const FIT_EL          = document.getElementById('cascade-graph-fit');
@@ -174,9 +173,11 @@ export class CascadeGraphView {
     this._isFullscreen = false;
     this._elements     = [];     // 집계된 그래프 elements 캐시
 
-    TOGGLE_EL.addEventListener('click', () => this._toggle());
     FIT_EL.addEventListener('click', () => this._fitAll());
     FULLSCREEN_EL.addEventListener('click', () => this._toggleFullscreen());
+
+    // 타임라인 제거 후 패널을 기본 open 상태로 유지
+    this._open();
 
     // cascade:loaded — CascadeLayer가 이미 한 API 호출을 재사용 (이중 호출 방지)
     eventBus.on('cascade:loaded', data => this._onCascadeLoaded(data));
@@ -346,7 +347,6 @@ export class CascadeGraphView {
   _open() {
     this._isOpen = true;
     PANEL_EL.classList.add('is-open');
-    TOGGLE_EL.textContent = '▼';
 
     if (!this._cy) {
       // CSS transition(250ms) 완료 후 Cytoscape 초기화 — 컨테이너가 완전히 펼쳐진 뒤
@@ -361,11 +361,9 @@ export class CascadeGraphView {
   }
 
   _close() {
-    // 전체화면 중 닫기 → fullscreen도 함께 해제
     if (this._isFullscreen) this._exitFullscreen();
     this._isOpen = false;
     PANEL_EL.classList.remove('is-open');
-    TOGGLE_EL.textContent = '▲';
   }
 
   // ── 내부 이론 패널 (전체화면 전용) ──────────────────────────────

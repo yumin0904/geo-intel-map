@@ -865,217 +865,6 @@ input[type=range].severity-slider::-webkit-slider-thumb {
   padding-left: 1px;
 }
 
-/* ── Timeline Panel (하단 슬라이드업) ────────────────────────────── */
-/* 평소엔 헤더 36px만 노출, .is-open 시 216px(36+180)으로 확장 */
-#timeline-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  height: 36px;
-  overflow: hidden;
-  transition: height 0.25s ease;
-  user-select: none;
-}
-
-#timeline-panel.is-open { height: 30vh; min-height: 120px; }
-
-.timeline-panel__header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 14px;
-  height: 36px;
-  cursor: default;
-}
-
-#timeline-panel.is-open .timeline-panel__header {
-  border-bottom: 1px solid var(--color-border);
-}
-
-.timeline-panel__title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #ffe566;
-}
-
-.timeline-panel__count {
-  font-size: 10px;
-  color: var(--color-text-secondary);
-  flex: 1;
-}
-
-.timeline-panel__toggle {
-  background: none;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.timeline-panel__toggle:hover {
-  color: var(--color-text-primary);
-  border-color: var(--color-accent);
-}
-
-/* 날짜 이동 툴바 */
-.timeline-panel__toolbar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 14px;
-  height: 36px;
-  border-bottom: 1px solid var(--color-border);
-  box-sizing: border-box;
-}
-.tl-select {
-  background: var(--color-bg);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  border-radius: 3px;
-  font-size: 11px;
-  font-family: var(--font-mono);
-  padding: 2px 4px;
-  height: 22px;
-  cursor: pointer;
-}
-.tl-sep {
-  font-size: 10px;
-  color: var(--color-text-secondary);
-}
-.tl-btn {
-  background: none;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-  white-space: nowrap;
-}
-.tl-btn:hover {
-  color: var(--color-text-primary);
-  border-color: var(--color-accent);
-}
-.tl-btn--fit { margin-left: auto; }
-
-/* header(36) + toolbar(36) = 72px */
-#timeline-vis { height: calc(30vh - 72px); }
-
-/* 패널 상단 드래그 리사이즈 핸들 */
-.timeline-resize-handle {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 6px;
-  cursor: ns-resize;
-  z-index: 2;
-}
-.timeline-resize-handle:hover,
-.timeline-resize-handle.is-dragging {
-  background: rgba(255, 229, 102, 0.18);
-}
-
-/* 타임라인이 열릴 때 분쟁 필터 바를 위로 올려 겹침 방지 */
-#conflict-filter-bar {
-  transition: bottom 0.25s ease;
-}
-#conflict-filter-bar.timeline-raised {
-  bottom: calc(30vh + 14px);
-}
-
-/* ── vis-timeline 다크 테마 오버라이드 ───────────────────────────── */
-/* #timeline-vis 스코프로 격리 — 외부 Leaflet 팝업 등에 누출 방지 */
-#timeline-vis .vis-timeline { border-color: var(--color-border); }
-
-#timeline-vis .vis-content,
-#timeline-vis .vis-background { background: var(--color-bg); }
-
-#timeline-vis .vis-panel.vis-left {
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
-  overflow-y: auto;
-}
-
-#timeline-vis .vis-label {
-  color: var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-border);
-}
-
-#timeline-vis .vis-time-axis { background: var(--color-surface); }
-#timeline-vis .vis-time-axis .vis-text { color: var(--color-text-secondary); }
-#timeline-vis .vis-time-axis .vis-grid.vis-minor { border-color: rgba(48,54,61,0.5); }
-#timeline-vis .vis-time-axis .vis-grid.vis-major { border-color: var(--color-border); }
-
-#timeline-vis .vis-group      { border-bottom: 1px solid var(--color-border); }
-#timeline-vis .vis-current-time { background: var(--color-accent); opacity: 0.45; }
-
-/* Cascade 링크 range 아이템 */
-#timeline-vis .vis-item.tl-link {
-  border-radius: 4px;
-  border-width: 1.5px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-/* 시장 상승 — cascade 화살표 노랑과 통일 */
-#timeline-vis .vis-item.tl-link.is-up {
-  background: rgba(255, 229, 102, 0.15);
-  border-color: rgba(255, 229, 102, 0.65);
-}
-
-/* 시장 하락 — 파랑 */
-#timeline-vis .vis-item.tl-link.is-down {
-  background: rgba(88, 166, 255, 0.15);
-  border-color: rgba(88, 166, 255, 0.65);
-}
-
-/* 선택 상태 — TheoryPanel 연동 표시 */
-#timeline-vis .vis-item.vis-selected {
-  border-color: var(--color-accent) !important;
-  background: rgba(88, 166, 255, 0.3) !important;
-}
-
-.tl-item__ticker { font-weight: 700; margin-right: 5px; }
-.tl-item__pct    { font-weight: 700; margin-right: 4px; }
-.tl-item__pct.is-up   { color: #ffe566; }
-.tl-item__pct.is-down { color: var(--color-accent); }
-.tl-item__score       { font-size: 9px; color: var(--color-text-secondary); }
-
-/* 그룹 레이블 — 좌측 패널 */
-.tl-group__label {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  padding: 0 6px;
-}
-
-/* vis-timeline 툴팁 다크 테마 */
-.vis-tooltip {
-  background: var(--color-surface) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-text-primary) !important;
-  font-family: var(--font-mono) !important;
-  font-size: 11px !important;
-  padding: 6px 10px !important;
-  border-radius: 4px !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
-}
 
 /* ── 도서관 검색 팁 (details/summary 접이식) ─────────────────────── */
 .theory-card__tip {
@@ -1190,15 +979,16 @@ body:not(.study-mode) .notebook { display: none; }
 }
 
 /* ── Cascade Graph Panel (인과 그래프 뷰, Cytoscape.js) ───────────────── */
-/* 타임라인 헤더(44px) 바로 위에 위치 — 우측 하단 플로팅 패널 */
 #cascade-graph-panel {
   position: fixed;
   right: 0;
-  bottom: 44px;
+  bottom: 0;
   width: 480px;
   height: 44px;     /* 닫힌 상태: 헤더만 노출 */
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-right: none;
+  border-bottom: none;
   border-radius: var(--panel-radius) 0 0 0;
   display: flex;
   flex-direction: column;
