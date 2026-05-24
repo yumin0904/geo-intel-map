@@ -32,24 +32,8 @@ export class SanctionsLayer {
     this._features = [];
   }
 
-  async show() {
-    if (this._visible) return;
-    this._visible = true;
-
-    if (!this._layer) {
-      await this._load();
-    } else {
-      this._layer.addTo(this._map);
-    }
-  }
-
-  hide() {
-    if (!this._visible) return;
-    this._visible = false;
-    if (this._layer) this._map.removeLayer(this._layer);
-  }
-
-  async _load() {
+  // LayerManager 인터페이스: load() + setVisible(bool)
+  async load() {
     let data;
     try {
       data = await api.get('/api/layers/sanctions');
@@ -61,6 +45,13 @@ export class SanctionsLayer {
     this._features = data.features || [];
     this._layer = this._buildLayer(this._features);
     if (this._visible) this._layer.addTo(this._map);
+  }
+
+  setVisible(visible) {
+    this._visible = visible;
+    if (!this._layer) return;
+    if (visible) this._layer.addTo(this._map);
+    else         this._map.removeLayer(this._layer);
   }
 
   _buildLayer(features) {
