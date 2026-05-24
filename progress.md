@@ -31,13 +31,24 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 | 5 | `TheoryLibraryView.js` — 풀스크린 2컬럼, marked.js 렌더, Gemini AI 설명 SSE | ✅ |
 | 6 | `sandbox_solver.py` — BFS 가설 검증 엔진 | ✅ |
 | 7 | `SandboxLabView.js` — Cytoscape 캔버스 + 검증 결과 UI + 튜토리얼 캔버스 자동생성 | ✅ |
-| 8 | GDELT/RSS/Sanctions + 8단계 추론 루틴 | ⏳ |
+| 8 | GDELT/RSS/Sanctions + 8단계 추론 루틴 | 🔄 GDELT 완료, Sanctions 진행 예정 |
 
 ### 이론 라이브러리 (.md 파일)
 `library/` 14개 완비 — 5대 섹터 전체 커버 (maritime·energy·techno·indo_pacific·gray_zone).
 
+### ✅ GDELT 3-Stage Funnel (2026-05-24)
+
+- `backend/connectors/gdelt_connector.py` — Stage 1: 15분 export ZIP 다운로드, QuadClass≥3·GoldsteinScale≤-5·NumMentions≥3·5대섹터 FIPS 필터
+- `backend/connectors/news_cross_validator.py` — Stage 2: Reuters·BBC·Al Jazeera·AP 4개 RSS 병렬 fetch, ≥2매체 언급 시 confidence 0.5→0.8
+- `backend/services/gdelt_pipeline.py` — Stage 3 오케스트레이터 + GeoJSON 직렬화 (`unverified: true` 프로퍼티)
+- `backend/models/event.py` — `confidence_score: float = 1.0` 필드 추가
+- `backend/api/layers.py` — `GET /api/layers/gdelt` (15분 캐시)
+- `frontend/src/layers/GdeltLayer.js` — 점선 테두리(미검증) / 실선(교차검증) 구분, ⚠️ 뱃지
+
+실측: 24개 피처 | 교차검증 20개(✓) | 미검증 4개(⚠️) — confidence_score 0.8/0.5
+
 ### 현재 버전
-`version.json`: **3.3.0** (phase: 3)
+`version.json`: **3.3.0** → 다음 완료 시 3.4.0 예정
 
 ---
 
