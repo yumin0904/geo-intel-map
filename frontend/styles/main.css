@@ -139,6 +139,90 @@ body.study-mode .conflict-tags { display: flex; }
   line-height: 1.4;
 }
 
+/* ── 클러스터 통합 건수 배지 ────────────────────────────── */
+.conflict-cluster-badge {
+  position: absolute;
+  top: -8px;
+  right: -14px;
+  background: #ffd700;
+  color: #000;
+  font-size: 8px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 1px 4px;
+  line-height: 1.4;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 600;
+}
+
+/* ── importance_score 팝업 섹션 ────────────────────────── */
+.popup-importance {
+  margin: 8px 0;
+  padding: 6px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.popup-importance__bar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.popup-importance__tier {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.popup-importance__bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.popup-importance__bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ff8c00);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.popup-importance__val {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  min-width: 24px;
+  text-align: right;
+}
+
+.popup-cluster-note {
+  font-size: 10px;
+  color: #ffd700;
+  margin: 3px 0;
+}
+
+.popup-importance__detail {
+  margin-top: 4px;
+}
+
+.popup-importance__detail summary {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.popup-importance__breakdown td {
+  font-size: 10px;
+  padding: 1px 4px;
+  color: var(--color-text-secondary);
+}
+
 /* ── Leaflet 툴팁 오버라이드 ─────────────────────────────────── */
 .geo-tooltip {
   background: var(--color-surface);
@@ -1384,51 +1468,53 @@ body:not(.study-mode) .notebook { display: none; }
 .lib-search__input:focus { border-color: var(--color-accent); }
 .lib-search__input::placeholder { color: var(--color-text-secondary); }
 
-.lib-sectors {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--color-border);
-  flex-shrink: 0;
-}
-.lib-filters {
+/* ── 칩 필터 (Phase 3 개편) ─────────────────────────────────────── */
+.lib-chips-section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 14px;
+  gap: 0;
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
-.lib-filter-select {
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  color: var(--color-text-primary);
-  font-size: 11px;
-  padding: 3px 6px;
-  cursor: pointer;
-  width: 100%;
+.lib-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
-.lib-filter-select:focus { border-color: var(--color-accent); outline: none; }
-.lib-sector-tab {
+.lib-chip-row:last-child { border-bottom: none; }
+.lib-chip-label {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+  min-width: 24px;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.lib-chip {
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--color-text-secondary);
   font-size: 9px;
   font-family: var(--font-mono);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 2px 8px;
+  padding: 2px 7px;
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
 }
-.lib-sector-tab:hover { color: var(--color-text-primary); border-color: var(--color-text-secondary); }
-.lib-sector-tab.is-active {
+.lib-chip:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+.lib-chip.is-active {
   color: #ffd700;
   border-color: #ffd700;
-  background: rgba(255,215,0,0.08);
+  background: rgba(255,215,0,0.1);
+  font-weight: 700;
 }
 
 .lib-list {

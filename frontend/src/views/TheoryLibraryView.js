@@ -4,50 +4,65 @@
  * 이론 라이브러리 풀스크린 오버레이 (Phase 3).
  *
  * 레이아웃:
- *   좌측 30% — 섹터 탭 + 검색 + 이론 카드 목록
+ *   좌측 30% — 칩 필터 3행 + 검색 + 이론 카드 목록
  *   우측 70% — 선택된 이론 상세 (marked.js 본문 + AI 스트리밍)
+ *
+ * 필터 칩 (3행, 행 내 단일 선택, AND 조건):
+ *   1행 용도:  전체 / 🔍개념 / 📚사례 / 📊데이터 / ⚖️규범
+ *   2행 지역:  전체 / 인도-태평양 / 중동 / 유럽 / 아프리카 / 전지구
+ *   3행 시대:  전체 / 냉전 / 탈냉전 / 다극화 / 현재
  *
  * 열기/닫기: EventBus 'library:toggle' 또는 ✕ 버튼
  */
 
-import { api }                        from '../services/api.js';
-import { store, setState }            from '../core/StateStore.js';
+import { api }             from '../services/api.js';
+import { store, setState } from '../core/StateStore.js';
 
-const SECTOR_LABELS = {
-  all:          '전체',
-  maritime:     '해양',
-  energy:       '에너지',
-  techno:       '기술',
-  indo_pacific: '인태',
-  gray_zone:    '회색지대',
-};
+// ── 필터 칩 정의 ──────────────────────────────────────────────────────────────
 
-const ASSET_TYPE_LABELS = {
-  all:        '전체',
-  theory:     '이론',
-  case_study: '사례',
-  profile:    '프로필',
-  norm:       '법·제재',
-};
+const USE_CASE_CHIPS = [
+  { key: 'all',        label: '전체',    icon: '' },
+  { key: 'concept',    label: '개념',    icon: '🔍' },
+  { key: 'case_study', label: '사례',    icon: '📚' },
+  { key: 'data',       label: '데이터',  icon: '📊' },
+  { key: 'norm',       label: '규범',    icon: '⚖️' },
+];
 
-const ERA_LABELS = {
-  all:        '전체',
-  cold_war:   '냉전',
-  unipolar:   '단극',
-  multipolar: '다극',
-};
+const REGION_CHIPS = [
+  { key: 'all',          label: '전체' },
+  { key: 'indo_pacific', label: '인도-태평양' },
+  { key: 'middle_east',  label: '중동' },
+  { key: 'europe',       label: '유럽' },
+  { key: 'africa',       label: '아프리카' },
+  { key: 'global',       label: '전지구' },
+];
 
-const REGION_LABELS = {
-  all:              '전체 지역',
-  taiwan_strait:    '대만해협',
-  south_china_sea:  '남중국해',
-  hormuz:           '호르무즈',
-  bab_el_mandeb:    '바브엘만데브',
-  suez:             '수에즈',
-  malacca:          '말라카',
-  ukraine:          '우크라이나',
-  middle_east:      '중동',
-  korean_peninsula: '한반도',
+const ERA_CHIPS = [
+  { key: 'all',               label: '전체' },
+  { key: 'cold_war',         label: '냉전 (1947-91)' },
+  { key: 'unipolar',         label: '탈냉전 (91-08)' },
+  { key: 'multipolar_early', label: '다극화 (08-20)' },
+  { key: 'multipolar_now',   label: '현재 (2020-)' },
+];
+
+// 지역 코드 → 클러스터 매핑
+const REGION_CLUSTER_CODES = {
+  indo_pacific: [
+    'taiwan_strait', 'south_china_sea', 'east_china_sea', 'malacca',
+    'korean_strait', 'korean_peninsula', 'pacific', 'indo_pacific',
+    'bay_of_bengal', 'philippine_sea', 'senkaku',
+  ],
+  middle_east: [
+    'hormuz', 'bab_el_mandeb', 'suez', 'persian_gulf',
+    'red_sea', 'middle_east', 'strait_of_hormuz', 'arabian_sea',
+  ],
+  europe: [
+    'ukraine', 'baltic', 'black_sea', 'europe', 'arctic', 'caspian', 'north_sea',
+  ],
+  africa: [
+    'gulf_of_guinea', 'horn_of_africa', 'sahel', 'somalia', 'africa',
+    'caribbean', 'mozambique',
+  ],
 };
 
 const SECTOR_COLORS = {
@@ -58,6 +73,45 @@ const SECTOR_COLORS = {
   gray_zone:    '#ffd700',
 };
 
+const SECTOR_LABELS = {
+  maritime:     '해양',
+  energy:       '에너지',
+  techno:       '기술',
+  indo_pacific: '인태',
+  gray_zone:    '회색지대',
+};
+
+// ── 필터 헬퍼 ────────────────────────────────────────────────────────────────
+
+function _matchesUseCase(theory, key) {
+  if (key === 'all') return true;
+  return (theory.use_case || theory.asset_type || 'concept') === key;
+}
+
+function _matchesRegion(theory, key) {
+  if (key === 'all') return true;
+  const regions = theory.related_regions || [];
+  if (key === 'global') {
+    if (regions.length === 0) return true;
+    const matchCount = Object.values(REGION_CLUSTER_CODES)
+      .filter(codes => regions.some(r => codes.includes(r))).length;
+    return matchCount >= 2;
+  }
+  const codes = REGION_CLUSTER_CODES[key] || [];
+  return regions.some(r => codes.includes(r));
+}
+
+function _matchesEra(theory, key) {
+  if (key === 'all')               return true;
+  if (key === 'cold_war')          return theory.era === 'cold_war';
+  if (key === 'unipolar')          return theory.era === 'unipolar';
+  if (key === 'multipolar_early')  return theory.era === 'multipolar' && (!theory.year || theory.year < 2020);
+  if (key === 'multipolar_now')    return theory.era === 'multipolar' && theory.year >= 2020;
+  return true;
+}
+
+// ── 뷰 클래스 ────────────────────────────────────────────────────────────────
+
 export class TheoryLibraryView {
   constructor(map, eventBus, layerManager) {
     this._map    = map;
@@ -66,7 +120,7 @@ export class TheoryLibraryView {
     this._el     = null;
     this._open   = false;
     this._loaded = false;
-    this._activeId    = null;   // 현재 선택된 theory_id
+    this._activeId    = null;
     this._aiAbortCtrl = null;
 
     this._mount();
@@ -83,19 +137,17 @@ export class TheoryLibraryView {
   }
 
   _template() {
-    const sectorTabs = Object.entries(SECTOR_LABELS)
-      .map(([k, l]) =>
-        `<button class="lib-sector-tab${k === 'all' ? ' is-active' : ''}" data-sector="${k}">${l}</button>`
-      ).join('');
+    const useCaseChips = USE_CASE_CHIPS.map(({ key, label, icon }) =>
+      `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="useCase" data-value="${key}">${icon ? icon + ' ' : ''}${label}</button>`
+    ).join('');
 
-    const assetOpts = Object.entries(ASSET_TYPE_LABELS)
-      .map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+    const regionChips = REGION_CHIPS.map(({ key, label }) =>
+      `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="region" data-value="${key}">${label}</button>`
+    ).join('');
 
-    const eraOpts = Object.entries(ERA_LABELS)
-      .map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
-
-    const regionOpts = Object.entries(REGION_LABELS)
-      .map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+    const eraChips = ERA_CHIPS.map(({ key, label }) =>
+      `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="era" data-value="${key}">${label}</button>`
+    ).join('');
 
     return `
       <div class="lib__header">
@@ -105,23 +157,27 @@ export class TheoryLibraryView {
 
       <div class="lib__body">
 
-        <!-- 좌측 30%: 필터 + 목록 -->
+        <!-- 좌측 30%: 칩 필터 + 검색 + 목록 -->
         <aside class="lib__sidebar">
           <div class="lib-search">
             <input type="search" class="lib-search__input" placeholder="이론 / 학자 검색…" />
           </div>
-          <div class="lib-sectors">${sectorTabs}</div>
-          <div class="lib-filters">
-            <select class="lib-filter-select" data-filter="assetType">
-              ${assetOpts}
-            </select>
-            <select class="lib-filter-select" data-filter="era">
-              ${eraOpts}
-            </select>
-            <select class="lib-filter-select" data-filter="region">
-              ${regionOpts}
-            </select>
+
+          <div class="lib-chips-section">
+            <div class="lib-chip-row" data-row="useCase">
+              <span class="lib-chip-label">용도</span>
+              ${useCaseChips}
+            </div>
+            <div class="lib-chip-row" data-row="region">
+              <span class="lib-chip-label">지역</span>
+              ${regionChips}
+            </div>
+            <div class="lib-chip-row" data-row="era">
+              <span class="lib-chip-label">시대</span>
+              ${eraChips}
+            </div>
           </div>
+
           <div class="lib-list"></div>
         </aside>
 
@@ -157,13 +213,14 @@ export class TheoryLibraryView {
     this._el.querySelector('.lib__close')
       .addEventListener('click', () => this.close());
 
-    // 섹터 탭
-    this._el.querySelectorAll('.lib-sector-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        this._el.querySelectorAll('.lib-sector-tab').forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        setState('library', { sectorFilter: btn.dataset.sector, searchQuery: '' });
-        this._el.querySelector('.lib-search__input').value = '';
+    // 칩 클릭 — 행 내 단일 선택
+    this._el.querySelectorAll('.lib-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const { filter, value } = chip.dataset;
+        const row = chip.closest('.lib-chip-row');
+        row.querySelectorAll('.lib-chip').forEach(c => c.classList.remove('is-active'));
+        chip.classList.add('is-active');
+        setState('library', { [`${filter}Filter`]: value });
         this._renderList();
       });
     });
@@ -176,15 +233,6 @@ export class TheoryLibraryView {
         setState('library', { searchQuery: e.target.value.trim() });
         this._renderList();
       }, 300);
-    });
-
-    // 유형·시대·지역 드롭다운 필터
-    this._el.querySelectorAll('.lib-filter-select').forEach(sel => {
-      sel.addEventListener('change', () => {
-        const key = sel.dataset.filter;         // assetType | era | region
-        setState('library', { [`${key}Filter`]: sel.value });
-        this._renderList();
-      });
     });
 
     // AI 버튼
@@ -246,16 +294,13 @@ export class TheoryLibraryView {
     const list = this._el.querySelector('.lib-list');
     if (!list) return;
     const {
-      theories, sectorFilter, searchQuery, loading,
-      assetTypeFilter, eraFilter, regionFilter,
+      theories, loading,
+      useCaseFilter, regionFilter, eraFilter, searchQuery,
     } = store.getState('library');
 
     if (loading) { list.innerHTML = '<div class="lib-loading">로딩 중…</div>'; return; }
 
-    const filtered = this._filter(
-      theories || [], sectorFilter, searchQuery,
-      assetTypeFilter, eraFilter, regionFilter,
-    );
+    const filtered = this._filter(theories || [], useCaseFilter, regionFilter, eraFilter, searchQuery);
     if (!filtered.length) { list.innerHTML = '<div class="lib-empty">이론이 없습니다.</div>'; return; }
 
     list.innerHTML = filtered.map(t => this._cardHTML(t)).join('');
@@ -268,12 +313,11 @@ export class TheoryLibraryView {
     });
   }
 
-  _filter(theories, sector, query, assetType, era, region) {
+  _filter(theories, useCase, region, era, query) {
     let r = theories;
-    if (sector    && sector    !== 'all') r = r.filter(t => t.sector_tag  === sector);
-    if (assetType && assetType !== 'all') r = r.filter(t => t.asset_type  === assetType);
-    if (era       && era       !== 'all') r = r.filter(t => t.era         === era);
-    if (region    && region    !== 'all') r = r.filter(t => (t.related_regions || []).includes(region));
+    r = r.filter(t => _matchesUseCase(t, useCase || 'all'));
+    r = r.filter(t => _matchesRegion(t, region   || 'all'));
+    r = r.filter(t => _matchesEra(t,   era       || 'all'));
     if (query) {
       const q = query.toLowerCase();
       r = r.filter(t =>
@@ -286,13 +330,13 @@ export class TheoryLibraryView {
   }
 
   _cardHTML(theory) {
-    const color    = SECTOR_COLORS[theory.sector_tag] || '#888';
-    const label    = SECTOR_LABELS[theory.sector_tag] || theory.sector_tag;
+    const color     = SECTOR_COLORS[theory.sector_tag] || '#888';
+    const label     = SECTOR_LABELS[theory.sector_tag] || theory.sector_tag;
     const theorists = (theory.theorists || []).slice(0, 2).join(', ') || '—';
-    const year     = theory.year ? ` (${theory.year})` : '';
-    const summary  = theory.summary
+    const year      = theory.year ? ` (${theory.year})` : '';
+    const summary   = theory.summary
       ? `<p class="lib-card__summary">${theory.summary}</p>` : '';
-    const isActive = theory.theory_id === this._activeId ? ' is-active' : '';
+    const isActive  = theory.theory_id === this._activeId ? ' is-active' : '';
 
     return `
       <div class="lib-card${isActive}" data-id="${theory.theory_id}">
@@ -312,21 +356,19 @@ export class TheoryLibraryView {
     this._activeId = theory.theory_id;
     this._cancelAiStream();
 
-    // 카드 active 상태 갱신
     this._el.querySelectorAll('.lib-card').forEach(c => {
       c.classList.toggle('is-active', c.dataset.id === this._activeId);
     });
 
-    // 우측 패널 표시 + 헤더 즉시 업데이트
     const placeholder = this._el.querySelector('.lib__detail-placeholder');
     const content     = this._el.querySelector('.lib__detail-content');
     placeholder.style.display = 'none';
     content.style.display = 'flex';
 
-    const color  = SECTOR_COLORS[theory.sector_tag] || '#888';
-    const label  = SECTOR_LABELS[theory.sector_tag] || theory.sector_tag;
+    const color     = SECTOR_COLORS[theory.sector_tag] || '#888';
+    const label     = SECTOR_LABELS[theory.sector_tag] || theory.sector_tag;
     const theorists = (theory.theorists || []).join(', ') || '—';
-    const year   = theory.year ? ` · ${theory.year}` : '';
+    const year      = theory.year ? ` · ${theory.year}` : '';
 
     const sectorEl = this._el.querySelector('.lib__detail-sector');
     sectorEl.textContent = label;
@@ -334,20 +376,17 @@ export class TheoryLibraryView {
     this._el.querySelector('.lib__detail-title').textContent = theory.display_name;
     this._el.querySelector('.lib__detail-meta').textContent  = `${theorists}${year}`;
 
-    // AI 결과 초기화
     this._el.querySelector('.lib-ai-result').innerHTML = '';
     const aiBtn = this._el.querySelector('.lib-ai-btn');
     aiBtn.disabled = false;
     aiBtn.textContent = '🤖 AI로 더 알아보기';
 
-    // body가 없으면 API에서 로드
     let fullTheory = theory;
     if (!theory.body) {
       this._el.querySelector('.lib-detail-md').innerHTML =
         '<p style="color:#8b949e;font-size:12px">본문 로딩 중…</p>';
       try {
         fullTheory = await api.get(`/api/library/theories/${theory.theory_id}`);
-        // 캐시: StateStore theories 배열의 해당 항목 갱신
         const { theories } = store.getState('library');
         const idx = theories.findIndex(t => t.theory_id === theory.theory_id);
         if (idx >= 0) theories[idx] = fullTheory;
@@ -358,13 +397,13 @@ export class TheoryLibraryView {
       }
     }
 
-    // marked.js 렌더링
     const bodyHtml = fullTheory.body
-      ? (window.marked ? window.marked.parse(fullTheory.body) : `<pre style="white-space:pre-wrap;font-size:12px">${fullTheory.body}</pre>`)
+      ? (window.marked
+          ? window.marked.parse(fullTheory.body)
+          : `<pre style="white-space:pre-wrap;font-size:12px">${fullTheory.body}</pre>`)
       : '<p style="color:#8b949e;font-size:12px">본문이 없습니다. POST /api/library/reindex 실행 후 새로고침하세요.</p>';
 
     this._el.querySelector('.lib-detail-md').innerHTML = bodyHtml;
-    // 본문 스크롤 최상단으로
     this._el.querySelector('.lib__detail-body').scrollTop = 0;
   }
 

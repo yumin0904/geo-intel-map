@@ -10,7 +10,7 @@ import logging
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Optional
 
 import frontmatter  # python-frontmatter: YAML front matter 파싱 전용
 
@@ -26,6 +26,10 @@ DB_PATH = Path(__file__).parent.parent.parent / "db" / "library.db"
 ALLOWED_SECTOR_TAGS = frozenset({"maritime", "energy", "techno", "indo_pacific", "gray_zone"})
 ALLOWED_ASSET_TYPES = frozenset({"theory", "case_study", "profile", "norm"})
 ALLOWED_ERAS        = frozenset({"cold_war", "unipolar", "multipolar"})
+ALLOWED_USE_CASES   = frozenset({"concept", "case_study", "data", "norm"})
+
+# asset_type → use_case 자동 파생 (front matter에 use_case 없을 때 적용)
+_ASSET_TO_USE_CASE = {"theory": "concept", "case_study": "case_study", "profile": "data", "norm": "norm"}
 
 REQUIRED_FIELDS = ("theory_id", "title", "sector_tag", "theorists", "year", "summary", "regions")
 
@@ -43,7 +47,8 @@ CREATE TABLE IF NOT EXISTS theories (
     file_path  TEXT,
     updated_at TEXT NOT NULL,
     asset_type TEXT DEFAULT 'theory',
-    era        TEXT
+    era        TEXT,
+    use_case   TEXT DEFAULT 'concept'
 );
 
 -- FTS5 가상 테이블: theories 테이블을 content source로 사용
@@ -67,7 +72,7 @@ def _get_conn() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.executescript(_SCHEMA_SQL)
     # 기존 DB에 신규 컬럼이 없으면 추가 (마이그레이션)
-    for col, default in [("asset_type", "'theory'"), ("era", "NULL")]:
+    for col, default in [("asset_type", "'theory'"), ("era", "NULL"), ("use_case", "'concept'")]:
         try:
             conn.execute(f"ALTER TABLE theories ADD COLUMN {col} TEXT DEFAULT {default}")
             conn.commit()
@@ -135,6 +140,12 @@ def parse_front_matter(path: Path) -> dict:
         era = None
     meta["era"] = era
 
+    # use_case: front matter 명시 → 없으면 asset_type에서 자동 파생
+    use_case = meta.get("use_case")
+    if use_case not in ALLOWED_USE_CASES:
+        use_case = _ASSET_TO_USE_CASE.get(meta["asset_type"], "concept")
+    meta["use_case"] = use_case
+
     # list 타입 필드를 JSON 문자열로 직렬화 (SQLite TEXT 컬럼 저장용)
     for field in ("theorists", "regions"):
         val = meta[field]
@@ -183,8 +194,8 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                 INSERT OR REPLACE INTO theories
                     (theory_id, title, sector_tag, theorists, year,
                      summary, regions, body, file_path, updated_at,
-                     asset_type, era)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     asset_type, era, use_case)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     meta["theory_id"],
@@ -199,6 +210,7 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                     now,
                     meta["asset_type"],
                     meta["era"],
+                    meta["use_case"],
                 ),
             )
             upserted += 1
@@ -252,7 +264,7 @@ def search_theories(query: str, limit: int = 20) -> list[dict]:
         conn.close()
 
 
-def get_db_theory(theory_id: str) -> dict | None:
+def get_db_theory(theory_id: str) -> Optional[dict]:
     """
     SQLite에서 단일 이론을 반환한다. body 마크다운 본문 포함.
 
@@ -269,7 +281,7 @@ def get_db_theory(theory_id: str) -> dict | None:
         conn.close()
 
 
-def list_db_theories(sector_tag: str | None = None) -> list[dict]:
+def list_db_theories(sector_tag: Optional[str] = None) -> list[dict]:
     """
     SQLite에서 이론 목록을 반환한다. body 제외 (리스트 뷰 성능 최적화).
 
@@ -279,7 +291,7 @@ def list_db_theories(sector_tag: str | None = None) -> list[dict]:
     try:
         sql = (
             "SELECT theory_id, title, sector_tag, theorists, year, "
-            "summary, regions, file_path, asset_type, era FROM theories"
+            "summary, regions, file_path, asset_type, era, use_case FROM theories"
         )
         conditions: list[str] = []
         params: list = []

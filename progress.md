@@ -54,8 +54,26 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - `backend/api/layers.py` — `GET /api/layers/sanctions` (24시간 캐시)
 - `frontend/src/layers/SanctionsLayer.js` — 국가 버블 마커 (UN 보라/서방 주황/단자 파랑)
 
+### ✅ 라이브러리 필터 UI 개편 (2026-05-24)
+
+- `backend/services/library/md_indexer.py` — `use_case` 컬럼 추가 (concept/case_study/data/norm), `asset_type` → `use_case` 자동 파생
+- `backend/api/library.py` — `_merge_db_only()` 추가 (YAML 미등록 DB-only 항목 지원), `get_theory()` DB-only fallback, `list_items()` DB-only 루프 + `use_case` 필터
+- `library/04_sanctions_and_norms/` — 15개 제재 레짐 .md (asset_type: norm, use_case: norm)
+- `frontend/src/views/TheoryLibraryView.js` — 섹터 탭·드롭다운 3개 → 칩 3행으로 전면 교체 (용도/지역/시대, 단일 선택, AND 조건)
+- `frontend/styles/main.css` — `.lib-chip`, `.lib-chip-row`, `.lib-chip-label` 스타일 추가
+
+라이브러리 DB: 29개 (이론 14 + 제재 15)
+
+### ✅ ACLED 복합 중요도 점수 (2026-05-24)
+
+- `backend/models/event.py` — `importance_score: float`, `cluster_count: int` 필드 추가
+- `backend/services/importance_scorer.py` (신규) — 클러스터링(region+7일+inter1), 점수 계산(severity·recency·cascade·반복·gdelt, 5개 가중합)
+- `backend/api/layers.py` — `get_conflict_events()`에 `cluster_events → score_events` 파이프라인 연결, GeoJSON 직렬화에 `importance_score·cluster_count·_score_breakdown` 포함
+- `frontend/src/layers/ConflictEventsLayer.js` — importance 기반 zoom 가시성(≥0.7 항상/0.4~7 zoom≥5/나머지 zoom≥7), severity 4단계 반지름, 클러스터 배지, 팝업 breakdown
+- `frontend/styles/main.css` — `.conflict-cluster-badge`, `.popup-importance` 스타일 추가
+
 ### 현재 버전
-`version.json`: **3.4.0** (Step 8 완료 — GDELT + Sanctions)
+`version.json`: **3.5.0**
 
 ---
 

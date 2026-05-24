@@ -64,12 +64,12 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
         "sector_tag":      theory_link.sector_tag,
         "map_focus":       theory_link.map_focus.model_dump(),
         "related_regions": theory_link.related_regions,
-        # SQLite 보강 필드 — 없으면 빈 값
         "theorists":   [],
         "year":        None,
         "summary":     "",
         "file_path":   None,
         "asset_type":  "theory",
+        "use_case":    "concept",
         "era":         None,
     }
     if include_body:
@@ -82,11 +82,33 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
             "summary":    db_row.get("summary") or "",
             "file_path":  db_row.get("file_path"),
             "asset_type": db_row.get("asset_type") or "theory",
+            "use_case":   db_row.get("use_case") or "concept",
             "era":        db_row.get("era"),
         })
         if include_body:
             out["body"] = db_row.get("body") or ""
 
+    return out
+
+
+def _merge_db_only(db_row: dict, include_body: bool = False) -> dict:
+    """theory_library.yaml 미등록 항목(norm/sanction 등) — DB만으로 구성."""
+    out = {
+        "theory_id":       db_row["theory_id"],
+        "display_name":    db_row["title"],
+        "sector_tag":      db_row["sector_tag"],
+        "map_focus":       None,
+        "related_regions": _parse_json_field(db_row.get("regions")),
+        "theorists":       _parse_json_field(db_row.get("theorists")),
+        "year":            db_row.get("year"),
+        "summary":         db_row.get("summary") or "",
+        "file_path":       db_row.get("file_path"),
+        "asset_type":      db_row.get("asset_type") or "norm",
+        "use_case":        db_row.get("use_case") or "norm",
+        "era":             db_row.get("era"),
+    }
+    if include_body:
+        out["body"] = db_row.get("body") or ""
     return out
 
 
@@ -96,22 +118,33 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
 async def list_items(
     sector:     Optional[str] = Query(None),
     asset_type: Optional[str] = Query(None),
+    use_case:   Optional[str] = Query(None),
     era:        Optional[str] = Query(None),
     region:     Optional[str] = Query(None),
 ):
     """
-    통합 라이브러리 목록. 4축 필터(sector·asset_type·era·region) 지원.
+    통합 라이브러리 목록. 5축 필터(sector·asset_type·use_case·era·region) 지원.
 
-    body 제외 (목록 뷰 성능). theory_library.yaml 권위 소스 + SQLite 보강.
+    body 제외 (목록 뷰 성능).
+    theory_library.yaml 등록 항목 + SQLite-only 항목(norm 등) 모두 포함.
     """
-    links = list_all(sector_tag=sector)
+    links   = list_all(sector_tag=sector)
     db_rows = list_db_theories(sector_tag=sector)
     db_map  = {r["theory_id"]: r for r in db_rows}
 
+    # yaml 등록 항목
+    linked_ids = {link.theory_id for link in links}
     results = [_merge(link, db_map.get(link.theory_id)) for link in links]
+
+    # DB-only 항목 (sanctions/norm 등 yaml 미등록)
+    for db_row in db_rows:
+        if db_row["theory_id"] not in linked_ids:
+            results.append(_merge_db_only(db_row))
 
     if asset_type:
         results = [r for r in results if r["asset_type"] == asset_type]
+    if use_case:
+        results = [r for r in results if r.get("use_case") == use_case]
     if era:
         results = [r for r in results if r["era"] == era]
     if region:
@@ -144,10 +177,13 @@ async def get_focus(theory_id: str):
 @router.get("/theories/{theory_id}")
 async def get_theory(theory_id: str):
     """단일 이론 상세 반환. body(마크다운 본문) 포함."""
-    link = get_theory_link(theory_id)
-    if not link:
-        raise HTTPException(404, f"이론을 찾을 수 없습니다: {theory_id}")
-    return _merge(link, get_db_theory(theory_id), include_body=True)
+    link   = get_theory_link(theory_id)
+    db_row = get_db_theory(theory_id)
+    if link:
+        return _merge(link, db_row, include_body=True)
+    if db_row:
+        return _merge_db_only(db_row, include_body=True)
+    raise HTTPException(404, f"이론을 찾을 수 없습니다: {theory_id}")
 
 
 @router.get("/search")

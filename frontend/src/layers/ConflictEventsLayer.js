@@ -23,36 +23,65 @@ const EVENT_TYPE_KO = {
   'Explosions/Remote violence': '폭발/원거리 공격',
 };
 
-// severity 0-100 → 마커 크기/색상/펄스 속도 매핑
-const SEVERITY_STYLES = [
-  { min: 80, radius: 14, color: '#f85149', duration: 0.5 },
-  { min: 60, radius: 11, color: '#ff8c00', duration: 1.0 },
-  { min: 30, radius:  8, color: '#d29922', duration: 2.0 },
-  { min:  0, radius:  5, color: '#3fb950', duration: 3.0 },
+// severity 0-100 → 마커 반지름 (요구사항 §5)
+const SEVERITY_RADIUS = [
+  { min: 81, radius: 16 },
+  { min: 61, radius: 12 },
+  { min: 31, radius:  8 },
+  { min:  0, radius:  4 },
 ];
 
-const ZOOM_HIGH_SEVERITY_CUTOFF = 6;
-const MIN_SEVERITY_LOW_ZOOM     = 60;
-const CLUSTER_THRESHOLD         = 1000;
+// severity → 색상/펄스 속도
+const SEVERITY_STYLES = [
+  { min: 80, color: '#f85149', duration: 0.5 },
+  { min: 60, color: '#ff8c00', duration: 1.0 },
+  { min: 30, color: '#d29922', duration: 2.0 },
+  { min:  0, color: '#3fb950', duration: 3.0 },
+];
+
+// importance_score 임계값 — zoom별 가시성 기준 (요구사항 §4)
+const IMP_HIGH  = 0.7;  // 항상 표시 ⭐
+const IMP_MID   = 0.4;  // zoom ≥ 5 시 표시 📌
+                        // < 0.4: zoom ≥ 7 시 표시 💤
+
+const CLUSTER_THRESHOLD = 1000;
 
 // GDELT 마커 색상
 const GDELT_COLOR_HIGH = '#ff4444';  // QuadClass 4: Material Conflict
 const GDELT_COLOR_LOW  = '#ff8800';  // QuadClass 3: Verbal Conflict
 
+function getSeverityRadius(severity) {
+  return (SEVERITY_RADIUS.find(s => severity >= s.min) ?? SEVERITY_RADIUS.at(-1)).radius;
+}
+
 function getSeverityStyle(severity) {
   return SEVERITY_STYLES.find(s => severity >= s.min) ?? SEVERITY_STYLES.at(-1);
 }
 
-/** ACLED용 DivIcon 펄스 마커 */
-function buildAcledIcon(severity, tags = []) {
-  const { radius, color, duration } = getSeverityStyle(severity);
-  const size    = radius * 2;
-  const badgeHtml = tags.length
-    ? `<div class="conflict-tags">${tags.map(t => `<span class="conflict-tag-badge">${t}</span>`).join('')}</div>`
+/** importance_score → 등급 기호 */
+function importanceTier(score) {
+  if (score >= IMP_HIGH) return '⭐';
+  if (score >= IMP_MID)  return '📌';
+  return '💤';
+}
+
+/** ACLED용 DivIcon 펄스 마커 (cluster_count 배지 포함) */
+function buildAcledIcon(severity, clusterCount = 1, importance = 0) {
+  const radius   = getSeverityRadius(severity);
+  const { color, duration } = getSeverityStyle(severity);
+  const size     = radius * 2;
+
+  // importance ≥ 0.7이면 실선 테두리로 강조
+  const outline  = importance >= IMP_HIGH ? 'outline:2px solid rgba(255,255,255,0.7);' : '';
+
+  // cluster_count > 1이면 숫자 배지 표시 (요구사항 §6)
+  const badgeHtml = clusterCount > 1
+    ? `<span class="conflict-cluster-badge">${clusterCount}건</span>`
     : '';
+
   return L.divIcon({
     className:   'conflict-icon',
-    html:        `<div class="conflict-dot" style="--cdot-color:${color};--cdot-duration:${duration}s"></div>${badgeHtml}`,
+    html:        `<div class="conflict-dot" style="--cdot-color:${color};--cdot-duration:${duration}s;${outline}"></div>${badgeHtml}`,
     iconSize:    [size, size],
     iconAnchor:  [radius, radius],
     popupAnchor: [0, -(radius + 4)],
@@ -116,6 +145,46 @@ function buildPopup(props) {
     ? (EVENT_TYPE_KO[props.event_type] ?? props.event_type ?? '')
     : (props.quad_class >= 4 ? '물리적 충돌' : '언어적 충돌');
 
+  // ── importance_score 섹션 (ACLED 전용, 요구사항 §7) ─────────────────
+  let importanceHtml = '';
+  if (!isGdelt && props.importance_score != null) {
+    const imp    = props.importance_score;
+    const tier   = importanceTier(imp);
+    const pct    = Math.round(imp * 100);
+    const bd     = props._score_breakdown || {};
+
+    const clusterNote = (props.cluster_count ?? 1) > 1
+      ? `<div class="popup-cluster-note">이 지역 유사 충돌 <strong>${props.cluster_count}건</strong> 통합됨</div>`
+      : '';
+
+    const bdRows = [
+      ['심각도',         bd.severity        ?? 0],
+      ['최신성',         bd.recency         ?? 0],
+      ['Cascade 연계',   bd.cascade_hit     ?? 0],
+      ['지역 반복',      bd.repeat_region   ?? 0],
+      ['GDELT 교차확인', bd.gdelt_confirmed ?? 0],
+    ].map(([label, val]) =>
+      `<tr><td>${label}</td><td>${(val * 100).toFixed(1)}p</td></tr>`
+    ).join('');
+
+    importanceHtml = `
+      <div class="popup-importance">
+        <div class="popup-importance__bar-row">
+          <span class="popup-importance__tier">${tier}</span>
+          <div class="popup-importance__bar-wrap">
+            <div class="popup-importance__bar" style="width:${pct}%"></div>
+          </div>
+          <span class="popup-importance__val">${pct}</span>
+        </div>
+        ${clusterNote}
+        <details class="popup-importance__detail">
+          <summary>점수 구성</summary>
+          <table class="base-popup__table popup-importance__breakdown">${bdRows}</table>
+        </details>
+      </div>
+    `;
+  }
+
   return `
     <div class="base-popup">
       <h3 class="base-popup__name">${props.title}</h3>
@@ -125,6 +194,7 @@ function buildPopup(props) {
         <tr><td>심각도</td><td><strong>${props.severity ?? 0}</strong> / 100</td></tr>
         ${extraRows}
       </table>
+      ${importanceHtml}
       ${sourceLink}
       <div class="base-popup__tags">${tags}</div>
     </div>
@@ -190,19 +260,29 @@ export class ConflictEventsLayer {
     if (!this._layerGroup) return;
 
     const zoom   = this.map.getZoom();
-    const zoomMin = zoom <= ZOOM_HIGH_SEVERITY_CUTOFF ? MIN_SEVERITY_LOW_ZOOM : 0;
-    const minSev  = Math.max(zoomMin, this._minSeverity);
-    const cutoff  = this._latestTs - this._periodDays * 86_400_000;
+    const cutoff = this._latestTs - this._periodDays * 86_400_000;
 
     this._layerGroup.clearLayers();
 
     this._features
       .filter(f => {
-        if ((f.properties.severity ?? 0) < minSev) return false;
-        const ts = f.properties.timestamp ? Date.parse(f.properties.timestamp) : 0;
-        // GDELT는 항상 최신 데이터 → 기간 필터 패스 처리
-        if (f.properties.data_source === 'GDELT') return true;
-        return ts >= cutoff;
+        const props = f.properties;
+
+        // severity 슬라이더 필터
+        if ((props.severity ?? 0) < this._minSeverity) return false;
+
+        // GDELT: 항상 최신 데이터 → 기간·importance 필터 패스
+        if (props.data_source === 'GDELT') return true;
+
+        // 기간 필터
+        const ts = props.timestamp ? Date.parse(props.timestamp) : 0;
+        if (ts < cutoff) return false;
+
+        // importance 기반 zoom 가시성 (요구사항 §4)
+        const imp = props.importance_score ?? 0;
+        if (imp >= IMP_HIGH)  return true;           // ⭐ 항상 표시
+        if (imp >= IMP_MID)   return zoom >= 5;      // 📌 zoom ≥ 5
+        return zoom >= 7;                             // 💤 zoom ≥ 7
       })
       .forEach(feature => {
         const [lon, lat] = feature.geometry.coordinates;
@@ -211,7 +291,13 @@ export class ConflictEventsLayer {
 
         const marker = isGdelt
           ? buildGdeltMarker(lat, lon, props)
-          : L.marker([lat, lon], { icon: buildAcledIcon(props.severity ?? 0, props.theory_tags ?? []) });
+          : L.marker([lat, lon], {
+              icon: buildAcledIcon(
+                props.severity       ?? 0,
+                props.cluster_count  ?? 1,
+                props.importance_score ?? 0,
+              ),
+            });
 
         marker.bindTooltip(
           isGdelt && props.unverified ? `⚠️ ${props.title}` : props.title,

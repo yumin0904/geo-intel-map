@@ -17,6 +17,7 @@ from connectors.opensky import OpenSkyConnector
 from models.event import Event
 from services.gdelt_pipeline import run_gdelt_pipeline, to_geojson as gdelt_to_geojson
 from connectors.sanctions_connector import load_sanctions
+from services.importance_scorer import cluster_events, score_events
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
 
@@ -100,6 +101,17 @@ async def get_conflict_events():
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"ACLED API 연결 실패: {e}") from e
 
+    # GDELT 캐시에서 지역 코드 추출 — gdelt_confirmed 점수 계산용
+    gdelt_regions: frozenset[str] = frozenset()
+    if _gdelt_cache["geojson"] is not None:
+        gdelt_regions = frozenset(
+            f["properties"].get("region_code", "")
+            for f in _gdelt_cache["geojson"].get("features", [])
+            if f["properties"].get("region_code")
+        )
+
+    events = cluster_events(events)
+    events = score_events(events, gdelt_regions)
     result = _events_to_geojson(events)
     _conflict_cache["geojson"] = result
     _conflict_cache["expires_at"] = now + _CONFLICT_TTL
@@ -122,14 +134,16 @@ def _events_to_geojson(events: list[Event]) -> dict:
                 "coordinates": [lon, lat],
             },
             "properties": {
-                "id":          e.id,
-                "timestamp":   e.timestamp.isoformat(),
-                "source_type": e.source_type,
-                "source_id":   e.source_id,
-                "severity":    e.severity,
-                "title":       e.title,
-                "description": e.description,
-                "theory_tags": e.theory_tags,
+                "id":               e.id,
+                "timestamp":        e.timestamp.isoformat(),
+                "source_type":      e.source_type,
+                "source_id":        e.source_id,
+                "severity":         e.severity,
+                "title":            e.title,
+                "description":      e.description,
+                "theory_tags":      e.theory_tags,
+                "importance_score": e.importance_score,
+                "cluster_count":    e.cluster_count,
                 **e.payload,
             },
         })

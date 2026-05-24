@@ -23,3 +23,5 @@ class Event(BaseModel):
     payload: dict                  # 소스별 원본 필드 보존 (Cascade 분석용)
     theory_tags: list[str]         # ["A2AD", "gray_zone", "hybrid_warfare", ...]
     confidence_score: float = 1.0  # ACLED=1.0, 교차검증=0.8, GDELT 미검증=0.5
+    importance_score: float = 0.0  # 복합 중요도 0-1 (severity·recency·cascade·반복·gdelt)
+    cluster_count: int = 1         # 지역+7일+inter1 기준 통합된 원본 이벤트 수
