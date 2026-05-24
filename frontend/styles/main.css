@@ -2088,3 +2088,22 @@ body:not(.study-mode) .notebook { display: none; }
 .sanction-popup .tag--bodies { color: #9b9; }
 .sanction-popup__trigger { color: #aaa; font-size: 10px; margin-bottom: 4px; }
 .sanction-popup__severity { color: #e67e22; font-size: 10px; font-weight: 600; }
+
+/* ── 통합 팝업: 출처 뱃지 (ACLED/GDELT) */
+.base-popup__badge-row { margin-bottom: 8px; }
+.popup-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.popup-badge--acled      { background: rgba(63,185,80,0.18); color: #3fb950; border: 1px solid rgba(63,185,80,0.4); }
+.popup-badge--gdelt-ok   { background: rgba(74,158,255,0.18); color: #4a9eff; border: 1px solid rgba(74,158,255,0.4); }
+.popup-badge--gdelt-warn { background: rgba(255,204,0,0.18); color: #ffcc00; border: 1px solid rgba(255,204,0,0.4); }
+
+/* ── 통합 팝업: 원문 링크 */
+.base-popup__link { margin: 6px 0; }
+.base-popup__link a { color: #4a9eff; font-size: 11px; text-decoration: none; }
+.base-popup__link a:hover { text-decoration: underline; }
