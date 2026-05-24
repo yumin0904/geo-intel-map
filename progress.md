@@ -72,6 +72,29 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - `frontend/src/layers/ConflictEventsLayer.js` — importance 기반 zoom 가시성(≥0.7 항상/0.4~7 zoom≥5/나머지 zoom≥7), severity 4단계 반지름, 클러스터 배지, 팝업 breakdown
 - `frontend/styles/main.css` — `.conflict-cluster-badge`, `.popup-importance` 스타일 추가
 
+### ✅ ACLED Gemini on-demand 번역 (2026-05-24)
+
+- `backend/connectors/gemini_translator.py` — SQLite 캐시(`translation_cache.db`), SHA-256 해시, Gemini 1.5 Flash 호출, 비용 추정(`estimate_cost`), 캐시 통계(`get_cache_stats`)
+- `backend/api/translate.py` (신규) — `GET /api/translate` (importance≥0.7 게이트, 캐시 반영), `GET /api/translate/stats`
+- `backend/main.py` — `translate_router` 등록
+- `frontend/src/layers/ConflictEventsLayer.js` — ⭐ 이벤트 팝업에 "🌐 한국어로 보기" 버튼, `popupopen` 핸들러로 fetch → 스피너 → 번역 결과 div 교체
+- `backend/.env.example` — `GEMINI_API_KEY` 항목 추가 (Google AI Studio 링크)
+- `frontend/styles/main.css` — `.popup-translate-btn`, `.popup-translated` 스타일 추가
+
+### ✅ GDELT 한국어 상세 템플릿 (2026-05-24)
+
+- `backend/connectors/gdelt_connector.py` — CAMEO actor 코드 → 한국어 매핑(`_ACTOR_COUNTRY_KO`, `_ACTOR_TYPE_KO`), `_generate_description()` 3행 템플릿, `_actor_ko()`, `_instability_label()`
+- `backend/services/gdelt_pipeline.py` — Stage 3: confidence 0.5→0.8 승격 시 description 재생성, `to_geojson()`에 `actor1_ko·actor2_ko` 노출
+- `frontend/src/layers/ConflictEventsLayer.js` — GDELT 팝업 `actor1_ko·actor2_ko` 행, description `pre-line` 렌더
+
+### ✅ 분쟁 레이어 통합 + 하단 UI 제거 (2026-05-24)
+
+- `frontend/src/layers/ConflictEventsLayer.js` — ACLED + GDELT 병렬 fetch, 단일 레이어 통합 렌더링, 출처 뱃지 구분
+- `frontend/index.html` — 하단 타임라인 패널(`#timeline-panel`) 제거, vis-timeline CDN 제거, `TimelineView` 연결 해제
+- `frontend/index.html` — 분쟁 필터바(`#conflict-filter-bar`, 슬라이더/기간버튼) 제거, CASCADE GRAPH 패널 제거, `CascadeGraphView` 연결 해제
+- `frontend/styles/main.css` — timeline·filter-bar·cgraph 관련 스타일 ~490줄 제거
+- 파일 보존: `TimelineView.js`, `CascadeGraphView.js` (연결만 해제)
+
 ### 현재 버전
 `version.json`: **3.5.0**
 
@@ -98,8 +121,9 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ## 다음 세션 시작점
 
-Phase 3 체크리스트 1~8 모두 ✅. 다음 선택지:
+### 우선순위 작업 (2026-05-25 예정)
 
-1. **3.5.0 선언** — 라이브러리 개편 (4축 필터 + asset_type/era) 이미 완료, 버전 공식 선언만 남음
-2. **8단계 추론 루틴 Step 3·6**: `case_studies.yaml` 초안 + `alliance_graph.yaml`
-3. **Phase 4 착수**: MapLibre 3D Globe, 외교 성명 RSS + Gemini 분석, FRED 거시 변수
+1. **상단 2단 바** — 긴장도 게이지 + 피자지수 + 주요 주가 / 뉴스 티커 (실시간 느낌 강화)
+2. **분석실(SandboxLab) 버그 수정** — 현재 알려진 UI 버그 점검
+3. **라이브러리 데이터 채우기** — 이론 카드 내용 보강 (참고문헌, 학습노트)
+4. **인과 연쇄 레이어 검토** — CascadeLayer 동작 점검, 룰 보완
