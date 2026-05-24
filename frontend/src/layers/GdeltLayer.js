@@ -48,7 +48,8 @@ export class GdeltLayer {
       onEachFeature: (feature, layer) => this._bindEvents(feature, layer),
     });
 
-    if (this._visible) this._layer.addTo(this._map);
+    this._visible = true;
+    this._layer.addTo(this._map);
   }
 
   _makeMarker(feature, latlng) {

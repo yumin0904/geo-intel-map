@@ -44,7 +44,8 @@ export class SanctionsLayer {
 
     this._features = data.features || [];
     this._layer = this._buildLayer(this._features);
-    if (this._visible) this._layer.addTo(this._map);
+    this._visible = true;
+    this._layer.addTo(this._map);
   }
 
   setVisible(visible) {
