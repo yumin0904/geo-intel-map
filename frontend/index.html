@@ -20,22 +20,6 @@
   <!-- 좌측 사이드바 — LayerPanel이 마운트 -->
   <div id="layer-panel"></div>
 
-  <!-- 분쟁 이벤트 필터 바 (하단 중앙 고정) -->
-  <div id="conflict-filter-bar">
-    <span class="filter-bar__title">◈ 분쟁 이벤트</span>
-    <div class="filter-bar__row">
-      <span class="filter-bar__label">심각도</span>
-      <input type="range" id="severity-slider" class="severity-slider" min="0" max="100" value="0" step="5" />
-      <span id="severity-label" class="filter-bar__value">0 이상</span>
-    </div>
-    <div class="filter-bar__divider"></div>
-    <div class="filter-bar__row">
-      <span class="filter-bar__label">기간</span>
-      <button class="period-btn is-active" data-days="30">30일</button>
-      <button class="period-btn" data-days="7">7일</button>
-    </div>
-  </div>
-
   <!-- 우측 상단 정보 패널 -->
   <div class="info-panel">
     <span class="info-title">geo-intel-map</span>
@@ -48,24 +32,6 @@
   <div id="library-panel" class="library-panel"></div>
   <!-- Phase 3: 분석실 노드·엣지 캔버스 — SandboxLabView.js가 마운트 -->
   <div id="sandbox-panel" class="sandbox-panel"></div>
-
-  <!-- 우측 하단 Cascade 그래프 패널 — CascadeGraphView.js가 마운트 -->
-  <div id="cascade-graph-panel">
-    <div class="cgraph__header">
-      <span class="cgraph__title">⬡ CASCADE GRAPH</span>
-      <span class="cgraph__count" id="cascade-graph-count">로딩 중…</span>
-      <button id="cascade-graph-fit" class="cgraph__btn" title="전체 그래프 보기">⊞ 전체</button>
-      <button id="cascade-graph-fullscreen" class="cgraph__btn" title="전체화면 전환">⛶</button>
-    </div>
-    <!-- cgraph__body: 그래프(70%) + 이론 패널(30%) — 전체화면 시 flex-row로 분할 -->
-    <div class="cgraph__body">
-      <div id="cascade-graph-cy"></div>
-      <!-- 전체화면 전용 이론 분석 패널 — 일반 모드에서는 display:none -->
-      <div class="cgraph__inner-theory" id="cascade-graph-inner-theory">
-        <p class="cgraph__inner-theory-hint">노드를 클릭하면<br>이론 분석이 표시됩니다.</p>
-      </div>
-    </div>
-  </div>
 
   <!-- Leaflet JS (CDN) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -94,7 +60,6 @@
     import { LayerPanel }           from './src/panels/LayerPanel.js';
     import { TheoryPanel }          from './src/panels/TheoryPanel.js';
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
-    import { CascadeGraphView }     from './src/views/CascadeGraphView.js';
     import { TheoryLibraryView }    from './src/views/TheoryLibraryView.js';
     import { SandboxLabView }       from './src/views/SandboxLabView.js';
     import { api }                  from './src/services/api.js';
@@ -202,34 +167,12 @@
     theoryPanel.setNotebook(new NotebookPanel());
     theoryPanel.mount('theory-panel');
 
-    // Phase 2: Cascade 그래프 뷰 — cascade:loaded 재사용, marker:click 연동
-    new CascadeGraphView(ctrl.eventBus);
-
     // Phase 3: 이론 라이브러리 뷰 — library:toggle 이벤트로 열기/닫기
     new TheoryLibraryView(ctrl.map, ctrl.eventBus, ctrl.layerManager);
 
     // Phase 3: Sandbox Lab 뷰 — sandbox:toggle 이벤트로 열기/닫기
     new SandboxLabView(ctrl.map, ctrl.eventBus);
 
-    // ── 분쟁 이벤트 필터 바 핸들러 ──────────────────────────────
-    const slider       = document.getElementById('severity-slider');
-    const severityLabel = document.getElementById('severity-label');
-    const periodBtns   = document.querySelectorAll('.period-btn');
-
-    // 슬라이더: 서버 재요청 없이 클라이언트 필터 (CLAUDE.md 성능 원칙)
-    slider.addEventListener('input', () => {
-      const val = Number(slider.value);
-      severityLabel.textContent = `${val} 이상`;
-      conflict.setSeverityMin(val);
-    });
-
-    periodBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        periodBtns.forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        conflict.setPeriod(Number(btn.dataset.days));
-      });
-    });
   </script>
 </body>
 </html>
