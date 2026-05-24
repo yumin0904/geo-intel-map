@@ -511,3 +511,43 @@ version.json: 3.2.0 → 3.3.0
 - [ ] 분석실 새 가설 생성 후 목록 미갱신 버그
 - [ ] 튜토리얼 캔버스 자동생성 미작동 버그 (확인 필요)
 - [ ] 버전 뱃지 `v...` 완성 (LayerPanel 하단 또는 지도 우하단)
+
+---
+
+## 분석실 8단계 추론 루틴 (Phase 3 후속)
+
+학습자가 단순 가설 캔버스를 넘어 체계적인 지정학 추론을 수행하도록 하는 프레임워크.
+
+### 8단계 구성
+
+| # | 단계 | 데이터 소스 | 상태 |
+|---|------|------------|------|
+| 1 | 사건 팩트 | ACLED, GDELT, FIRMS, AIS, ADS-B | ✅ 기존 자산 |
+| 2 | 섹터 분류 | theory_library.yaml sector_tag | ✅ 기존 자산 |
+| 3 | 역사적 비교 | case_studies.yaml (신규) | ⏳ 신규 제작 |
+| 4 | 거시 변수 | yfinance + FRED (환율/원자재) | 🔧 확장 필요 |
+| 5 | 명분과 의도 | 외교 성명 RSS + Gemini 분석 | 🔮 Phase 4 |
+| 6 | 제도적 저항 | UN 안보리, GSDB 제재 | ⏳ Step 8에 포함 |
+| 7 | 시간적 추이 | cascade depth=4 체이닝 | ✅ 기존 자산 |
+| 8 | 동맹 확산 | alliance_graph.yaml (신규) | ⏳ 신규 제작 |
+
+### 진행 순서
+
+**Step 8 (즉시)**: 1, 2, 4, 6단계 — 기존 작업 확장
+**Phase 3 후반 (2~3주)**: 3, 7, 8단계 — 케이스 스터디 + 동맹 그래프
+**Phase 4 (장기)**: 5단계 — 안보화 분석 (Gemini API 필수)
+
+### UI 제안
+
+분석실 좌측에 8단계 체크리스트 사이드바 추가:
+- 자동 채워지는 데이터 (1, 2, 4단계)
+- 사용자 메모란 (3, 5, 7, 8단계)
+- 각 단계 완료 시 체크 → 다음 단계 진행 버튼
+
+### 신규 필요 파일
+
+- `backend/config/case_studies.yaml` — 역사적 사례 DB (수에즈, 오일쇼크, 크림 등)
+- `backend/config/alliance_graph.yaml` — NATO/QUAD/AUKUS/SCO/CSTO 네트워크
+- `backend/connectors/fred_adapter.py` — 환율/원자재 데이터
+- `backend/services/reasoning/` — 8단계 추론 엔진
+- `frontend/src/views/ReasoningPanelView.js` — 8단계 사이드바 UI
