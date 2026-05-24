@@ -95,6 +95,125 @@ _COL = {
 # 루트코드로 한 번 더 걸러 오피니언 기사 주제가 될 만한 '정치적 갈등' 노이즈를 차단한다.
 _ALLOWED_ROOT_CODES: frozenset[str] = frozenset({"18", "19"})
 
+# ── 행위자 코드 → 한국어 매핑 ────────────────────────────────────────────────
+# CAMEO 행위자 코드 구조: [3자 국가코드][3자 유형코드] (예: USAGOV, CHNMIL)
+# 국가코드는 CAMEO/ISO Alpha-3 혼용이므로 주요 행위자만 수동 매핑
+_ACTOR_COUNTRY_KO: dict[str, str] = {
+    "USA": "미국",      "CHN": "중국",    "RUS": "러시아",
+    "ISR": "이스라엘",  "IRN": "이란",    "PRK": "북한",
+    "KOR": "한국",      "UKR": "우크라이나", "YEM": "예멘",
+    "SYR": "시리아",    "IRQ": "이라크",  "SAU": "사우디아라비아",
+    "JPN": "일본",      "TWN": "대만",    "MYA": "미얀마",
+    "VNM": "베트남",    "PHL": "필리핀",  "LBN": "레바논",
+    "PSE": "팔레스타인", "EGY": "이집트", "ETH": "에티오피아",
+    "SOM": "소말리아",
+}
+
+_ACTOR_TYPE_KO: dict[str, str] = {
+    "GOV": "정부",      "MIL": "군",      "REB": "반군",
+    "CIV": "민간인",    "OPP": "야당",    "MED": "미디어",
+    "SPY": "정보기관",  "COP": "경찰",    "IGO": "국제기구",
+    "NGO": "NGO",       "LEG": "의회",    "REL": "종교단체",
+    "BUS": "기업",      "CVL": "민간인",  "ELI": "엘리트",
+}
+
+# 지역 코드 → 한국어 (description 지역 표시용)
+_REGION_KO: dict[str, str] = {
+    "taiwan_strait":   "대만해협",
+    "south_china_sea": "남중국해",
+    "east_china_sea":  "동중국해",
+    "korean_peninsula":"한반도",
+    "korean_strait":   "한국해협",
+    "hormuz":          "호르무즈 해협",
+    "bab_el_mandeb":   "바브엘만데브 해협",
+    "suez":            "수에즈 운하",
+    "malacca":         "말라카 해협",
+    "ukraine":         "우크라이나",
+    "middle_east":     "중동",
+    "persian_gulf":    "페르시아만",
+    "red_sea":         "홍해",
+}
+
+# CAMEO 루트코드 → 한국어 이벤트 유형
+_ROOT_CODE_KO: dict[str, str] = {
+    "18": "무력 충돌",
+    "19": "교전",
+    "17": "강압·제재",
+    "14": "시위·반발",
+    "13": "위협·압박",
+}
+
+
+def _actor_ko(code: str) -> str:
+    """CAMEO 행위자 코드 → 한국어.
+
+    처리 순서:
+    1. 국가 코드 정확 매핑 (예: CHN → 중국)
+    2. 유형 코드 단독 매핑 (예: REB → 반군, CIV → 민간인)
+    3. 국가(앞3자) + 유형(뒤3자) 조합 (예: ISRMIL → 이스라엘 군)
+    """
+    if not code or code in ("Unknown", ""):
+        return "미상 세력"
+    code = code.strip().upper()
+    if code in _ACTOR_COUNTRY_KO:
+        return _ACTOR_COUNTRY_KO[code]
+    if code in _ACTOR_TYPE_KO:          # REB, CIV, GOV 등 3자 유형 단독
+        return _ACTOR_TYPE_KO[code]
+    country = _ACTOR_COUNTRY_KO.get(code[:3], "")
+    atype   = _ACTOR_TYPE_KO.get(code[3:6], "") if len(code) >= 6 else ""
+    if country and atype:
+        return f"{country} {atype}"
+    return country or atype or code
+
+
+def _instability_label(goldstein: float) -> str:
+    """GoldsteinScale → 불안정 수준 한국어 레이블."""
+    if goldstein <= -7:
+        return "극도로 불안정"
+    if goldstein <= -5:
+        return "매우 불안정"
+    if goldstein <= -3:
+        return "불안정"
+    return "주시 필요"
+
+
+def _generate_description(
+    actor1: str,
+    actor2: str,
+    event_root_code: str,
+    region_code: str | None,
+    geo_name: str,
+    goldstein: float,
+    severity: int,
+    confidence_score: float,
+) -> str:
+    """
+    GDELT 이벤트 상세 설명 자동 생성 (Gemini 없이 템플릿 방식).
+
+    예시:
+      이스라엘 군과 팔레스타인 반군 간 무력 충돌 발생.
+      불안정 지수: -8.0 (극도로 불안정) / 긴장도: 85
+      신뢰도: 교차검증 완료 (0.8)
+    """
+    actor1_ko = _actor_ko(actor1)
+    actor2_ko = _actor_ko(actor2)
+    event_ko  = _ROOT_CODE_KO.get(event_root_code, "충돌")
+    region_ko = _REGION_KO.get(region_code or "", "") if region_code else ""
+    location  = f"{geo_name}({region_ko})" if region_ko else geo_name
+    instab    = _instability_label(goldstein)
+
+    if confidence_score >= 0.8:
+        conf_label = f"교차검증 완료 ({confidence_score:.1f})"
+    else:
+        conf_label = f"미검증 ({confidence_score:.1f})"
+
+    return (
+        f"{location}에서 {actor1_ko}과 {actor2_ko} 간 {event_ko} 발생.\n"
+        f"불안정 지수: {goldstein:.1f} ({instab}) / 긴장도: {severity}\n"
+        f"신뢰도: {conf_label}"
+    )
+
+
 # CAMEO 루트코드 → theory_tags 매핑
 _CAMEO_TAGS: dict[str, list[str]] = {
     "13": ["gray_zone"],            # 위협·압박
@@ -239,12 +358,26 @@ def _to_event(
     theory_tags = _derive_tags(event_code, quad, region_code)
 
     # severity: GoldsteinScale -10~-5 → 50~100, mentions 보정
-    base  = int(min(80, (-goldstein) * 8))
-    boost = min(20, mentions // 10)
+    base     = int(min(80, (-goldstein) * 8))
+    boost    = min(20, mentions // 10)
     severity = min(100, base + boost)
 
+    # Stage 2 교차검증 전 기본 confidence
+    confidence = 0.5
+
+    root_code = event_code[:2] if len(event_code) >= 2 else ""
     quad_desc = "물리적 충돌" if quad == 4 else "언어적 충돌"
-    title = f"[GDELT] {geo_name}: {actor1} vs {actor2} ({quad_desc})"
+    title = f"[GDELT] {geo_name}: {_actor_ko(actor1)} vs {_actor_ko(actor2)} ({quad_desc})"
+
+    description = _generate_description(
+        actor1=actor1, actor2=actor2,
+        event_root_code=root_code,
+        region_code=region_code,
+        geo_name=geo_name,
+        goldstein=goldstein,
+        severity=severity,
+        confidence_score=confidence,
+    )
 
     return Event(
         id=str(uuid.uuid4()),
@@ -255,23 +388,22 @@ def _to_event(
         region_code=region_code,
         severity=severity,
         title=title,
-        description=(
-            f"GoldsteinScale={goldstein:.1f}, 미디어 언급={mentions}회, "
-            f"출처: {url[:80]}"
-        ),
+        description=description,
         payload={
-            "event_code": event_code,
-            "quad_class": quad,
+            "event_code":  event_code,
+            "quad_class":  quad,
             "goldstein_scale": goldstein,
             "num_mentions": mentions,
-            "actor1": actor1,
-            "actor2": actor2,
-            "geo_name": geo_name,
-            "source_url": url,
+            "actor1":      actor1,
+            "actor2":      actor2,
+            "actor1_ko":   _actor_ko(actor1),
+            "actor2_ko":   _actor_ko(actor2),
+            "geo_name":    geo_name,
+            "source_url":  url,
             "data_source": "GDELT",
         },
         theory_tags=theory_tags,
-        confidence_score=0.5,  # Stage 2 교차검증 전 미검증 기본값
+        confidence_score=confidence,
     )
 
 

@@ -16,7 +16,11 @@ from __future__ import annotations
 
 import logging
 
-from connectors.gdelt_connector import fetch_latest_gdelt
+from connectors.gdelt_connector import (
+    fetch_latest_gdelt,
+    _actor_ko,
+    _generate_description,
+)
 from connectors.news_cross_validator import cross_validate
 from models.event import Event
 
@@ -41,14 +45,33 @@ async def run_gdelt_pipeline() -> list[Event]:
     # Stage 2: RSS 교차검증 (네트워크 실패 시 stage1 결과 그대로 반환)
     stage2 = await cross_validate(stage1)
 
-    # Stage 3: 통계 로그 + 반환
-    confirmed = sum(1 for e in stage2 if e.confidence_score >= 0.8)
-    unverified = len(stage2) - confirmed
+    # Stage 3: confidence 변경된 이벤트의 description 재생성
+    # cross_validate가 confidence 0.5→0.8로 올린 경우 "미검증" → "교차검증 완료" 반영
+    stage3: list[Event] = []
+    for evt in stage2:
+        if evt.confidence_score >= 0.8:
+            root_code = evt.payload.get("event_code", "")[:2]
+            new_desc  = _generate_description(
+                actor1=evt.payload.get("actor1", ""),
+                actor2=evt.payload.get("actor2", ""),
+                event_root_code=root_code,
+                region_code=evt.region_code,
+                geo_name=evt.payload.get("geo_name", ""),
+                goldstein=evt.payload.get("goldstein_scale", 0.0),
+                severity=evt.severity,
+                confidence_score=evt.confidence_score,
+            )
+            stage3.append(evt.model_copy(update={"description": new_desc}))
+        else:
+            stage3.append(evt)
+
+    confirmed  = sum(1 for e in stage3 if e.confidence_score >= 0.8)
+    unverified = len(stage3) - confirmed
     logger.info(
         "[Pipeline] 완료 — 교차검증=%d, 미검증=%d, 합계=%d",
-        confirmed, unverified, len(stage2),
+        confirmed, unverified, len(stage3),
     )
-    return stage2
+    return stage3
 
 
 def to_geojson(events: list[Event]) -> dict:
@@ -85,6 +108,10 @@ def to_geojson(events: list[Event]) -> dict:
                 "goldstein":     evt.payload.get("goldstein_scale"),
                 "num_mentions":  evt.payload.get("num_mentions"),
                 "source_url":    evt.payload.get("source_url", ""),
+                "actor1":        evt.payload.get("actor1", ""),
+                "actor2":        evt.payload.get("actor2", ""),
+                "actor1_ko":     evt.payload.get("actor1_ko", ""),
+                "actor2_ko":     evt.payload.get("actor2_ko", ""),
             },
         }
         features.append(feature)

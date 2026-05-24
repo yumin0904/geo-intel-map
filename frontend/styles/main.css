@@ -2188,6 +2188,20 @@ body:not(.study-mode) .notebook { display: none; }
 .popup-badge--acled      { background: rgba(63,185,80,0.18); color: #3fb950; border: 1px solid rgba(63,185,80,0.4); }
 .popup-badge--gdelt-ok   { background: rgba(74,158,255,0.18); color: #4a9eff; border: 1px solid rgba(74,158,255,0.4); }
 .popup-badge--gdelt-warn { background: rgba(255,204,0,0.18); color: #ffcc00; border: 1px solid rgba(255,204,0,0.4); }
+.popup-badge em { font-style: normal; opacity: 0.75; font-size: 9px; margin-left: 3px; }
+
+/* GDELT 자동 생성 description 블록 */
+.popup-gdelt-desc {
+  font-size: 11px;
+  line-height: 1.55;
+  white-space: pre-line;      /* \n → 줄바꿈 렌더링 */
+  color: var(--color-text-secondary);
+  background: rgba(255,255,255,0.04);
+  border-left: 2px solid rgba(74,158,255,0.4);
+  padding: 5px 8px;
+  margin: 6px 0;
+  border-radius: 0 4px 4px 0;
+}
 
 /* ── 통합 팝업: 원문 링크 */
 .base-popup__link { margin: 6px 0; }

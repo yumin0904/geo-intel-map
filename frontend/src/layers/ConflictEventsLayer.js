@@ -115,21 +115,30 @@ function buildPopup(props) {
     .map(t => `<span class="theory-tag">${t}</span>`)
     .join(' ');
 
-  // 출처 뱃지
+  // 출처 뱃지 — GDELT는 "GDELT 🌐 + confidence" 포맷 (요구사항 §5)
   let sourceBadge;
   if (!isGdelt) {
     sourceBadge = '<span class="popup-badge popup-badge--acled">ACLED ✅</span>';
-  } else if ((props.confidence_score ?? 0) >= 0.8) {
-    sourceBadge = '<span class="popup-badge popup-badge--gdelt-ok">GDELT 교차검증✓</span>';
   } else {
-    sourceBadge = '<span class="popup-badge popup-badge--gdelt-warn">GDELT ⚠️ 미검증</span>';
+    const conf     = props.confidence_score ?? 0.5;
+    const confPct  = Math.round(conf * 100);
+    const verified = conf >= 0.8;
+    sourceBadge = verified
+      ? `<span class="popup-badge popup-badge--gdelt-ok">GDELT 🌐 교차검증✓ <em>${confPct}%</em></span>`
+      : `<span class="popup-badge popup-badge--gdelt-warn">GDELT 🌐 ⚠️ 미검증 <em>${confPct}%</em></span>`;
   }
+
+  // GDELT description 블록 (요구사항 §4)
+  const descHtml = isGdelt && props.description
+    ? `<p class="popup-gdelt-desc">${props.description}</p>`
+    : '';
 
   // 출처별 추가 행
   const extraRows = isGdelt ? `
-    <tr><td>신뢰도</td><td>${(props.confidence_score ?? 0.5).toFixed(1)}</td></tr>
-    <tr><td>Goldstein</td><td>${props.goldstein_scale ?? '-'}</td></tr>
+    <tr><td>Goldstein</td><td>${props.goldstein ?? props.goldstein_scale ?? '-'}</td></tr>
     <tr><td>미디어 언급</td><td>${props.num_mentions ?? '-'}회</td></tr>
+    ${props.actor1_ko ? `<tr><td>행위자1</td><td>${props.actor1_ko}</td></tr>` : ''}
+    ${props.actor2_ko ? `<tr><td>행위자2</td><td>${props.actor2_ko}</td></tr>` : ''}
   ` : `
     <tr><td>행위자</td><td>${props.actor1 ?? '-'}</td></tr>
     ${props.actor2 ? `<tr><td>상대방</td><td>${props.actor2}</td></tr>` : ''}
@@ -190,6 +199,7 @@ function buildPopup(props) {
       <h3 class="base-popup__name">${props.title}</h3>
       <p class="base-popup__name-en">${eventTypeKo} · ${date} · ${region}</p>
       <div class="base-popup__badge-row">${sourceBadge}</div>
+      ${descHtml}
       <table class="base-popup__table">
         <tr><td>심각도</td><td><strong>${props.severity ?? 0}</strong> / 100</td></tr>
         ${extraRows}
