@@ -133,6 +133,11 @@ function buildPopup(props) {
     ? `<p class="popup-gdelt-desc">${props.description}</p>`
     : '';
 
+  // ACLED ⭐ 이벤트: 한국어 번역 버튼 (importance ≥ 0.7만 Gemini API 허용)
+  const translateBtn = !isGdelt && (props.importance_score ?? 0) >= IMP_HIGH
+    ? `<button class="popup-translate-btn" data-text="${encodeURIComponent(props.title)}" data-importance="${props.importance_score ?? 0}">🌐 한국어로 보기</button>`
+    : '';
+
   // 출처별 추가 행
   const extraRows = isGdelt ? `
     <tr><td>Goldstein</td><td>${props.goldstein ?? props.goldstein_scale ?? '-'}</td></tr>
@@ -205,6 +210,7 @@ function buildPopup(props) {
         ${extraRows}
       </table>
       ${importanceHtml}
+      ${translateBtn}
       ${sourceLink}
       <div class="base-popup__tags">${tags}</div>
     </div>
@@ -321,6 +327,49 @@ export class ConflictEventsLayer {
             this.bindPopup(buildPopup(props), { maxWidth: 360, className: 'geo-popup' });
           }
           this.openPopup();
+        });
+
+        // 팝업 DOM이 렌더된 뒤 번역 버튼 이벤트 등록
+        marker.on('popupopen', function () {
+          const btn = this.getPopup()?.getElement()?.querySelector('.popup-translate-btn');
+          if (!btn) return;
+
+          btn.addEventListener('click', async () => {
+            const rawText  = decodeURIComponent(btn.dataset.text);
+            const impScore = parseFloat(btn.dataset.importance ?? '0');
+
+            btn.disabled   = true;
+            btn.textContent = '⏳ 번역 중…';
+
+            try {
+              const params = new URLSearchParams({
+                text:       rawText,
+                context:    'acled',
+                importance: impScore,
+              });
+              const res  = await fetch(`/api/translate?${params}`);
+              const data = await res.json();
+
+              if (!res.ok) {
+                btn.textContent = '⚠️ 번역 불가';
+                return;
+              }
+
+              // 버튼을 번역 결과 블록으로 교체
+              const cached = data.cached ? ' (캐시)' : '';
+              const el = document.createElement('div');
+              el.className   = 'popup-translated';
+              el.textContent = data.text_ko;
+              const note     = document.createElement('span');
+              note.className = 'popup-translated__note';
+              note.textContent = `🌐 한국어${cached}`;
+              el.prepend(note);
+              btn.replaceWith(el);
+            } catch {
+              btn.textContent = '⚠️ 네트워크 오류';
+              btn.disabled = false;
+            }
+          }, { once: true });
         });
 
         this._layerGroup.addLayer(marker);

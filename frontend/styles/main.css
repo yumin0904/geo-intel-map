@@ -2203,6 +2203,43 @@ body:not(.study-mode) .notebook { display: none; }
   border-radius: 0 4px 4px 0;
 }
 
+/* ── ACLED 번역 버튼 */
+.popup-translate-btn {
+  display: block;
+  width: 100%;
+  margin: 8px 0 4px;
+  padding: 4px 0;
+  background: rgba(74,158,255,0.1);
+  border: 1px solid rgba(74,158,255,0.35);
+  border-radius: 4px;
+  color: #4a9eff;
+  font-size: 11px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+.popup-translate-btn:hover:not(:disabled) { background: rgba(74,158,255,0.2); }
+.popup-translate-btn:disabled { opacity: 0.55; cursor: default; }
+
+/* 번역 결과 블록 */
+.popup-translated {
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  background: rgba(74,158,255,0.06);
+  border-left: 2px solid rgba(74,158,255,0.5);
+  padding: 5px 8px;
+  margin: 6px 0;
+  border-radius: 0 4px 4px 0;
+}
+.popup-translated__note {
+  display: block;
+  font-size: 9px;
+  color: rgba(74,158,255,0.7);
+  margin-bottom: 3px;
+  font-family: var(--font-mono);
+}
+
 /* ── 통합 팝업: 원문 링크 */
 .base-popup__link { margin: 6px 0; }
 .base-popup__link a { color: #4a9eff; font-size: 11px; text-decoration: none; }

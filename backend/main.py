@@ -14,6 +14,7 @@ from api.library import router as library_router
 from api.sandbox import router as sandbox_router
 from api.sandbox import seed_tutorial_canvas
 from api.study import router as study_router
+from api.translate import router as translate_router
 from api.version import router as version_router
 
 
@@ -54,6 +55,7 @@ app.include_router(cascade_router)
 app.include_router(library_router)
 app.include_router(sandbox_router)
 app.include_router(study_router)
+app.include_router(translate_router)
 app.include_router(version_router)
 
 # ── 엔드포인트 ───────────────────────────────────────────────────
