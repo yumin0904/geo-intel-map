@@ -1,0 +1,225 @@
+# sanctions.yaml — 주요 제재 레짐 정적 데이터 (CLAUDE.md Phase 3 Step 8)
+#
+# 5대 섹터 관련 제재를 중심으로 큐레이션.
+# asset_type: norm (통합 라이브러리 분류 기준)
+# 학습 목적 이론: Weaponized Interdependence (Farrell & Newman 2019)
+#                 Economic Coercion (Drezner 2011)
+
+regimes:
+  # ── 섹터 4: 인도-태평양 ───────────────────────────────────────────────────
+
+  - id: un_sc_north_korea
+    target_country: KP
+    target_name: "북한"
+    lat: 39.02
+    lon: 125.75
+    sanctioning_bodies: [UN, US, EU, JP, KR]
+    year_established: 2006
+    trigger: "핵실험·ICBM 발사 (UN SC 결의 1718, 1874, 2270, 2321, 2371, 2375, 2397)"
+    sectors: [nuclear, missile, coal, seafood, financial, shipping]
+    description: "가장 포괄적인 UN 다자 제재 레짐. 핵·미사일 프로그램 억제 목적. 석탄·수산물 수출 전면 금지, 원유 수입 상한제 포함."
+    theory_tags: [economic_coercion, SLOC_disruption, A2AD]
+    severity: 95
+    region_code: korean_peninsula
+
+  - id: us_entity_list_china
+    target_country: CN
+    target_name: "중국 기술기업 (미 Entity List)"
+    lat: 39.90
+    lon: 116.40
+    sanctioning_bodies: [US]
+    year_established: 2019
+    trigger: "국가안보·인권 우려 — Huawei·SMIC·DJI·CXMT 등 700개 이상"
+    sectors: [semiconductor, AI, telecom, surveillance]
+    description: "미 상무부 BIS Entity List. 미국산 반도체·장비 수출 금지. 반도체 공급망 무기화의 핵심 사례."
+    theory_tags: [techno_nationalism, weaponized_interdependence, semiconductor_supply_chain]
+    severity: 75
+    region_code: south_china_sea
+
+  - id: us_eu_myanmar
+    target_country: MM
+    target_name: "미얀마 (군사정권)"
+    lat: 16.87
+    lon: 96.15
+    sanctioning_bodies: [US, EU, UK, CA]
+    year_established: 2021
+    trigger: "2021년 군사 쿠데타 — 민 아웅 흘라잉 군사평의회"
+    sectors: [financial, jade, defense, military_officials]
+    description: "민주 정부 전복 후 미국·EU 타깃 제재. UN 안보리는 중국·러시아 거부권으로 불발. 회색지대 내정간섭 억제 실패 사례."
+    theory_tags: [gray_zone, hybrid_warfare, economic_coercion]
+    severity: 65
+    region_code: null
+
+  # ── 섹터 2: 에너지 ────────────────────────────────────────────────────────
+
+  - id: un_sc_iran
+    target_country: IR
+    target_name: "이란"
+    lat: 35.68
+    lon: 51.42
+    sanctioning_bodies: [UN, US, EU, UK]
+    year_established: 2006
+    trigger: "핵 농축 프로그램 (UN SC 결의 1737, 1747, 1803, 1929)"
+    sectors: [nuclear, oil, gas, financial, IRGC, shipping]
+    description: "미국 OFAC 제재가 가장 광범위. 원유 수출 사실상 봉쇄. 호르무즈 해협 긴장과 직결 — Cascade 룰 hormuz_tension_to_oil 이론 근거."
+    theory_tags: [resource_weaponization, SLOC_disruption, weaponized_interdependence]
+    severity: 90
+    region_code: hormuz
+
+  - id: un_eu_us_russia_2022
+    target_country: RU
+    target_name: "러시아"
+    lat: 55.75
+    lon: 37.62
+    sanctioning_bodies: [EU, US, UK, JP, CA, AU]
+    year_established: 2022
+    trigger: "우크라이나 전면 침공 (2022.02.24) — EU 14차 패키지 이상"
+    sectors: [energy, financial, defense, luxury, transport, technology]
+    description: "현대 최대 규모 서방 제재. SWIFT 배제, 러 중앙은행 자산 동결, 석유 가격 상한제 ($60/배럴). 에너지 무기화의 역제재 사례."
+    theory_tags: [weaponized_interdependence, resource_weaponization, hybrid_warfare, economic_coercion]
+    severity: 95
+    region_code: ukraine
+
+  - id: us_eu_venezuela
+    target_country: VE
+    target_name: "베네수엘라"
+    lat: 10.49
+    lon: -66.88
+    sanctioning_bodies: [US, EU, CA]
+    year_established: 2015
+    trigger: "마두로 정권 민주주의 훼손·인권침해·마약밀매"
+    sectors: [oil, financial, gold, government_officials]
+    description: "원유 수출 제한으로 PDVSA(국영석유) 수익 봉쇄. 자원 무기화 역효과 — 중국·러시아 우회 수출 증가."
+    theory_tags: [resource_weaponization, economic_coercion]
+    severity: 65
+    region_code: null
+
+  # ── 섹터 5: 회색지대 ──────────────────────────────────────────────────────
+
+  - id: eu_us_belarus
+    target_country: BY
+    target_name: "벨라루스"
+    lat: 53.90
+    lon: 27.56
+    sanctioning_bodies: [EU, US, UK, CA]
+    year_established: 2020
+    trigger: "루카셴코 선거 부정 (2020) + 난민 무기화 + 라이언에어 강제 착륙"
+    sectors: [financial, potash, petroleum, defense, officials]
+    description: "하이브리드전의 전형. 난민 흐름을 무기화해 EU 국경 압박. 염화칼륨(비료) 제재가 핵심."
+    theory_tags: [hybrid_warfare, gray_zone, economic_coercion]
+    severity: 70
+    region_code: null
+
+  - id: un_sc_houthis_yemen
+    target_country: YE
+    target_name: "후티 (예멘)"
+    lat: 15.35
+    lon: 44.21
+    sanctioning_bodies: [US, UK, UN]
+    year_established: 2024
+    trigger: "홍해 상선 공격 — 바브엘만데브 SLOC 봉쇄 시도 (2023.10~)"
+    sectors: [arms, shipping, financial]
+    description: "미국, 후티를 특별지정글로벌테러리스트(SDGT) 재지정. 홍해 운임 급등·글로벌 공급망 교란. Cascade 룰 bab_el_mandeb_tension_to_oil 이론 근거."
+    theory_tags: [SLOC_disruption, gray_zone, resource_weaponization]
+    severity: 80
+    region_code: bab_el_mandeb
+
+  - id: us_eu_syria
+    target_country: SY
+    target_name: "시리아"
+    lat: 33.51
+    lon: 36.29
+    sanctioning_bodies: [US, EU, UK, CA]
+    year_established: 2011
+    trigger: "시리아 내전·화학무기 사용 (UN SC 러·중 거부권으로 다자 불발)"
+    sectors: [oil, financial, government, military]
+    description: "러시아·중국 거부권으로 UN SC 제재 무력화 — 단자 서방 제재만 시행. 강대국 거부권의 제도적 한계 사례."
+    theory_tags: [gray_zone, hybrid_warfare, information_warfare]
+    severity: 75
+    region_code: middle_east
+
+  # ── 섹터 1: 해양 ──────────────────────────────────────────────────────────
+
+  - id: un_sc_libya
+    target_country: LY
+    target_name: "리비아"
+    lat: 32.89
+    lon: 13.18
+    sanctioning_bodies: [UN, EU, US]
+    year_established: 2011
+    trigger: "카다피 정권 시민 탄압 (UN SC 결의 1970) → 내전 지속"
+    sectors: [arms, oil, financial]
+    description: "UN SC 무기 금수 (결의 1970). 다수 세력이 연루된 석유 밀수로 실효성 논란. 지중해 이민 위기와 연계."
+    theory_tags: [resource_weaponization, SLOC_disruption]
+    severity: 60
+    region_code: null
+
+  - id: un_sc_somalia
+    target_country: SO
+    target_name: "소말리아"
+    lat: 2.05
+    lon: 45.34
+    sanctioning_bodies: [UN]
+    year_established: 1992
+    trigger: "내전·해적·알샤바브 — UN SC 결의 733 (무기금수)"
+    sectors: [arms, charcoal]
+    description: "가장 오래된 UN SC 무기 금수 중 하나. 소말리아 해적은 바브엘만데브-아덴만 SLOC에 직접 위협."
+    theory_tags: [SLOC_disruption, gray_zone]
+    severity: 55
+    region_code: bab_el_mandeb
+
+  - id: un_sc_sudan
+    target_country: SD
+    target_name: "수단"
+    lat: 15.55
+    lon: 32.53
+    sanctioning_bodies: [UN, US, EU]
+    year_established: 2004
+    trigger: "다르푸르 위기 (UN SC 결의 1591) → 2023년 RSF-SAF 내전"
+    sectors: [arms, officials]
+    description: "다르푸르 이후 부분 해제·재부과 반복. 2023년 내전 이후 EU 추가 제재."
+    theory_tags: [conventional_warfare, gray_zone]
+    severity: 60
+    region_code: null
+
+  - id: us_cuba_embargo
+    target_country: CU
+    target_name: "쿠바"
+    lat: 23.13
+    lon: -82.38
+    sanctioning_bodies: [US]
+    year_established: 1962
+    trigger: "냉전 기원 — 카스트로 정권 (1962 수출관리법)"
+    sectors: [trade, financial, tourism]
+    description: "현존 최장기 양자 제재 (60년+). 냉전 시대 경제 봉쇄 전략의 유물. UN 총회는 매년 압도적 다수로 해제 촉구."
+    theory_tags: [economic_coercion, weaponized_interdependence]
+    severity: 55
+    region_code: null
+
+  - id: un_sc_mali
+    target_country: ML
+    target_name: "말리"
+    lat: 12.65
+    lon: -8.00
+    sanctioning_bodies: [UN, EU, US]
+    year_established: 2017
+    trigger: "쿠데타 반복 (2020·2021) + 바그너 그룹 초청"
+    sectors: [arms, officials]
+    description: "러시아 바그너 그룹의 아프리카 회색지대 작전 교두보. EU CSDP 훈련임무 축출 → 러시아 영향력 대체."
+    theory_tags: [gray_zone, hybrid_warfare]
+    severity: 55
+    region_code: null
+
+  - id: un_eu_haiti
+    target_country: HT
+    target_name: "아이티"
+    lat: 18.54
+    lon: -72.33
+    sanctioning_bodies: [UN, US, CA]
+    year_established: 2022
+    trigger: "갱단 장악·무정부 상태 (UN SC 결의 2699)"
+    sectors: [arms, officials]
+    description: "UN SC 케냐 주도 다국적경찰지원임무(MSS) 승인. 비전통 안보 위협의 국제화 사례."
+    theory_tags: [gray_zone, asymmetric_warfare]
+    severity: 50
+    region_code: null

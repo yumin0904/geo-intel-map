@@ -16,6 +16,7 @@ from connectors.nasa_firms import NasaFirmsConnector
 from connectors.opensky import OpenSkyConnector
 from models.event import Event
 from services.gdelt_pipeline import run_gdelt_pipeline, to_geojson as gdelt_to_geojson
+from connectors.sanctions_connector import load_sanctions
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
 
@@ -50,6 +51,13 @@ _adsb_cache: dict = {
 # GDELT: 15분 주기 갱신 소스에 맞춰 15분 캐시
 _GDELT_TTL = timedelta(minutes=15)
 _gdelt_cache: dict = {
+    "geojson":    None,
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
+# 제재 데이터: 정적 YAML 기반 — 24시간 캐시 (UN SC·OFAC 결의는 매일 바뀌지 않음)
+_SANCTIONS_TTL = timedelta(hours=24)
+_sanctions_cache: dict = {
     "geojson":    None,
     "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
 }
@@ -400,3 +408,58 @@ async def get_gdelt():
     _gdelt_cache["geojson"]    = result
     _gdelt_cache["expires_at"] = now + _GDELT_TTL
     return result
+
+
+@router.get("/sanctions")
+async def get_sanctions():
+    """
+    제재 레짐 GeoJSON 반환 (24시간 캐시).
+
+    정적 sanctions.yaml 기반 — UN SC·미국 OFAC·EU 제한 조치·BIS Entity List.
+    15개 레짐, 5대 섹터 전체 커버.
+    confidence_score=1.0 (공개 결의 기반 완전 검증 데이터).
+
+    연관 이론:
+      - Weaponized Interdependence (Farrell & Newman 2019)
+      - Economic Coercion (Drezner 2011)
+    """
+    now = datetime.now(timezone.utc)
+    if _sanctions_cache["geojson"] is not None and now < _sanctions_cache["expires_at"]:
+        return _sanctions_cache["geojson"]
+
+    events = load_sanctions()
+    result = _sanctions_to_geojson(events)
+    _sanctions_cache["geojson"]    = result
+    _sanctions_cache["expires_at"] = now + _SANCTIONS_TTL
+    return result
+
+
+def _sanctions_to_geojson(events) -> dict:
+    """제재 Event 리스트 → GeoJSON FeatureCollection."""
+    features = []
+    for e in events:
+        lat, lon = e.location
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [lon, lat]},
+            "properties": {
+                "id":          e.id,
+                "title":       e.title,
+                "description": e.description,
+                "source_type": e.source_type,
+                "region_code": e.region_code,
+                "severity":    e.severity,
+                "theory_tags": e.theory_tags,
+                **e.payload,
+            },
+        })
+
+    return {
+        "type":     "FeatureCollection",
+        "features": features,
+        "metadata": {
+            "count":     len(features),
+            "source":    "sanctions.yaml (UN SC·OFAC·EU)",
+            "generated": datetime.now(timezone.utc).isoformat(),
+        },
+    }

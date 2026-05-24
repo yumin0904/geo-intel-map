@@ -31,12 +31,12 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 | 5 | `TheoryLibraryView.js` — 풀스크린 2컬럼, marked.js 렌더, Gemini AI 설명 SSE | ✅ |
 | 6 | `sandbox_solver.py` — BFS 가설 검증 엔진 | ✅ |
 | 7 | `SandboxLabView.js` — Cytoscape 캔버스 + 검증 결과 UI + 튜토리얼 캔버스 자동생성 | ✅ |
-| 8 | GDELT/RSS/Sanctions + 8단계 추론 루틴 | 🔄 GDELT 완료, Sanctions 진행 예정 |
+| 8 | GDELT/RSS/Sanctions + 8단계 추론 루틴 | ✅ |
 
 ### 이론 라이브러리 (.md 파일)
 `library/` 14개 완비 — 5대 섹터 전체 커버 (maritime·energy·techno·indo_pacific·gray_zone).
 
-### ✅ GDELT 3-Stage Funnel (2026-05-24)
+### ✅ Step 8 완료 — GDELT + Sanctions (2026-05-24)
 
 - `backend/connectors/gdelt_connector.py` — Stage 1: 15분 export ZIP 다운로드, QuadClass≥3·GoldsteinScale≤-5·NumMentions≥3·5대섹터 FIPS 필터
 - `backend/connectors/news_cross_validator.py` — Stage 2: Reuters·BBC·Al Jazeera·AP 4개 RSS 병렬 fetch, ≥2매체 언급 시 confidence 0.5→0.8
@@ -47,8 +47,15 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 실측: 24개 피처 | 교차검증 20개(✓) | 미검증 4개(⚠️) — confidence_score 0.8/0.5
 
+### ✅ 제재 레짐 레이어 (2026-05-24)
+
+- `backend/config/sanctions.yaml` — 15개 레짐 (UN SC·OFAC·EU·BIS, 5대 섹터 전체)
+- `backend/connectors/sanctions_connector.py` — YAML → Event 정규화
+- `backend/api/layers.py` — `GET /api/layers/sanctions` (24시간 캐시)
+- `frontend/src/layers/SanctionsLayer.js` — 국가 버블 마커 (UN 보라/서방 주황/단자 파랑)
+
 ### 현재 버전
-`version.json`: **3.3.0** → 다음 완료 시 3.4.0 예정
+`version.json`: **3.4.0** (Step 8 완료 — GDELT + Sanctions)
 
 ---
 
@@ -73,6 +80,8 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ## 다음 세션 시작점
 
-1. **버그 수정**: 분석실 새 가설 생성 후 목록 미갱신 + 튜토리얼 캔버스 자동생성 미작동 확인
-2. **버전 뱃지**: LayerPanel 하단 또는 지도 우하단에 `v3.3.0` 표시 (version.json에서 fetch)
-3. **Step 8 착수**: 1·2·4·6단계부터 — 기존 yfinance 확장(FRED) + GSDB 제재 레이어 + case_studies.yaml 초안
+Phase 3 체크리스트 1~8 모두 ✅. 다음 선택지:
+
+1. **3.5.0 선언** — 라이브러리 개편 (4축 필터 + asset_type/era) 이미 완료, 버전 공식 선언만 남음
+2. **8단계 추론 루틴 Step 3·6**: `case_studies.yaml` 초안 + `alliance_graph.yaml`
+3. **Phase 4 착수**: MapLibre 3D Globe, 외교 성명 RSS + Gemini 분석, FRED 거시 변수
