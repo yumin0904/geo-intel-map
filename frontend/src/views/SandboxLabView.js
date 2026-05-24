@@ -177,9 +177,14 @@ export class SandboxLabView {
       body: JSON.stringify({ title: title.trim(), hypothesis: '', sector_tag: null,
                              created_at: now, updated_at: now }),
     });
+    if (!res.ok) {
+      console.error('[Sandbox] 캔버스 생성 실패', res.status);
+      await this._loadCanvasList();
+      return;
+    }
     const canvas = await res.json();
     await this._loadCanvasList();
-    this._selectCanvas(canvas.id);
+    await this._selectCanvas(canvas.id);
   }
 
   async _deleteCanvas(canvasId) {

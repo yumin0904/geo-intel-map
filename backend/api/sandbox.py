@@ -399,7 +399,8 @@ _TUTORIAL_EDGES = [
 
 def seed_tutorial_canvas() -> None:
     """
-    sandbox.db에 캔버스가 하나도 없을 때 튜토리얼 가설을 자동 삽입한다.
+    앱 시작 시마다 튜토리얼 캔버스를 INSERT OR IGNORE로 삽입한다.
+    이미 같은 ID가 있으면 무시되므로 중복 없음.
 
     Weaponized Interdependence(Farrell & Newman 2019) 이론을 실제 데이터로
     체험하도록 설계된 '홍해 긴장 → 유가 연쇄' 시나리오.
@@ -407,10 +408,6 @@ def seed_tutorial_canvas() -> None:
     now = datetime.utcnow().isoformat()
 
     with _conn() as con:
-        count = con.execute("SELECT COUNT(*) FROM canvases").fetchone()[0]
-        if count > 0:
-            return  # DB에 이미 캔버스가 있으면 스킵
-
         con.execute(
             "INSERT OR IGNORE INTO canvases (id, title, hypothesis, sector_tag, created_at, updated_at) VALUES (?,?,?,?,?,?)",
             (
@@ -440,4 +437,4 @@ def seed_tutorial_canvas() -> None:
                 (edge["id"], _TUTORIAL_CANVAS_ID, json.dumps(payload, ensure_ascii=False)),
             )
 
-    logger.info("[Sandbox] 튜토리얼 캔버스 생성 완료: %s", _TUTORIAL_CANVAS_ID)
+    logger.info("[Sandbox] 튜토리얼 캔버스 시드 완료 (INSERT OR IGNORE): %s", _TUTORIAL_CANVAS_ID)
