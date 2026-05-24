@@ -72,22 +72,28 @@ _SECTOR_FIPS: frozenset[str] = frozenset({
 
 # ── GDELT 2.0 export CSV 컬럼 인덱스 (0-based, 탭 구분) ────────────────────
 _COL = {
-    "event_id":     0,
-    "sqldate":      1,
-    "actor1":       6,
-    "actor2":      16,
-    "event_code":  26,
-    "quad_class":  29,
-    "goldstein":   30,
-    "mentions":    31,
-    "sources":     32,
-    "avg_tone":    34,
-    "geo_name":    52,
-    "geo_country": 53,
-    "lat":         56,
-    "lon":         57,
-    "url":         60,
+    "event_id":        0,
+    "sqldate":         1,
+    "actor1":          6,
+    "actor2":         16,
+    "event_code":     26,
+    "event_root_code": 28,   # 2자리 CAMEO 루트코드 (EventCode 앞 2자리와 다름에 주의)
+    "quad_class":     29,
+    "goldstein":      30,
+    "mentions":       31,
+    "sources":        32,
+    "avg_tone":       34,
+    "geo_name":       52,
+    "geo_country":    53,
+    "lat":            56,
+    "lon":            57,
+    "url":            60,
 }
+
+# 허용 EventRootCode: 18=Assault, 19=Fight 계열만 실제 물리적 분쟁
+# 13(위협)·14(시위)·17(제재) 등 비물리적 이벤트는 GoldsteinScale로 이미 상당수 제거되나,
+# 루트코드로 한 번 더 걸러 오피니언 기사 주제가 될 만한 '정치적 갈등' 노이즈를 차단한다.
+_ALLOWED_ROOT_CODES: frozenset[str] = frozenset({"18", "19"})
 
 # CAMEO 루트코드 → theory_tags 매핑
 _CAMEO_TAGS: dict[str, list[str]] = {
@@ -161,7 +167,7 @@ def _filter_and_normalize(rows: list[list[str]]) -> list[Event]:
         except ValueError:
             continue
 
-        # Stage 1 필터
+        # Stage 1 필터 ①: 수치 기준
         if quad < _QUAD_CLASS_MIN:
             continue
         if gold > _GOLDSTEIN_MAX:
@@ -169,11 +175,30 @@ def _filter_and_normalize(rows: list[list[str]]) -> list[Event]:
         if mentions < _NUM_MENTIONS_MIN:
             continue
 
+        # Stage 1 필터 ②: EventRootCode — 18(Assault)·19(Fight) 계열만 허용
+        root_code = row[_COL["event_root_code"]].strip()
+        if root_code not in _ALLOWED_ROOT_CODES:
+            continue
+
+        # Stage 1 필터 ③: 지리적 좌표 필수 — 빈 값 또는 Null Island(0,0) 제외
+        lat_s = row[_COL["lat"]].strip()
+        lon_s = row[_COL["lon"]].strip()
+        if not lat_s or not lon_s:
+            continue
+        try:
+            lat_f = float(lat_s)
+            lon_f = float(lon_s)
+        except ValueError:
+            continue
+        if lat_f == 0.0 and lon_f == 0.0:
+            continue
+
+        # Stage 1 필터 ④: 5대 섹터 국가 코드
         country = row[_COL["geo_country"]].strip().upper()
         if country not in _SECTOR_FIPS:
             continue
 
-        event = _to_event(row, quad, gold, mentions)
+        event = _to_event(row, quad, gold, mentions, lat_f, lon_f)
         if event:
             events.append(event)
 
@@ -182,19 +207,16 @@ def _filter_and_normalize(rows: list[list[str]]) -> list[Event]:
 
 
 def _to_event(
-    row: list[str], quad: int, goldstein: float, mentions: int
+    row: list[str], quad: int, goldstein: float, mentions: int,
+    lat: float = 0.0, lon: float = 0.0,
 ) -> Event | None:
-    """단일 GDELT 행 → Event 정규화."""
-    try:
-        lat_s = row[_COL["lat"]].strip()
-        lon_s = row[_COL["lon"]].strip()
-        lat = float(lat_s) if lat_s else 0.0
-        lon = float(lon_s) if lon_s else 0.0
-    except ValueError:
-        return None
+    """단일 GDELT 행 → Event 정규화.
 
+    lat/lon은 _filter_and_normalize에서 이미 검증된 값을 받는다.
+    기본값 0.0은 직접 호출 시 방어용 — 이 경우 None 반환.
+    """
     if lat == 0.0 and lon == 0.0:
-        return None  # 좌표 없는 이벤트 제외
+        return None
 
     actor1   = row[_COL["actor1"]].strip() or "Unknown"
     actor2   = row[_COL["actor2"]].strip() or "Unknown"
