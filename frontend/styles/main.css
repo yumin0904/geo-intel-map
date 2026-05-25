@@ -87,7 +87,7 @@ body {
 
 /* 1단: THREAT 섹터 긴장도 — compact emoji 형식 */
 #tension-zone {
-  flex: 1;
+  flex: none;   /* 콘텐츠 크기만큼만 차지 → pizza-wrap이 바로 옆에 붙음 */
   display: flex;
   align-items: center;
   gap: 0;
