@@ -54,16 +54,11 @@ body {
   align-items: center;
   padding: 0 10px;
   gap: 6px;
-  border-bottom: 1px solid rgba(48, 54, 61, 0.55);
+  border-bottom: 1px solid #1a2332;
   overflow: hidden;
 }
 /* row1은 pizza tooltip이 아래로 overflow 되어야 하므로 visible */
 #top-bar-row1 { overflow: visible; }
-
-/* 3단(티커) 행은 bottom border 더 두껍게 — ━━━━ 효과 */
-#top-bar-row2 {
-  border-bottom: 1px solid var(--color-border);
-}
 
 /* 브랜드 레이블 ◆ GEO-INTEL BRIEF ◆ */
 .top-bar-brand {
@@ -78,7 +73,7 @@ body {
   margin-right: 4px;
 }
 
-/* THREAT / MARKET 섹션 레이블 */
+/* THREAT: / MARKET 섹션 레이블 */
 .top-bar-section-label {
   flex: none;
   color: var(--color-text-secondary);
@@ -86,11 +81,11 @@ body {
   letter-spacing: 0.8px;
   white-space: nowrap;
   padding-right: 8px;
-  border-right: 1px solid rgba(48, 54, 61, 0.7);
+  border-right: 1px solid #1a2332;
   margin-right: 2px;
 }
 
-/* 1단: THREAT 섹터 긴장도 */
+/* 1단: THREAT 섹터 긴장도 — compact emoji 형식 */
 #tension-zone {
   flex: 1;
   display: flex;
@@ -99,22 +94,22 @@ body {
   overflow: hidden;
 }
 
+/* 긴장도 아이템: 지역🔴91 형식 */
 .tension-item {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
   white-space: nowrap;
-  font-size: 11px;
+  font-size: 10.5px;
   cursor: default;
-  padding: 0 8px;
-  border-right: 1px solid rgba(48, 54, 61, 0.5);
+  padding: 0 7px;
+  border-right: 1px solid #1a2332;
 }
-.tension-item:first-child { padding-left: 4px; }
+.tension-item:first-child { padding-left: 2px; }
 .tension-item:last-child  { border-right: none; }
 
-.tension-name  { color: var(--color-text-secondary); }
-.tension-bar   { letter-spacing: -1px; }   /* 블록 문자 간격 압축 */
-.tension-score { color: var(--color-text-secondary); font-size: 10px; }
+.t-name  { color: var(--color-text-secondary); margin-right: 1px; }
+.t-emoji { font-size: 10px; line-height: 1; }
+.t-score { color: var(--color-text-primary); font-size: 10px; font-weight: 600; margin-left: 1px; }
 
 /* 2단: MARKET 4개 동시 표시 */
 #market-zone {
@@ -131,12 +126,12 @@ body {
   gap: 3px;
   white-space: nowrap;
   padding: 0 10px;
-  border-right: 1px solid rgba(48, 54, 61, 0.5);
+  border-right: 1px solid #1a2332;
 }
 .market-item:last-child { border-right: none; }
 
 .mkt-name   { color: var(--color-text-secondary); font-size: 10px; }
-.mkt-price  { color: var(--color-text-primary); }
+.mkt-price  { color: var(--color-text-primary); font-size: 10.5px; }
 .mkt-change { font-size: 10px; }
 
 /* 3단: 뉴스 티커 */
@@ -154,7 +149,7 @@ body {
   padding: 0 8px;
   color: var(--color-accent);
   font-size: 10px;
-  border-right: 1px solid rgba(48, 54, 61, 0.5);
+  border-right: 1px solid #1a2332;
 }
 
 #news-ticker-wrap {
@@ -203,15 +198,17 @@ body {
   position: relative;
   flex: none;
   cursor: help;
-  margin-left: 4px;
+  margin-left: 2px;
   padding-left: 8px;
-  border-left: 1px solid var(--color-border);
+  border-left: 1px solid #1a2332;
 }
 
 .pizza-btn {
-  font-size: 12px;
+  font-size: 10.5px;
   line-height: 1;
   display: inline-block;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
 }
 
 .pizza-tooltip {

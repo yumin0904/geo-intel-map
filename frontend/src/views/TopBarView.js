@@ -1,19 +1,19 @@
 /**
  * TopBarView.js — 상단 3단 바 (총 48px)
  *
- * Row 1: ◆ GEO-INTEL BRIEF ◆  THREAT │ 중동 ████ 91 │ 인태 ███ 72 │ ...
- * Row 2: MARKET │ WTI $96.6▼ │ 금 $413▲ │ SOXX $537▲ │ ₩1,513▼
+ * Row 1: ◆ GEO-INTEL BRIEF ◆ │ THREAT: 중동🔴91 │ 인태🟠72 │ 유럽🟡68 │ 아프리카🟢45 │ 🍕 74.6
+ * Row 2: MARKET │ WTI $96.60▼0.88% │ 금 $413.8▲0.57% │ 반도체 $537.3▲2.06% │ 원/달러 ₩1,514▲0.46%
  * Row 3: ▶  뉴스 티커 스크롤
  */
 
 const API_BASE = 'http://localhost:8000';
 
-// 긴장도 레벨 → 블록 수 + 색상
-const TENSION_LEVELS = {
-  critical: { blocks: 4, color: '#f85149' },   // ≥80
-  high:     { blocks: 3, color: '#f0883e' },   // ≥60
-  medium:   { blocks: 2, color: '#d29922' },   // ≥40
-  low:      { blocks: 1, color: '#3fb950' },   // <40
+// 긴장도 레벨 → emoji 표시 (블록 바 → compact emoji 형식으로 변경)
+const LEVEL_EMOJI = {
+  critical: '🔴',   // ≥80
+  high:     '🟠',   // ≥60
+  medium:   '🟡',   // ≥40
+  low:      '🟢',   // <40
 };
 
 const TICKER_SPEED_PX_S = 80;
@@ -44,12 +44,7 @@ async function _get(path) {
   return res.json();
 }
 
-// ── 1단: THREAT 긴장도 ────────────────────────────────────────────────────────
-function _tensionBar(level) {
-  const cfg = TENSION_LEVELS[level] || TENSION_LEVELS.low;
-  return `<span class="tension-bar" style="color:${cfg.color}">${'█'.repeat(cfg.blocks)}</span>`;
-}
-
+// ── 1단: THREAT 긴장도 — compact emoji 형식 ─────────────────────────────────
 function _renderTension(sectors) {
   const el = $tension();
   if (!el) return;
@@ -59,12 +54,13 @@ function _renderTension(sectors) {
   }
   el.innerHTML = sectors.map(s => {
     const score = Math.round(s.avg_severity);
+    const emoji = LEVEL_EMOJI[s.level] || LEVEL_EMOJI.low;
     const hint  = `${s.event_count}건 평균 ${s.avg_severity.toFixed(1)}`;
     return (
       `<span class="tension-item" title="${hint}">` +
-      `<span class="tension-name">${s.sector}</span>` +
-      _tensionBar(s.level) +
-      `<span class="tension-score">${score}</span>` +
+      `<span class="t-name">${s.sector}</span>` +
+      `<span class="t-emoji">${emoji}</span>` +
+      `<span class="t-score">${score}</span>` +
       `</span>`
     );
   }).join('');
@@ -79,6 +75,11 @@ function _calcPizzaIndex(sectors) {
   if (!sectors || sectors.length === 0) return 0;
   const sum = sectors.reduce((acc, s) => acc + (s.avg_severity || 0), 0);
   return sum / sectors.length;
+}
+
+function _renderPizzaBadge() {
+  const btn = document.getElementById('pizza-btn');
+  if (btn) btn.textContent = `🍕 ${_pizzaIndexVal.toFixed(1)}`;
 }
 
 function _renderPizzaTooltip() {
@@ -128,12 +129,11 @@ function _renderMarkets(items) {
       );
     }
 
-    const up     = item.direction === 'up';
-    const arrow  = up ? '▲' : '▼';
-    const color  = up ? '#3fb950' : '#f85149';
-    const sign   = item.change_pct >= 0 ? '+' : '';
+    const up    = item.direction === 'up';
+    const arrow = up ? '▲' : '▼';
+    const color = up ? '#3fb950' : '#f85149';
 
-    // KRW=X는 정수, 나머지는 소수점 1자리
+    // KRW=X → ₩1,514  / 나머지 → $96.60 (< 100: 2자리) $413.8 (≥ 100: 1자리)
     const priceStr = item.ticker === 'KRW=X'
       ? `₩${Math.round(item.price).toLocaleString()}`
       : `$${item.price.toFixed(item.price >= 100 ? 1 : 2)}`;
@@ -142,7 +142,7 @@ function _renderMarkets(items) {
       `<span class="market-item">` +
       `<span class="mkt-name">${item.name}</span> ` +
       `<span class="mkt-price">${priceStr}</span>` +
-      `<span class="mkt-change" style="color:${color}">${arrow}${sign}${Math.abs(item.change_pct).toFixed(2)}%</span>` +
+      `<span class="mkt-change" style="color:${color}">${arrow}${Math.abs(item.change_pct).toFixed(2)}%</span>` +
       `</span>`
     );
   }).join('');
@@ -191,6 +191,7 @@ async function _refreshTension() {
     // 피자 지수: 섹터 평균 긴장도 기반
     _pizzaIndexVal  = _calcPizzaIndex(sectors);
     _tensionFetchAt = Date.now();
+    _renderPizzaBadge();
   } catch (e) { console.debug('[TopBar] tension 실패:', e.message); }
 }
 
