@@ -19,6 +19,7 @@ from __future__ import annotations
 import csv
 import io
 import logging
+import re
 import zipfile
 from datetime import datetime, timezone
 from typing import Any
@@ -436,3 +437,72 @@ def _derive_tags(event_code: str, quad: int, region_code: str | None) -> list[st
         tags.add("resource_weaponization")
 
     return sorted(tags) or ["gray_zone"]
+
+
+# ── 기사 헤드라인 fetch ─────────────────────────────────────────────────────────
+# 뉴스 사이트 제목 suffix 패턴 (제거 대상)
+_TITLE_SUFFIX_RE = re.compile(
+    r'\s*[|·—–\-]\s+(?:'
+    r'Reuters|AP|AFP|BBC|CNN|Al Jazeera|Bloomberg|FT|WSJ|NYT|'
+    r'The Guardian|The Times|Axios|Politico|Defense News|'
+    r'TASS|Xinhua|NHK|Yonhap|VOA|RFE/RL|NPR|Fox News|CNBC'
+    r').{0,20}$',
+    re.IGNORECASE,
+)
+
+
+def _clean_headline(raw: str) -> str:
+    """<title> 태그 원문 → 깔끔한 기사 헤드라인."""
+    text = re.sub(r'\s+', ' ', raw).strip()
+    # 알려진 사이트명 suffix 제거
+    text = _TITLE_SUFFIX_RE.sub('', text).strip()
+    # 그 외 마지막 구분자 이후가 짧으면(≤30자) 사이트명으로 간주하고 제거
+    m = re.match(r'^(.+?)\s+[|·—–\-]\s+.{3,30}$', text)
+    if m:
+        candidate = m.group(1).strip()
+        if len(candidate) >= 15:
+            text = candidate
+    return text
+
+
+async def fetch_headline(url: str, timeout: float = 5.0) -> str | None:
+    """source_url에서 기사 <title> 헤드라인을 추출한다.
+
+    - httpx로 GET, 타임아웃 5초 (뉴스 티커 전용 — 실패 시 None 반환)
+    - og:title 우선, 없으면 <title> 태그
+    - 사이트명 suffix 정리 후 반환
+    """
+    if not url or not url.startswith("http"):
+        return None
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (compatible; geo-intel-map/1.0; +https://github.com)",
+            "Accept": "text/html",
+        }
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+            resp = await client.get(url, headers=headers)
+            if resp.status_code != 200:
+                return None
+            html = resp.text[:8192]   # <title>은 항상 head 안에 있으므로 8KB로 충분
+
+        # og:title 우선 (흔히 더 간결)
+        m = re.search(
+            r'<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']{10,200})["\']',
+            html, re.IGNORECASE,
+        )
+        if not m:
+            m = re.search(
+                r'<meta[^>]+content=["\']([^"\']{10,200})["\'][^>]+property=["\']og:title["\']',
+                html, re.IGNORECASE,
+            )
+        if m:
+            return _clean_headline(m.group(1))
+
+        # <title> 태그
+        m = re.search(r'<title[^>]*>([^<]{10,300})</title>', html, re.IGNORECASE | re.DOTALL)
+        if m:
+            return _clean_headline(m.group(1))
+
+    except Exception as exc:
+        logger.debug("[fetch_headline] %s → %s", url[:60], exc)
+    return None

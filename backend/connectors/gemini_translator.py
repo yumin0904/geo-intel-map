@@ -288,28 +288,39 @@ def _is_quota_exhausted() -> bool:
 
 # ── 티커 전용 번역 ──────────────────────────────────────────────────────────────
 
-_TICKER_FORMAT_PROMPT = (
-    "다음 뉴스를 한국어로 번역해줘.\n"
-    "포맷: 이모지 [지역] 핵심주어 + 행동 + 결과\n"
-    "길이: 15~25자 내외로 요약\n"
-    "예시: 🔴 [중동] 미국·이스라엘 이란 작전 3개월 지속, 호르무즈 통행 중단\n"
-    "시간 표시는 포함하지 말 것.\n"
-    "번역문만 출력. 설명·주석·원문 첨부 금지.\n\n"
+_HEADLINE_TICKER_PROMPT = (
+    "다음 뉴스 헤드라인을 한국어로 요약해줘.\n\n"
+    "규칙:\n"
+    "- 실제 사건의 주체·행동·결과를 명확히 표현\n"
+    "- 'A vs B' 또는 'A와 B의 충돌' 형식 금지\n"
+    "- 대신 '중국, 영국 기업 자산 동결' 처럼 구체적 행동 중심으로 작성\n"
+    "- 15~25자 내외\n"
+    "- 지역 태그 포함: [중동] [인태] [유럽] [동아시아] [아프리카] 등\n"
+    "- 이모지로 긴장도 표시: 🔴(전쟁/공습) 🟠(충돌/교전) 🟡(긴장/위협)\n"
+    "- 시간 표시 금지. 번역문만 출력. 설명·주석·원문 첨부 금지.\n\n"
+    "예시:\n"
+    "입력: 'China freezes assets of British firm amid dispute'\n"
+    "출력: 🔴 [인태] 중국, 영국 기업 자산 동결 조치\n\n"
+    "입력: 'US forces conduct airstrike in Syria'\n"
+    "출력: 🔴 [중동] 미군, 시리아 공습 단행\n\n"
     "원문:\n{text}"
 )
 
 
-async def translate_ticker_text(text: str) -> str:
+async def translate_ticker_text(text: str, cache_key: str = "") -> str:
     """뉴스 티커 포맷(이모지 [지역] 요약) 번역.
 
-    일반 번역(_build_prompt)과 달리 티커 전용 프롬프트를 사용한다.
-    캐시 키에 "ticker:" 접두사를 붙여 일반 번역과 충돌을 방지한다.
+    Args:
+        text:      번역할 헤드라인 (영문 원문 권장)
+        cache_key: 캐싱 기준 문자열. source_url 전달 시 URL 기반 캐싱,
+                   생략 시 텍스트 해시 기반 (backward-compatible).
     """
     text = text.strip()
     if not text:
         return ""
 
-    h = _text_hash("ticker:" + text)
+    # source_url이 있으면 URL 기반, 없으면 텍스트 기반 캐싱
+    h = _text_hash("ticker_url:" + cache_key if cache_key else "ticker:" + text)
     cached = _cache_get(h)
     if cached:
         return cached["text_ko"]
@@ -317,7 +328,7 @@ async def translate_ticker_text(text: str) -> str:
     if not _API_KEY or _is_quota_exhausted():
         return text[:60]
 
-    prompt = _TICKER_FORMAT_PROMPT.format(text=text)
+    prompt = _HEADLINE_TICKER_PROMPT.format(text=text)
     url  = _GEMINI_URL.format(key=_API_KEY)
     body = {
         "contents": [{"parts": [{"text": prompt}], "role": "user"}],

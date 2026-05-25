@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter
 
 from connectors.gemini_translator import translate_ticker_text, _is_quota_exhausted
+from connectors.gdelt_connector import fetch_headline
 
 router = APIRouter(prefix="/api/news", tags=["news"])
 logger = logging.getLogger(__name__)
@@ -54,24 +55,27 @@ def _has_korean(text: str) -> bool:
     return any("가" <= c <= "힣" for c in text)
 
 
-async def _process_feature(props: dict) -> dict | None:
-    """단일 GeoJSON feature props -> 티커 아이템 변환."""
-    title       = props.get("title", "")
-    description = props.get("description", "")
-    # description이 있으면 title + description 조합, 없으면 title만
-    source_text = f"{title}. {description}" if description else title
-    if not source_text.strip():
+async def _process_feature(props: dict, headline: str | None = None) -> dict | None:
+    """단일 GeoJSON feature props + 실제 기사 헤드라인 → 티커 아이템 변환.
+
+    headline이 있으면 실제 기사 헤드라인 기반 번역,
+    없으면 GDELT 템플릿 title로 fallback.
+    """
+    source_url = props.get("source_url") or props.get("url") or ""
+    # 실제 헤드라인 우선, 없으면 템플릿 title 사용
+    source_text = (headline or props.get("title", "")).strip()
+    if not source_text:
         return None
 
-    text_ko    = await translate_ticker_text(source_text)
+    # source_url 기준으로 캐싱 (같은 기사 재번역 방지)
+    text_ko    = await translate_ticker_text(source_text, cache_key=source_url)
     time_label = _hours_ago_label(props.get("timestamp", ""))
-    url        = props.get("source_url") or props.get("url") or ""
 
     return {
-        "text_ko":    text_ko,
-        "time_label": time_label,
-        "url":        url,
-        "is_fallback": not _has_korean(text_ko),  # 번역 실패 여부
+        "text_ko":     text_ko,
+        "time_label":  time_label,
+        "url":         source_url,
+        "is_fallback": not _has_korean(text_ko),
     }
 
 
@@ -131,15 +135,26 @@ async def get_news_ticker():
         _ticker_cache["expires_at"] = now + timedelta(seconds=30)
         return data
 
-    # 순차 번역 — 병렬(gather) 대신 순차로 처리해 Gemini 429 Rate Limit 방지
-    # 캐시 히트 항목은 API 호출 없으므로 딜레이 없이 즉시 반환됨
+    # Step 1: 기사 헤드라인 병렬 fetch (HTTP GET — Gemini 호출 아님, 병렬 OK)
+    headline_results = await asyncio.gather(
+        *[fetch_headline(p.get("source_url", "")) for p in top8],
+        return_exceptions=True,
+    )
+    headlines = [
+        h if isinstance(h, str) and h else None
+        for h in headline_results
+    ]
+    fetched = sum(1 for h in headlines if h)
+    logger.debug("[ticker] 헤드라인 fetch: %d/%d 성공", fetched, len(top8))
+
+    # Step 2: 순차 번역 — Gemini 15 RPM 한도 준수 (캐시 히트 시 딜레이 없음)
     items: list[dict] = []
     had_fallback = False
-    for i, props in enumerate(top8):
+    for i, (props, headline) in enumerate(zip(top8, headlines)):
         if i > 0:
             await asyncio.sleep(2.0)   # 요청 간 2초 간격 (free tier 15 RPM 방지)
         try:
-            result = await _process_feature(props)
+            result = await _process_feature(props, headline)
             if result:
                 if result.get("is_fallback"):
                     had_fallback = True
