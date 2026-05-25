@@ -258,6 +258,99 @@ _ref_date_cache: dict = {
 }
 
 
+# ── 맥락 요약 (Gemini 통합 준비) ────────────────────────────────────────────────
+
+_ACLED_EVENT_KO: dict[str, str] = {
+    "Battles":                    "무력 교전",
+    "Violence against civilians": "민간인 피해",
+    "Protests":                   "시위",
+    "Riots":                      "폭동",
+    "Strategic developments":     "전략 동향",
+    "Explosions/Remote violence": "폭발·원거리 공격",
+}
+
+# Gemini 지정학적 맥락 요약 프롬프트.
+# 'A vs B' 금지, 행동 중심 2~3문장 + 정치외교학 이론 연결 1문장.
+_CONTEXT_SUMMARY_PROMPT = """\
+다음 분쟁 사건을 한국어로 지정학 맥락 요약해줘.
+
+규칙:
+- '{actor1} vs {actor2}' 형식 절대 금지. '{actor1}이(가) {actor2}에 {행동}' 형식 사용.
+- 행동·결과 중심 2~3문장 (무슨 일이, 어디서, 피해 규모)
+- 마지막 1문장: 정치외교학적 함의 (회색지대·A2AD·자원무기화·Weaponized Interdependence 등)
+- 전체 70자 이내. 설명·주석·원문 첨부 금지.
+
+사건 정보:
+- 유형: {event_type}
+- 주체: {actor1}
+- 대상: {actor2}
+- 국가: {country}
+- 사망자: {fatalities}명
+- 원문 노트: {notes}
+"""
+
+
+def _build_acled_template(payload: dict, severity: int) -> str:
+    """Gemini 불가 시 한국어 구조 템플릿 fallback.
+
+    ACLED notes가 영문이므로 핵심 필드만 한국어로 조합한다.
+    """
+    event_type   = payload.get("event_type", "")
+    actor1       = payload.get("actor1", "")
+    actor2       = payload.get("actor2", "")
+    country      = payload.get("country", "")
+    fatalities   = int(payload.get("fatalities", 0) or 0)
+
+    event_ko     = _ACLED_EVENT_KO.get(event_type, event_type)
+    fatality_str = f", 사망 {fatalities}명" if fatalities > 0 else ""
+
+    if actor2:
+        return f"{actor1}이(가) {actor2}에 {event_ko} 발생{fatality_str}. ({country})"
+    return f"{country}에서 {actor1} {event_ko} 발생{fatality_str}."
+
+
+async def generate_context_summary(
+    payload: dict,
+    severity: int,
+    importance: float,
+    notes: str = "",
+) -> str:
+    """importance ≥ 0.7 이벤트용 지정학적 맥락 요약.
+
+    Gemini 사용 가능 시: 행동 중심 2~3문장 + 정치외교학적 함의 1문장.
+    Gemini 불가 시: _build_acled_template() 한국어 템플릿으로 자동 fallback.
+
+    오전 9시(KST) 이후 Gemini 할당량 리셋되면 자동으로 AI 요약으로 전환된다.
+
+    Args:
+        payload:    Event.payload (actor1, actor2, event_type, country, fatalities 포함)
+        severity:   정규화된 심각도 0-100
+        importance: importance_score (0.7 미만이면 템플릿 반환)
+        notes:      ACLED 원문 노트 (영문)
+    """
+    from connectors.gemini_translator import generate_summary
+
+    template = _build_acled_template(payload, severity)
+
+    if importance < 0.7:
+        return template
+
+    cache_key = "acled_ctx:{}:{}".format(
+        payload.get("event_type", ""),
+        notes[:120],
+    )
+    prompt = _CONTEXT_SUMMARY_PROMPT.format(
+        event_type=payload.get("event_type", ""),
+        actor1=payload.get("actor1", ""),
+        actor2=payload.get("actor2", ""),
+        country=payload.get("country", ""),
+        fatalities=int(payload.get("fatalities", 0) or 0),
+        notes=notes[:300],
+    )
+    result = await generate_summary(prompt, cache_key=cache_key, max_tokens=200)
+    return result or template
+
+
 class AcledConnector(BaseConnector):
     """
     ACLED API에서 분쟁 이벤트를 조회하고 공통 Event 모델로 정규화한다.

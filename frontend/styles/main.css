@@ -745,9 +745,9 @@ body.study-mode .conflict-tags { display: flex; }
 /* ── Theory Panel (우측 슬라이드인) ──────────────────────────────── */
 .theory-panel {
   position: fixed;
-  top: 0; right: 0;
+  top: 48px; right: 0;
   width: 320px;
-  height: 100vh;
+  height: calc(100vh - 48px);
   z-index: 1001;
   background: var(--color-surface);
   border-left: 1px solid var(--color-border);

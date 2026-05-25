@@ -215,6 +215,75 @@ def _generate_description(
     )
 
 
+# GDELT 맥락 요약 프롬프트 — 실제 기사 헤드라인 기반, 'A vs B' 금지
+_GDELT_CONTEXT_PROMPT = """\
+다음 뉴스 헤드라인과 GDELT 사건 정보를 참고해 한국어 지정학 맥락 요약을 작성해줘.
+
+규칙:
+- 'A vs B' 또는 'A와 B의 충돌' 형식 절대 금지
+- 실제 행동 중심: '{주체}이(가) {대상}에 {행동}'
+- 행동·결과 2~3문장 + 정치외교학적 함의 1문장
+- 전체 70자 이내. 설명·주석·원문 첨부 금지.
+
+헤드라인: {headline}
+지역: {region}
+행위자1: {actor1}
+행위자2: {actor2}
+불안정 지수: {goldstein}
+"""
+
+
+async def generate_gdelt_summary(
+    source_url: str,
+    actor1: str,
+    actor2: str,
+    region_ko: str,
+    goldstein: float,
+    severity: int,
+    confidence_score: float,
+    event_root_code: str,
+    region_code: str | None,
+    geo_name: str,
+) -> str:
+    """GDELT 이벤트 맥락 요약.
+
+    source_url 헤드라인 fetch 성공 + Gemini 가능: 실제 기사 기반 AI 요약.
+    fetch 실패 또는 Gemini 불가: _generate_description() 한국어 템플릿 fallback.
+
+    오전 9시(KST) 이후 Gemini 할당량 리셋 → 자동으로 AI 요약 전환.
+    """
+    from connectors.gemini_translator import generate_summary
+
+    # 항상 사용 가능한 한국어 템플릿 fallback
+    template = _generate_description(
+        actor1=actor1,
+        actor2=actor2,
+        event_root_code=event_root_code,
+        region_code=region_code,
+        geo_name=geo_name,
+        goldstein=goldstein,
+        severity=severity,
+        confidence_score=confidence_score,
+    )
+
+    # 헤드라인 fetch 시도 (5초 타임아웃)
+    headline = await fetch_headline(source_url) if source_url else None
+    if not headline:
+        return template
+
+    # Gemini 시도 — 실패 시 template fallback
+    cache_key = "gdelt_ctx:{}".format(headline[:120])
+    prompt = _GDELT_CONTEXT_PROMPT.format(
+        headline=headline,
+        region=region_ko or geo_name,
+        actor1=_actor_ko(actor1),
+        actor2=_actor_ko(actor2),
+        goldstein=goldstein,
+    )
+    result = await generate_summary(prompt, cache_key=cache_key, max_tokens=200)
+    return result or template
+
+
 # CAMEO 루트코드 → theory_tags 매핑
 _CAMEO_TAGS: dict[str, list[str]] = {
     "13": ["gray_zone"],            # 위협·압박

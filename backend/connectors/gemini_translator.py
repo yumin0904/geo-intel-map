@@ -405,6 +405,69 @@ def get_quota_status() -> dict:
     return {"exhausted": False}
 
 
+# ── 범용 요약 생성 (커스텀 프롬프트) ────────────────────────────────────────────────
+
+async def generate_summary(
+    prompt: str,
+    cache_key: str,
+    max_tokens: int = 256,
+) -> str | None:
+    """커스텀 프롬프트 기반 Gemini 요약 생성.
+
+    캐시·일일 한도·circuit breaker를 공유하여 비용을 통제한다.
+    실패 시 None 반환 → 호출자가 fallback 처리.
+
+    Args:
+        prompt:    완전한 Gemini 프롬프트 문자열
+        cache_key: 캐시 키 접두사 포함 식별자 (예: "acled_ctx:...")
+        max_tokens: 최대 출력 토큰 수
+    """
+    h = _text_hash("summary:" + cache_key)
+    cached = _cache_get(h)
+    if cached:
+        logger.debug("[summary] cache hit: %s…", cache_key[:40])
+        return cached["text_ko"]
+
+    if not _API_KEY or _is_quota_exhausted():
+        return None
+    if _get_daily_count() >= MAX_DAILY_TRANSLATIONS:
+        logger.warning("[summary] 일일 한도 초과, 건너뜀")
+        return None
+
+    url  = _GEMINI_URL.format(key=_API_KEY)
+    body = {
+        "contents": [{"parts": [{"text": prompt}], "role": "user"}],
+        "generationConfig": {"temperature": 0.3, "maxOutputTokens": max_tokens},
+    }
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(url, json=body)
+            if resp.status_code == 429:
+                try:
+                    err_status = resp.json().get("error", {}).get("status", "")
+                except Exception:
+                    err_status = ""
+                if err_status == "RESOURCE_EXHAUSTED":
+                    _mark_quota_exhausted()
+                logger.warning("[summary] 429: %s", err_status or "RATE_LIMIT")
+                return None
+            resp.raise_for_status()
+        text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception as exc:
+        logger.warning("[summary] Gemini 호출 실패: %s", exc)
+        return None
+
+    _increment_daily_count()
+    _cache_set(h, TranslationResult(
+        text_ko=text,
+        source_lang="auto",
+        cached=False,
+        char_count=len(prompt),
+        model=_MODEL,
+    ))
+    return text
+
+
 # ── 티커 전용 번역 ──────────────────────────────────────────────────────────────
 
 _HEADLINE_TICKER_PROMPT = (
