@@ -95,17 +95,25 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - `frontend/styles/main.css` — timeline·filter-bar·cgraph 관련 스타일 ~490줄 제거
 - 파일 보존: `TimelineView.js`, `CascadeGraphView.js` (연결만 해제)
 
-### ✅ 상단 2단 바 (2026-05-25)
+### ✅ 상단 3단 바 + 펜타곤 피자지수 + GDELT importance (2026-05-25)
 
-- `backend/api/stats.py` (신규) — `GET /api/stats/tension` (5분 캐시), `GET /api/stats/pizza-index` (1시간, KRW=X 실시간 BigMac 지수), `GET /api/stats/markets` (5분, WTI·금·반도체·원달러 4종 병렬)
-- `backend/api/news.py` (신규) — `GET /api/news/ticker` (3분 캐시, importance≥0.7 & confidence≥0.8 최신 8건, Gemini 티커 포맷 번역)
-- `backend/connectors/gemini_translator.py` — `translate_ticker_text()` 추가 (티커 전용 프롬프트, "ticker:" 접두사 캐시 분리)
-- `backend/main.py` — `stats_router`, `news_router` 등록
-- `frontend/src/views/TopBarView.js` (신규) — Row1(긴장도·피자·시장 3초 순환), Row2(뉴스 CSS 스크롤, hover pause, click 새탭)
-- `frontend/styles/main.css` — `#top-bar` 2단 레이아웃, `ticker-scroll` 애니메이션, `#map` top:32px 이동, `.info-panel`·`#layer-panel` top:48px 조정
-- `frontend/index.html` — `#top-bar` HTML 추가, `initTopBar()` 호출
+**상단 3단 바 (48px)**
+- `backend/api/stats.py` (신규) — `GET /api/stats/tension`, `/markets` (WTI·금·반도체·원달러), `/pizza-index`
+- `backend/api/news.py` (신규) — `GET /api/news/ticker` (GDELT 전용, confidence≥0.8 우선·≥0.5 보충, 최신 8건)
+- `frontend/src/views/TopBarView.js` (신규) — Row1(긴장도 `중동🔴78` compact + `🍕 26.6`), Row2(마켓 4종), Row3(뉴스 CSS 무한스크롤)
+- `frontend/styles/main.css` — 3단 레이아웃, `#1a2332` 구분선, ticker-scroll 애니메이션
+- `frontend/index.html` — 3단 HTML + `initTopBar()` 호출
 
-실측 (서버 응답): 피자지수 74.6, WTI $96.6(-0.88%), 반도체 $537.33(+2.06%), ₩1513
+**🍕 펜타곤 피자지수 툴팁**
+- 호버 시 NORMAL/ELEVATED/GUARDED/CRITICAL 레벨 + 개념 설명 표시
+- Share Tech Mono, `#00b4d8` cyan border, 0.2s fade-in
+- 긴장도 평균 기반 자동 산출, "N분 전" 동적 계산
+
+**GDELT importance_score + Gemini 번역**
+- `backend/services/importance_scorer.py` — `score_gdelt_events()` (severity×0.3, recency×0.4, confidence×0.3)
+- `backend/connectors/gdelt_connector.py` — `fetch_headline()` (source_url → og:title/<title> 추출, 병렬)
+- `backend/connectors/gemini_translator.py` — 행동 중심 프롬프트 교체, `cache_key=source_url`, circuit breaker (RESOURCE_EXHAUSTED → 1시간 차단)
+- 피자지수 위치 수정: `#tension-zone flex:none` → 아프리카 바로 옆
 
 ### 현재 버전
 `version.json`: **3.6.0**
@@ -133,9 +141,11 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ## 다음 세션 시작점
 
-### 우선순위 작업 (2026-05-25 예정)
+### 우선순위 작업 (2026-05-26 예정)
 
-1. ~~**상단 2단 바**~~ ✅ 완료
-2. **분석실(SandboxLab) 버그 수정** — 현재 알려진 UI 버그 점검
-3. **라이브러리 데이터 채우기** — 이론 카드 내용 보강 (참고문헌, 학습노트)
-4. **인과 연쇄 레이어 검토** — CascadeLayer 동작 점검, 룰 보완
+1. **뉴스 티커 한국어 번역 수정** — Gemini 할당량(내일 UTC 자정 리셋), `translation_cache.db` 채우기
+2. **분쟁 이벤트 설명 Gemini 맥락 요약** — 팝업 클릭 시 단순 번역 대신 지정학적 맥락 포함
+3. **펄스 애니메이션 복원** — 분쟁 마커 importance 기반 pulse 효과
+4. **데이터 계층형 보관 설계** — GDELT/ACLED 이벤트 TTL 정책, 오래된 데이터 아카이브
+5. **분석실(SandboxLab) 버그 점검** — 알려진 UI 버그
+6. **인과 연쇄 레이어 검토** — CascadeLayer 동작 점검, 룰 보완
