@@ -313,21 +313,37 @@ body {
   cursor: pointer;
 }
 
-/* 바깥으로 퍼지는 링 — ::after가 scale 3까지 커지며 페이드아웃 */
+/* importance 기반 펄스 링 — 군사기지 마커와 구분 위해 분쟁 이벤트 전용 */
 .conflict-dot::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background: var(--cdot-color, #3fb950);
-  opacity: 0.55;
+  opacity: 1;
   pointer-events: none;
-  animation: conflict-pulse var(--cdot-duration, 2s) ease-out infinite;
+  /* 기본 애니메이션 없음 — importance 클래스로만 활성화 */
 }
 
 @keyframes conflict-pulse {
-  0%   { transform: scale(1);   opacity: 0.55; }
-  100% { transform: scale(3.2); opacity: 0;    }
+  0%   { transform: scale(1);   opacity: 1;   }
+  50%  { transform: scale(1.5); opacity: 0.5; }
+  100% { transform: scale(1);   opacity: 1;   }
+}
+
+/* importance ≥ 0.7 ⭐: 빠른 펄스 */
+.conflict-dot.conflict-pulse-fast::after {
+  animation: conflict-pulse 1s ease-in-out infinite;
+}
+
+/* importance 0.4~0.7 📌: 느린 펄스 */
+.conflict-dot.conflict-pulse-slow::after {
+  animation: conflict-pulse 2s ease-in-out infinite;
+}
+
+/* importance < 0.4 💤: 애니메이션 없음 (::after 숨김) */
+.conflict-dot.conflict-no-pulse::after {
+  display: none;
 }
 
 /* ── Study Mode: 이론 태그 뱃지 (마커 아래) ─────────────────── */

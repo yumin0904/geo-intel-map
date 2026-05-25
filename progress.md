@@ -139,13 +139,44 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ---
 
+---
+
+## 서브 에이전트 도입 계획
+
+### Phase 3 후반 (즉시 착수)
+
+**8단계 추론 자동화**
+- 사용자가 사건 선택 → 서브 에이전트가 8단계 자동 채움
+- 서브 A: 사건 팩트 수집 (GDELT/ACLED)
+- 서브 B: 역사 사례 매칭 (케이스 스터디 DB)
+- 서브 C: 시장 반응 분석 (yfinance)
+- 서브 D: 제재 레짐 조회
+- 메인: 결과 종합 → 분석실 캔버스 자동 생성
+
+**라이브러리 자동 확장**
+- 새 이벤트 감지 → 관련 논문/보고서 자동 요약
+- .md 파일 자동 생성 → library.db 업데이트
+- 싱크탱크 보고서 자동 아카이브
+  - CSIS (미국), RAND (미국)
+  - IISS (영국), Chatham House (영국)
+  - INSS — Institute for National Security Studies (이스라엘)
+  - INSS — 국가안보전략연구원 (한국)
+  - 한국 국방과학연구원 (ADD)
+
+### Phase 4 (장기)
+- 데이터 수집 병렬화 (GDELT/RSS/AIS/ADS-B)
+- Cascade 자동 검증 (통계 + 실시간 + 역사 사례)
+
+---
+
 ## 다음 세션 시작점
 
-### 우선순위 작업 (2026-05-26 예정)
+### 우선순위 작업
 
-1. **뉴스 티커 한국어 번역 수정** — Gemini 할당량(내일 UTC 자정 리셋), `translation_cache.db` 채우기
+1. **뉴스 티커 한국어 번역** — KST 09:00 이후 `POST /api/translate/reset_circuit` 후 `/api/news/ticker` 재확인
 2. **분쟁 이벤트 설명 Gemini 맥락 요약** — 팝업 클릭 시 단순 번역 대신 지정학적 맥락 포함
 3. **펄스 애니메이션 복원** — 분쟁 마커 importance 기반 pulse 효과
 4. **데이터 계층형 보관 설계** — GDELT/ACLED 이벤트 TTL 정책, 오래된 데이터 아카이브
 5. **분석실(SandboxLab) 버그 점검** — 알려진 UI 버그
 6. **인과 연쇄 레이어 검토** — CascadeLayer 동작 점검, 룰 보완
+7. **서브 에이전트 8단계 추론 설계** — `backend/services/reasoning/` 구조 설계 착수

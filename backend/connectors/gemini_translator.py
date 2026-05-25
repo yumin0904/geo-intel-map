@@ -46,6 +46,9 @@ _PRICE_OUTPUT_PER_M = 0.30
 # 번역문은 원문의 약 1.2배 길이, 안전계수 1.1 적용
 _OUTPUT_RATIO = 1.32
 
+_CACHE_TTL_HOURS       = 24   # 번역 캐시 유효 기간 (하루 1번만 번역)
+MAX_DAILY_TRANSLATIONS = 200  # 일일 Gemini 호출 한도 (free tier 절약)
+
 
 @dataclass
 class TranslationResult:
@@ -78,7 +81,26 @@ def _db() -> Iterator[sqlite3.Connection]:
                 model       TEXT NOT NULL,
                 char_count  INTEGER NOT NULL,
                 hit_count   INTEGER NOT NULL DEFAULT 0,
-                created_at  TEXT NOT NULL
+                created_at  TEXT NOT NULL,
+                expires_at  TEXT NOT NULL DEFAULT '9999-12-31T23:59:59'
+            )
+            """
+        )
+        # 기존 DB 마이그레이션: expires_at 컬럼 없으면 추가
+        try:
+            con.execute(
+                "ALTER TABLE translation_cache ADD COLUMN "
+                "expires_at TEXT NOT NULL DEFAULT '9999-12-31T23:59:59'"
+            )
+        except sqlite3.OperationalError:
+            pass  # 이미 존재
+
+        # 일일 사용량 추적 테이블 (UTC 날짜 기준 리셋)
+        con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS daily_usage (
+                date  TEXT PRIMARY KEY,  -- YYYY-MM-DD UTC
+                count INTEGER NOT NULL DEFAULT 0
             )
             """
         )
@@ -95,27 +117,40 @@ def _text_hash(text: str) -> str:
 
 
 def _cache_get(text_hash: str) -> Optional[dict]:
+    now_iso = datetime.utcnow().isoformat()
     with _db() as con:
         row = con.execute(
-            "SELECT text_ko, source_lang, model, char_count FROM translation_cache WHERE hash = ?",
-            (text_hash,),
+            """
+            SELECT text_ko, source_lang, model, char_count
+            FROM translation_cache
+            WHERE hash = ? AND expires_at > ?
+            """,
+            (text_hash, now_iso),
         ).fetchone()
         if row:
-            # 조회 시마다 hit_count 증가
             con.execute(
                 "UPDATE translation_cache SET hit_count = hit_count + 1 WHERE hash = ?",
                 (text_hash,),
+            )
+        else:
+            # 만료 항목 정리 (hit miss 시 삭제 — 공간 절약)
+            con.execute(
+                "DELETE FROM translation_cache WHERE hash = ? AND expires_at <= ?",
+                (text_hash, now_iso),
             )
     return dict(row) if row else None
 
 
 def _cache_set(text_hash: str, result: TranslationResult) -> None:
+    import datetime as dt_module
+    now     = datetime.utcnow()
+    expires = now + dt_module.timedelta(hours=_CACHE_TTL_HOURS)
     with _db() as con:
         con.execute(
             """
             INSERT OR REPLACE INTO translation_cache
-                (hash, text_ko, source_lang, model, char_count, hit_count, created_at)
-            VALUES (?, ?, ?, ?, ?, 0, ?)
+                (hash, text_ko, source_lang, model, char_count, hit_count, created_at, expires_at)
+            VALUES (?, ?, ?, ?, ?, 0, ?, ?)
             """,
             (
                 text_hash,
@@ -123,7 +158,8 @@ def _cache_set(text_hash: str, result: TranslationResult) -> None:
                 result.source_lang,
                 result.model,
                 result.char_count,
-                datetime.utcnow().isoformat(),
+                now.isoformat(),
+                expires.isoformat(),
             ),
         )
 
@@ -219,7 +255,7 @@ async def translate_event_text(
             model=cached["model"],
         )
 
-    # 2. API 키 없음 또는 할당량 소진
+    # 2. API 키 없음 / 할당량 소진 / 일일 한도 초과
     if not _API_KEY:
         return TranslationResult(
             text_ko="번역 기능을 사용하려면 GEMINI_API_KEY가 필요합니다.",
@@ -236,10 +272,21 @@ async def translate_event_text(
             char_count=len(text),
             model=_MODEL,
         )
+    daily = _get_daily_count()
+    if daily >= MAX_DAILY_TRANSLATIONS:
+        logger.warning("[translate] 일일 한도 초과 (%d/%d)", daily, MAX_DAILY_TRANSLATIONS)
+        return TranslationResult(
+            text_ko=f"(일일 번역 한도 {MAX_DAILY_TRANSLATIONS}회 초과) {text[:60]}",
+            source_lang=source_lang,
+            cached=False,
+            char_count=len(text),
+            model=_MODEL,
+        )
 
     # 3. Gemini 호출
-    logger.info("[translate] Gemini 호출: %d chars, ctx=%s", len(text), context)
+    logger.info("[translate] Gemini 호출 #%d: %d chars, ctx=%s", daily + 1, len(text), context)
     text_ko = await _call_gemini(text, context)
+    _increment_daily_count()
 
     result = TranslationResult(
         text_ko=text_ko,
@@ -249,7 +296,7 @@ async def translate_event_text(
         model=_MODEL,
     )
 
-    # 4. 캐시 저장
+    # 4. 캐시 저장 (24시간 TTL)
     _cache_set(h, result)
     return result
 
@@ -268,22 +315,94 @@ async def translate_batch(
     return results
 
 
+# ── 일일 번역 카운터 ─────────────────────────────────────────────────────────────
+# UTC 날짜 기준으로 daily_usage 테이블에 누적. 서버 재시작 후에도 유지.
+
+def _today_utc() -> str:
+    return datetime.utcnow().strftime("%Y-%m-%d")
+
+
+def _get_daily_count() -> int:
+    """오늘 UTC 기준 Gemini 실제 호출 횟수."""
+    try:
+        with _db() as con:
+            row = con.execute(
+                "SELECT count FROM daily_usage WHERE date = ?", (_today_utc(),)
+            ).fetchone()
+        return row["count"] if row else 0
+    except Exception:
+        return 0
+
+
+def _increment_daily_count() -> int:
+    """호출 카운터 +1. 새 카운트 반환."""
+    today = _today_utc()
+    try:
+        with _db() as con:
+            con.execute(
+                """
+                INSERT INTO daily_usage (date, count) VALUES (?, 1)
+                ON CONFLICT(date) DO UPDATE SET count = count + 1
+                """,
+                (today,),
+            )
+            row = con.execute(
+                "SELECT count FROM daily_usage WHERE date = ?", (today,)
+            ).fetchone()
+        return row["count"] if row else 1
+    except Exception:
+        return 0
+
+
 # ── Circuit Breaker — Gemini 할당량 소진 시 일시 차단 ────────────────────────────
-# RESOURCE_EXHAUSTED(일일 RPD) 감지 시 1시간 동안 API 호출 금지.
-# RPM 초과(일시적)는 재시도 허용, RPD 소진(지속적)은 차단.
+# RESOURCE_EXHAUSTED(일일 RPD) 감지 시 다음 UTC 자정까지 API 호출 금지.
+# Gemini 일일 할당량은 UTC 00:00에 리셋되므로, 자정 직후 자동 재개된다.
+# RPM 초과(일시적 429)는 circuit breaker 를 활성화하지 않음.
 _gemini_disabled_until: datetime = datetime(1970, 1, 1)
 
 
 def _mark_quota_exhausted() -> None:
-    global _gemini_disabled_until
-    _gemini_disabled_until = datetime.utcnow().replace(microsecond=0)
+    """일일 할당량 소진 — 다음 UTC 자정까지 차단."""
     import datetime as dt_module
-    _gemini_disabled_until = datetime.utcnow() + dt_module.timedelta(hours=1)
-    logger.warning("[gemini] 일일 할당량 소진 — %s까지 API 호출 비활성화", _gemini_disabled_until)
+    global _gemini_disabled_until
+    now = datetime.utcnow()
+    # 다음 UTC 자정 계산 (오늘 자정이 이미 지났으면 내일 자정)
+    next_midnight = (now + dt_module.timedelta(days=1)).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    _gemini_disabled_until = next_midnight
+    remaining_h = (next_midnight - now).total_seconds() / 3600
+    logger.warning(
+        "[gemini] 일일 할당량 소진 — %s UTC(약 %.1f시간)까지 비활성화 (KST %s 09:00 이후 재개)",
+        next_midnight.strftime("%Y-%m-%d %H:%M"),
+        remaining_h,
+        next_midnight.strftime("%m-%d"),
+    )
 
 
 def _is_quota_exhausted() -> bool:
     return datetime.utcnow() < _gemini_disabled_until
+
+
+def reset_quota_circuit_breaker() -> None:
+    """관리용: circuit breaker 강제 해제 (서버 재시작 없이 수동 초기화)."""
+    global _gemini_disabled_until
+    _gemini_disabled_until = datetime(1970, 1, 1)
+    logger.info("[gemini] circuit breaker 수동 해제")
+
+
+def get_quota_status() -> dict:
+    """현재 circuit breaker 상태 반환 (stats 엔드포인트용)."""
+    now = datetime.utcnow()
+    exhausted = _is_quota_exhausted()
+    if exhausted:
+        remaining_sec = (_gemini_disabled_until - now).total_seconds()
+        return {
+            "exhausted": True,
+            "resets_in_sec": int(max(0, remaining_sec)),
+            "resets_at_utc": _gemini_disabled_until.strftime("%Y-%m-%d %H:%M UTC"),
+        }
+    return {"exhausted": False}
 
 
 # ── 티커 전용 번역 ──────────────────────────────────────────────────────────────
@@ -328,6 +447,11 @@ async def translate_ticker_text(text: str, cache_key: str = "") -> str:
     if not _API_KEY or _is_quota_exhausted():
         return text[:60]
 
+    daily = _get_daily_count()
+    if daily >= MAX_DAILY_TRANSLATIONS:
+        logger.warning("[ticker_translate] 일일 한도 초과 (%d/%d)", daily, MAX_DAILY_TRANSLATIONS)
+        return text[:60]
+
     prompt = _HEADLINE_TICKER_PROMPT.format(text=text)
     url  = _GEMINI_URL.format(key=_API_KEY)
     body = {
@@ -356,6 +480,7 @@ async def translate_ticker_text(text: str, cache_key: str = "") -> str:
         logger.warning("[ticker_translate] Gemini 호출 실패: %s", e)
         return text[:60]
 
+    _increment_daily_count()
     _cache_set(h, TranslationResult(
         text_ko=text_ko,
         source_lang="auto",
@@ -382,45 +507,66 @@ def estimate_cost(char_count: int, model: str = _MODEL) -> float:
 
 
 def get_cache_stats() -> dict:
-    """번역 캐시 통계 (관리 페이지용)."""
+    """번역 캐시 통계 + 일일 사용량 (관리 페이지용)."""
+    now_iso = datetime.utcnow().isoformat()
     try:
         with _db() as con:
+            # 유효 항목만 카운트 (만료 제외)
             total = con.execute(
-                "SELECT COUNT(*) as n FROM translation_cache"
+                "SELECT COUNT(*) as n FROM translation_cache WHERE expires_at > ?",
+                (now_iso,),
             ).fetchone()["n"]
 
             total_hits = con.execute(
-                "SELECT COALESCE(SUM(hit_count), 0) as n FROM translation_cache"
+                "SELECT COALESCE(SUM(hit_count), 0) as n FROM translation_cache WHERE expires_at > ?",
+                (now_iso,),
             ).fetchone()["n"]
 
             top_langs = con.execute(
                 """
                 SELECT source_lang, COUNT(*) as n
                 FROM translation_cache
+                WHERE expires_at > ?
                 GROUP BY source_lang
                 ORDER BY n DESC
                 LIMIT 5
-                """
+                """,
+                (now_iso,),
             ).fetchall()
 
             total_chars = con.execute(
-                "SELECT COALESCE(SUM(char_count), 0) as n FROM translation_cache"
+                "SELECT COALESCE(SUM(char_count), 0) as n FROM translation_cache WHERE expires_at > ?",
+                (now_iso,),
             ).fetchone()["n"]
 
-        saved_usd = estimate_cost(total_chars * total_hits) if total_hits else 0.0
-        hit_rate  = round(total_hits / max(1, total + total_hits), 3)
+            daily_count = con.execute(
+                "SELECT COALESCE(count, 0) as n FROM daily_usage WHERE date = ?",
+                (_today_utc(),),
+            ).fetchone()
+
+        saved_usd  = estimate_cost(total_chars * total_hits) if total_hits else 0.0
+        hit_rate   = round(total_hits / max(1, total + total_hits), 3)
+        today_used = daily_count["n"] if daily_count else 0
 
         return {
-            "total_entries":        total,
-            "cache_hit_rate_7d":    hit_rate,
-            "estimated_savings_usd": round(saved_usd, 4),
-            "top_source_langs":     [(r["source_lang"], r["n"]) for r in top_langs],
+            "total_entries":          total,
+            "cache_hit_rate":         hit_rate,
+            "estimated_savings_usd":  round(saved_usd, 4),
+            "top_source_langs":       [(r["source_lang"], r["n"]) for r in top_langs],
+            "daily_translations_today": today_used,
+            "daily_limit":            MAX_DAILY_TRANSLATIONS,
+            "daily_remaining":        max(0, MAX_DAILY_TRANSLATIONS - today_used),
+            "cache_ttl_hours":        _CACHE_TTL_HOURS,
         }
     except Exception as exc:
         logger.warning("[translate] cache stats 조회 실패: %s", exc)
         return {
             "total_entries": 0,
-            "cache_hit_rate_7d": 0.0,
+            "cache_hit_rate": 0.0,
             "estimated_savings_usd": 0.0,
             "top_source_langs": [],
+            "daily_translations_today": 0,
+            "daily_limit": MAX_DAILY_TRANSLATIONS,
+            "daily_remaining": MAX_DAILY_TRANSLATIONS,
+            "cache_ttl_hours": _CACHE_TTL_HOURS,
         }

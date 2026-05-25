@@ -31,12 +31,12 @@ const SEVERITY_RADIUS = [
   { min:  0, radius:  4 },
 ];
 
-// severity → 색상/펄스 속도
+// severity → 마커 색상 (펄스 속도는 importance 기반으로 분리)
 const SEVERITY_STYLES = [
-  { min: 80, color: '#f85149', duration: 0.5 },
-  { min: 60, color: '#ff8c00', duration: 1.0 },
-  { min: 30, color: '#d29922', duration: 2.0 },
-  { min:  0, color: '#3fb950', duration: 3.0 },
+  { min: 80, color: '#f85149' },
+  { min: 60, color: '#ff8c00' },
+  { min: 30, color: '#d29922' },
+  { min:  0, color: '#3fb950' },
 ];
 
 // importance_score 임계값 — zoom별 가시성 기준 (요구사항 §4)
@@ -65,14 +65,21 @@ function importanceTier(score) {
   return '💤';
 }
 
+/** importance_score → 펄스 CSS 클래스 */
+function pulseClass(importance) {
+  if (importance >= IMP_HIGH) return 'conflict-pulse-fast';  // ⭐ 1s
+  if (importance >= IMP_MID)  return 'conflict-pulse-slow';  // 📌 2s
+  return 'conflict-no-pulse';                                 // 💤 없음
+}
+
 /** ACLED용 DivIcon 펄스 마커 (cluster_count 배지 포함) */
 function buildAcledIcon(severity, clusterCount = 1, importance = 0) {
-  const radius   = getSeverityRadius(severity);
-  const { color, duration } = getSeverityStyle(severity);
-  const size     = radius * 2;
+  const radius  = getSeverityRadius(severity);
+  const { color } = getSeverityStyle(severity);
+  const size    = radius * 2;
 
   // importance ≥ 0.7이면 실선 테두리로 강조
-  const outline  = importance >= IMP_HIGH ? 'outline:2px solid rgba(255,255,255,0.7);' : '';
+  const outline = importance >= IMP_HIGH ? 'outline:2px solid rgba(255,255,255,0.7);' : '';
 
   // cluster_count > 1이면 숫자 배지 표시 (요구사항 §6)
   const badgeHtml = clusterCount > 1
@@ -81,7 +88,7 @@ function buildAcledIcon(severity, clusterCount = 1, importance = 0) {
 
   return L.divIcon({
     className:   'conflict-icon',
-    html:        `<div class="conflict-dot" style="--cdot-color:${color};--cdot-duration:${duration}s;${outline}"></div>${badgeHtml}`,
+    html:        `<div class="conflict-dot ${pulseClass(importance)}" style="--cdot-color:${color};${outline}"></div>${badgeHtml}`,
     iconSize:    [size, size],
     iconAnchor:  [radius, radius],
     popupAnchor: [0, -(radius + 4)],
