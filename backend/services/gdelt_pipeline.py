@@ -100,8 +100,9 @@ def to_geojson(events: list[Event]) -> dict:
                 "timestamp":        evt.timestamp.isoformat(),
                 "region_code":      evt.region_code,
                 "theory_tags":      evt.theory_tags,
-                "confidence_score": evt.confidence_score,
-                "unverified":       evt.confidence_score < 0.8,
+                "confidence_score":  evt.confidence_score,
+                "importance_score":  evt.importance_score,
+                "unverified":        evt.confidence_score < 0.8,
                 "data_source":      "GDELT",
                 # payload 핵심 필드만 노출 (전체 덤프 금지)
                 "quad_class":    evt.payload.get("quad_class"),

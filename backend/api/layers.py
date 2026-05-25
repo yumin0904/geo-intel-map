@@ -17,7 +17,7 @@ from connectors.opensky import OpenSkyConnector
 from models.event import Event
 from services.gdelt_pipeline import run_gdelt_pipeline, to_geojson as gdelt_to_geojson
 from connectors.sanctions_connector import load_sanctions
-from services.importance_scorer import cluster_events, score_events
+from services.importance_scorer import cluster_events, score_events, score_gdelt_events
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
 
@@ -138,10 +138,12 @@ def _events_to_geojson(events: list[Event]) -> dict:
                 "timestamp":        e.timestamp.isoformat(),
                 "source_type":      e.source_type,
                 "source_id":        e.source_id,
+                "region_code":      e.region_code,      # tension / news 집계용
                 "severity":         e.severity,
                 "title":            e.title,
                 "description":      e.description,
                 "theory_tags":      e.theory_tags,
+                "confidence_score": e.confidence_score, # news 필터용 (ACLED=1.0)
                 "importance_score": e.importance_score,
                 "cluster_count":    e.cluster_count,
                 **e.payload,
@@ -413,6 +415,7 @@ async def get_gdelt():
 
     try:
         events = await run_gdelt_pipeline()
+        events = score_gdelt_events(events)  # importance_score 계산
         result = gdelt_to_geojson(events)
     except Exception as exc:
         import logging

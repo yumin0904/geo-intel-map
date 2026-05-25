@@ -24,12 +24,182 @@ body {
   overflow: hidden; /* 지도 바깥에 스크롤바 안 생기게 */
 }
 
-#map { width: 100vw; height: 100vh; }
+/* 상단 3단 바 48px 확보 */
+#map {
+  position: absolute;
+  top: 48px; left: 0;
+  width: 100vw;
+  height: calc(100vh - 48px);
+}
+
+/* ── 상단 3단 바 (THREAT · MARKET · TICKER) ───────────────────────── */
+#top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  background: var(--color-bg);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  user-select: none;
+}
+
+/* 공통 행 기반 */
+#top-bar-row1,
+#top-bar-row2 {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 6px;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.55);
+  overflow: hidden;
+}
+
+/* 3단(티커) 행은 bottom border 더 두껍게 — ━━━━ 효과 */
+#top-bar-row2 {
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 브랜드 레이블 ◆ GEO-INTEL BRIEF ◆ */
+.top-bar-brand {
+  flex: none;
+  color: var(--color-accent);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  padding-right: 8px;
+  border-right: 1px solid var(--color-border);
+  margin-right: 4px;
+}
+
+/* THREAT / MARKET 섹션 레이블 */
+.top-bar-section-label {
+  flex: none;
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+  padding-right: 8px;
+  border-right: 1px solid rgba(48, 54, 61, 0.7);
+  margin-right: 2px;
+}
+
+/* 1단: THREAT 섹터 긴장도 */
+#tension-zone {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.tension-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  font-size: 11px;
+  cursor: default;
+  padding: 0 8px;
+  border-right: 1px solid rgba(48, 54, 61, 0.5);
+}
+.tension-item:first-child { padding-left: 4px; }
+.tension-item:last-child  { border-right: none; }
+
+.tension-name  { color: var(--color-text-secondary); }
+.tension-bar   { letter-spacing: -1px; }   /* 블록 문자 간격 압축 */
+.tension-score { color: var(--color-text-secondary); font-size: 10px; }
+
+/* 2단: MARKET 4개 동시 표시 */
+#market-zone {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.market-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  padding: 0 10px;
+  border-right: 1px solid rgba(48, 54, 61, 0.5);
+}
+.market-item:last-child { border-right: none; }
+
+.mkt-name   { color: var(--color-text-secondary); font-size: 10px; }
+.mkt-price  { color: var(--color-text-primary); }
+.mkt-change { font-size: 10px; }
+
+/* 3단: 뉴스 티커 */
+#top-bar-row3 {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(22, 27, 34, 0.5);
+}
+
+.top-bar-ticker-arrow {
+  flex: none;
+  padding: 0 8px;
+  color: var(--color-accent);
+  font-size: 10px;
+  border-right: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+#news-ticker-wrap {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+#news-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: ticker-scroll var(--ticker-duration, 80s) linear infinite;
+  color: var(--color-text-secondary);
+  font-size: 10.5px;
+}
+
+#news-ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  white-space: nowrap;
+  padding: 0 2px;
+  transition: color 0.15s;
+}
+.ticker-item[data-url]:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.ticker-sep {
+  color: var(--color-border);
+  padding: 0 6px;
+  pointer-events: none;
+}
 
 /* ── 정보 패널 ─────────────────────────────────────────────── */
 .info-panel {
   position: absolute;
-  top: 16px; right: 16px;
+  top: 64px; right: 16px; /* 48px 상단 바 + 16px 여백 */
   z-index: 1000; /* Leaflet 기본 컨트롤(줌 버튼 등)보다 위에 표시 */
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -238,7 +408,7 @@ body.study-mode .conflict-tags { display: flex; }
 /* ── 레이어 패널 (좌측 사이드바) ─────────────────────────────── */
 #layer-panel {
   position: absolute;
-  top: 16px;
+  top: 64px; /* 48px 상단 바 + 16px 여백 */
   left: 16px;
   z-index: 1000;
   width: 180px;

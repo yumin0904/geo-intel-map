@@ -52,12 +52,6 @@ def _load_cascade_regions() -> frozenset:
     return _CASCADE_TRIGGER_REGIONS
 
 
-def _recency(ts: datetime, ref: datetime) -> float:
-    """이벤트 timestamp와 기준일(ref=오늘) 차이를 [0, 1] recency 값으로 변환."""
-    days = (ref - ts).total_seconds() / 86_400
-    return max(0.0, 1.0 - days / 30.0)
-
-
 def score_events(
     events: list[Event],
     gdelt_regions: frozenset[str],
@@ -69,15 +63,22 @@ def score_events(
     Args:
         events:        ACLED connector에서 반환된 Event 리스트 (이미 클러스터링 완료)
         gdelt_regions: GDELT GeoJSON에서 추출한 region_code 집합
-        ref_time:      recency 계산 기준. None이면 UTC now.
+        ref_time:      미사용 (하위 호환 유지용으로만 존재)
     """
     if not events:
         return events
 
-    now     = ref_time or datetime.now(timezone.utc)
     cascade = _load_cascade_regions()
 
-    # repeat_region: 30일 내 같은 region_code 등장 횟수 집계
+    # recency: 데이터셋 내 상대적 최신순 정규화
+    # 절대 시간 기준(오늘 - 30일)은 시스템 시계와 데이터 날짜가 다르면 항상 0이 되므로,
+    # 보유 데이터 내 min/max timestamp 기준으로 정규화한다.
+    timestamps = [e.timestamp.timestamp() for e in events]
+    ts_min = min(timestamps)
+    ts_max = max(timestamps)
+    ts_range = ts_max - ts_min  # 0이면 단일 이벤트 → 모두 1.0
+
+    # repeat_region: 같은 region_code 등장 횟수 집계
     region_counts: dict[str, int] = {}
     for e in events:
         if e.region_code:
@@ -85,11 +86,12 @@ def score_events(
 
     scored: list[Event] = []
     for e in events:
-        sev_s     = e.severity / 100.0
-        rec_s     = _recency(e.timestamp, now)
-        casc_s    = 1.0 if e.region_code in cascade   else 0.0
-        rep_s     = min(1.0, region_counts.get(e.region_code, 0) / 10.0)
-        gdelt_s   = 1.0 if e.region_code in gdelt_regions else 0.0
+        sev_s   = e.severity / 100.0
+        # 데이터 내 상대적 최신순: 가장 최근 = 1.0, 가장 오래된 = 0.0
+        rec_s   = (e.timestamp.timestamp() - ts_min) / ts_range if ts_range > 0 else 1.0
+        casc_s  = 1.0 if e.region_code in cascade        else 0.0
+        rep_s   = min(1.0, region_counts.get(e.region_code, 0) / 10.0)
+        gdelt_s = 1.0 if e.region_code in gdelt_regions  else 0.0
 
         score = (
             sev_s   * 0.3 +
@@ -110,6 +112,48 @@ def score_events(
                     "cascade_hit":     round(casc_s  * 0.2, 4),
                     "repeat_region":   round(rep_s   * 0.1, 4),
                     "gdelt_confirmed": round(gdelt_s * 0.1, 4),
+                },
+            },
+        }))
+
+    return scored
+
+
+def score_gdelt_events(events: list[Event]) -> list[Event]:
+    """GDELT 이벤트 importance_score 계산.
+
+    ACLED 스코어와 다른 가중치를 사용한다:
+      severity        × 0.3  (Goldstein → 0-100 정규화된 값)
+      recency         × 0.4  (GDELT는 15분 단위 실시간 → 최신성 가중치 높임)
+      confidence_score × 0.3 (0.8=교차검증, 0.5=미검증)
+      cascade_hit / repeat_region = 0  (GDELT는 region 매칭이 약함)
+
+    recency도 ACLED와 동일하게 데이터셋 내 상대적 최신순 정규화.
+    """
+    if not events:
+        return events
+
+    timestamps = [e.timestamp.timestamp() for e in events]
+    ts_min  = min(timestamps)
+    ts_max  = max(timestamps)
+    ts_range = ts_max - ts_min
+
+    scored: list[Event] = []
+    for e in events:
+        sev_s  = e.severity / 100.0
+        rec_s  = (e.timestamp.timestamp() - ts_min) / ts_range if ts_range > 0 else 1.0
+        conf_s = e.confidence_score  # 0.8(교차검증) or 0.5(미검증)
+
+        score = sev_s * 0.3 + rec_s * 0.4 + conf_s * 0.3
+
+        scored.append(e.model_copy(update={
+            "importance_score": round(min(1.0, score), 4),
+            "payload": {
+                **e.payload,
+                "_score_breakdown": {
+                    "severity":         round(sev_s  * 0.3, 4),
+                    "recency":          round(rec_s  * 0.4, 4),
+                    "confidence":       round(conf_s * 0.3, 4),
                 },
             },
         }))

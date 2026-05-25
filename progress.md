@@ -95,8 +95,20 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - `frontend/styles/main.css` — timeline·filter-bar·cgraph 관련 스타일 ~490줄 제거
 - 파일 보존: `TimelineView.js`, `CascadeGraphView.js` (연결만 해제)
 
+### ✅ 상단 2단 바 (2026-05-25)
+
+- `backend/api/stats.py` (신규) — `GET /api/stats/tension` (5분 캐시), `GET /api/stats/pizza-index` (1시간, KRW=X 실시간 BigMac 지수), `GET /api/stats/markets` (5분, WTI·금·반도체·원달러 4종 병렬)
+- `backend/api/news.py` (신규) — `GET /api/news/ticker` (3분 캐시, importance≥0.7 & confidence≥0.8 최신 8건, Gemini 티커 포맷 번역)
+- `backend/connectors/gemini_translator.py` — `translate_ticker_text()` 추가 (티커 전용 프롬프트, "ticker:" 접두사 캐시 분리)
+- `backend/main.py` — `stats_router`, `news_router` 등록
+- `frontend/src/views/TopBarView.js` (신규) — Row1(긴장도·피자·시장 3초 순환), Row2(뉴스 CSS 스크롤, hover pause, click 새탭)
+- `frontend/styles/main.css` — `#top-bar` 2단 레이아웃, `ticker-scroll` 애니메이션, `#map` top:32px 이동, `.info-panel`·`#layer-panel` top:48px 조정
+- `frontend/index.html` — `#top-bar` HTML 추가, `initTopBar()` 호출
+
+실측 (서버 응답): 피자지수 74.6, WTI $96.6(-0.88%), 반도체 $537.33(+2.06%), ₩1513
+
 ### 현재 버전
-`version.json`: **3.5.0**
+`version.json`: **3.6.0**
 
 ---
 
@@ -123,7 +135,7 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ### 우선순위 작업 (2026-05-25 예정)
 
-1. **상단 2단 바** — 긴장도 게이지 + 피자지수 + 주요 주가 / 뉴스 티커 (실시간 느낌 강화)
+1. ~~**상단 2단 바**~~ ✅ 완료
 2. **분석실(SandboxLab) 버그 수정** — 현재 알려진 UI 버그 점검
 3. **라이브러리 데이터 채우기** — 이론 카드 내용 보강 (참고문헌, 학습노트)
 4. **인과 연쇄 레이어 검토** — CascadeLayer 동작 점검, 룰 보완

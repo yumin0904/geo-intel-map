@@ -22,13 +22,16 @@ from pathlib import Path
 from typing import Iterator, Literal, Optional
 
 import httpx
+from dotenv import load_dotenv
+
+load_dotenv()  # .env 로드 — 다른 커넥터와 동일 패턴
 
 logger = logging.getLogger(__name__)
 
 SourceLang = Literal["en", "ar", "ru", "zh", "auto"]
 
 _DB_PATH      = Path(__file__).resolve().parents[1] / "db" / "translation_cache.db"
-_MODEL        = "gemini-1.5-flash"
+_MODEL        = "gemini-2.0-flash"
 _GEMINI_URL   = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     f"{_MODEL}:generateContent?key={{key}}"
@@ -159,6 +162,14 @@ async def _call_gemini(text: str, context: Optional[str]) -> str:
     }
     async with httpx.AsyncClient(timeout=30) as client:
         resp = await client.post(url, json=body)
+        if resp.status_code == 429:
+            try:
+                err_status = resp.json().get("error", {}).get("status", "")
+            except Exception:
+                err_status = ""
+            if err_status == "RESOURCE_EXHAUSTED":
+                _mark_quota_exhausted()
+            resp.raise_for_status()
         resp.raise_for_status()
 
     data = resp.json()
@@ -208,10 +219,18 @@ async def translate_event_text(
             model=cached["model"],
         )
 
-    # 2. API 키 없음
+    # 2. API 키 없음 또는 할당량 소진
     if not _API_KEY:
         return TranslationResult(
             text_ko="번역 기능을 사용하려면 GEMINI_API_KEY가 필요합니다.",
+            source_lang=source_lang,
+            cached=False,
+            char_count=len(text),
+            model=_MODEL,
+        )
+    if _is_quota_exhausted():
+        return TranslationResult(
+            text_ko=f"(번역 일시 중단 — Gemini 할당량 소진) {text[:80]}",
             source_lang=source_lang,
             cached=False,
             char_count=len(text),
@@ -247,6 +266,93 @@ async def translate_batch(
     for text in texts:
         results.append(await translate_event_text(text, source_lang=source_lang))
     return results
+
+
+# ── Circuit Breaker — Gemini 할당량 소진 시 일시 차단 ────────────────────────────
+# RESOURCE_EXHAUSTED(일일 RPD) 감지 시 1시간 동안 API 호출 금지.
+# RPM 초과(일시적)는 재시도 허용, RPD 소진(지속적)은 차단.
+_gemini_disabled_until: datetime = datetime(1970, 1, 1)
+
+
+def _mark_quota_exhausted() -> None:
+    global _gemini_disabled_until
+    _gemini_disabled_until = datetime.utcnow().replace(microsecond=0)
+    import datetime as dt_module
+    _gemini_disabled_until = datetime.utcnow() + dt_module.timedelta(hours=1)
+    logger.warning("[gemini] 일일 할당량 소진 — %s까지 API 호출 비활성화", _gemini_disabled_until)
+
+
+def _is_quota_exhausted() -> bool:
+    return datetime.utcnow() < _gemini_disabled_until
+
+
+# ── 티커 전용 번역 ──────────────────────────────────────────────────────────────
+
+_TICKER_FORMAT_PROMPT = (
+    "다음 뉴스를 한국어로 번역해줘.\n"
+    "포맷: 이모지 [지역] 핵심주어 + 행동 + 결과\n"
+    "길이: 15~25자 내외로 요약\n"
+    "예시: 🔴 [중동] 미국·이스라엘 이란 작전 3개월 지속, 호르무즈 통행 중단\n"
+    "시간 표시는 포함하지 말 것.\n"
+    "번역문만 출력. 설명·주석·원문 첨부 금지.\n\n"
+    "원문:\n{text}"
+)
+
+
+async def translate_ticker_text(text: str) -> str:
+    """뉴스 티커 포맷(이모지 [지역] 요약) 번역.
+
+    일반 번역(_build_prompt)과 달리 티커 전용 프롬프트를 사용한다.
+    캐시 키에 "ticker:" 접두사를 붙여 일반 번역과 충돌을 방지한다.
+    """
+    text = text.strip()
+    if not text:
+        return ""
+
+    h = _text_hash("ticker:" + text)
+    cached = _cache_get(h)
+    if cached:
+        return cached["text_ko"]
+
+    if not _API_KEY or _is_quota_exhausted():
+        return text[:60]
+
+    prompt = _TICKER_FORMAT_PROMPT.format(text=text)
+    url  = _GEMINI_URL.format(key=_API_KEY)
+    body = {
+        "contents": [{"parts": [{"text": prompt}], "role": "user"}],
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 128},
+    }
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(url, json=body)
+            # RESOURCE_EXHAUSTED = 일일 할당량 소진 → circuit breaker 활성화
+            if resp.status_code == 429:
+                try:
+                    err_status = resp.json().get("error", {}).get("status", "")
+                except Exception:
+                    err_status = ""
+                if err_status == "RESOURCE_EXHAUSTED":
+                    _mark_quota_exhausted()
+                logger.warning("[ticker_translate] 429: %s", err_status or "RATE_LIMIT")
+                return text[:60]
+            resp.raise_for_status()
+        data = resp.json()
+        text_ko = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except httpx.HTTPStatusError:
+        return text[:60]
+    except Exception as e:
+        logger.warning("[ticker_translate] Gemini 호출 실패: %s", e)
+        return text[:60]
+
+    _cache_set(h, TranslationResult(
+        text_ko=text_ko,
+        source_lang="auto",
+        cached=False,
+        char_count=len(text),
+        model=_MODEL,
+    ))
+    return text_ko
 
 
 def estimate_cost(char_count: int, model: str = _MODEL) -> float:

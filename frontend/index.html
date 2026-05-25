@@ -14,6 +14,30 @@
 
 </head>
 <body>
+  <!-- 상단 3단 바 (48px) — TopBarView.js가 데이터를 주입 -->
+  <div id="top-bar">
+    <!-- 1단: ◆ GEO-INTEL BRIEF ◆  THREAT 섹터 긴장도 -->
+    <div id="top-bar-row1">
+      <span class="top-bar-brand">◆ GEO-INTEL BRIEF ◆</span>
+      <span class="top-bar-section-label">THREAT</span>
+      <div id="tension-zone"></div>
+    </div>
+    <!-- 2단: MARKET 시장 지표 4개 동시 표시 -->
+    <div id="top-bar-row2">
+      <span class="top-bar-section-label">MARKET</span>
+      <div id="market-zone"></div>
+    </div>
+    <!-- 3단: 뉴스 티커 (CSS 무한 스크롤) -->
+    <div id="top-bar-row3">
+      <span class="top-bar-ticker-arrow">▶</span>
+      <div id="news-ticker-wrap">
+        <div id="news-ticker-track">
+          <span class="ticker-item">뉴스 로딩 중...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 지도가 그려질 div — MapController가 이 id를 사용 -->
   <div id="map"></div>
 
@@ -62,6 +86,7 @@
     import { NotebookPanel }        from './src/panels/NotebookPanel.js';
     import { TheoryLibraryView }    from './src/views/TheoryLibraryView.js';
     import { SandboxLabView }       from './src/views/SandboxLabView.js';
+    import { initTopBar }           from './src/views/TopBarView.js';
     import { api }                  from './src/services/api.js';
 
     // 우상단 버전 뱃지를 백엔드 config/version.json 기준으로 동적 표시
@@ -172,6 +197,9 @@
 
     // Phase 3: Sandbox Lab 뷰 — sandbox:toggle 이벤트로 열기/닫기
     new SandboxLabView(ctrl.map, ctrl.eventBus);
+
+    // 상단 2단 바 초기화 — conflict 레이어 캐시가 웜업된 뒤 ticker를 fetch
+    initTopBar();
 
   </script>
 </body>
