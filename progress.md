@@ -171,12 +171,11 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ## 다음 세션 시작점
 
-### 우선순위 작업
+### 우선순위 작업 (2026-05-27 예정)
 
-1. **뉴스 티커 한국어 번역** — KST 09:00 이후 `POST /api/translate/reset_circuit` 후 `/api/news/ticker` 재확인
-2. **분쟁 이벤트 설명 Gemini 맥락 요약** — 팝업 클릭 시 단순 번역 대신 지정학적 맥락 포함
-3. **펄스 애니메이션 복원** — 분쟁 마커 importance 기반 pulse 효과
+1. **Gemini 리셋 확인** — KST 09:00 이후 `POST /api/translate/reset_circuit` 실행
+2. **뉴스 티커 한국어 번역 확인** — `/api/news/ticker` 호출, 이모지·[지역] 포맷 정상 표시 여부
+3. **분쟁 이벤트 맥락 요약 Gemini 동작 확인** — `generate_context_summary()` / `generate_gdelt_summary()` 실제 호출 테스트
 4. **데이터 계층형 보관 설계** — GDELT/ACLED 이벤트 TTL 정책, 오래된 데이터 아카이브
-5. **분석실(SandboxLab) 버그 점검** — 알려진 UI 버그
-6. **인과 연쇄 레이어 검토** — CascadeLayer 동작 점검, 룰 보완
-7. **서브 에이전트 8단계 추론 설계** — `backend/services/reasoning/` 구조 설계 착수
+5. **라이브러리 데이터 채우기** — `library/` .md 신규 추가, theory_library.yaml 항목 보강
+6. **서브 에이전트 8단계 추론 자동화 설계 시작** — `backend/services/reasoning/` 구조 설계, case_studies.yaml 초안
