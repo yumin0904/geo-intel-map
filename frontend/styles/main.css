@@ -57,6 +57,8 @@ body {
   border-bottom: 1px solid rgba(48, 54, 61, 0.55);
   overflow: hidden;
 }
+/* row1은 pizza tooltip이 아래로 overflow 되어야 하므로 visible */
+#top-bar-row1 { overflow: visible; }
 
 /* 3단(티커) 행은 bottom border 더 두껍게 — ━━━━ 효과 */
 #top-bar-row2 {
@@ -195,6 +197,56 @@ body {
   padding: 0 6px;
   pointer-events: none;
 }
+
+/* ── 🍕 펜타곤 피자 지수 툴팁 ───────────────────────────────────── */
+.pizza-wrap {
+  position: relative;
+  flex: none;
+  cursor: help;
+  margin-left: 4px;
+  padding-left: 8px;
+  border-left: 1px solid var(--color-border);
+}
+
+.pizza-btn {
+  font-size: 12px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.pizza-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 340px;
+  background: #0d1117;
+  border: 1px solid #00b4d8;
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-family: 'Share Tech Mono', 'SF Mono', monospace;
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--color-text-primary);
+  z-index: 2100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  white-space: pre;
+}
+
+.pizza-wrap:hover .pizza-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pzt-title  { color: #e6edf3; font-weight: bold; margin-bottom: 2px; }
+.pzt-rule   { color: #00b4d8; overflow: hidden; max-height: 1.2em; }
+.pzt-cur    { color: #e6edf3; margin: 2px 0; }
+.pzt-cur b  { color: #f0f6fc; }
+.pzt-desc   { color: #8b949e; margin: 4px 0; }
+.pzt-guide-hdr { color: #e6edf3; margin-top: 4px; }
+.pzt-guide  { color: #8b949e; }
+.pzt-footer { color: #8b949e; margin-top: 4px; border-top: 1px solid #21262d; padding-top: 4px; }
 
 /* ── 정보 패널 ─────────────────────────────────────────────── */
 .info-panel {

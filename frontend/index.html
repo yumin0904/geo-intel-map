@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <link rel="stylesheet" href="styles/main.css" />
+  <!-- Share Tech Mono — 피자 지수 툴팁 전용 모노스페이스 폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
 
 </head>
 <body>
@@ -21,6 +24,11 @@
       <span class="top-bar-brand">◆ GEO-INTEL BRIEF ◆</span>
       <span class="top-bar-section-label">THREAT</span>
       <div id="tension-zone"></div>
+      <!-- 🍕 펜타곤 피자 지수 — 긴장도 기반 비공식 지표 (호버 툴팁) -->
+      <span class="pizza-wrap">
+        <span class="pizza-btn" id="pizza-btn">🍕</span>
+        <div class="pizza-tooltip" id="pizza-tooltip"></div>
+      </span>
     </div>
     <!-- 2단: MARKET 시장 지표 4개 동시 표시 -->
     <div id="top-bar-row2">

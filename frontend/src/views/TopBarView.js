@@ -19,10 +19,23 @@ const TENSION_LEVELS = {
 const TICKER_SPEED_PX_S = 80;
 const TICKER_REFRESH_MS = 3 * 60 * 1000;
 
+// 🍕 펜타곤 피자 지수 레벨 정의 (긴장도 → 작전 임박도)
+const PIZZA_LEVELS = [
+  { min: 81, label: 'CRITICAL', emoji: '🔴', desc: '작전 임박'  },
+  { min: 61, label: 'GUARDED',  emoji: '🟠', desc: '야근 감지'  },
+  { min: 41, label: 'ELEVATED', emoji: '🟡', desc: '회의 증가'  },
+  { min:  0, label: 'NORMAL',   emoji: '🟢', desc: '정상 업무'  },
+];
+
+// 피자 지수 최근 갱신 상태 (hover 시 "N분 전" 계산용)
+let _pizzaIndexVal   = 0;
+let _tensionFetchAt  = 0;   // Date.now() 타임스탬프
+
 // ── DOM 참조 ─────────────────────────────────────────────────────────────────
 const $tension     = () => document.getElementById('tension-zone');
 const $market      = () => document.getElementById('market-zone');
 const $tickerTrack = () => document.getElementById('news-ticker-track');
+const $pizzaTooltip = () => document.getElementById('pizza-tooltip');
 
 // ── API ──────────────────────────────────────────────────────────────────────
 async function _get(path) {
@@ -55,6 +68,45 @@ function _renderTension(sectors) {
       `</span>`
     );
   }).join('');
+}
+
+// ── 🍕 펜타곤 피자 지수 ──────────────────────────────────────────────────────
+function _pizzaLevel(index) {
+  return PIZZA_LEVELS.find(l => index >= l.min) || PIZZA_LEVELS[PIZZA_LEVELS.length - 1];
+}
+
+function _calcPizzaIndex(sectors) {
+  if (!sectors || sectors.length === 0) return 0;
+  const sum = sectors.reduce((acc, s) => acc + (s.avg_severity || 0), 0);
+  return sum / sectors.length;
+}
+
+function _renderPizzaTooltip() {
+  const el = $pizzaTooltip();
+  if (!el) return;
+
+  const idx = _pizzaIndexVal;
+  const lv  = _pizzaLevel(idx);
+  const minAgo = _tensionFetchAt
+    ? Math.floor((Date.now() - _tensionFetchAt) / 60000)
+    : null;
+  const updateStr = minAgo === null ? '—' : minAgo === 0 ? '방금 전' : `${minAgo}분 전`;
+
+  const SEP = '━'.repeat(33);
+  el.innerHTML =
+    `<div class="pzt-title">🍕 펜타곤 피자 지수 (Pentagon Pizza Index)</div>` +
+    `<div class="pzt-rule">${SEP}</div>` +
+    `<div class="pzt-cur">현재: <b>${idx.toFixed(1)}</b> → ${lv.emoji} ${lv.label} — ${lv.desc}</div>` +
+    `<div class="pzt-rule">${SEP}</div>` +
+    `<div class="pzt-desc">개념: 펜타곤 인근 피자 배달량 급증 시\n` +
+    `      내부 긴급회의/야근 = 군사작전 임박 신호\n` +
+    `      CIA·NSA 분석가들의 비공식 참고 지표</div>` +
+    `<div class="pzt-guide-hdr">\n판독 기준:</div>` +
+    `<div class="pzt-guide">🟢 0-40&nbsp;&nbsp; NORMAL&nbsp;&nbsp;&nbsp;— 정상 업무</div>` +
+    `<div class="pzt-guide">🟡 41-60 ELEVATED — 회의 증가</div>` +
+    `<div class="pzt-guide">🟠 61-80 GUARDED&nbsp; — 야근 감지</div>` +
+    `<div class="pzt-guide">🔴 81+&nbsp;&nbsp;&nbsp;&nbsp;CRITICAL — 작전 임박</div>` +
+    `<div class="pzt-footer">현재 글로벌 긴장도 기반 산출\n업데이트: ${updateStr}</div>`;
 }
 
 // ── 2단: MARKET 4개 동시 표시 ────────────────────────────────────────────────
@@ -133,8 +185,13 @@ function _escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'
 
 // ── 갱신 함수 ─────────────────────────────────────────────────────────────────
 async function _refreshTension() {
-  try { _renderTension(await _get('/api/stats/tension')); }
-  catch (e) { console.debug('[TopBar] tension 실패:', e.message); }
+  try {
+    const sectors = await _get('/api/stats/tension');
+    _renderTension(sectors);
+    // 피자 지수: 섹터 평균 긴장도 기반
+    _pizzaIndexVal  = _calcPizzaIndex(sectors);
+    _tensionFetchAt = Date.now();
+  } catch (e) { console.debug('[TopBar] tension 실패:', e.message); }
 }
 
 async function _refreshMarkets() {
@@ -168,4 +225,7 @@ export function initTopBar() {
     const item = e.target.closest('[data-url]');
     if (item?.dataset.url) window.open(item.dataset.url, '_blank', 'noopener,noreferrer');
   });
+
+  // 🍕 피자 툴팁 — 호버 시 최신 "N분 전" 포함 콘텐츠 렌더
+  document.querySelector('.pizza-wrap')?.addEventListener('mouseenter', _renderPizzaTooltip);
 }
