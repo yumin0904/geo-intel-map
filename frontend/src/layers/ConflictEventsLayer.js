@@ -218,6 +218,7 @@ function buildPopup(props) {
       </table>
       ${importanceHtml}
       ${translateBtn}
+      ${props.id ? `<button class="popup-reasoning-btn" data-event-id="${props.id}">🤖 AI 분析</button>` : ''}
       ${sourceLink}
       <div class="base-popup__tags">${tags}</div>
     </div>
@@ -336,47 +337,61 @@ export class ConflictEventsLayer {
           this.openPopup();
         });
 
-        // 팝업 DOM이 렌더된 뒤 번역 버튼 이벤트 등록
+        // 팝업 DOM이 렌더된 뒤 버튼 이벤트 등록
         marker.on('popupopen', function () {
-          const btn = this.getPopup()?.getElement()?.querySelector('.popup-translate-btn');
-          if (!btn) return;
+          const popupEl = this.getPopup()?.getElement();
+          if (!popupEl) return;
 
-          btn.addEventListener('click', async () => {
-            const rawText  = decodeURIComponent(btn.dataset.text);
-            const impScore = parseFloat(btn.dataset.importance ?? '0');
+          // ── 🌐 한국어 번역 버튼 ──────────────────────────────────
+          const translateBtn = popupEl.querySelector('.popup-translate-btn');
+          if (translateBtn) {
+            translateBtn.addEventListener('click', async () => {
+              const rawText  = decodeURIComponent(translateBtn.dataset.text);
+              const impScore = parseFloat(translateBtn.dataset.importance ?? '0');
 
-            btn.disabled   = true;
-            btn.textContent = '⏳ 번역 중…';
+              translateBtn.disabled    = true;
+              translateBtn.textContent = '⏳ 번역 중…';
 
-            try {
-              const params = new URLSearchParams({
-                text:       rawText,
-                context:    'acled',
-                importance: impScore,
-              });
-              const res  = await fetch(`/api/translate?${params}`);
-              const data = await res.json();
+              try {
+                const params = new URLSearchParams({
+                  text:       rawText,
+                  context:    'acled',
+                  importance: impScore,
+                });
+                const res  = await fetch(`/api/translate?${params}`);
+                const data = await res.json();
 
-              if (!res.ok) {
-                btn.textContent = '⚠️ 번역 불가';
-                return;
+                if (!res.ok) {
+                  translateBtn.textContent = '⚠️ 번역 불가';
+                  return;
+                }
+
+                const cached = data.cached ? ' (캐시)' : '';
+                const el = document.createElement('div');
+                el.className   = 'popup-translated';
+                el.textContent = data.text_ko;
+                const note     = document.createElement('span');
+                note.className = 'popup-translated__note';
+                note.textContent = `🌐 한국어${cached}`;
+                el.prepend(note);
+                translateBtn.replaceWith(el);
+              } catch {
+                translateBtn.textContent = '⚠️ 네트워크 오류';
+                translateBtn.disabled = false;
               }
+            }, { once: true });
+          }
 
-              // 버튼을 번역 결과 블록으로 교체
-              const cached = data.cached ? ' (캐시)' : '';
-              const el = document.createElement('div');
-              el.className   = 'popup-translated';
-              el.textContent = data.text_ko;
-              const note     = document.createElement('span');
-              note.className = 'popup-translated__note';
-              note.textContent = `🌐 한국어${cached}`;
-              el.prepend(note);
-              btn.replaceWith(el);
-            } catch {
-              btn.textContent = '⚠️ 네트워크 오류';
-              btn.disabled = false;
-            }
-          }, { once: true });
+          // ── 🤖 AI 분析 버튼 ──────────────────────────────────────
+          const reasoningBtn = popupEl.querySelector('.popup-reasoning-btn');
+          if (reasoningBtn) {
+            reasoningBtn.addEventListener('click', () => {
+              eb?.emit('reasoning:open', {
+                event_id: reasoningBtn.dataset.eventId,
+                title:    props.title,
+              });
+            }, { once: true });
+          }
         });
 
         this._layerGroup.addLayer(marker);
