@@ -484,3 +484,79 @@ next_rule_hint: "semiconductor_to_chips_act"  # 다음 룰 ID
 ### 사용자에게
 - 매 세션 시작 시 이 원칙을 한 줄로 상기시켜줄 것
   예: "💡 토큰 절약: 작업 완료 시 /clear, 파일은 필요한 부분만 요청하세요"
+
+---
+
+## 14. LLM 사용 원칙 & Token-Zero Tagging Rule
+
+### 14-A. [필수 원칙] Token-Zero Tagging
+실시간 첩보(GDELT/RSS) 수집 시 7대 축 태그 부여에 Gemini/Claude API를 절대 호출하지 않는다.
+반드시 `backend/utils/cameo_mapper.py`의 Deterministic 파이썬 로직으로 백엔드 1차 태깅을 완료해야 한다.
+
+#### GDELT CAMEO 매핑 기준
+| 태그 축 | 입력 필드 | 매핑 규칙 |
+|---------|----------|----------|
+| `level_of_analysis` | `Actor1Type1Code` | IGO/MNI → systemic, GOV/MIL/COP/LEG → state_domestic, REB/INS/NGO/CVL → non_state |
+| `instrument_of_power` | `EventRootCode` | 01~05 → diplomatic, 16 → economic, 17~20 → military, 그 외 → informational |
+| `strategic_posture` | `GoldsteinScale` | ≤ -5.0 → revisionist, 그 외 → status_quo |
+
+LLM 호출은 **사용자가 명시적으로 요청한 "AI 설명 SSE"** 또는 **번역** 기능에만 허용된다.
+
+---
+
+## 15. 데이터 모델 고도화 — 7대 축 다차원 태그 매트릭스
+
+모든 `Event` 및 `library/*.md` 프론트매터에 아래 7개 필드를 강제 적용한다.
+
+| 축 | 필드명 | 값 선택지 | 이론적 근거 |
+|---|--------|----------|-----------|
+| 1 | `form_type` | concept / case_study / norm / data_point | — |
+| 2 | `geopol_region` | taiwan_strait / hormuz / bab_el_mandeb / eastern_europe 등 | 지오펜싱 코드 |
+| 3 | `sector_lead` | maritime / energy / techno / alliance / gray_zone | 5대 섹터 |
+| 4 | `temporal_era` | cold_war / post_cold / us_china_rivalry / **hot** (최근 7일) | 시대 배경 |
+| 5 | `level_of_analysis` | systemic / state_domestic / non_state | Waltz 3수준 |
+| 6 | `instrument_of_power` | diplomatic / informational / military / economic | DIME 프레임워크 |
+| 7 | `strategic_posture` | status_quo / revisionist | Snyder 동맹 딜레마 |
+
+Pydantic 모델: `backend/models/intelligence.py` → `IntelligenceMetadata`
+
+---
+
+## 16. 3단계 지정학 팩트체커 (Verification Funnel)
+
+실시간 첩보는 `is_staging: bool = True` 상태로 버퍼에 먼저 적재된다.
+아래 3단계를 통과하여 `confidence_score >= 0.8`에 도달해야 대시보드에 승격된다.
+
+| Stage | 검증 방법 | 점수 보정 |
+|-------|----------|---------|
+| 1 | ACLED 베이스라인 대조 (지역별 과거 분쟁 패턴) | +0.1 |
+| 2 | RSS 4대 매체 교차 검증 (Reuters·BBC·Al Jazeera·AP 중 ≥2개) | +0.2 |
+| 3 | 물리 센서 결합 (반경 50km, 12시간 이내 FIRMS/AIS/ADS-B 이상 징후) | +0.1 |
+
+초기값 0.5 → 최대 0.9. 미달 자산은 `is_staging: True` 유지, 3일 후 자동 삭제.
+구현 파일: `backend/services/verification_funnel.py`
+
+---
+
+## 17. Stage 8 동맹 확산 (Alliance Diffusion) 알고리즘
+
+글렌 스나이더 '동맹의 딜레마(Alliance Dilemma)' 계량화.
+
+- `Diffusion_Score ≥ 80`: **동맹 연루(Entrapment) 위험** → Actor C의 군사 자산 레이어 점선 하이라이트
+- `Diffusion_Score < 50` + 외교 성명 생략: **동맹 방기(Abandonment) 징후** → sanctions.yaml 교차 분석
+
+`pact_intensity` 기준값: NATO=1.0, 조·러조약=0.90, 미·필리핀=0.85
+구현 파일: `backend/config/alliance_graph.yaml`, Stage 8 로직은 `backend/services/reasoning/stages.py`
+
+---
+
+## 18. 계층형 데이터 보관 정책 (TTL)
+
+| 소스 | 핫 테이블 보관 | 아카이브 이관 조건 | 완전 삭제 |
+|------|-------------|-----------------|---------|
+| GDELT/RSS | 3일 (72h) | confidence≥0.8 또는 importance≥0.7 → `event_archive` 영구 보존 | 미검증(≤0.5) 3일 후 자동 삭제 |
+| ACLED | 상시 (1년 전 고정) | 인입 즉시 `event_archive` 영구 귀속 (베이스라인 상수) | 없음 |
+| FIRMS | 24h | Cascade Link 매칭된 열점만 보존 | 미매칭 48h 후 삭제 |
+| AIS/ADS-B | 12h 스냅샷 | 초크포인트·기지 주변 이상 로그만 보존 | 일반 로그 24h 후 소멸 |
+
+구현 파일: `backend/db/archive_manager.py`
