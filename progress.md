@@ -162,8 +162,15 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - Token-Zero GDELT CAMEO → 7대 축 파이썬 자동 매퍼 설계 (LLM 호출 없이 ActorType/EventRootCode/GoldsteinScale 결정론적 매핑)
 - CLAUDE.md 섹션 §14~§18 추가 확정 (구현 예정 파일: `cameo_mapper.py` · `intelligence.py` · `verification_funnel.py` · `archive_manager.py`)
 
+### 다음 세션 우선순위 작업 (v3.9.0 이후)
+
+1. **`backend/utils/cameo_mapper.py`** — `map_gdelt_to_intelligence_tags()` (ActorType→Level, EventRootCode→DIME, Goldstein→Posture) + `gdelt_connector.py` fetch() 반환 직전 태그 자동 주입
+2. **`backend/services/verification_funnel.py`** — 3단계 팩트체크 (ACLED 대조 / RSS 교차 / 물리센서 결합), `is_staging` 필드 + 72h TTL 스케줄러 연동
+3. **`backend/db/archive_manager.py`** — 3일 TTL 클리너 (GDELT 미검증 자동 삭제), 고가치 자산 `event_archive` 이관
+4. **`backend/models/intelligence.py`** — `IntelligenceMetadata` Pydantic 모델 (7대 축 전체 필드), 기존 `Event`에 `intelligence_meta: IntelligenceMetadata | None` 추가
+
 ### 현재 버전
-`version.json`: **3.7.1**
+`version.json`: **3.9.0**
 
 ---
 
