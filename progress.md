@@ -152,6 +152,16 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - `frontend/styles/main.css` — `.reasoning-panel`, `.rs-stage`, `.popup-reasoning-btn` 스타일
 - `frontend/index.html` — `#reasoning-panel` div + `ReasoningPanelView` 마운트
 
+### ✅ Phase 3 고도화 아키텍처 설계 확정 (2026-05-26)
+
+- ACLED 1년 제약 대응 — 과거 베이스라인 vs. 실시간 GDELT 이원화 파이프라인 아키텍처 수립
+- 3단계 지정학 팩트체커 (맥락·교차언론·물리센서) 및 Staging Buffer 구조 정립
+- 7대 축 다차원 태그 매트릭스 스키마 확정 (Form/Region/Sector/Temporal/Level/DIME/Posture)
+- Stage 8 동맹 확산 스코어링 수식 계량화 (Snyder 동맹 딜레마 적용)
+- 계층형 데이터 보관 TTL 정책 설계 (핫 72h / event_archive 영구 / 소멸 자동화)
+- Token-Zero GDELT CAMEO → 7대 축 파이썬 자동 매퍼 설계 (LLM 호출 없이 ActorType/EventRootCode/GoldsteinScale 결정론적 매핑)
+- CLAUDE.md 섹션 §14~§18 추가 확정 (구현 예정 파일: `cameo_mapper.py` · `intelligence.py` · `verification_funnel.py` · `archive_manager.py`)
+
 ### 현재 버전
 `version.json`: **3.7.1**
 
