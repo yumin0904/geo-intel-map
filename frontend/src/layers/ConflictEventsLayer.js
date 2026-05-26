@@ -218,7 +218,7 @@ function buildPopup(props) {
       </table>
       ${importanceHtml}
       ${translateBtn}
-      ${props.id ? `<button class="popup-reasoning-btn" data-event-id="${props.id}">🤖 AI 분析</button>` : ''}
+      ${props.id ? `<button class="popup-reasoning-btn" data-event-id="${props.id}">🤖 AI 분석</button>` : ''}
       ${sourceLink}
       <div class="base-popup__tags">${tags}</div>
     </div>
@@ -382,7 +382,7 @@ export class ConflictEventsLayer {
             }, { once: true });
           }
 
-          // ── 🤖 AI 분析 버튼 ──────────────────────────────────────
+          // ── 🤖 AI 분석 버튼 ──────────────────────────────────────
           const reasoningBtn = popupEl.querySelector('.popup-reasoning-btn');
           if (reasoningBtn) {
             reasoningBtn.addEventListener('click', () => {
