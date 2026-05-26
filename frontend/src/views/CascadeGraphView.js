@@ -47,6 +47,9 @@ const TICKER_LABEL = {
   'SOXX':  '반도체\nETF',
   'KRW=X': '원/달러',
   '^KS11': '코스피',
+  'TIP':   '물가연동채\n(TIP)',
+  'INTC':  '인텔\n(CHIPS Act)',
+  'QQQ':   '나스닥\n(QQQ)',
 };
 
 // region → 이론 태그 (Cytoscape 노드 클릭 시 TheoryPanel에 전달)
@@ -71,6 +74,14 @@ const C_MARKET_BORDER   = '#ffe566';
 const C_EDGE            = '#ffe566';   // 인과 화살표 — CascadeLayer 화살표와 동일 노랑
 const C_HIGHLIGHT       = '#00e5ff';   // 하이라이트 — 파란 선택 강조
 const C_BG              = '#0d1117';   // 그래프 배경 (--color-bg)
+
+// depth별 체인 노드 색상 (Snyder 동맹 딜레마 — 연루 강도 시각화)
+// depth=1: 흰 테두리 (1차 충격), depth=2: 노랑 (2차 전이), depth=3: 주황 (3차 파급)
+const C_CHAIN_DEPTH = {
+  1: { border: '#ffffff', bg: '#b7950b' },   // 기본 market 색 유지 + 흰 테두리
+  2: { border: '#ffe566', bg: '#5d4037' },   // 갈색 배경 + 노랑 테두리
+  3: { border: '#ff9800', bg: '#6d2600' },   // 진한 주황 배경 + 주황 테두리
+};
 
 const CYTOSCAPE_STYLE = [
   // 분쟁 지역 노드 (원인 — 그래프 좌측)
@@ -135,6 +146,27 @@ const CYTOSCAPE_STYLE = [
   // 상관도 높을수록 엣지 굵게 (학습 포인트: 통계적 유의미성)
   { selector: 'edge[score > 0.5]', style: { 'width': 3 } },
   { selector: 'edge[score > 0.8]', style: { 'width': 5 } },
+  // 다단계 체인 depth별 노드 색상 구분 (CLAUDE.md §11-A: Cascade 룰 체이닝)
+  // depth=2: 노랑 테두리 — TSMC하락→인텔상승(CHIPS Act) 같은 2차 전이
+  {
+    selector: 'node[depth = 2]',
+    style: {
+      'background-color': C_CHAIN_DEPTH[2].bg,
+      'border-color':     C_CHAIN_DEPTH[2].border,
+      'border-width':     3,
+    },
+  },
+  // depth=3: 주황 테두리 — 방산ETF상승 같은 3차 파급 효과
+  {
+    selector: 'node[depth = 3]',
+    style: {
+      'background-color': C_CHAIN_DEPTH[3].bg,
+      'border-color':     C_CHAIN_DEPTH[3].border,
+      'border-width':     4,
+    },
+  },
+  // 체인 엣지 (depth≥2) — 점선으로 일반 인과 엣지와 구분
+  { selector: 'edge[depth > 1]', style: { 'line-style': 'dashed', 'line-dash-pattern': [6, 4] } },
   // 마커 클릭 시 — 해당 region 노드 + 연결 하이라이트
   {
     selector: '.hl-node',
@@ -213,78 +245,136 @@ export class CascadeGraphView {
    * 집계값: 평균 상관도(avgScore), 평균 등락률(avgPct), 링크 수(count)
    */
   _buildElements(data) {
-    // 집계용 맵
+    const links = data.links ?? [];
+
+    // link.id → link 인덱스 (체인 부모 역참조용)
+    const linkById = new Map(links.map(l => [l.id, l]));
+
+    // depth=1 집계용
     const regionMap = new Map();  // region → { count }
-    const tickerMap = new Map();  // ticker → { count }
+    const tickerMap = new Map();  // `ticker::depth` → { count, maxDepth }
     // `region::ticker` → { count, totalScore, pctSum, rule_id }
     const edgeMap   = new Map();
+    // 체인 엣지: `srcTicker::dstTicker::depth` → { count, totalScore, pctSum, rule_id, depth }
+    const chainEdgeMap = new Map();
 
-    for (const link of data.links ?? []) {
-      const region = link.evidence?.region;
+    for (const link of links) {
+      const depth  = link.depth ?? 1;
       const ticker = link.evidence?.ticker;
-      if (!region || !ticker) continue;
+      if (!ticker) continue;
 
-      if (!regionMap.has(region)) regionMap.set(region, { count: 0 });
-      regionMap.get(region).count++;
+      if (depth === 1) {
+        // 1단계: 분쟁지역 → 시장 지표 (기존 로직)
+        const region = link.evidence?.region;
+        if (!region) continue;
 
-      if (!tickerMap.has(ticker)) tickerMap.set(ticker, { count: 0 });
-      tickerMap.get(ticker).count++;
+        if (!regionMap.has(region)) regionMap.set(region, { count: 0 });
+        regionMap.get(region).count++;
 
-      const key = `${region}::${ticker}`;
-      if (!edgeMap.has(key)) {
-        edgeMap.set(key, { count: 0, totalScore: 0, pctSum: 0, rule_id: link.rule_id ?? '' });
+        const tKey = `${ticker}::1`;
+        if (!tickerMap.has(tKey)) tickerMap.set(tKey, { count: 0, depth: 1 });
+        tickerMap.get(tKey).count++;
+
+        const eKey = `${region}::${ticker}`;
+        if (!edgeMap.has(eKey)) {
+          edgeMap.set(eKey, { count: 0, totalScore: 0, pctSum: 0, rule_id: link.rule_id ?? '' });
+        }
+        const e = edgeMap.get(eKey);
+        e.count++;
+        e.totalScore += link.correlation_score ?? 0;
+        e.pctSum     += link.evidence?.pct_change ?? 0;
+
+      } else {
+        // 2단계 이상: 이전 ticker → 이 ticker (체인 엣지)
+        // parent_link_id를 따라 올라가 직전 단계의 ticker를 찾는다.
+        const parentLink = linkById.get(link.parent_link_id);
+        const srcTicker  = parentLink?.evidence?.ticker;
+        if (!srcTicker) continue;
+
+        const tKey = `${ticker}::${depth}`;
+        if (!tickerMap.has(tKey)) tickerMap.set(tKey, { count: 0, depth });
+        tickerMap.get(tKey).count++;
+
+        const cKey = `${srcTicker}::${ticker}::${depth}`;
+        if (!chainEdgeMap.has(cKey)) {
+          chainEdgeMap.set(cKey, { count: 0, totalScore: 0, pctSum: 0, rule_id: link.rule_id ?? '', depth });
+        }
+        const ce = chainEdgeMap.get(cKey);
+        ce.count++;
+        ce.totalScore += link.correlation_score ?? 0;
+        ce.pctSum     += link.evidence?.pct_change ?? 0;
       }
-      const entry = edgeMap.get(key);
-      entry.count++;
-      entry.totalScore += link.correlation_score ?? 0;
-      entry.pctSum     += link.evidence?.pct_change ?? 0;
     }
 
     const elements = [];
 
-    // 분쟁 지역 노드
+    // 분쟁 지역 노드 (depth=1 원인 노드)
     for (const [region, info] of regionMap) {
       elements.push({
         data: {
-          id:     `r_${region}`,
-          label:  REGION_LABEL[region] ?? region,
-          type:   'conflict',
+          id:    `r_${region}`,
+          label: REGION_LABEL[region] ?? region,
+          type:  'conflict',
+          depth: 0,
           region,
-          count:  info.count,
+          count: info.count,
         },
       });
     }
 
-    // 시장 지표 노드
-    for (const [ticker, info] of tickerMap) {
+    // 시장 지표 노드 (depth별로 별도 노드 ID)
+    for (const [tKey, info] of tickerMap) {
+      const [ticker] = tKey.split('::');
       elements.push({
         data: {
-          id:     `t_${ticker}`,
-          label:  TICKER_LABEL[ticker] ?? ticker,
-          type:   'market',
+          id:    `t_${tKey}`,           // "t_TSM::1", "t_INTC::2" 등 depth 포함
+          label: TICKER_LABEL[ticker] ?? ticker,
+          type:  'market',
+          depth: info.depth,
           ticker,
-          count:  info.count,
+          count: info.count,
         },
       });
     }
 
-    // 인과 엣지 (집계)
     let idx = 0;
+
+    // depth=1 인과 엣지 (지역 → 시장)
     for (const [key, info] of edgeMap) {
       const [region, ticker] = key.split('::');
       const avgScore = info.totalScore / info.count;
       const avgPct   = info.pctSum / info.count;
       const pctStr   = `${avgPct > 0 ? '+' : ''}${avgPct.toFixed(1)}%`;
-
       elements.push({
         data: {
           id:      `e_${idx++}`,
           source:  `r_${region}`,
-          target:  `t_${ticker}`,
+          target:  `t_${ticker}::1`,
           rule_id: info.rule_id,
           score:   Math.round(avgScore * 100) / 100,
           label:   `${pctStr}\n(${info.count}건)`,
           count:   info.count,
+          depth:   1,
+        },
+      });
+    }
+
+    // depth≥2 체인 엣지 (시장 → 시장, 점선)
+    for (const [key, info] of chainEdgeMap) {
+      const [srcTicker, dstTicker] = key.split('::');
+      const avgScore = info.totalScore / info.count;
+      const avgPct   = info.pctSum / info.count;
+      const pctStr   = `${avgPct > 0 ? '+' : ''}${avgPct.toFixed(1)}%`;
+      elements.push({
+        data: {
+          id:      `e_${idx++}`,
+          source:  `t_${srcTicker}::${info.depth - 1}`,
+          target:  `t_${dstTicker}::${info.depth}`,
+          rule_id: info.rule_id,
+          score:   Math.round(avgScore * 100) / 100,
+          label:   `${pctStr}\n(${info.count}건)`,
+          count:   info.count,
+          depth:   info.depth,
         },
       });
     }
@@ -317,17 +407,19 @@ export class CascadeGraphView {
     const regionNode = this._cy.getElementById(`r_${region}`);
     if (regionNode.length === 0) return;
 
-    // 해당 region 노드 + 연결 엣지 + 연결된 시장 노드 강조
+    // region에서 시작해 다단계 체인 전체를 DFS로 수집
+    // successors()는 방향 그래프에서 도달 가능한 모든 후속 노드+엣지를 반환한다.
+    const chainEles = regionNode.successors();
     regionNode.addClass('hl-node');
-    regionNode.connectedEdges().addClass('hl-edge');
-    regionNode.neighborhood('node').addClass('hl-node');
+    chainEles.nodes().addClass('hl-node');
+    chainEles.edges().addClass('hl-edge');
 
     // 나머지 요소는 희미하게
     this._cy.elements().not('.hl-node, .hl-edge').addClass('dimmed');
 
-    // 강조 노드들로 뷰 이동 (부드럽게)
+    // 강조된 전체 체인으로 뷰 이동 (부드럽게)
     this._cy.animate({
-      fit: { eles: regionNode.union(regionNode.neighborhood()), padding: 40 },
+      fit: { eles: regionNode.union(chainEles), padding: 40 },
       duration: 350,
       easing:   'ease-in-out-cubic',
     });

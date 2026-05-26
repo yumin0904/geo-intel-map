@@ -252,6 +252,7 @@
     source_type: conflict
     region: korean_peninsula
     severity_min: 60
+    chain_input: "krw_depreciation"   # north_korea_missile_to_krw 의 chain_output 과 연결
   expected_response:
     source_type: market
     ticker: "^KS11"            # KOSPI 종합지수. 한국 증시 전체의 지정학 반응 지표
@@ -268,3 +269,143 @@
       한국 증시는 북한 도발, 한미 훈련, DMZ 충돌 등 한반도 긴장에 구조적으로 민감하다.
       이를 '코리아 디스카운트'라 부르며, 한국 기업의 펀더멘털과 무관하게 지정학 리스크가
       밸류에이션을 낮추는 메커니즘을 관찰한다. KRW=X 룰과 함께 보면 FX-주식 동시 충격 경로를 확인 가능.
+
+# ── Phase 3 체이닝 2단계 룰 ────────────────────────────────────────────────────
+# bab_el_mandeb → oil_spike → inflation_pressure (자원무기화 → 거시경제 전이)
+
+- id: bab_el_mandeb_to_oil_spike
+  name: "바브엘만데브 긴장 → 유가 급등"
+  trigger:
+    source_type: conflict
+    region: bab_el_mandeb
+    severity_min: 55
+  expected_response:
+    source_type: market
+    ticker: "CL=F"
+    direction: up
+    window_hours: 48
+    threshold_pct: 1.5
+  chainable: true
+  chain_output: "oil_spike"
+  next_rule_hint: "oil_spike_to_inflation"
+  theory:
+    framework: "Resource Weaponization"
+    reference: "Hirschman (1945)"
+    learning_note: >-
+      바브엘만데브 해협(홍해↔아덴만)은 글로벌 원유 해상 운송의 약 9%가 통과한다.
+      후티 공격 등으로 해협이 위협받으면 수에즈 우회 비용 증가가 즉각 유가에 반영된다.
+      이 체인은 지리적 긴장 → 에너지 가격 → 인플레이션 경로를 관찰하는 데 목적이 있다.
+
+- id: oil_spike_to_inflation
+  name: "유가 급등 → 인플레이션 압력"
+  trigger:
+    source_type: market
+    chain_input: "oil_spike"
+  expected_response:
+    source_type: market
+    ticker: "TIP"
+    direction: up
+    window_hours: 72
+    threshold_pct: 0.2   # TIP(물가연동채)는 듀레이션 리스크로 변동 완만 — 0.2% 이상이면 인플레 기대 유의미 상승
+  chainable: true
+  chain_output: "inflation_pressure"
+  next_rule_hint: "inflation_to_fed_rate"
+  theory:
+    framework: "Resource Weaponization → 거시경제 전이"
+    reference: "Drezner (2015), Blanchard & Galí (2007)"
+    learning_note: >-
+      유가 급등은 생산 비용 전반을 끌어올려 CPI 상방 압력을 형성한다.
+      TIP(물가연동채 ETF)는 시장의 기대 인플레이션을 실시간으로 반영하므로
+      지정학적 에너지 충격이 금융시장 인플레이션 기대에 얼마나 빠르게 전이되는지 관찰할 수 있다.
+      Drezner의 '경제적 제재의 강압 논리'와 결합하면 에너지 무기화의 비용-편익 구조를 이해하게 된다.
+
+# taiwan_strait → semiconductor_supply_risk → chips_act_investment → us_tech_sovereignty (기술패권 3단계 체인)
+
+- id: semiconductor_supply_risk_to_sector_decline
+  name: "반도체 공급망 위기 → 반도체 섹터 하락 (SOXX)"
+  # 실증 검증 (2026-05-27):
+  #   2023 Joint Sword: SOXX -0.52% (48h) ✅ 발화
+  #   2022 Pelosi 위기: SOXX +0.19% (48h) ❌ 미발화 (선반영 후 buy-the-dip)
+  # ※ 이전 INTC↑ 가설은 단기(48h) 실데이터로 검증 시 불성립.
+  #   INTC는 TSM 하락 후 오히려 하락(-2.5~-6.6%). CHIPS Act 로테이션은 중장기(수주) 현상.
+  trigger:
+    source_type: market
+    chain_input: "semiconductor_supply_risk"   # taiwan_strait_to_tsm 의 chain_output 과 연결
+  expected_response:
+    source_type: market
+    ticker: "SOXX"             # iShares 반도체 ETF: 섹터 전체 공급망 공포 반영
+    direction: down
+    window_hours: 48           # 대만 긴장 → 섹터 공포 매도 1~2거래일
+    threshold_pct: 0.5         # ETF는 개별주보다 충격 흡수 — 낮은 임계치
+  chainable: true
+  chain_output: "semiconductor_sector_decline"
+  next_rule_hint: "semiconductor_sector_decline_to_defense"
+  theory:
+    framework: "Supply Chain Contagion / Techno-nationalism"
+    reference: "CSIS 'Chips of War' (2023), SIA 반도체 산업협회 보고서"
+    learning_note: >-
+      TSMC 주가 하락 이후 시장은 단기적으로 반도체 섹터 전체를 매도한다 ('공급망 공포').
+      CHIPS Act 수혜 로테이션(INTC↑)은 중장기(수주~수개월) 현상이며,
+      48시간 단위의 지정학 충격 전파는 섹터 전반의 하락으로 나타난다.
+      2023 Joint Sword 실데이터: SOXX -2.24%(48h) — 개별주(TSM -2.14%)와 유사 하락폭.
+
+- id: semiconductor_sector_decline_to_defense
+  name: "반도체 섹터 하락 → 방산·국방기술주 상승 (ITA)"
+  # 실증 검증 (2026-05-27):
+  #   2023 Joint Sword: ITA +1.49%(1주) ✅ 발화 (window 168h 기준)
+  #   ITA는 72h 이내 미반응 — 방산주 반응은 정책 기대치 형성에 1주 시차 필요
+  trigger:
+    source_type: market
+    chain_input: "semiconductor_sector_decline"
+  expected_response:
+    source_type: market
+    ticker: "ITA"              # iShares 미국 항공우주·방산 ETF (LMT·RTX·NOC·L3Harris 포함)
+    direction: up
+    window_hours: 168          # 반도체 위기 → 방산 지출 기대 형성은 주간 단위 (1주 = 168h)
+    threshold_pct: 0.8
+  chainable: false             # 3단계 체인 종점 (ITA 경로)
+  chain_output: "us_defense_response"
+  theory:
+    framework: "Techno-nationalism → Military-Industrial Complex"
+    reference: "Eisenhower (1961) 군산복합체, CSIS 'Chips of War' (2023)"
+    learning_note: >-
+      반도체 섹터 위기가 가시화되면 투자자는 기술 자립 및 국방 현대화 수혜주로 자금을 이동한다.
+      첨단 칩 없이는 정밀유도무기·AI 드론·위성 통신이 작동하지 않으므로
+      반도체 공급망 재편은 방산 업체의 국내 조달 보장 기대를 높인다.
+      Chris Miller 'Chip War': 반도체는 21세기의 석유 — 공급 불안 → 기술 주권 확보 압력 → 방산 수혜.
+      실증: 2023 Joint Sword 후 ITA +1.49%(7일) — 72h 미반응, 168h 발화 확인.
+
+# ── semiconductor_sector_decline 분기 체인 ────────────────────────────────
+# semiconductor_sector_decline 을 두 룰이 동시에 수신한다 (분기 구조):
+#   A. semiconductor_sector_decline_to_defense   → ITA↑ (국방·기술주권 수혜)
+#   B. semiconductor_sector_decline_to_qqq_drop → QQQ↓ (기술주 전반 리스크오프)
+# 같은 D2 신호에서 "방산↑ + 나스닥↓"가 병렬 발화 → 학습 포인트: 위기는 승자와 패자를 동시에 만든다.
+
+- id: semiconductor_sector_decline_to_qqq_drop
+  name: "반도체 섹터 하락 → 기술주 전반 매도 (QQQ)"
+  # 실증 검증 (2026-05-27):
+  #   2023 Joint Sword: QQQ -0.91%(1주, 04-12) ✅ 발화
+  #   48h·72h 내 QQQ는 반등(+0.67%) → 반도체 공포의 나스닥 전파는 1주 시차
+  trigger:
+    source_type: market
+    chain_input: "semiconductor_sector_decline"   # semiconductor_supply_risk_to_sector_decline 출력
+  expected_response:
+    source_type: market
+    ticker: "QQQ"              # Invesco 나스닥100 ETF — 기술주 집중도 1위 (반도체 비중 ~25%)
+    direction: down
+    window_hours: 168          # 반도체 섹터 공포 → 나스닥 전반 확산은 1주 시차 필요
+    threshold_pct: 0.8         # 나스닥은 반도체보다 분산 → 충격 흡수 → 낮은 임계치
+  chainable: false             # 3단계 체인 종점 (QQQ 경로)
+  chain_output: "tech_sector_selloff"
+  theory:
+    framework: "Supply Chain Contagion → Broad Tech Risk-off"
+    reference: "Shiller (2000) 기술주 버블 메커니즘, BIS 공급망 충격 전파 보고서 (2022)"
+    learning_note: >-
+      반도체 섹터 하락은 나스닥100(QQQ) 전체로 전이된다. 반도체가 QQQ 비중의 약 25%를 차지하므로
+      SOXX↓는 수학적으로 QQQ를 하방 압박한다.
+      그러나 48~72h 내에는 'SOXX만 하락·QQQ는 방어' 현상이 나타난다 — 투자자들이
+      '반도체 문제'와 '나스닥 전체 문제'를 단기적으로 분리해 인식하기 때문.
+      1주 후 QQQ도 하락(2023 Joint Sword: -0.91%)함으로써 섹터 공포가 지수 전반으로 '삼투'한다.
+      ITA↑(방산)과 QQQ↓(기술)이 동시에 발화하는 구조 — 같은 위기가 승자와 패자를 만든다.
+      Weaponized Interdependence의 분배적 결과: 공급망 위기는 특정 섹터를 망가뜨리고
+      다른 섹터(국방·소재)를 부상시킨다.

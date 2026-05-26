@@ -162,15 +162,141 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - Token-Zero GDELT CAMEO → 7대 축 파이썬 자동 매퍼 설계 (LLM 호출 없이 ActorType/EventRootCode/GoldsteinScale 결정론적 매핑)
 - CLAUDE.md 섹션 §14~§18 추가 확정 (구현 예정 파일: `cameo_mapper.py` · `intelligence.py` · `verification_funnel.py` · `archive_manager.py`)
 
-### 다음 세션 우선순위 작업 (v3.9.0 이후)
+### ✅ 2026-05-26 세션 완료 작업 (v3.9.0 → v3.10.0)
 
-1. **`backend/utils/cameo_mapper.py`** — `map_gdelt_to_intelligence_tags()` (ActorType→Level, EventRootCode→DIME, Goldstein→Posture) + `gdelt_connector.py` fetch() 반환 직전 태그 자동 주입
-2. **`backend/services/verification_funnel.py`** — 3단계 팩트체크 (ACLED 대조 / RSS 교차 / 물리센서 결합), `is_staging` 필드 + 72h TTL 스케줄러 연동
-3. **`backend/db/archive_manager.py`** — 3일 TTL 클리너 (GDELT 미검증 자동 삭제), 고가치 자산 `event_archive` 이관
-4. **`backend/models/intelligence.py`** — `IntelligenceMetadata` Pydantic 모델 (7대 축 전체 필드), 기존 `Event`에 `intelligence_meta: IntelligenceMetadata | None` 추가
+#### 1. CAMEO → 7대 축 자동 매퍼 + IntelligenceMetadata
+- `backend/models/intelligence.py` (신규) — `IntelligenceMetadata` Pydantic 모델 (7대 축 전체 필드)
+- `backend/utils/cameo_mapper.py` (신규) — `map_gdelt_to_intelligence_tags()` 결정론적 매핑 (LLM 0토큰, §14 Token-Zero Rule)
+  - Actor1Type1Code → level_of_analysis (Waltz), EventRootCode → instrument_of_power (DIME), GoldsteinScale ≤ -5 → revisionist
+- `backend/models/event.py` — `intelligence_meta`, `is_staging` 필드 추가
+- `backend/connectors/gdelt_connector.py` — `actor1_type1_code` 컬럼 추가, `_to_event()` mapper 연동
+
+#### 2. 3단계 지정학 팩트체커 (Verification Funnel)
+- `backend/services/verification_funnel.py` (신규) — 0.5 기저 + Stage1(+0.1 ACLED) + Stage2(+0.2 RSS) + Stage3(+0.1 센서) → 임계값 0.8
+- `backend/connectors/news_cross_validator.py` — `fetch_rss_articles()`, `check_rss_match()` 공개 인터페이스 추가
+- `backend/services/gdelt_pipeline.py` — `cross_validate()` → `enrich_with_funnel()` 교체, `to_geojson()` is_staging 필터
+
+#### 3. 계층형 TTL 아카이브 관리자
+- `backend/db/schema.sql` (신규) — `events`(핫) + `event_archive`(영구) + `sensor_snapshots` DDL
+- `backend/db/archive_manager.py` (신규) — ACLED 즉시 귀속 / 고가치 GDELT 이관 / TTL 만료 삭제 / 센서 정리
+- `backend/requirements.txt` — `apscheduler>=3.10,<4.0` 추가
+- `backend/main.py` — lifespan에 스키마 초기화 + 1시간 크론 연결
+
+#### 4. 7대 축 이론 라이브러리 전면 확장
+- `library/**/*.md` × 29 — `geopol_region` / `temporal_era` / `level_of_analysis` / `instrument_of_power` / `strategic_posture` 이식 완료
+- `backend/services/library/md_indexer.py` — DDL 5컬럼 + ALTER 마이그레이션 + parse/INSERT 확장 (29/29 upserted)
+- `backend/api/library.py` — `list_items()` 8축 필터 (기존 5 + 신규 3)
+- `frontend/src/views/TheoryLibraryView.js` — 칩 3행 → 5행 (분석수준·권력수단 추가), temporal_era 칩 업데이트
+
+### ✅ ACLED 대량 인입 스크립트 (2026-05-26)
+
+- `backend/connectors/acled.py` — `_normalize()` payload에 `data_source: 'ACLED'` 추가 (archive_manager 식별 필드 누락 버그 수정) + `confidence_score=1.0` 명시
+- `backend/connectors/acled.py` — `fetch_range(since, until, countries, page_size=500)` 메서드 추가 (날짜 범위 + page=1,2,... 페이지네이션 완전 조회)
+- `backend/scripts/acled_bulk_ingest.py` (신규) — CLI 단독 실행 스크립트
+  - `--months 12` (기본), `--page-size 500`, `--dry-run` 옵션
+  - 대상: 41개국 (인도-태평양 + 걸프 + 중동 + 동유럽/코카서스 + 아프리카 회색지대)
+  - 월별 루프 + 국가 20개 배치 분할 → `archive_manager.write_events()` 자동 귀속
+  - `INSERT OR IGNORE` 보장으로 재실행 안전
+- 실측 (dry-run 1개월): **19,796건** (41개국, 중복 없음, 176초) → 12개월 약 **240,000건 / 35분** 예상
+
+실행 방법:
+```bash
+cd backend
+source .venv/bin/activate
+python3 scripts/acled_bulk_ingest.py --dry-run    # 건수 확인
+python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35분)
+```
+
+### ✅ ACLED 베이스라인 적재 + Stage 1 검증 (2026-05-26)
+
+- `backend/scripts/acled_bulk_ingest.py` 실행 완료 — **232,533건** `event_archive` 적재 (41개국, 12개월, 29분)
+- `backend/services/verification_funnel.py` — Stage 1 버그 2개 수정
+  - `_stage1_baseline()` timestamp 필터 제거 (베이스라인은 전체 이력 참조)
+  - `_REGION_ALIASES` 추가 (eastern_europe→ukraine, indo_pacific→taiwan_strait 등 광역 매핑)
+- 실측: taiwan_strait 902건 / hormuz 221건 / eastern_europe(ukraine) 81,707건 → Stage1 +0.1 ✅
+
+### ✅ Cascade 다단계 체이닝 구현 완료 (2026-05-26)
+
+- `backend/models/cascade.py` — `region: str = ""` (chain-only 룰 `region` 필드 optional 허용)
+- `backend/services/cascade/engine.py` — `_evaluate_trigger()`에 `target_timestamp=response_event.timestamp` 누락 버그 수정 (체이닝 synthetic event가 `now()`로 fallback하던 문제)
+- `backend/config/cascade_rules.yaml` — 2단계 체인 2룰 추가 (총 13룰)
+  - `bab_el_mandeb_to_oil_spike` (conflict → CL=F +1.5%, chain_output: "oil_spike")
+  - `oil_spike_to_inflation` (chain_input: "oil_spike" → TIP +0.2%, chain_output: "inflation_pressure")
+- `backend/config/cascade_rules.yaml` — `korean_tension_to_kospi`에 `chain_input: "krw_depreciation"` 추가 (기존 북한 미사일→KRW 체인 활성화)
+- 실데이터 검증: 2023-11-19 홍해 위기 → CL=F +2.25% ✅ → TIP +0.30% ✅ → 2단계 체인 발화 확인
+- 현재(2025-05) 기간은 미발화 (OPEC+ 증산·관세 우려로 TIP 하락) — 이론 불성립 기간 정상 처리
+- 이론: Resource Weaponization (Hirschman 1945) → 거시경제 전이 (Drezner 2015)
+
+### ✅ 3단계 반도체 체인 + CascadeGraphView 다단계 시각화 (2026-05-26)
+
+**3단계 체인 룰 추가** (`cascade_rules.yaml`)
+- `semiconductor_supply_risk_to_intc` — chain_input: "semiconductor_supply_risk" → INTC ↑1.5% (CHIPS Act 수혜 로테이션)
+- `chips_act_investment_to_defense_tech` — chain_input: "chips_act_investment" → ITA ↑1.0% (방산·국방기술주, 종점)
+- 전체 경로: `대만해협긴장(military_flight≥50)` → `TSM↓` → `INTC↑` → `ITA↑` (depth=1/2/3)
+- 이론: Weaponized Interdependence → Techno-nationalism / Supply Chain Reshoring → Military-Industrial Complex
+- 총 15개 룰, chain_input 룰 4개
+
+**CascadeGraphView 다단계 노드 시각화** (`CascadeGraphView.js`)
+- depth별 노드 색상: depth=1 황금(기존), depth=2 갈색+노랑 테두리, depth=3 진갈색+주황 테두리
+- 체인 엣지(depth≥2) 점선(`line-style: dashed`) 구분
+- `_buildElements()` 전면 재작성 — depth=1: region→ticker, depth≥2: parent_link_id로 srcTicker→dstTicker 체인 엣지 빌드
+- `_highlightRegion()` — `successors()`로 전체 체인 경로 하이라이트 (이전: 직접 neighborhood만)
+- TICKER_LABEL에 TIP·INTC 추가
+
+**ReasoningPanel cascade depth 배지** (`ReasoningPanelView.js`)
+- Stage 7 요약: depth≥3 → `🟠D3`, depth=2 → `🟡D2` 배지 표시
+- Stage 7 상세: 링크별 `⬜D1/🟡D2/🟠D3` + 상관도 + 시간 표시
+- `stages.py`: `cascade_chain` 항목에 `depth` 필드 추가
+
+### ✅ 3단계 체인 실데이터 검증 + 룰 수정 (2026-05-27)
+
+**검증 결과 (yfinance 실데이터)**
+- 2022 펠로시 위기(08-01): D1(TSM↓2.45%)✅ → D2 미발화(SOXX +0.19% buy-the-dip)
+- 2023 Joint Sword(04-05): D1(TSM↓2.14%)✅ → D2(SOXX↓0.52%)✅ → D3(ITA↑2.16%, 1주)✅ **3단계 전체 발화!**
+
+**핵심 발견 (이론 vs 실증)**
+- D2 INTC↑ 가설 폐기: INTC는 TSM 하락 후 오히려 -2.5~-6.6% 추가 하락. CHIPS Act 로테이션은 수주~수개월 시계열, 48h 부적합.
+- D2 → SOXX↓(공급망 공포, 섹터 전체 하락)로 교체. 2023 발화: SOXX -2.24%(48h)
+- D3 윈도우 72h→168h(1주): ITA는 방산 정책 기대 형성에 시차 필요. 2023 발화: ITA +2.16%(1주)
+- 2022 이상치 해석: 기술주 과도 매도 선행 → 펠로시 방문이 '최악 회피' 신호 → buy-the-dip. 이론 불성립 아님, 교란 변수.
+
+**수정 파일**
+- `backend/config/cascade_rules.yaml` — D2·D3 룰 교체 (`semiconductor_supply_risk_to_sector_decline`, `semiconductor_sector_decline_to_defense`)
+- `backend/scripts/verify_taiwan_chain.py` — 검증 스크립트 신규 + 실증 이론 노트 포함
+
+### ✅ QQQ 분기 체인 구현 (2026-05-27)
+
+**분기 구조**: `semiconductor_sector_decline` → ITA↑ (D3a) 와 QQQ↓ (D3b) 병렬 발화
+- `semiconductor_sector_decline_to_qqq_drop` 룰 추가: QQQ↓0.8% in 168h
+- 실증: 2023 Joint Sword -0.91% ✅, 2022 펠로시 후속 -1.45% ✅
+- CascadeGraphView: TICKER_LABEL에 `QQQ: '나스닥\n(QQQ)'` 추가
+- 학습 포인트: 같은 D2 신호 → "방산↑ + 나스닥↓" 동시 발화 — 위기는 승자와 패자를 동시에 만든다
+- 총 16개 룰
+
+### ✅ SandboxLab 체인 뷰어 구현 (2026-05-27, 미완료)
+
+**구현 내용**
+- `SandboxLabView.js` — 체인 뷰어 모드 추가
+  - `cascade:loaded` 구독 → `_cascadeLinks`, `_cascadeEvents` 캐시
+  - `sandbox:toggle({ event_id, report })` 페이로드 감지 → `_openWithChain()` 호출
+  - `_buildChainElementsForRegion(region)` — D1 링크(evidence.region) → D2→D3 재귀 탐색
+  - `_initChainCy(elements)` — dagre 상→하 트리, depth별 색상(빨강/황금/갈색/주황)
+  - `_renderChainInfo(region, ...)` — 우측 패널에 D1/D2/D3 링크 요약 표시
+- `main.css` — `.sandbox__chain-*` 스타일 추가
+- fetch URL `/api/cascade/build` → `/api/cascade/links` 수정
+
+**미완료 사항 (내일 계속)**
+- 브라우저에서 실제 클릭 플로우 검증 (이벤트 팝업 → AI분析 → 분析실 열기 → 체인 트리 표시)
+- 레이어 경로 `/api/layers/conflict` → `/api/layers/conflict-events` 확인 필요
+- 체인 뷰어 depth 필터 검증 (현재 기간 D2/D3 미발화 → 트리 D1만 표시되는 케이스)
 
 ### 현재 버전
-`version.json`: **3.9.0**
+`version.json`: **3.15.0**
+
+### 다음 세션 우선순위
+
+1. **SandboxLab 체인 뷰어 브라우저 검증** — 이벤트 클릭 → AI분析 → 분析실 → 체인 트리 실제 동작 확인
+2. 이후 추가 기능 논의
 
 ---
 

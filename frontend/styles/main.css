@@ -2279,3 +2279,65 @@ body:not(.study-mode) .notebook { display: none; }
   color: var(--color-danger);
   line-height: 1.6;
 }
+
+/* ── SandboxLab: 체인 뷰어 ───────────────────────────────────────── */
+.sandbox__chain-info {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.sandbox__chain-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--color-accent);
+  margin-bottom: 2px;
+}
+.sandbox__chain-sub {
+  color: #8b949e;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+.sandbox__chain-depth-label {
+  font-size: 11px;
+  color: #ffe566;
+  font-weight: bold;
+  margin: 8px 0 3px;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 2px;
+}
+.sandbox__chain-rows { margin-bottom: 4px; }
+.sandbox__chain-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  border-bottom: 1px solid #1c2128;
+}
+.sandbox__chain-ticker {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #e6edf3;
+  min-width: 50px;
+}
+.sandbox__chain-pct {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 50px;
+}
+.sandbox__chain-pct.up  { color: #3fb950; }
+.sandbox__chain-pct.dn  { color: #f85149; }
+.sandbox__chain-score {
+  color: #8b949e;
+  font-size: 10px;
+  margin-left: auto;
+}
+.sandbox__chain-note {
+  margin-top: 12px;
+  padding: 8px;
+  background: rgba(0,180,216,0.07);
+  border: 1px solid rgba(0,180,216,0.2);
+  border-radius: 4px;
+  font-size: 10px;
+  color: #8b949e;
+  line-height: 1.6;
+}

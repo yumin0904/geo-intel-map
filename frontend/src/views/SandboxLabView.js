@@ -1,11 +1,46 @@
 /**
  * SandboxLabView — 분석실(Sandbox Lab) 풀스크린 오버레이.
  *
- * 레이아웃: 좌측 20% 캔버스 목록 | 중앙 60% Cytoscape | 우측 20% 검증 결과
+ * 두 가지 모드:
+ *   A. 가설 빌더 — 수동 노드/엣지 구성, 검증
+ *   B. 체인 뷰어 — sandbox:toggle({event_id, report}) 수신 시 해당 region의
+ *      Cascade 체인 트리를 자동 시각화 (D1→D2→D3 다단계)
+ *
+ * 레이아웃: 좌측 20% 캔버스 목록 | 중앙 60% Cytoscape | 우측 20% 검증/체인 결과
  * 열기/닫기: EventBus 'sandbox:toggle' 또는 ✕ 버튼
  *
  * cytoscape, cytoscape-dagre는 index.html에서 전역 로드됨
  */
+
+// region → 한국어 레이블 (CascadeGraphView와 동일)
+const REGION_LABEL_KO = {
+  bab_el_mandeb:   '바브엘만데브',
+  ukraine:         '우크라이나',
+  middle_east:     '중동',
+  south_china_sea: '남중국해',
+  suez:            '수에즈',
+  hormuz:          '호르무즈',
+  taiwan_strait:   '대만해협',
+  north_korea:     '북한',
+  korean_peninsula:'한반도',
+};
+
+// ticker → 한국어 레이블
+const TICKER_LABEL_KO = {
+  'CL=F': '원유(WTI)', 'ZW=F': '밀선물', 'GLD': '금ETF',
+  'ITA': '방산ETF', 'NG=F': 'LNG선물', 'ZIM': '해운(ZIM)',
+  'TSM': 'TSMC', 'SOXX': '반도체ETF', 'KRW=X': '원/달러',
+  '^KS11': '코스피', 'TIP': '물가연동채', 'INTC': '인텔',
+  'QQQ': '나스닥QQQ',
+};
+
+// depth별 노드 스타일
+const DEPTH_STYLE = {
+  0: { bg: '#c0392b', border: '#e74c3c', shape: 'ellipse' },   // 분쟁 지역 (빨강)
+  1: { bg: '#b7950b', border: '#ffe566', shape: 'diamond' },   // D1 (황금)
+  2: { bg: '#5d4037', border: '#ffe566', shape: 'diamond' },   // D2 (갈색)
+  3: { bg: '#6d2600', border: '#ff9800', shape: 'diamond' },   // D3 (주황)
+};
 
 const cytoscape = window.cytoscape;
 
@@ -22,6 +57,9 @@ export class SandboxLabView {
     this._open = false;
     this._currentCanvasId = null;
     this._canvases = [];
+    this._chainMode = false;    // 체인 뷰어 모드 플래그
+    this._cascadeLinks = [];    // cascade:loaded 캐시
+    this._cascadeEvents = {};   // event_id → event
 
     this._mount();
     this._bindEvents();
@@ -109,7 +147,22 @@ export class SandboxLabView {
   }
 
   _bindEvents() {
-    this._bus.on('sandbox:toggle', () => this._open ? this.close() : this.open());
+    // cascade:loaded — 체인 뷰어에서 지역 기반 체인 트리를 빌드하기 위해 캐시
+    this._bus.on('cascade:loaded', data => {
+      this._cascadeLinks   = data.links ?? [];
+      this._cascadeEvents  = {};
+      for (const ev of (data.events ?? [])) this._cascadeEvents[ev.id] = ev;
+    });
+
+    // sandbox:toggle — 페이로드 없으면 토글, event_id 있으면 체인 뷰어 모드
+    this._bus.on('sandbox:toggle', payload => {
+      const { event_id, report } = payload || {};
+      if (event_id && report) {
+        this._openWithChain(event_id, report);
+      } else {
+        this._open ? this.close() : this.open();
+      }
+    });
   }
 
   // ── 열기/닫기 ────────────────────────────────────────────────────────────────
@@ -413,6 +466,254 @@ export class SandboxLabView {
             <span>${m.rule_name}</span>
             <span class="sandbox__match-pct">${Math.round(m.match_score * 100)}%</span>
           </div>`).join('')}
+      </div>
+    `;
+  }
+
+  // ── 체인 뷰어 모드 ──────────────────────────────────────────────────────────
+
+  /**
+   * 분석실을 열고 해당 이벤트의 region 기반 cascade 체인 트리를 표시한다.
+   * event_id는 UUID라 cascade link ID와 매칭 불가 — region_code로 체인 조회.
+   */
+  async _openWithChain(event_id, report) {
+    // 열기
+    if (!this._open) {
+      this._el.classList.add('is-open');
+      this._open = true;
+      await this._loadCanvasList();
+    }
+    this._chainMode = true;
+
+    // report에서 region 추출 (Stage 1)
+    const stages = report.stages ?? [];
+    const stage1 = stages.find(s => s.stage === 1) ?? {};
+    const region = stage1.region ?? 'unknown';
+    const regionLabel = REGION_LABEL_KO[region] ?? region;
+    const eventTitle  = stage1.event_title ?? event_id.slice(0, 8);
+
+    // cascade 데이터가 없으면 새로 fetch
+    if (!this._cascadeLinks.length) {
+      try {
+        const res  = await fetch('/api/cascade/links');
+        const data = await res.json();
+        this._cascadeLinks  = data.links ?? [];
+        this._cascadeEvents = {};
+        for (const ev of (data.events ?? [])) this._cascadeEvents[ev.id] = ev;
+      } catch { /* cascade 없으면 빈 트리 */ }
+    }
+
+    // region 기반 체인 elements 빌드
+    const elements = this._buildChainElementsForRegion(region, regionLabel);
+
+    // 중앙 영역 전환
+    const hint  = document.getElementById('sandbox-hint');
+    const cyDiv = document.getElementById('sandbox-cy');
+    const verifyBtn = document.getElementById('sandbox-verify-btn');
+
+    if (!elements) {
+      hint.textContent = `"${regionLabel}" 지역에서 발화된 Cascade 체인이 없습니다. (cascade 데이터 로드 필요)`;
+      hint.style.display = 'flex';
+      cyDiv.style.display = 'none';
+      return;
+    }
+
+    hint.style.display = 'none';
+    cyDiv.style.display = 'block';
+    verifyBtn.disabled = true;
+
+    // 타이틀 임시 변경
+    const titleEl = this._el.querySelector('.sandbox__title');
+    if (titleEl) titleEl.textContent = `🔗 체인 뷰어: ${regionLabel}`;
+
+    this._initChainCy(elements);
+    this._renderChainInfo(region, regionLabel, eventTitle);
+  }
+
+  /**
+   * region_code 기반으로 Cytoscape elements를 빌드한다.
+   * D1 링크 → D2 링크 → D3 링크 순으로 재귀 탐색.
+   */
+  _buildChainElementsForRegion(region, regionLabel) {
+    // D1: evidence.region == region 인 링크
+    const d1Links = this._cascadeLinks.filter(
+      l => (l.depth == null || l.depth === 1) && l.evidence?.region === region
+    );
+    if (!d1Links.length) return null;
+
+    // link.id → link 인덱스 (parent_link_id 역참조)
+    const linkById = new Map(this._cascadeLinks.map(l => [l.id, l]));
+
+    const nodeSet  = new Set();
+    const elements = [];
+
+    // 루트 노드: 분쟁 지역
+    const rootId = `region-${region}`;
+    elements.push({ data: { id: rootId, label: regionLabel, type: 'conflict', depth: 0 } });
+    nodeSet.add(rootId);
+
+    const addLinks = (parentNodeId, links, depth) => {
+      for (const link of links) {
+        const ticker = link.evidence?.ticker;
+        if (!ticker) continue;
+
+        const pct       = link.evidence?.pct_change ?? 0;
+        const tickLabel = TICKER_LABEL_KO[ticker] ?? ticker;
+        const sign      = pct >= 0 ? '+' : '';
+        const nodeLabel = `${tickLabel}\n${sign}${pct.toFixed(1)}%`;
+        // 같은 ticker가 여러 번 나와도 link.id로 구분
+        const nodeId    = `ticker-${link.id}`;
+
+        if (!nodeSet.has(nodeId)) {
+          elements.push({ data: { id: nodeId, label: nodeLabel, type: 'market', depth } });
+          nodeSet.add(nodeId);
+        }
+
+        // 인과 엣지
+        const ruleShort = (link.rule_id ?? '').replace(/_/g, ' ').slice(0, 20);
+        elements.push({ data: { source: parentNodeId, target: nodeId, label: ruleShort, depth } });
+
+        // 재귀: 자식 체인 링크
+        const children = this._cascadeLinks.filter(l => l.parent_link_id === link.id);
+        if (children.length) addLinks(nodeId, children, depth + 1);
+      }
+    };
+
+    addLinks(rootId, d1Links, 1);
+    return elements;
+  }
+
+  /** 체인 전용 Cytoscape 초기화 (dagre 상하 트리) */
+  _initChainCy(elements) {
+    const container = document.getElementById('sandbox-cy');
+    this._cy?.destroy();
+
+    this._cy = cytoscape({
+      container,
+      elements,
+      style: [
+        {
+          selector: 'node[type = "conflict"]',
+          style: {
+            'background-color': DEPTH_STYLE[0].bg,
+            'border-color':     DEPTH_STYLE[0].border,
+            'border-width': 2, shape: DEPTH_STYLE[0].shape,
+            label: 'data(label)', color: '#fff',
+            'font-size': 11, 'font-weight': 'bold',
+            'text-valign': 'center', 'text-halign': 'center',
+            'text-wrap': 'wrap', 'text-max-width': '80px',
+            width: 100, height: 56,
+          },
+        },
+        {
+          selector: 'node[type = "market"][depth = 1]',
+          style: {
+            'background-color': DEPTH_STYLE[1].bg, 'border-color': DEPTH_STYLE[1].border,
+            'border-width': 2, shape: DEPTH_STYLE[1].shape,
+            label: 'data(label)', color: '#fff', 'font-size': 10,
+            'text-valign': 'center', 'text-halign': 'center',
+            'text-wrap': 'wrap', 'text-max-width': '70px',
+            width: 84, height: 56,
+          },
+        },
+        {
+          selector: 'node[type = "market"][depth = 2]',
+          style: {
+            'background-color': DEPTH_STYLE[2].bg, 'border-color': DEPTH_STYLE[2].border,
+            'border-width': 2, shape: DEPTH_STYLE[2].shape,
+            label: 'data(label)', color: '#ffe566', 'font-size': 10,
+            'text-valign': 'center', 'text-halign': 'center',
+            'text-wrap': 'wrap', 'text-max-width': '70px',
+            width: 80, height: 52,
+          },
+        },
+        {
+          selector: 'node[type = "market"][depth = 3]',
+          style: {
+            'background-color': DEPTH_STYLE[3].bg, 'border-color': DEPTH_STYLE[3].border,
+            'border-width': 2, shape: DEPTH_STYLE[3].shape,
+            label: 'data(label)', color: '#ff9800', 'font-size': 10,
+            'text-valign': 'center', 'text-halign': 'center',
+            'text-wrap': 'wrap', 'text-max-width': '70px',
+            width: 80, height: 52,
+          },
+        },
+        {
+          selector: 'edge[depth = 1]',
+          style: {
+            'line-color': '#ffe566', 'target-arrow-color': '#ffe566',
+            'target-arrow-shape': 'triangle', width: 2,
+            'curve-style': 'bezier', label: 'data(label)',
+            'font-size': 8, color: '#aaa',
+          },
+        },
+        {
+          selector: 'edge[depth >= 2]',
+          style: {
+            'line-color': '#ff9800', 'target-arrow-color': '#ff9800',
+            'target-arrow-shape': 'triangle', width: 1.5,
+            'curve-style': 'bezier', 'line-style': 'dashed',
+            label: 'data(label)', 'font-size': 8, color: '#888',
+          },
+        },
+      ],
+      layout: {
+        name:      'dagre',
+        rankDir:   'TB',   // 상→하 트리
+        nodeSep:   40,
+        rankSep:   70,
+        animate:   true,
+        animationDuration: 400,
+      },
+      wheelSensitivity: 0.1,
+    });
+  }
+
+  /** 우측 패널에 체인 요약 정보 표시 */
+  _renderChainInfo(region, regionLabel, eventTitle) {
+    const d1 = this._cascadeLinks.filter(l => (l.depth == null || l.depth === 1) && l.evidence?.region === region);
+    const d2 = this._cascadeLinks.filter(l => l.depth === 2 && d1.some(p => p.id === l.parent_link_id));
+    const d3 = this._cascadeLinks.filter(l => l.depth === 3 && d2.some(p => p.id === l.parent_link_id));
+
+    const emptyEl = document.getElementById('sandbox-result-empty');
+    const bodyEl  = document.getElementById('sandbox-result-body');
+    if (!emptyEl || !bodyEl) return;
+
+    emptyEl.style.display = 'none';
+    bodyEl.style.display  = 'block';
+
+    const mkRows = (links) => links.map(l => {
+      const ticker = l.evidence?.ticker ?? '?';
+      const pct    = l.evidence?.pct_change ?? 0;
+      const sign   = pct >= 0 ? '↑' : '↓';
+      const score  = Math.round((l.correlation_score ?? 0) * 100);
+      return `<div class="sandbox__chain-row">
+        <span class="sandbox__chain-ticker">${ticker}</span>
+        <span class="sandbox__chain-pct ${pct>=0?'up':'dn'}">${sign}${Math.abs(pct).toFixed(1)}%</span>
+        <span class="sandbox__chain-score">${score}%</span>
+      </div>`;
+    }).join('');
+
+    bodyEl.innerHTML = `
+      <div class="sandbox__chain-info">
+        <div class="sandbox__chain-title">📍 ${regionLabel}</div>
+        <div class="sandbox__chain-sub">이벤트: ${eventTitle}</div>
+
+        ${d1.length ? `<div class="sandbox__chain-depth-label">D1 — 직접 반응 (${d1.length}개)</div>
+          <div class="sandbox__chain-rows">${mkRows(d1)}</div>` : ''}
+
+        ${d2.length ? `<div class="sandbox__chain-depth-label">D2 — 2차 전이 (${d2.length}개)</div>
+          <div class="sandbox__chain-rows">${mkRows(d2)}</div>` : ''}
+
+        ${d3.length ? `<div class="sandbox__chain-depth-label">D3 — 3차 파급 (${d3.length}개)</div>
+          <div class="sandbox__chain-rows">${mkRows(d3)}</div>` : ''}
+
+        ${(!d1.length && !d2.length && !d3.length) ? '<div style="color:#888;font-size:12px">현재 기간 발화 없음</div>' : ''}
+
+        <div class="sandbox__chain-note">
+          💡 이론: Weaponized Interdependence →<br>
+          Supply Chain Contagion → Military-Industrial Complex
+        </div>
       </div>
     `;
   }
