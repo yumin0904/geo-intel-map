@@ -115,8 +115,29 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - `backend/connectors/gemini_translator.py` — 행동 중심 프롬프트 교체, `cache_key=source_url`, circuit breaker (RESOURCE_EXHAUSTED → 1시간 차단)
 - 피자지수 위치 수정: `#tension-zone flex:none` → 아프리카 바로 옆
 
+### ✅ 8단계 추론 엔진 + 뉴스 티커 dedup (2026-05-26)
+
+**뉴스 티커 source_url 중복 제거**
+- `backend/api/news.py` — source_url 기준 dedup (seen_urls set)
+
+**8단계 지정학 추론 엔진**
+- `backend/config/case_studies.yaml` (신규) — 역사 사례 12건 (5대 섹터 전체 커버)
+- `backend/config/alliance_graph.yaml` (신규) — 동맹 14개 + 국가별 membership 인덱스
+- `backend/services/reasoning/__init__.py` / `engine.py` / `stages.py` (신규)
+  - Stage 1: 사건 팩트 (ACLED·GDELT actor 필드 통합 추출)
+  - Stage 2: 섹터 분류 (theory_tags → sector 확장 매핑)
+  - Stage 3: 역사적 비교 (case_studies.yaml 키워드·섹터 스코어링)
+  - Stage 4: 거시 변수 (yfinance 섹터별 티커)
+  - Stage 5: 명분과 의도 (Phase 4 placeholder)
+  - Stage 6: 제도적 저항 (sanctions.yaml target_country 매칭)
+  - Stage 7: 시간적 추이 (cascade_links DB 조회)
+  - Stage 8: 동맹 확산 (alliance_graph.yaml)
+- `backend/api/reasoning.py` (신규) — `GET /api/reasoning/{event_id}`, `POST /api/reasoning/batch`, 10분 캐시
+- `backend/main.py` — reasoning_router 등록
+- 실측: CHINA-JAPAN 이벤트 → 역사 3건·제재 1건·동맹 5개 정상 매칭, 0.4초
+
 ### 현재 버전
-`version.json`: **3.6.0**
+`version.json`: **3.7.0**
 
 ---
 
@@ -171,11 +192,9 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ## 다음 세션 시작점
 
-### 우선순위 작업 (2026-05-27 예정)
+### 우선순위 작업 (다음 세션)
 
-1. **Gemini 리셋 확인** — KST 09:00 이후 `POST /api/translate/reset_circuit` 실행
-2. **뉴스 티커 한국어 번역 확인** — `/api/news/ticker` 호출, 이모지·[지역] 포맷 정상 표시 여부
-3. **분쟁 이벤트 맥락 요약 Gemini 동작 확인** — `generate_context_summary()` / `generate_gdelt_summary()` 실제 호출 테스트
-4. **데이터 계층형 보관 설계** — GDELT/ACLED 이벤트 TTL 정책, 오래된 데이터 아카이브
-5. **라이브러리 데이터 채우기** — `library/` .md 신규 추가, theory_library.yaml 항목 보강
-6. **서브 에이전트 8단계 추론 자동화 설계 시작** — `backend/services/reasoning/` 구조 설계, case_studies.yaml 초안
+1. **Gemini 번역 재확인** — KST 2026-05-27 09:00 이후 뉴스 티커 + 맥락 요약 한국어 동작 확인 (오늘 할당량 소진 → 내일 리셋)
+2. **ReasoningPanelView.js** — 8단계 추론 결과를 프론트엔드 패널로 표시 (이벤트 클릭 시 좌측 또는 하단 패널 오픈)
+3. **데이터 계층형 보관 설계** — GDELT/ACLED 이벤트 TTL 정책, 오래된 데이터 아카이브
+4. **라이브러리 데이터 채우기** — `library/` .md 신규 추가, theory_library.yaml 항목 보강

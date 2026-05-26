@@ -124,9 +124,20 @@ async def get_news_ticker():
             if len(candidates) >= 8:
                 break
 
+    # source_url 기준 중복 제거 (같은 기사가 여러 GDELT 이벤트로 묶이는 경우)
+    seen_urls: set[str] = set()
+    deduped: list[dict] = []
+    for p in candidates:
+        url = p.get("source_url") or p.get("url") or ""
+        if url and url in seen_urls:
+            continue
+        if url:
+            seen_urls.add(url)
+        deduped.append(p)
+
     # 최신순 정렬 후 상위 8건
-    candidates.sort(key=lambda p: p.get("timestamp", ""), reverse=True)
-    top8 = candidates[:8]
+    deduped.sort(key=lambda p: p.get("timestamp", ""), reverse=True)
+    top8 = deduped[:8]
 
     if not top8:
         data = {"items": []}

@@ -12,6 +12,7 @@ from api.cascade import router as cascade_router
 from api.layers import router as layers_router
 from api.library import router as library_router
 from api.news import router as news_router
+from api.reasoning import router as reasoning_router
 from api.sandbox import router as sandbox_router
 from api.sandbox import seed_tutorial_canvas
 from api.stats import router as stats_router
@@ -56,6 +57,7 @@ app.include_router(layers_router)
 app.include_router(cascade_router)
 app.include_router(library_router)
 app.include_router(news_router)
+app.include_router(reasoning_router)
 app.include_router(sandbox_router)
 app.include_router(stats_router)
 app.include_router(study_router)

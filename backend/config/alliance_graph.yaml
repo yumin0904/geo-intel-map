@@ -1,0 +1,160 @@
+# 동맹·안보 파트너십 그래프
+# 8단계 추론 Step 8: 동맹 확산 분석에 사용.
+# 국가 코드는 ISO 3166-1 alpha-3 기준.
+
+# ── 공식 동맹 (Treaty-Based) ─────────────────────────────────────────────
+alliances:
+
+  - id: nato
+    name: "NATO"
+    name_ko: "북대서양조약기구"
+    type: collective_defense
+    treaty_article: "Article 5 (집단방위)"
+    members: [USA, GBR, DEU, FRA, ITA, CAN, TUR, POL, NOR, DNK, BEL, NLD,
+              ESP, PRT, GRC, HUN, CZE, SVK, ROU, BGR, EST, LVA, LTU, HRV,
+              ALB, MNE, MKD, FIN, SWE]
+    sector_tags: [indo_pacific, gray_zone]
+    notes_ko: "핵 공유(Nuclear Sharing) 포함. 제5조 발동은 북대서양이사회 만장일치."
+
+  - id: aukus
+    name: "AUKUS"
+    name_ko: "오커스"
+    type: security_partnership
+    founded: "2021-09-15"
+    members: [AUS, GBR, USA]
+    sector_tags: [indo_pacific, maritime, techno]
+    notes_ko: "핵추진 잠수함 기술 공유 + AI·양자·사이버. 중국 A2/AD 대응 설계."
+
+  - id: quad
+    name: "Quad"
+    name_ko: "쿼드"
+    type: strategic_dialogue
+    members: [USA, JPN, IND, AUS]
+    sector_tags: [indo_pacific, maritime]
+    notes_ko: "비공식 안보 협의체. 구속력 없으나 정보 공유·훈련 조율."
+
+  - id: five_eyes
+    name: "Five Eyes"
+    name_ko: "파이브 아이즈"
+    type: intelligence_sharing
+    members: [USA, GBR, CAN, AUS, NZL]
+    sector_tags: [techno, gray_zone]
+    notes_ko: "SIGINT(신호정보) 공유 동맹. 화웨이 5G 금지 조율의 핵심."
+
+  - id: us_japan
+    name: "US-Japan Security Treaty"
+    name_ko: "미일안보조약"
+    type: bilateral_defense
+    members: [USA, JPN]
+    treaty_article: "제5조 (상호방위)"
+    sector_tags: [indo_pacific]
+    notes_ko: "대만 사태·남중국해에 간접 적용. 주일미군 약 5.5만 명."
+
+  - id: us_rok
+    name: "US-ROK Mutual Defense Treaty"
+    name_ko: "한미상호방위조약"
+    type: bilateral_defense
+    members: [USA, KOR]
+    sector_tags: [indo_pacific]
+    notes_ko: "주한미군 약 2.8만 명. 확장억제(핵우산) 포함."
+
+  - id: us_australia
+    name: "ANZUS Treaty"
+    name_ko: "ANZUS 조약"
+    type: collective_defense
+    members: [USA, AUS, NZL]
+    sector_tags: [indo_pacific, maritime]
+    notes_ko: "뉴질랜드는 1986년 핵추진함 입항 거부로 군사조항 정지."
+
+  - id: us_philippines
+    name: "US-Philippines Mutual Defense Treaty"
+    name_ko: "미-필리핀 상호방위조약"
+    type: bilateral_defense
+    members: [USA, PHL]
+    sector_tags: [indo_pacific, maritime]
+    notes_ko: "2023 EDCA 기지 4곳 추가 (북부 루손 포함). 대만 위기 시 핵심 전진기지."
+
+  # ── 중국 주도 / 경쟁 진영 ───────────────────────────────────────────────
+
+  - id: sco
+    name: "SCO"
+    name_ko: "상하이협력기구"
+    type: strategic_organization
+    members: [CHN, RUS, IND, PAK, KAZ, KGZ, TJK, UZB, IRN, BLR]
+    sector_tags: [gray_zone, energy]
+    notes_ko: "안보·경제 협의체. 미국·NATO 견제 목적이나 구속력 약함."
+
+  - id: csto
+    name: "CSTO"
+    name_ko: "집단안보조약기구"
+    type: collective_defense
+    members: [RUS, BLR, KAZ, KGZ, TJK, ARM]
+    sector_tags: [gray_zone]
+    notes_ko: "구소련권 집단방위. 2022 카자흐스탄 파병으로 실효성 논란."
+
+  - id: china_russia_partnership
+    name: "China-Russia Comprehensive Strategic Partnership"
+    name_ko: "중-러 전략적 동반자관계"
+    type: strategic_partnership
+    members: [CHN, RUS]
+    sector_tags: [energy, indo_pacific, gray_zone]
+    notes_ko: "동맹 아님(공식). 에너지·기술 협력 + 대미 공동전선. '한계 없는 우정(2022)'."
+
+  - id: bri_partners
+    name: "Belt and Road Initiative (Key Partners)"
+    name_ko: "일대일로 핵심 파트너"
+    type: economic_connectivity
+    members: [CHN, PAK, MYS, IDN, ETH, KEN, ZMB, SRB, HUN, GRC]
+    sector_tags: [energy, maritime]
+    notes_ko: "항만·인프라 투자. 진주목걸이(Pearl String) 전략의 경제적 레이어."
+
+  # ── 중동 ────────────────────────────────────────────────────────────────
+
+  - id: gcc
+    name: "Gulf Cooperation Council"
+    name_ko: "걸프협력회의"
+    type: regional_organization
+    members: [SAU, ARE, KWT, QAT, BHR, OMN]
+    sector_tags: [energy, maritime]
+    notes_ko: "공동방위 조항 보유. 이란 견제·석유 정책 조율의 핵심 플랫폼."
+
+  - id: iran_axis
+    name: "Axis of Resistance"
+    name_ko: "저항의 축"
+    type: informal_network
+    members: [IRN, SYR, LBN, YEM, IRQ]
+    sector_tags: [gray_zone, energy]
+    notes_ko: "비공식 이란 주도 네트워크. 헤즈볼라·후티·PMF 포함."
+
+  # ── 신흥 파트너십 ────────────────────────────────────────────────────────
+
+  - id: i2u2
+    name: "I2U2 (India-Israel-UAE-USA)"
+    name_ko: "I2U2"
+    type: strategic_dialogue
+    members: [IND, ISR, ARE, USA]
+    sector_tags: [energy, techno]
+    notes_ko: "2022 창설. 식량·에너지·인프라 협력. 인도-태평양·중동 연결 시도."
+
+  - id: north_korea_russia
+    name: "DPRK-Russia Military Cooperation"
+    name_ko: "북러 군사협력"
+    type: bilateral_military
+    members: [PRK, RUS]
+    sector_tags: [indo_pacific, gray_zone]
+    notes_ko: "2024 북한 병력 러시아 배치. 탄약·미사일 거래. 전략적 수렴 가속."
+
+# ── 국가별 동맹 인덱스 (빠른 조회용) ──────────────────────────────────────
+country_memberships:
+  USA: [nato, aukus, quad, five_eyes, us_japan, us_rok, us_australia, us_philippines, i2u2]
+  CHN: [sco, china_russia_partnership, bri_partners]
+  RUS: [sco, csto, china_russia_partnership]
+  JPN: [us_japan, quad]
+  KOR: [us_rok]
+  AUS: [aukus, quad, five_eyes, us_australia]
+  GBR: [nato, aukus, five_eyes]
+  IND: [sco, quad, i2u2]
+  IRN: [sco, iran_axis]
+  PRK: [north_korea_russia]
+  SAU: [gcc]
+  ISR: [i2u2]
