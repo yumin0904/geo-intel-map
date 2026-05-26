@@ -1,92 +1,102 @@
 """
 news.py — 상단 뉴스 티커 API.
 
-GET /api/news/ticker — importance >= 0.5 & confidence >= 0.5 최신 8건,
-                       Gemini 티커 포맷(이모지 [지역] 요약)으로 번역 (3분 캐시)
+GET /api/news/ticker — 최신 GDELT 이벤트 최대 8건을 영문 헤드라인으로 반환.
+포맷: [지역] 영문 헤드라인
+Gemini 번역 없음. source_url에서 실제 헤드라인을 fetch하고,
+실패 시 GDELT 템플릿 title로 fallback. 3분 캐시.
 """
 from __future__ import annotations
 
 import asyncio
+import html as html_mod
 import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter
 
-from connectors.gemini_translator import translate_ticker_text, _is_quota_exhausted
 from connectors.gdelt_connector import fetch_headline
 
 router = APIRouter(prefix="/api/news", tags=["news"])
 logger = logging.getLogger(__name__)
 
-_TICKER_TTL            = timedelta(minutes=3)
-_TICKER_TTL_SHORT      = timedelta(minutes=5)    # RPM 초과 시 재시도
-_TICKER_TTL_QUOTA_DONE = timedelta(hours=1)      # 일일 할당량 소진 시
+_TICKER_TTL = timedelta(minutes=3)
 _ticker_cache: dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
 
+# region_code → 한국어 지역명 (티커 [지역] 접두사)
+_REGION_LABEL: dict[str, str] = {
+    "ukraine":        "우크라이나",
+    "hormuz":         "호르무즈",
+    "taiwan_strait":  "대만해협",
+    "red_sea":        "홍해",
+    "south_china_sea":"남중국해",
+    "bab_el_mandeb":  "바브엘만데브",
+    "suez":           "수에즈",
+    "malacca":        "말라카",
+    "east_china_sea": "동중국해",
+    "korean_peninsula":"한반도",
+    "middle_east":    "중동",
+    "persian_gulf":   "페르시아만",
+    "balkans":        "발칸",
+    "sahel":          "사헬",
+    "myanmar":        "미얀마",
+    "global":         "글로벌",
+}
 
-def _hours_ago_label(timestamp_str: str) -> str:
-    """ISO timestamp -> 경과 시간 레이블 (분/시간/일/개월/년)."""
+
+def _time_label(timestamp_str: str) -> str:
+    """ISO timestamp → 경과 시간 레이블."""
     try:
         ts = datetime.fromisoformat(timestamp_str)
         if ts.tzinfo is None:
             ts = ts.replace(tzinfo=timezone.utc)
-        delta = datetime.now(timezone.utc) - ts
-        minutes = int(delta.total_seconds() / 60)
-        if minutes < 1:
-            return "방금 전"
-        if minutes < 60:
-            return f"{minutes}분 전"
+        minutes = int((datetime.now(timezone.utc) - ts).total_seconds() / 60)
+        if minutes < 1:   return "방금 전"
+        if minutes < 60:  return f"{minutes}분 전"
         hours = minutes // 60
-        if hours < 24:
-            return f"{hours}시간 전"
+        if hours < 24:    return f"{hours}시간 전"
         days = hours // 24
-        if days < 30:
-            return f"{days}일 전"
+        if days < 30:     return f"{days}일 전"
         months = days // 30
-        if months < 12:
-            return f"{months}개월 전"
+        if months < 12:   return f"{months}개월 전"
         return f"{days // 365}년 전"
     except Exception:
         return ""
 
 
-def _has_korean(text: str) -> bool:
-    """한글 음절(가-힣) 포함 여부."""
-    return any("가" <= c <= "힣" for c in text)
+def _format_text(headline: str | None, props: dict) -> str:
+    """[지역] 영문 헤드라인 조합.
 
-
-async def _process_feature(props: dict, headline: str | None = None) -> dict | None:
-    """단일 GeoJSON feature props + 실제 기사 헤드라인 → 티커 아이템 변환.
-
-    headline이 있으면 실제 기사 헤드라인 기반 번역,
-    없으면 GDELT 템플릿 title로 fallback.
+    headline: source_url에서 fetch한 실제 기사 제목 (없으면 GDELT title)
     """
-    source_url = props.get("source_url") or props.get("url") or ""
-    # 실제 헤드라인 우선, 없으면 템플릿 title 사용
-    source_text = (headline or props.get("title", "")).strip()
-    if not source_text:
-        return None
+    # GDELT 템플릿 title은 "[GDELT] 지명: ..." 형태라 실제 헤드라인보다 노이즈 많음
+    # 실제 헤드라인이 있으면 우선 사용
+    raw_title  = props.get("title", "")
+    text       = html_mod.unescape((headline or raw_title).strip())
 
-    # source_url 기준으로 캐싱 (같은 기사 재번역 방지)
-    text_ko    = await translate_ticker_text(source_text, cache_key=source_url)
-    time_label = _hours_ago_label(props.get("timestamp", ""))
+    # "[GDELT] ..." 형태의 템플릿 title이면 headline fetch 실패 → 짧게 정리
+    if text.startswith("[GDELT]"):
+        # 콜론 뒤 행위자 설명만 남김 (예: "IRAN vs AFGHANISTAN (물리적 충돌)")
+        parts = text.split(":", 1)
+        text  = parts[1].strip() if len(parts) > 1 else text
 
-    return {
-        "text_ko":     text_ko,
-        "time_label":  time_label,
-        "url":         source_url,
-        "is_fallback": not _has_korean(text_ko),
-    }
+    # [지역] 접두사
+    region = props.get("region_code", "")
+    label  = _REGION_LABEL.get(region, "")
+    if label:
+        text = f"[{label}] {text}"
+
+    return text
 
 
 @router.get("/ticker")
 async def get_news_ticker():
-    """상단 뉴스 티커용 GDELT 이벤트 목록.
+    """상단 뉴스 티커용 GDELT 이벤트 목록 (영문 헤드라인).
 
-    GDELT만 사용 (ACLED는 1년 전 데이터라 최신 티커 부적합).
-    필터: confidence_score >= 0.8 (교차검증 완료) + importance_score >= 0.5
-    최신 8건을 Gemini 티커 포맷으로 번역해 반환한다.
-    fallback(429 등) 발생 시 30초 단축 TTL로 빠른 재시도.
+    필터: importance_score >= 0.5
+    1순위: confidence_score >= 0.8 (RSS 교차검증 완료)
+    2순위: confidence_score >= 0.5 (미검증) 로 8건 보충
+    source_url 기준 중복 제거 후 최신순 상위 8건.
     """
     now = datetime.now(timezone.utc)
     if _ticker_cache["data"] is not None and now < _ticker_cache["expires_at"]:
@@ -94,95 +104,72 @@ async def get_news_ticker():
 
     from api.layers import _gdelt_cache
 
-    # GDELT만 사용 (ACLED는 1년 전 데이터라 최신 티커 부적합)
-    # 1순위: confidence >= 0.8 (RSS 교차검증 완료) + importance >= 0.5
-    # 2순위: 8건 미만이면 confidence >= 0.5 (미검증) 로 보충
-    _IMPORTANCE_MIN      = 0.5
-    _CONFIDENCE_VERIFIED = 0.8
-    _CONFIDENCE_ANY      = 0.5
-
-    features = []
+    features: list[dict] = []
     if _gdelt_cache.get("geojson") is not None:
         features = _gdelt_cache["geojson"].get("features", [])
 
-    def _passes(props: dict, conf_min: float) -> bool:
+    _IMP_MIN  = 0.5
+    _CONF_HI  = 0.8
+    _CONF_LO  = 0.5
+
+    def _passes(p: dict, conf_min: float) -> bool:
         return (
-            float(props.get("importance_score", 0.0)) >= _IMPORTANCE_MIN
-            and float(props.get("confidence_score", 0.0)) >= conf_min
+            float(p.get("importance_score", 0.0)) >= _IMP_MIN
+            and float(p.get("confidence_score", 0.0)) >= conf_min
         )
 
-    # 1순위: 교차검증 완료
-    candidates = [f["properties"] for f in features if _passes(f["properties"], _CONFIDENCE_VERIFIED)]
+    # 1순위 — 교차검증 완료
+    candidates = [f["properties"] for f in features if _passes(f["properties"], _CONF_HI)]
 
-    # 2순위 보충: 8건 미만이면 미검증도 추가 (중복 제외)
+    # 2순위 — 보충
     if len(candidates) < 8:
-        verified_ids = {p.get("id") for p in candidates}
+        seen_ids = {p.get("id") for p in candidates}
         for f in features:
             p = f["properties"]
-            if p.get("id") not in verified_ids and _passes(p, _CONFIDENCE_ANY):
+            if p.get("id") not in seen_ids and _passes(p, _CONF_LO):
                 candidates.append(p)
             if len(candidates) >= 8:
                 break
 
-    # source_url 기준 중복 제거 (같은 기사가 여러 GDELT 이벤트로 묶이는 경우)
+    # source_url 중복 제거
     seen_urls: set[str] = set()
     deduped: list[dict] = []
     for p in candidates:
-        url = p.get("source_url") or p.get("url") or ""
+        url = p.get("source_url") or ""
         if url and url in seen_urls:
             continue
         if url:
             seen_urls.add(url)
         deduped.append(p)
 
-    # 최신순 정렬 후 상위 8건
     deduped.sort(key=lambda p: p.get("timestamp", ""), reverse=True)
     top8 = deduped[:8]
 
     if not top8:
         data = {"items": []}
-        _ticker_cache["data"] = data
-        # GDELT 캐시가 비어있거나 필터 통과 항목 없음 → 30초 뒤 재시도
-        _ticker_cache["expires_at"] = now + timedelta(seconds=30)
+        _ticker_cache.update({"data": data, "expires_at": now + timedelta(seconds=30)})
         return data
 
-    # Step 1: 기사 헤드라인 병렬 fetch (HTTP GET — Gemini 호출 아님, 병렬 OK)
+    # 기사 헤드라인 병렬 fetch (Gemini 없음, HTTP GET만)
     headline_results = await asyncio.gather(
         *[fetch_headline(p.get("source_url", "")) for p in top8],
         return_exceptions=True,
     )
-    headlines = [
-        h if isinstance(h, str) and h else None
-        for h in headline_results
-    ]
-    fetched = sum(1 for h in headlines if h)
-    logger.debug("[ticker] 헤드라인 fetch: %d/%d 성공", fetched, len(top8))
 
-    # Step 2: 순차 번역 — Gemini 15 RPM 한도 준수 (캐시 히트 시 딜레이 없음)
     items: list[dict] = []
-    had_fallback = False
-    for i, (props, headline) in enumerate(zip(top8, headlines)):
-        if i > 0:
-            await asyncio.sleep(2.0)   # 요청 간 2초 간격 (free tier 15 RPM 방지)
-        try:
-            result = await _process_feature(props, headline)
-            if result:
-                if result.get("is_fallback"):
-                    had_fallback = True
-                # is_fallback 필드는 내부 신호용, 클라이언트에 노출 불필요
-                items.append({k: v for k, v in result.items() if k != "is_fallback"})
-        except Exception as e:
-            logger.debug("[ticker] 번역 건너뜀: %s", e)
+    for props, hl_result in zip(top8, headline_results):
+        headline = hl_result if isinstance(hl_result, str) and hl_result else None
+        text     = _format_text(headline, props)
+        if not text:
+            continue
+        items.append({
+            "text":       text,
+            "time_label": _time_label(props.get("timestamp", "")),
+            "url":        props.get("source_url", ""),
+        })
+
+    logger.debug("[ticker] %d건 완료", len(items))
 
     data = {"items": items}
-    _ticker_cache["data"] = data
-    # TTL 결정: 할당량 소진 → 1시간, 일시 429 → 5분, 정상 → 3분
-    if had_fallback and _is_quota_exhausted():
-        ttl = _TICKER_TTL_QUOTA_DONE
-    elif had_fallback:
-        ttl = _TICKER_TTL_SHORT
-    else:
-        ttl = _TICKER_TTL
-    _ticker_cache["expires_at"] = now + ttl
-    logger.debug("[ticker] %d건 완료, fallback=%s, TTL=%s", len(items), had_fallback, ttl)
+    _ticker_cache.update({"data": data, "expires_at": now + _TICKER_TTL})
     return data

@@ -162,7 +162,7 @@ function _renderTicker(items) {
   const singleSet = items.map(item => {
     const time    = item.time_label ? ` · ${item.time_label}` : '';
     const urlAttr = item.url ? ` data-url="${_esc(item.url)}"` : '';
-    return `<span class="ticker-item"${urlAttr}>${_escHtml(item.text_ko)}${time}</span>`;
+    return `<span class="ticker-item"${urlAttr}>${_escHtml(item.text ?? item.text_ko ?? '')}${time}</span>`;
   }).join('<span class="ticker-sep">　·　</span>');
 
   const sep = '<span class="ticker-sep">　·　·　</span>';
