@@ -136,8 +136,24 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 - `backend/main.py` — reasoning_router 등록
 - 실측: CHINA-JAPAN 이벤트 → 역사 3건·제재 1건·동맹 5개 정상 매칭, 0.4초
 
+### ✅ 뉴스 티커 Gemini 번역 제거 + 8단계 추론 패널 프론트엔드 (2026-05-26)
+
+**뉴스 티커 Gemini 완전 제거**
+- `backend/api/news.py` — Gemini 번역 코드 전면 제거, 영문 원문 직접 표시
+- 포맷: `[지역] 영문 헤드라인 · N시간 전` (HTML entity unescape 포함)
+- `frontend/src/views/TopBarView.js` — `text_ko` → `text ?? text_ko` 호환 처리
+
+**8단계 추론 패널 프론트엔드 (ReasoningPanelView.js)**
+- `frontend/src/panels/ReasoningPanelView.js` (신규) — 우측 340px 슬라이드인, Share Tech Mono, z-index 1002
+  - `reasoning:open` 이벤트 → `GET /api/reasoning/{event_id}` → 8단계 0.4s 순차 표시
+  - 상세 내용 클릭 펼침 (stages 3·4·6·7·8), `[🔬 분析실에서 열기]` 완료 버튼
+  - fix: `has-detail` 클래스 누락 수정 (cursor:pointer 미적용 버그)
+- `frontend/src/layers/ConflictEventsLayer.js` — 팝업에 `[🤖 AI 분析]` 버튼 추가, `reasoning:open` 이벤트 발신
+- `frontend/styles/main.css` — `.reasoning-panel`, `.rs-stage`, `.popup-reasoning-btn` 스타일
+- `frontend/index.html` — `#reasoning-panel` div + `ReasoningPanelView` 마운트
+
 ### 현재 버전
-`version.json`: **3.7.0**
+`version.json`: **3.7.1**
 
 ---
 
