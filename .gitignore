@@ -46,3 +46,4 @@ build/
 
 # 개인 노트 (선택사항)
 docs/private/
+.claude/
