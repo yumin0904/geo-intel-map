@@ -352,14 +352,47 @@ python scripts/baseline_bulk_ingest.py --comtrade path/to/comtrade.csv
 ```
 
 ### 현재 버전
-`version.json`: **3.16.0**
+`version.json`: **3.17.0**
+
+### ✅ 국가 클릭 정보 패널 구현 완료 (2026-05-27)
+
+#### 백엔드
+- `backend/api/country.py` (신규) — `GET /api/country/{iso3}`
+  - 30분 캐시, 30개 주요 국가 정보 레지스트리
+  - `_query_macro()` — FRED `historical_macro_indices` 최근 30일 (환율·원유·VIX)
+  - `_query_trade()` — Comtrade `historical_trade_matrix` HS 8542/27/26 상위 5개 파트너
+  - `_query_sanctions()` — `sanctions.yaml` ISO2 매칭 (target_country)
+  - `_query_theories()` — `library.db` regions/geopol_region 매칭 (최대 12개)
+  - 실측: KOR → macro 3개·trade 3 HS·theories 4개 / IRN → sanction 1건(un_sc_iran)·theories 7개
+- `backend/main.py` — `country_router` 등록
+
+#### 프론트엔드
+- `frontend/src/layers/CountryLayer.js` (신규)
+  - Natural Earth 110m GeoJSON CDN (jsDelivr → datasets/geo-countries)
+  - sessionStorage 2차 캐시 (탭 내 재로드 시 즉시 표시)
+  - Leaflet `countryPane` (z-index 201) — 마커 클릭 우선
+  - 호버 반투명 하이라이트 + 국가명 툴팁
+  - 클릭 → `country:open { iso3, name_en }` 이벤트 발신
+- `frontend/src/panels/CountryPanelView.js` (신규)
+  - 우측 슬라이드인 360px 패널 (ReasoningPanel 구조 재활용)
+  - 5탭: 기본정보 / 거시지표 / 무역의존도 / 제재 / 관련이론
+  - 거시지표: SVG sparkline (30일 추이) + 변동률 %
+  - 무역의존도: 3 HS코드 × 5파트너 테이블 + 의존도 배지
+  - 제재: 심각도 색상 배지 + 이론 태그
+  - 관련이론: sector 색상 배지 + 요약
+- `frontend/index.html` — `#country-panel` div + import + `CountryLayer` 등록 (LayerPanel `🗺 국가 경계`)
+- `frontend/styles/main.css` — `.country-panel`, `.cp-*` 스타일 (~200줄)
+
+이론 연결:
+  Farrell & Newman 'Weaponized Interdependence' — 무역의존도 수치화
+  Drezner 'Economic Coercion' — 제재 레짐 목록
 
 ### 다음 세션 우선순위
 
-1. **ZW=F 티커 한국어 레이블** — TICKER_LABEL_KO에 `ZW=F: '밀선물\n(ZW=F)'` 추가 (SandboxLabView + CascadeGraphView)
-2. **SCS 이벤트 체인 트리** 브라우저 최종 확인
-3. **FRED 키 발급 후 실적재** — dry-run 확인 후 `--fred` 실행
-4. **ReasoningPanel Stage 4/8 UI** — indicators/trade_dependencies 필드 프론트엔드 렌더링
+1. **브라우저 검증** — 국가 클릭 → 패널 오픈, 5탭 데이터 확인
+2. **ZW=F 티커 한국어 레이블** — TICKER_LABEL_KO에 `ZW=F: '밀선물\n(ZW=F)'` 추가
+3. **ReasoningPanel Stage 4/8 UI** — indicators/trade_dependencies 필드 프론트엔드 렌더링
+4. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
 
 ---
 

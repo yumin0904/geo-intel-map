@@ -1,0 +1,492 @@
+"Nomenclature","ReporterISO3","ProductCode","ReporterName","PartnerISO3","PartnerName","Year","TradeFlowName","TradeFlowCode","TradeValue in 1000 USD"
+"H4","ARE","26","United Arab Emirates","WLD"," World",2020,"Export",6,23007.392
+"H4","ARE","26","United Arab Emirates","WLD"," World",2020,"Import",5,940607.098
+"H4","ARE","26","United Arab Emirates","WLD"," World",2021,"Export",6,58342.79
+"H4","ARE","26","United Arab Emirates","WLD"," World",2021,"Import",5,1605789.117
+"H4","ARE","26","United Arab Emirates","WLD"," World",2022,"Export",6,37007.574
+"H4","ARE","26","United Arab Emirates","WLD"," World",2022,"Import",5,1528521.098
+"H4","ARE","26","United Arab Emirates","WLD"," World",2023,"Export",6,54010.033
+"H4","ARE","26","United Arab Emirates","WLD"," World",2023,"Import",5,1802575.056
+"H4","ARE","27","United Arab Emirates","WLD"," World",2020,"Export",6,169119495.904
+"H4","ARE","27","United Arab Emirates","WLD"," World",2020,"Import",5,42449014.653
+"H4","ARE","27","United Arab Emirates","WLD"," World",2021,"Export",6,212077801.267
+"H4","ARE","27","United Arab Emirates","WLD"," World",2021,"Import",5,36789890.02
+"H4","ARE","27","United Arab Emirates","WLD"," World",2022,"Export",6,260670609.114
+"H4","ARE","27","United Arab Emirates","WLD"," World",2022,"Import",5,20590754.358
+"H4","ARE","27","United Arab Emirates","WLD"," World",2023,"Export",6,275038910.956
+"H4","ARE","27","United Arab Emirates","WLD"," World",2023,"Import",5,21257678.537
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2020,"Export",6,1257.281
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2020,"Import",5,365943.798
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2021,"Export",6,427.818
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2021,"Import",5,345995.441
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2022,"Export",6,1285.092
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2022,"Import",5,319999.343
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2023,"Export",6,2159.497
+"H4","ARE","8542","United Arab Emirates","WLD"," World",2023,"Import",5,381549.456
+"H4","AUS","26","Australia","WLD"," World",2020,"Export",6,90149510.305
+"H4","AUS","26","Australia","WLD"," World",2020,"Import",5,559943.725
+"H4","AUS","26","Australia","WLD"," World",2021,"Export",6,130894256.672
+"H4","AUS","26","Australia","WLD"," World",2021,"Import",5,954674.357
+"H4","AUS","26","Australia","WLD"," World",2022,"Export",6,100496339.957
+"H4","AUS","26","Australia","WLD"," World",2022,"Import",5,622150.922
+"H4","AUS","26","Australia","WLD"," World",2023,"Export",6,103636755.026
+"H4","AUS","26","Australia","WLD"," World",2023,"Import",5,648194.117
+"H4","AUS","26","Australia","WLD"," World",2024,"Export",6,95874856.568
+"H4","AUS","26","Australia","WLD"," World",2024,"Import",5,689028.04
+"H4","AUS","26","Australia","WLD"," World",2025,"Export",6,95233914.009
+"H4","AUS","26","Australia","WLD"," World",2025,"Import",5,936339.847
+"H4","AUS","27","Australia","WLD"," World",2020,"Export",6,52676054.627
+"H4","AUS","27","Australia","WLD"," World",2020,"Import",5,17145880.449
+"H4","AUS","27","Australia","WLD"," World",2021,"Export",6,94764870.542
+"H4","AUS","27","Australia","WLD"," World",2021,"Import",5,26798138.22
+"H4","AUS","27","Australia","WLD"," World",2022,"Export",6,175159601.638
+"H4","AUS","27","Australia","WLD"," World",2022,"Import",5,47206370.656
+"H4","AUS","27","Australia","WLD"," World",2023,"Export",6,129171296.046
+"H4","AUS","27","Australia","WLD"," World",2023,"Import",5,42490614.916
+"H4","AUS","27","Australia","WLD"," World",2024,"Export",6,113130494.069
+"H4","AUS","27","Australia","WLD"," World",2024,"Import",5,39452083.942
+"H4","AUS","27","Australia","WLD"," World",2025,"Export",6,90323028.493
+"H4","AUS","27","Australia","WLD"," World",2025,"Import",5,35983469.609
+"H4","AUS","8542","Australia","WLD"," World",2020,"Export",6,59230.158
+"H4","AUS","8542","Australia","WLD"," World",2020,"Import",5,461785.788
+"H4","AUS","8542","Australia","WLD"," World",2021,"Export",6,67881.003
+"H4","AUS","8542","Australia","WLD"," World",2021,"Import",5,543753.056
+"H4","AUS","8542","Australia","WLD"," World",2022,"Export",6,90033.515
+"H4","AUS","8542","Australia","WLD"," World",2022,"Import",5,576278.261
+"H4","AUS","8542","Australia","WLD"," World",2023,"Export",6,86654.961
+"H4","AUS","8542","Australia","WLD"," World",2023,"Import",5,482997.675
+"H4","AUS","8542","Australia","WLD"," World",2024,"Export",6,88184.815
+"H4","AUS","8542","Australia","WLD"," World",2024,"Import",5,447804.392
+"H4","AUS","8542","Australia","WLD"," World",2025,"Export",6,92598.147
+"H4","AUS","8542","Australia","WLD"," World",2025,"Import",5,486004.403
+"H4","CHN","26","China","WLD"," World",2020,"Export",6,1942480.63
+"H4","CHN","26","China","WLD"," World",2020,"Import",5,187192533.28
+"H4","CHN","26","China","WLD"," World",2021,"Export",6,4539029.751
+"H4","CHN","26","China","WLD"," World",2021,"Import",5,271682055.251
+"H4","CHN","26","China","WLD"," World",2022,"Export",6,3938161.586
+"H4","CHN","26","China","WLD"," World",2022,"Import",5,224716252.26
+"H4","CHN","26","China","WLD"," World",2023,"Export",6,3613915.811
+"H4","CHN","26","China","WLD"," World",2023,"Import",5,237830492.999
+"H4","CHN","26","China","WLD"," World",2024,"Export",6,3955891.846
+"H4","CHN","26","China","WLD"," World",2024,"Import",5,251056682.472
+"H4","CHN","27","China","WLD"," World",2020,"Export",6,31442592.572
+"H4","CHN","27","China","WLD"," World",2020,"Import",5,273676145.821
+"H4","CHN","27","China","WLD"," World",2021,"Export",6,42834476.915
+"H4","CHN","27","China","WLD"," World",2021,"Import",5,405429007.005
+"H4","CHN","27","China","WLD"," World",2022,"Export",6,64367715.872
+"H4","CHN","27","China","WLD"," World",2022,"Import",5,535121014.206
+"H4","CHN","27","China","WLD"," World",2023,"Export",6,61092825.863
+"H4","CHN","27","China","WLD"," World",2023,"Import",5,515849676.426
+"H4","CHN","27","China","WLD"," World",2024,"Export",6,53572785.795
+"H4","CHN","27","China","WLD"," World",2024,"Import",5,504006953.477
+"H4","CHN","8542","China","WLD"," World",2020,"Export",6,116989221.967
+"H4","CHN","8542","China","WLD"," World",2020,"Import",5,310019018.012
+"H4","CHN","8542","China","WLD"," World",2021,"Export",6,154221191.756
+"H4","CHN","8542","China","WLD"," World",2021,"Import",5,374212226.914
+"H4","CHN","8542","China","WLD"," World",2022,"Export",6,154526128.249
+"H4","CHN","8542","China","WLD"," World",2022,"Import",5,365618694.238
+"H4","CHN","8542","China","WLD"," World",2023,"Export",6,136336564.012
+"H4","CHN","8542","China","WLD"," World",2023,"Import",5,303617983.129
+"H4","CHN","8542","China","WLD"," World",2024,"Export",6,159749357.402
+"H4","CHN","8542","China","WLD"," World",2024,"Import",5,329732035.679
+"H4","DEU","26","Germany","WLD"," World",2020,"Export",6,495751.498
+"H4","DEU","26","Germany","WLD"," World",2020,"Import",5,9920272.578
+"H4","DEU","26","Germany","WLD"," World",2021,"Export",6,936749.861
+"H4","DEU","26","Germany","WLD"," World",2021,"Import",5,15147655.079
+"H4","DEU","26","Germany","WLD"," World",2022,"Export",6,1052666.736
+"H4","DEU","26","Germany","WLD"," World",2022,"Import",5,12362956.802
+"H4","DEU","26","Germany","WLD"," World",2023,"Export",6,865474.909
+"H4","DEU","26","Germany","WLD"," World",2023,"Import",5,11701760.415
+"H4","DEU","26","Germany","WLD"," World",2024,"Export",6,807249.209
+"H4","DEU","26","Germany","WLD"," World",2024,"Import",5,9895829.126
+"H4","DEU","26","Germany","WLD"," World",2025,"Export",6,773317.481
+"H4","DEU","26","Germany","WLD"," World",2025,"Import",5,11539459.164
+"H4","DEU","27","Germany","WLD"," World",2020,"Export",6,26189714.338
+"H4","DEU","27","Germany","WLD"," World",2020,"Import",5,76605476.289
+"H4","DEU","27","Germany","WLD"," World",2021,"Export",6,43300118.242
+"H4","DEU","27","Germany","WLD"," World",2021,"Import",5,128071788.563
+"H4","DEU","27","Germany","WLD"," World",2022,"Export",6,61923184.525
+"H4","DEU","27","Germany","WLD"," World",2022,"Import",5,207787387.23
+"H4","DEU","27","Germany","WLD"," World",2023,"Export",6,36340242.116
+"H4","DEU","27","Germany","WLD"," World",2023,"Import",5,133885730.231
+"H4","DEU","27","Germany","WLD"," World",2024,"Export",6,34270962.185
+"H4","DEU","27","Germany","WLD"," World",2024,"Import",5,111834547.584
+"H4","DEU","27","Germany","WLD"," World",2025,"Export",6,33759373.006
+"H4","DEU","27","Germany","WLD"," World",2025,"Import",5,115528009.818
+"H4","DEU","8542","Germany","WLD"," World",2020,"Export",6,12815712.304
+"H4","DEU","8542","Germany","WLD"," World",2020,"Import",5,13314715.164
+"H4","DEU","8542","Germany","WLD"," World",2021,"Export",6,16050929.587
+"H4","DEU","8542","Germany","WLD"," World",2021,"Import",5,17243191.492
+"H4","DEU","8542","Germany","WLD"," World",2022,"Export",6,20248666.076
+"H4","DEU","8542","Germany","WLD"," World",2022,"Import",5,24016739.163
+"H4","DEU","8542","Germany","WLD"," World",2023,"Export",6,22134516.377
+"H4","DEU","8542","Germany","WLD"," World",2023,"Import",5,25467248.037
+"H4","DEU","8542","Germany","WLD"," World",2024,"Export",6,18329152.025
+"H4","DEU","8542","Germany","WLD"," World",2024,"Import",5,18334905.178
+"H4","DEU","8542","Germany","WLD"," World",2025,"Export",6,20442594.718
+"H4","DEU","8542","Germany","WLD"," World",2025,"Import",5,20241305.742
+"H4","IND","26","India","WLD"," World",2020,"Export",6,4205513.249
+"H4","IND","26","India","WLD"," World",2020,"Import",5,2343871.012
+"H4","IND","26","India","WLD"," World",2021,"Export",6,4519783.149
+"H4","IND","26","India","WLD"," World",2021,"Import",5,4975698.621
+"H4","IND","26","India","WLD"," World",2022,"Export",6,1944597.526
+"H4","IND","26","India","WLD"," World",2022,"Import",5,5729977.372
+"H4","IND","26","India","WLD"," World",2023,"Export",6,3984330.406
+"H4","IND","26","India","WLD"," World",2023,"Import",5,5885803.928
+"H4","IND","26","India","WLD"," World",2024,"Export",6,2980871.601
+"H4","IND","26","India","WLD"," World",2024,"Import",5,6844532.419
+"H4","IND","27","India","WLD"," World",2020,"Export",6,27634362.827
+"H4","IND","27","India","WLD"," World",2020,"Import",5,104358496.964
+"H4","IND","27","India","WLD"," World",2021,"Export",6,56400638.754
+"H4","IND","27","India","WLD"," World",2021,"Import",5,170398554.315
+"H4","IND","27","India","WLD"," World",2022,"Export",6,98472280.095
+"H4","IND","27","India","WLD"," World",2022,"Import",5,277238257.324
+"H4","IND","27","India","WLD"," World",2023,"Export",6,89330986.219
+"H4","IND","27","India","WLD"," World",2023,"Import",5,220592555.171
+"H4","IND","27","India","WLD"," World",2024,"Export",6,74267309.683
+"H4","IND","27","India","WLD"," World",2024,"Import",5,217910689.348
+"H4","IND","8542","India","WLD"," World",2020,"Export",6,265331.455
+"H4","IND","8542","India","WLD"," World",2020,"Import",5,8417890.351
+"H4","IND","8542","India","WLD"," World",2021,"Export",6,380462.791
+"H4","IND","8542","India","WLD"," World",2021,"Import",5,12391531.711
+"H4","IND","8542","India","WLD"," World",2022,"Export",6,476585.457
+"H4","IND","8542","India","WLD"," World",2022,"Import",5,16122306.967
+"H4","IND","8542","India","WLD"," World",2023,"Export",6,219587.508
+"H4","IND","8542","India","WLD"," World",2023,"Import",5,19215332.639
+"H4","IND","8542","India","WLD"," World",2024,"Export",6,271936.746
+"H4","IND","8542","India","WLD"," World",2024,"Import",5,23443865.105
+"H4","IRN","26","Iran, Islamic Rep.","WLD"," World",2020,"Export",6,290784.859
+"H4","IRN","26","Iran, Islamic Rep.","WLD"," World",2020,"Import",5,77149.296
+"H4","IRN","26","Iran, Islamic Rep.","WLD"," World",2021,"Export",6,560316.796
+"H4","IRN","26","Iran, Islamic Rep.","WLD"," World",2021,"Import",5,99456.892
+"H4","IRN","26","Iran, Islamic Rep.","WLD"," World",2022,"Export",6,899501.668
+"H4","IRN","26","Iran, Islamic Rep.","WLD"," World",2022,"Import",5,140972.454
+"H4","IRN","27","Iran, Islamic Rep.","WLD"," World",2020,"Export",6,10034998.163
+"H4","IRN","27","Iran, Islamic Rep.","WLD"," World",2020,"Import",5,457305.408
+"H4","IRN","27","Iran, Islamic Rep.","WLD"," World",2021,"Export",6,32234540.491
+"H4","IRN","27","Iran, Islamic Rep.","WLD"," World",2021,"Import",5,820146.828
+"H4","IRN","27","Iran, Islamic Rep.","WLD"," World",2022,"Export",6,45600446.191
+"H4","IRN","27","Iran, Islamic Rep.","WLD"," World",2022,"Import",5,1181262.767
+"H4","IRN","8542","Iran, Islamic Rep.","WLD"," World",2020,"Export",6,104.231
+"H4","IRN","8542","Iran, Islamic Rep.","WLD"," World",2020,"Import",5,70833.69
+"H4","IRN","8542","Iran, Islamic Rep.","WLD"," World",2021,"Export",6,86.142
+"H4","IRN","8542","Iran, Islamic Rep.","WLD"," World",2021,"Import",5,112619.72
+"H4","IRN","8542","Iran, Islamic Rep.","WLD"," World",2022,"Export",6,70.404
+"H4","IRN","8542","Iran, Islamic Rep.","WLD"," World",2022,"Import",5,189844.36
+"H4","ISR","26","Israel","WLD"," World",2020,"Export",6,2048
+"H4","ISR","26","Israel","WLD"," World",2020,"Import",5,12797
+"H4","ISR","26","Israel","WLD"," World",2021,"Export",6,4018
+"H4","ISR","26","Israel","WLD"," World",2021,"Import",5,14812
+"H4","ISR","26","Israel","WLD"," World",2022,"Export",6,3911
+"H4","ISR","26","Israel","WLD"," World",2022,"Import",5,16655
+"H4","ISR","26","Israel","WLD"," World",2023,"Export",6,4780
+"H4","ISR","26","Israel","WLD"," World",2023,"Import",5,12337
+"H4","ISR","26","Israel","WLD"," World",2024,"Export",6,3373
+"H4","ISR","26","Israel","WLD"," World",2024,"Import",5,11697
+"H4","ISR","26","Israel","WLD"," World",2025,"Export",6,4011
+"H4","ISR","26","Israel","WLD"," World",2025,"Import",5,19214
+"H4","ISR","27","Israel","WLD"," World",2020,"Export",6,1282992
+"H4","ISR","27","Israel","WLD"," World",2020,"Import",5,5586424
+"H4","ISR","27","Israel","WLD"," World",2021,"Export",6,2252676
+"H4","ISR","27","Israel","WLD"," World",2021,"Import",5,9131433
+"H4","ISR","27","Israel","WLD"," World",2022,"Export",6,3860444
+"H4","ISR","27","Israel","WLD"," World",2022,"Import",5,14675744
+"H4","ISR","27","Israel","WLD"," World",2023,"Import",5,10835871
+"H4","ISR","27","Israel","WLD"," World",2024,"Export",6,4385946
+"H4","ISR","27","Israel","WLD"," World",2024,"Import",5,9345844
+"H4","ISR","27","Israel","WLD"," World",2025,"Export",6,3929372
+"H4","ISR","27","Israel","WLD"," World",2025,"Import",5,7907366
+"H4","ISR","8542","Israel","WLD"," World",2020,"Export",6,2925553
+"H4","ISR","8542","Israel","WLD"," World",2020,"Import",5,1016117
+"H4","ISR","8542","Israel","WLD"," World",2021,"Export",6,3746309
+"H4","ISR","8542","Israel","WLD"," World",2021,"Import",5,1700255
+"H4","ISR","8542","Israel","WLD"," World",2022,"Export",6,4942587
+"H4","ISR","8542","Israel","WLD"," World",2022,"Import",5,2200605
+"H4","ISR","8542","Israel","WLD"," World",2023,"Export",6,4746294
+"H4","ISR","8542","Israel","WLD"," World",2023,"Import",5,1808125
+"H4","ISR","8542","Israel","WLD"," World",2024,"Export",6,5741855
+"H4","ISR","8542","Israel","WLD"," World",2024,"Import",5,1736205
+"H4","ISR","8542","Israel","WLD"," World",2025,"Export",6,4748737
+"H4","ISR","8542","Israel","WLD"," World",2025,"Import",5,2140249
+"H4","JPN","26","Japan","WLD"," World",2020,"Export",6,158550.343
+"H4","JPN","26","Japan","WLD"," World",2020,"Import",5,21752107.189
+"H4","JPN","26","Japan","WLD"," World",2021,"Export",6,178473.734
+"H4","JPN","26","Japan","WLD"," World",2021,"Import",5,34471895.143
+"H4","JPN","26","Japan","WLD"," World",2022,"Export",6,165779.266
+"H4","JPN","26","Japan","WLD"," World",2022,"Import",5,31499188.792
+"H4","JPN","26","Japan","WLD"," World",2023,"Export",6,195351.612
+"H4","JPN","26","Japan","WLD"," World",2023,"Import",5,26360220.933
+"H4","JPN","26","Japan","WLD"," World",2024,"Export",6,179072.083
+"H4","JPN","26","Japan","WLD"," World",2024,"Import",5,27843763.036
+"H4","JPN","26","Japan","WLD"," World",2025,"Export",6,161465.217
+"H4","JPN","26","Japan","WLD"," World",2025,"Import",5,24622066.517
+"H4","JPN","27","Japan","WLD"," World",2020,"Export",6,7628748.832
+"H4","JPN","27","Japan","WLD"," World",2020,"Import",5,105482658.409
+"H4","JPN","27","Japan","WLD"," World",2021,"Export",6,10228412.817
+"H4","JPN","27","Japan","WLD"," World",2021,"Import",5,154729669.753
+"H4","JPN","27","Japan","WLD"," World",2022,"Export",6,18248127.394
+"H4","JPN","27","Japan","WLD"," World",2022,"Import",5,254657779.836
+"H4","JPN","27","Japan","WLD"," World",2023,"Export",6,12726473.279
+"H4","JPN","27","Japan","WLD"," World",2023,"Import",5,194666525.342
+"H4","JPN","27","Japan","WLD"," World",2024,"Export",6,9955903.167
+"H4","JPN","27","Japan","WLD"," World",2024,"Import",5,168656670.866
+"H4","JPN","27","Japan","WLD"," World",2025,"Export",6,8764857.922
+"H4","JPN","27","Japan","WLD"," World",2025,"Import",5,142189681.53
+"H4","JPN","8542","Japan","WLD"," World",2020,"Export",6,28880685.725
+"H4","JPN","8542","Japan","WLD"," World",2020,"Import",5,18756811.672
+"H4","JPN","8542","Japan","WLD"," World",2021,"Export",6,34011057.038
+"H4","JPN","8542","Japan","WLD"," World",2021,"Import",5,25389671.08
+"H4","JPN","8542","Japan","WLD"," World",2022,"Export",6,33648603.519
+"H4","JPN","8542","Japan","WLD"," World",2022,"Import",5,32414842.528
+"H4","JPN","8542","Japan","WLD"," World",2023,"Export",6,30886901.997
+"H4","JPN","8542","Japan","WLD"," World",2023,"Import",5,29480329.353
+"H4","JPN","8542","Japan","WLD"," World",2024,"Export",6,32473746.626
+"H4","JPN","8542","Japan","WLD"," World",2024,"Import",5,24133376.474
+"H4","JPN","8542","Japan","WLD"," World",2025,"Export",6,33723740.609
+"H4","JPN","8542","Japan","WLD"," World",2025,"Import",5,24497874.782
+"H4","KOR","26","Korea, Rep.","WLD"," World",2020,"Export",6,503587.717
+"H4","KOR","26","Korea, Rep.","WLD"," World",2020,"Import",5,15898952.273
+"H4","KOR","26","Korea, Rep.","WLD"," World",2021,"Export",6,1445405.11
+"H4","KOR","26","Korea, Rep.","WLD"," World",2021,"Import",5,24588154.947
+"H4","KOR","26","Korea, Rep.","WLD"," World",2022,"Export",6,1792951.157
+"H4","KOR","26","Korea, Rep.","WLD"," World",2022,"Import",5,21871950.3
+"H4","KOR","26","Korea, Rep.","WLD"," World",2023,"Export",6,1762313.67
+"H4","KOR","26","Korea, Rep.","WLD"," World",2023,"Import",5,19707452.376
+"H4","KOR","26","Korea, Rep.","WLD"," World",2024,"Export",6,940242.339
+"H4","KOR","26","Korea, Rep.","WLD"," World",2024,"Import",5,19199490.027
+"H4","KOR","26","Korea, Rep.","WLD"," World",2025,"Export",6,639617.319
+"H4","KOR","26","Korea, Rep.","WLD"," World",2025,"Import",5,20841393.306
+"H4","KOR","27","Korea, Rep.","WLD"," World",2020,"Export",6,25443847.248
+"H4","KOR","27","Korea, Rep.","WLD"," World",2020,"Import",5,86563271.982
+"H4","KOR","27","Korea, Rep.","WLD"," World",2021,"Export",6,40012148.135
+"H4","KOR","27","Korea, Rep.","WLD"," World",2021,"Import",5,137572591.484
+"H4","KOR","27","Korea, Rep.","WLD"," World",2022,"Export",6,64751328.658
+"H4","KOR","27","Korea, Rep.","WLD"," World",2022,"Import",5,218678954.84
+"H4","KOR","27","Korea, Rep.","WLD"," World",2023,"Export",6,54042174.737
+"H4","KOR","27","Korea, Rep.","WLD"," World",2023,"Import",5,171354533.642
+"H4","KOR","27","Korea, Rep.","WLD"," World",2024,"Export",6,52616721.372
+"H4","KOR","27","Korea, Rep.","WLD"," World",2024,"Import",5,162096246.783
+"H4","KOR","27","Korea, Rep.","WLD"," World",2025,"Export",6,47235215.55
+"H4","KOR","27","Korea, Rep.","WLD"," World",2025,"Import",5,140092305.192
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2020,"Export",6,82884355.424
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2020,"Import",5,40277147.261
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2021,"Export",6,109296681.667
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2021,"Import",5,50339776.096
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2022,"Export",6,112870923.87
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2022,"Import",5,62497259.174
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2023,"Export",6,86156046.31
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2023,"Import",5,51791997.717
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2024,"Export",6,120217643.249
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2024,"Import",5,60636890.551
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2025,"Export",6,142867980.364
+"H4","KOR","8542","Korea, Rep.","WLD"," World",2025,"Import",5,61927666.031
+"H4","NLD","26","Netherlands","WLD"," World",2020,"Export",6,1269837.247
+"H4","NLD","26","Netherlands","WLD"," World",2020,"Import",5,2466574.165
+"H4","NLD","26","Netherlands","WLD"," World",2021,"Export",6,1542996.457
+"H4","NLD","26","Netherlands","WLD"," World",2021,"Import",5,3489094.453
+"H4","NLD","26","Netherlands","WLD"," World",2022,"Export",6,1180635.562
+"H4","NLD","26","Netherlands","WLD"," World",2022,"Import",5,3005909.16
+"H4","NLD","26","Netherlands","WLD"," World",2023,"Export",6,1619237.786
+"H4","NLD","26","Netherlands","WLD"," World",2023,"Import",5,2923152.283
+"H4","NLD","26","Netherlands","WLD"," World",2024,"Export",6,1448999.346
+"H4","NLD","26","Netherlands","WLD"," World",2024,"Import",5,2699249.415
+"H4","NLD","26","Netherlands","WLD"," World",2025,"Export",6,1620425.049
+"H4","NLD","26","Netherlands","WLD"," World",2025,"Import",5,2864815.762
+"H4","NLD","27","Netherlands","WLD"," World",2020,"Export",6,50741441.729
+"H4","NLD","27","Netherlands","WLD"," World",2020,"Import",5,54920561.121
+"H4","NLD","27","Netherlands","WLD"," World",2021,"Export",6,87772928.011
+"H4","NLD","27","Netherlands","WLD"," World",2021,"Import",5,99569783.336
+"H4","NLD","27","Netherlands","WLD"," World",2022,"Export",6,169583177.669
+"H4","NLD","27","Netherlands","WLD"," World",2022,"Import",5,178727671.989
+"H4","NLD","27","Netherlands","WLD"," World",2023,"Export",6,129483556.503
+"H4","NLD","27","Netherlands","WLD"," World",2023,"Import",5,142600445.111
+"H4","NLD","27","Netherlands","WLD"," World",2024,"Export",6,104942339.278
+"H4","NLD","27","Netherlands","WLD"," World",2024,"Import",5,111386787.979
+"H4","NLD","27","Netherlands","WLD"," World",2025,"Export",6,96408395.617
+"H4","NLD","27","Netherlands","WLD"," World",2025,"Import",5,103669405.737
+"H4","NLD","8542","Netherlands","WLD"," World",2020,"Export",6,11541016.421
+"H4","NLD","8542","Netherlands","WLD"," World",2020,"Import",5,13686864.097
+"H4","NLD","8542","Netherlands","WLD"," World",2021,"Export",6,13468102.483
+"H4","NLD","8542","Netherlands","WLD"," World",2021,"Import",5,15004517.92
+"H4","NLD","8542","Netherlands","WLD"," World",2022,"Export",6,5332562.472
+"H4","NLD","8542","Netherlands","WLD"," World",2022,"Import",5,5708925.171
+"H4","NLD","8542","Netherlands","WLD"," World",2023,"Export",6,4664560.196
+"H4","NLD","8542","Netherlands","WLD"," World",2023,"Import",5,5417550.238
+"H4","NLD","8542","Netherlands","WLD"," World",2024,"Export",6,3044967.969
+"H4","NLD","8542","Netherlands","WLD"," World",2024,"Import",5,4497496.96
+"H4","NLD","8542","Netherlands","WLD"," World",2025,"Export",6,2224819.993
+"H4","NLD","8542","Netherlands","WLD"," World",2025,"Import",5,4671156.309
+"H4","OAS","26","Other Asia, nes","WLD"," World",2020,"Export",6,954850.314
+"H4","OAS","26","Other Asia, nes","WLD"," World",2020,"Import",5,3346298.254
+"H4","OAS","26","Other Asia, nes","WLD"," World",2021,"Export",6,1703551.605
+"H4","OAS","26","Other Asia, nes","WLD"," World",2021,"Import",5,6408297.165
+"H4","OAS","26","Other Asia, nes","WLD"," World",2022,"Export",6,1956868.917
+"H4","OAS","26","Other Asia, nes","WLD"," World",2022,"Import",5,4740017.131
+"H4","OAS","26","Other Asia, nes","WLD"," World",2023,"Export",6,1298136.029
+"H4","OAS","26","Other Asia, nes","WLD"," World",2023,"Import",5,3638379.573
+"H4","OAS","26","Other Asia, nes","WLD"," World",2024,"Export",6,1088093.144
+"H4","OAS","26","Other Asia, nes","WLD"," World",2024,"Import",5,3646796.05
+"H4","OAS","27","Other Asia, nes","WLD"," World",2020,"Export",6,6265372.422
+"H4","OAS","27","Other Asia, nes","WLD"," World",2020,"Import",5,29731444.499
+"H4","OAS","27","Other Asia, nes","WLD"," World",2021,"Export",6,10253242.537
+"H4","OAS","27","Other Asia, nes","WLD"," World",2021,"Import",5,49760530.76
+"H4","OAS","27","Other Asia, nes","WLD"," World",2022,"Export",6,17547405.947
+"H4","OAS","27","Other Asia, nes","WLD"," World",2022,"Import",5,78240836.827
+"H4","OAS","27","Other Asia, nes","WLD"," World",2023,"Export",6,13179909.202
+"H4","OAS","27","Other Asia, nes","WLD"," World",2023,"Import",5,56881237.654
+"H4","OAS","27","Other Asia, nes","WLD"," World",2024,"Export",6,12740054.285
+"H4","OAS","27","Other Asia, nes","WLD"," World",2024,"Import",5,53470347.748
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2020,"Export",6,123139389.159
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2020,"Import",5,62615782.227
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2021,"Export",6,155917919.183
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2021,"Import",5,81628458.9
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2022,"Export",6,183667676.507
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2022,"Import",5,87522514.049
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2023,"Export",6,166464250.298
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2023,"Import",5,73267330.849
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2024,"Export",6,164902008.511
+"H4","OAS","8542","Other Asia, nes","WLD"," World",2024,"Import",5,94290776.058
+"H4","QAT","26","Qatar","WLD"," World",2020,"Export",6,1502.784
+"H4","QAT","26","Qatar","WLD"," World",2020,"Import",5,114331.725
+"H4","QAT","26","Qatar","WLD"," World",2021,"Export",6,1492.934
+"H4","QAT","26","Qatar","WLD"," World",2021,"Import",5,260234.366
+"H4","QAT","26","Qatar","WLD"," World",2022,"Export",6,2481.073
+"H4","QAT","26","Qatar","WLD"," World",2022,"Import",5,271851.179
+"H4","QAT","26","Qatar","WLD"," World",2023,"Export",6,2075.629
+"H4","QAT","26","Qatar","WLD"," World",2023,"Import",5,450267.412
+"H4","QAT","26","Qatar","WLD"," World",2024,"Export",6,2097.634
+"H4","QAT","26","Qatar","WLD"," World",2024,"Import",5,483108.137
+"H4","QAT","27","Qatar","WLD"," World",2020,"Export",6,42137917.743
+"H4","QAT","27","Qatar","WLD"," World",2020,"Import",5,213258.681
+"H4","QAT","27","Qatar","WLD"," World",2021,"Export",6,73602978.222
+"H4","QAT","27","Qatar","WLD"," World",2021,"Import",5,283476.192
+"H4","QAT","27","Qatar","WLD"," World",2022,"Export",6,114320528.307
+"H4","QAT","27","Qatar","WLD"," World",2022,"Import",5,577577.021
+"H4","QAT","27","Qatar","WLD"," World",2023,"Export",6,84595541.757
+"H4","QAT","27","Qatar","WLD"," World",2023,"Import",5,745818.225
+"H4","QAT","27","Qatar","WLD"," World",2024,"Export",6,79608644.025
+"H4","QAT","27","Qatar","WLD"," World",2024,"Import",5,2228997.379
+"H4","QAT","8542","Qatar","WLD"," World",2020,"Export",6,256.045
+"H4","QAT","8542","Qatar","WLD"," World",2020,"Import",5,7508.362
+"H4","QAT","8542","Qatar","WLD"," World",2021,"Export",6,551.987
+"H4","QAT","8542","Qatar","WLD"," World",2021,"Import",5,11043.511
+"H4","QAT","8542","Qatar","WLD"," World",2022,"Export",6,615.881
+"H4","QAT","8542","Qatar","WLD"," World",2022,"Import",5,6360.354
+"H4","QAT","8542","Qatar","WLD"," World",2023,"Export",6,896.383
+"H4","QAT","8542","Qatar","WLD"," World",2023,"Import",5,9090.891
+"H4","QAT","8542","Qatar","WLD"," World",2024,"Export",6,5464.985
+"H4","QAT","8542","Qatar","WLD"," World",2024,"Import",5,8837.544
+"H4","RUS","26","Russian Federation","WLD"," World",2020,"Export",6,4329567.653
+"H4","RUS","26","Russian Federation","WLD"," World",2020,"Import",5,1945943.209
+"H4","RUS","26","Russian Federation","WLD"," World",2021,"Export",6,7429334.774
+"H4","RUS","26","Russian Federation","WLD"," World",2021,"Import",5,2377750.674
+"H4","RUS","27","Russian Federation","WLD"," World",2020,"Export",6,141918219.659
+"H4","RUS","27","Russian Federation","WLD"," World",2020,"Import",5,1699289.514
+"H4","RUS","27","Russian Federation","WLD"," World",2021,"Export",6,212417989.932
+"H4","RUS","27","Russian Federation","WLD"," World",2021,"Import",5,2279022.581
+"H4","RUS","8542","Russian Federation","WLD"," World",2020,"Export",6,43595.571
+"H4","RUS","8542","Russian Federation","WLD"," World",2020,"Import",5,1254343.567
+"H4","RUS","8542","Russian Federation","WLD"," World",2021,"Export",6,66326.425
+"H4","RUS","8542","Russian Federation","WLD"," World",2021,"Import",5,1555417.737
+"H4","SAU","26","Saudi Arabia","WLD"," World",2020,"Export",6,567550.64
+"H4","SAU","26","Saudi Arabia","WLD"," World",2020,"Import",5,133902.281
+"H4","SAU","26","Saudi Arabia","WLD"," World",2021,"Export",6,728388.201
+"H4","SAU","26","Saudi Arabia","WLD"," World",2021,"Import",5,195372.54
+"H4","SAU","26","Saudi Arabia","WLD"," World",2022,"Export",6,873057.481
+"H4","SAU","26","Saudi Arabia","WLD"," World",2022,"Import",5,203679.795
+"H4","SAU","26","Saudi Arabia","WLD"," World",2023,"Export",6,644403.316
+"H4","SAU","26","Saudi Arabia","WLD"," World",2023,"Import",5,708457.025
+"H4","SAU","26","Saudi Arabia","WLD"," World",2024,"Export",6,810618.747
+"H4","SAU","26","Saudi Arabia","WLD"," World",2024,"Import",5,533500.582
+"H4","SAU","27","Saudi Arabia","WLD"," World",2020,"Export",6,119359790.419
+"H4","SAU","27","Saudi Arabia","WLD"," World",2020,"Import",5,4581551.886
+"H4","SAU","27","Saudi Arabia","WLD"," World",2021,"Export",6,202166358.064
+"H4","SAU","27","Saudi Arabia","WLD"," World",2021,"Import",5,7389487.772
+"H4","SAU","27","Saudi Arabia","WLD"," World",2022,"Export",6,327007233.855
+"H4","SAU","27","Saudi Arabia","WLD"," World",2022,"Import",5,14271478.814
+"H4","SAU","27","Saudi Arabia","WLD"," World",2023,"Export",6,246465463.893
+"H4","SAU","27","Saudi Arabia","WLD"," World",2023,"Import",5,15255838.341
+"H4","SAU","27","Saudi Arabia","WLD"," World",2024,"Export",6,223378864.942
+"H4","SAU","27","Saudi Arabia","WLD"," World",2024,"Import",5,13153766.551
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2020,"Export",6,2531.066
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2020,"Import",5,97481.894
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2021,"Export",6,969.85
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2021,"Import",5,105079.083
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2022,"Export",6,307.155
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2022,"Import",5,87887.256
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2023,"Export",6,73.335
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2023,"Import",5,122701.698
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2024,"Export",6,2860.184
+"H4","SAU","8542","Saudi Arabia","WLD"," World",2024,"Import",5,145836.69
+"H4","TUR","26","Turkey","WLD"," World",2020,"Export",6,1384358.99
+"H4","TUR","26","Turkey","WLD"," World",2020,"Import",5,1229908.643
+"H4","TUR","26","Turkey","WLD"," World",2021,"Export",6,2166684.485
+"H4","TUR","26","Turkey","WLD"," World",2021,"Import",5,2269095.268
+"H4","TUR","26","Turkey","WLD"," World",2022,"Export",6,2246031.864
+"H4","TUR","26","Turkey","WLD"," World",2022,"Import",5,1746767.701
+"H4","TUR","26","Turkey","WLD"," World",2023,"Export",6,2028080.151
+"H4","TUR","26","Turkey","WLD"," World",2023,"Import",5,1284973.551
+"H4","TUR","26","Turkey","WLD"," World",2024,"Export",6,2367187.588
+"H4","TUR","26","Turkey","WLD"," World",2024,"Import",5,1381153.789
+"H4","TUR","26","Turkey","WLD"," World",2025,"Export",6,2386814.689
+"H4","TUR","26","Turkey","WLD"," World",2025,"Import",5,1195999.108
+"H4","TUR","27","Turkey","WLD"," World",2020,"Export",6,4715232.979
+"H4","TUR","27","Turkey","WLD"," World",2020,"Import",5,28925039.417
+"H4","TUR","27","Turkey","WLD"," World",2021,"Export",6,8506561.99
+"H4","TUR","27","Turkey","WLD"," World",2021,"Import",5,50691986.207
+"H4","TUR","27","Turkey","WLD"," World",2022,"Export",6,16411096.285
+"H4","TUR","27","Turkey","WLD"," World",2022,"Import",5,96548874.404
+"H4","TUR","27","Turkey","WLD"," World",2023,"Export",6,16389206.844
+"H4","TUR","27","Turkey","WLD"," World",2023,"Import",5,69113810.547
+"H4","TUR","27","Turkey","WLD"," World",2024,"Export",6,16551434.986
+"H4","TUR","27","Turkey","WLD"," World",2024,"Import",5,65589736.402
+"H4","TUR","27","Turkey","WLD"," World",2025,"Export",6,15253783.25
+"H4","TUR","27","Turkey","WLD"," World",2025,"Import",5,62465580.162
+"H4","TUR","8542","Turkey","WLD"," World",2020,"Export",6,16852.523
+"H4","TUR","8542","Turkey","WLD"," World",2020,"Import",5,527475.777
+"H4","TUR","8542","Turkey","WLD"," World",2021,"Export",6,27966.298
+"H4","TUR","8542","Turkey","WLD"," World",2021,"Import",5,755203.751
+"H4","TUR","8542","Turkey","WLD"," World",2022,"Export",6,44400.797
+"H4","TUR","8542","Turkey","WLD"," World",2022,"Import",5,908280.165
+"H4","TUR","8542","Turkey","WLD"," World",2023,"Export",6,50738.094
+"H4","TUR","8542","Turkey","WLD"," World",2023,"Import",5,1025666.595
+"H4","TUR","8542","Turkey","WLD"," World",2024,"Export",6,53133.513
+"H4","TUR","8542","Turkey","WLD"," World",2024,"Import",5,844095.519
+"H4","TUR","8542","Turkey","WLD"," World",2025,"Export",6,44355.19
+"H4","TUR","8542","Turkey","WLD"," World",2025,"Import",5,916729.317
+"H4","USA","26","United States","WLD"," World",2020,"Export",6,6430765.925
+"H4","USA","26","United States","WLD"," World",2020,"Import",5,2289738.849
+"H4","USA","26","United States","WLD"," World",2021,"Export",6,8427674.184
+"H4","USA","26","United States","WLD"," World",2021,"Import",5,3285911.978
+"H4","USA","26","United States","WLD"," World",2022,"Export",6,8510634.331
+"H4","USA","26","United States","WLD"," World",2022,"Import",5,3674036.002
+"H4","USA","26","United States","WLD"," World",2023,"Export",6,8035448.735
+"H4","USA","26","United States","WLD"," World",2023,"Import",5,3475363.328
+"H4","USA","26","United States","WLD"," World",2024,"Export",6,8309813.015
+"H4","USA","26","United States","WLD"," World",2024,"Import",5,3641599.2
+"H4","USA","26","United States","WLD"," World",2025,"Export",6,9123545.461
+"H4","USA","26","United States","WLD"," World",2025,"Import",5,3849156.157
+"H4","USA","27","United States","WLD"," World",2020,"Export",6,153623594.394
+"H4","USA","27","United States","WLD"," World",2020,"Import",5,130118461.274
+"H4","USA","27","United States","WLD"," World",2021,"Export",6,235570958.65
+"H4","USA","27","United States","WLD"," World",2021,"Import",5,223932092.237
+"H4","USA","27","United States","WLD"," World",2022,"Export",6,373508228.359
+"H4","USA","27","United States","WLD"," World",2022,"Import",5,322698860.015
+"H4","USA","27","United States","WLD"," World",2023,"Export",6,315838168.429
+"H4","USA","27","United States","WLD"," World",2023,"Import",5,266592032.22
+"H4","USA","27","United States","WLD"," World",2024,"Export",6,315148547.759
+"H4","USA","27","United States","WLD"," World",2024,"Import",5,251121693.817
+"H4","USA","27","United States","WLD"," World",2025,"Export",6,304199089.739
+"H4","USA","27","United States","WLD"," World",2025,"Import",5,216428787.53
+"H4","USA","8542","United States","WLD"," World",2020,"Export",6,23357831.028
+"H4","USA","8542","United States","WLD"," World",2020,"Import",5,31910037.043
+"H4","USA","8542","United States","WLD"," World",2021,"Export",6,28098974.43
+"H4","USA","8542","United States","WLD"," World",2021,"Import",5,41251253.003
+"H4","USA","8542","United States","WLD"," World",2022,"Export",6,24742858.565
+"H4","USA","8542","United States","WLD"," World",2022,"Import",5,43707379.725
+"H4","USA","8542","United States","WLD"," World",2023,"Export",6,20713960.123
+"H4","USA","8542","United States","WLD"," World",2023,"Import",5,36091664.011
+"H4","USA","8542","United States","WLD"," World",2024,"Export",6,26952341.195
+"H4","USA","8542","United States","WLD"," World",2024,"Import",5,40407697.736
+"H4","USA","8542","United States","WLD"," World",2025,"Export",6,27574186.783
+"H4","USA","8542","United States","WLD"," World",2025,"Import",5,42448428.103

@@ -1977,6 +1977,92 @@ body:not(.study-mode) .notebook { display: none; }
 }
 .sandbox-btn:hover { background: rgba(88,166,255,0.08); border-color: #58a6ff; }
 
+/* ── LayerPanel: 국가 검색 드롭다운 ────────────────────────────────────────── */
+.country-search {
+  margin-top: 10px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 8px;
+}
+
+.country-search__label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+}
+
+.country-search__wrap {
+  position: relative;
+}
+
+.country-search__input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 5px 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.country-search__input:focus {
+  border-color: var(--color-accent);
+}
+.country-search__input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.6;
+}
+
+/* 드롭다운: 위로 열림 (패널 하단이므로) */
+.country-search__dropdown {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+  z-index: 2000;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.5);
+}
+
+.country-search__item {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 5px 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.country-search__item:hover {
+  background: rgba(88,166,255,0.12);
+}
+
+.cs-name-ko {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.cs-name-en {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ── SanctionsLayer: 제재 레짐 팝업 */
 .sanction-popup { font-family: var(--font-mono); font-size: 11px; min-width: 200px; }
 .sanction-popup__title { font-weight: 700; font-size: 12px; margin-bottom: 4px; color: #e8e8e8; }
@@ -2341,3 +2427,293 @@ body:not(.study-mode) .notebook { display: none; }
   color: #8b949e;
   line-height: 1.6;
 }
+
+/* ── 국가 정보 패널 (CountryPanelView) ──────────────────────────────────── */
+.country-panel {
+  position: fixed;
+  top: 48px;
+  right: -360px;
+  width: 360px;
+  height: calc(100vh - 48px);
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.country-panel.is-open { right: 0; }
+
+/* 헤더 */
+.cp-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--color-border);
+  flex: none;
+}
+.cp-header-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.cp-label {
+  color: var(--color-accent);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+.cp-close {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+.cp-close:hover { color: var(--color-text-primary); }
+.cp-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.cp-subtitle {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+/* 탭 바 */
+.cp-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  flex: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cp-tabs::-webkit-scrollbar { display: none; }
+.cp-tab {
+  flex: none;
+  padding: 7px 10px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.cp-tab:hover { color: var(--color-text-primary); }
+.cp-tab.is-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+/* 본문 공통 */
+.cp-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+.cp-loading { color: var(--color-text-secondary); font-size: 11px; }
+.cp-empty   { color: var(--color-text-secondary); font-size: 11px; line-height: 1.8; }
+.cp-error   { color: var(--color-danger); font-size: 11px; }
+
+/* 기본정보 탭 */
+.cp-section { display: flex; flex-direction: column; gap: 8px; }
+.cp-kv { display: flex; gap: 8px; align-items: baseline; }
+.cp-key {
+  flex: none;
+  width: 60px;
+  color: var(--color-text-secondary);
+  font-size: 10px;
+}
+.cp-val { color: var(--color-text-primary); font-size: 12px; }
+.cp-mono { font-family: var(--font-mono); letter-spacing: 0.5px; }
+.cp-na  { color: var(--color-text-secondary); }
+.cp-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  background: rgba(88,166,255,0.12);
+  border: 1px solid rgba(88,166,255,0.3);
+  border-radius: 3px;
+  color: var(--color-accent);
+  font-size: 10px;
+}
+
+/* 거시지표 탭 */
+.cp-macro-row {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(48,54,61,0.6);
+}
+.cp-macro-row:last-child { border-bottom: none; }
+.cp-macro-header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+.cp-macro-label { color: var(--color-text-primary); font-size: 11px; font-weight: 600; }
+.cp-macro-unit  { color: var(--color-text-secondary); font-size: 9px; }
+.cp-macro-latest {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.cp-macro-value { font-size: 16px; color: var(--color-accent); font-weight: 600; }
+.cp-macro-date  { font-size: 9px; color: var(--color-text-secondary); }
+.cp-pct { font-size: 10px; margin-left: auto; }
+.cp-up  { color: var(--color-success); }
+.cp-dn  { color: var(--color-danger); }
+.cp-spark {
+  display: block;
+  width: 100%;
+  height: 30px;
+  opacity: 0.8;
+}
+
+/* 무역의존도 탭 */
+.cp-trade-block { margin-bottom: 16px; }
+.cp-trade-head  {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.cp-trade-period { font-size: 9px; color: var(--color-text-secondary); }
+.cp-trade-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.cp-trade-table th {
+  text-align: left;
+  color: var(--color-text-secondary);
+  font-weight: normal;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+.cp-trade-table td { padding: 3px 4px; }
+.cp-rank    { color: var(--color-text-secondary); width: 18px; }
+.cp-partner { color: var(--color-text-primary); font-weight: 600; }
+.cp-flow    { color: var(--color-text-secondary); }
+.cp-tval    { color: var(--color-text-primary); }
+.cp-dep {
+  display: inline-block;
+  padding: 1px 4px;
+  background: rgba(88,166,255,0.1);
+  border-radius: 2px;
+  color: var(--color-accent);
+  font-size: 9px;
+}
+.cp-tdep    { text-align: right; }
+
+/* 제재 탭 */
+.cp-sanction-card {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.6);
+}
+.cp-sanction-card:last-child { border-bottom: none; }
+.cp-sanction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.cp-sanction-name { font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
+.cp-severity {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.cp-sev-crit { background: rgba(248,81,73,0.2); color: #f85149; }
+.cp-sev-high { background: rgba(210,153,34,0.2); color: #d29922; }
+.cp-sev-mid  { background: rgba(88,166,255,0.15); color: var(--color-accent); }
+.cp-sev-low  { background: rgba(63,185,80,0.15); color: var(--color-success); }
+.cp-sanction-meta { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
+.cp-sanction-sectors { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.cp-sanction-desc {
+  font-size: 10px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  margin-bottom: 5px;
+}
+.cp-sanction-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.cp-tag {
+  display: inline-block;
+  padding: 1px 5px;
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.2);
+  border-radius: 3px;
+  font-size: 9px;
+  color: var(--color-accent);
+}
+
+/* 이론 탭 */
+.cp-theory-card {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.6);
+}
+.cp-theory-card:last-child { border-bottom: none; }
+.cp-theory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.cp-theory-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+.cp-use-case {
+  flex: none;
+  font-size: 9px;
+  padding: 1px 5px;
+  background: rgba(63,185,80,0.1);
+  border: 1px solid rgba(63,185,80,0.2);
+  border-radius: 3px;
+  color: var(--color-success);
+}
+.cp-theory-meta { margin-bottom: 4px; }
+.cp-theory-summary {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+.cp-sector {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 600;
+}
+.cp-sector--maritime    { background: rgba(0,119,182,0.2); color: #90e0ef; }
+.cp-sector--energy      { background: rgba(255,140,0,0.2); color: #ffd700; }
+.cp-sector--techno      { background: rgba(88,166,255,0.2); color: var(--color-accent); }
+.cp-sector--indo_pacific{ background: rgba(248,81,73,0.15); color: #f85149; }
+.cp-sector--gray_zone   { background: rgba(139,148,158,0.2); color: #8b949e; }
+
+/* 국가 호버 툴팁 (pointer-events: none → 클릭 이벤트 차단 없음) */
+.country-hover-tooltip.leaflet-tooltip {
+  background: rgba(22,27,34,0.9);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  box-shadow: none;
+  pointer-events: none;
+}
+.country-hover-tooltip.leaflet-tooltip::before { display: none; }

@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.cascade import router as cascade_router
+from api.country import router as country_router
 from api.layers import router as layers_router
 from api.library import router as library_router
 from api.news import router as news_router
@@ -75,6 +76,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(country_router)
 app.include_router(layers_router)
 app.include_router(cascade_router)
 app.include_router(library_router)
