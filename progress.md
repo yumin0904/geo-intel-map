@@ -307,13 +307,24 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 - [✅] `/api/sandbox/canvases` 404 원인 파악 — 엔드포인트·router 등록·cytoscape 로드 순서 모두 정상 확인
 - [⏳] 분析실 체인 트리 미표시 — cascade_links `region_code` 불일치 (다음 세션)
 
+### ✅ 분析실 체인 트리 렌더링 완료 (2026-05-27)
+
+- [✅] `stages.py` — `region_code` geofence 역조회 fallback (`region_for_point` import, 좌표 → 지역 자동 파생, 1,323개 None 이벤트 해결)
+- [✅] `reasoning.py` — `_resolve_event()` 캐시 미스 시 `get_conflict_events()` / `get_gdelt()` warm-up 자동 호출 (서버 재시작 직후 빈 Stage 1 버그 해결)
+- [✅] `index.html` — `dagre@0.8.5` peer dependency 추가, cytoscape → dagre → cytoscape-dagre 순서 확정 (graphlib 오류 해결)
+- [✅] `CascadeLink` 모델 — `rule_name: str | None` 필드 추가, engine.py D1·D2/D3 생성 시 `rule.name` 세팅
+- [✅] `CascadeGraphView.js` — 엣지 레이블 `rule_name[:10]\n${pctStr}` 형식으로 변경 (rule_id 원문 노출 제거)
+- [✅] `SandboxLabView.js` — 체인 뷰어 엣지 레이블 `rule_name[:10]` 우선 사용
+- [✅] 실측: 우크라이나 → 밀선물 D1 3개 체인 트리 렌더링 성공
+- [✅] `gdelt_connector.py` — GDELT Actor1CountryCode == Actor2CountryCode 동일국가 중복 필터
+
 ### 현재 버전
-`version.json`: **3.15.2**
+`version.json`: **3.15.3**
 
 ### 다음 세션 우선순위
 
-1. **분析실 체인 트리** — cascade_links `region_code` vs SandboxLab `region` 불일치 수정
-2. **cytoscape-dagre graphlib 오류** 해결
+1. **ZW=F 티커 한국어 레이블** — TICKER_LABEL_KO에 `ZW=F: '밀선물\n(ZW=F)'` 추가 (SandboxLabView + CascadeGraphView)
+2. **SCS 이벤트 체인 트리** 브라우저 최종 확인
 
 ---
 

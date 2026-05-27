@@ -570,8 +570,8 @@ export class SandboxLabView {
           nodeSet.add(nodeId);
         }
 
-        // 인과 엣지
-        const ruleShort = (link.rule_id ?? '').replace(/_/g, ' ').slice(0, 20);
+        // 인과 엣지 — rule_name 앞 10자 우선, 없으면 rule_id 축약
+        const ruleShort = (link.rule_name || link.rule_id || '').slice(0, 10);
         elements.push({ data: { source: parentNodeId, target: nodeId, label: ruleShort, depth } });
 
         // 재귀: 자식 체인 링크

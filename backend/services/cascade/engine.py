@@ -251,6 +251,7 @@ async def _evaluate_trigger(
         correlation_score=round(score, 2),
         link_type="rule",
         rule_id=rule.id,
+        rule_name=rule.name,
         target_timestamp=response_event.timestamp,  # 체이닝 synthetic event 타임스탬프 기준점
         evidence={
             "region": rule.trigger.region,
@@ -430,6 +431,7 @@ async def _evaluate_chain_step(
             correlation_score=response["score"],
             link_type="rule",
             rule_id=rule.id,
+            rule_name=rule.name,
             depth=depth + 1,
             parent_link_id=parent_link.id,
             chain_output=rule.chain_output,

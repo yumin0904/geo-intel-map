@@ -277,7 +277,7 @@ export class CascadeGraphView {
 
         const eKey = `${region}::${ticker}`;
         if (!edgeMap.has(eKey)) {
-          edgeMap.set(eKey, { count: 0, totalScore: 0, pctSum: 0, rule_id: link.rule_id ?? '' });
+          edgeMap.set(eKey, { count: 0, totalScore: 0, pctSum: 0, rule_id: link.rule_id ?? '', rule_name: link.rule_name ?? '' });
         }
         const e = edgeMap.get(eKey);
         e.count++;
@@ -297,7 +297,7 @@ export class CascadeGraphView {
 
         const cKey = `${srcTicker}::${ticker}::${depth}`;
         if (!chainEdgeMap.has(cKey)) {
-          chainEdgeMap.set(cKey, { count: 0, totalScore: 0, pctSum: 0, rule_id: link.rule_id ?? '', depth });
+          chainEdgeMap.set(cKey, { count: 0, totalScore: 0, pctSum: 0, rule_id: link.rule_id ?? '', rule_name: link.rule_name ?? '', depth });
         }
         const ce = chainEdgeMap.get(cKey);
         ce.count++;
@@ -345,16 +345,18 @@ export class CascadeGraphView {
       const avgScore = info.totalScore / info.count;
       const avgPct   = info.pctSum / info.count;
       const pctStr   = `${avgPct > 0 ? '+' : ''}${avgPct.toFixed(1)}%`;
+      const nameShort = (info.rule_name || info.rule_id).slice(0, 10);
       elements.push({
         data: {
-          id:      `e_${idx++}`,
-          source:  `r_${region}`,
-          target:  `t_${ticker}::1`,
-          rule_id: info.rule_id,
-          score:   Math.round(avgScore * 100) / 100,
-          label:   `${pctStr}\n(${info.count}건)`,
-          count:   info.count,
-          depth:   1,
+          id:        `e_${idx++}`,
+          source:    `r_${region}`,
+          target:    `t_${ticker}::1`,
+          rule_id:   info.rule_id,
+          rule_name: info.rule_name,
+          score:     Math.round(avgScore * 100) / 100,
+          label:     `${nameShort}\n${pctStr}`,
+          count:     info.count,
+          depth:     1,
         },
       });
     }
@@ -362,19 +364,21 @@ export class CascadeGraphView {
     // depth≥2 체인 엣지 (시장 → 시장, 점선)
     for (const [key, info] of chainEdgeMap) {
       const [srcTicker, dstTicker] = key.split('::');
-      const avgScore = info.totalScore / info.count;
-      const avgPct   = info.pctSum / info.count;
-      const pctStr   = `${avgPct > 0 ? '+' : ''}${avgPct.toFixed(1)}%`;
+      const avgScore  = info.totalScore / info.count;
+      const avgPct    = info.pctSum / info.count;
+      const pctStr    = `${avgPct > 0 ? '+' : ''}${avgPct.toFixed(1)}%`;
+      const nameShort = (info.rule_name || info.rule_id).slice(0, 10);
       elements.push({
         data: {
-          id:      `e_${idx++}`,
-          source:  `t_${srcTicker}::${info.depth - 1}`,
-          target:  `t_${dstTicker}::${info.depth}`,
-          rule_id: info.rule_id,
-          score:   Math.round(avgScore * 100) / 100,
-          label:   `${pctStr}\n(${info.count}건)`,
-          count:   info.count,
-          depth:   info.depth,
+          id:        `e_${idx++}`,
+          source:    `t_${srcTicker}::${info.depth - 1}`,
+          target:    `t_${dstTicker}::${info.depth}`,
+          rule_id:   info.rule_id,
+          rule_name: info.rule_name,
+          score:     Math.round(avgScore * 100) / 100,
+          label:     `${nameShort}\n${pctStr}`,
+          count:     info.count,
+          depth:     info.depth,
         },
       });
     }

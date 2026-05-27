@@ -46,9 +46,21 @@ def _set_cached(event_id: str, report: dict) -> None:
 async def _resolve_event(event_id: str) -> dict | None:
     """이벤트 ID로 원본 이벤트 dict를 조회한다.
 
-    GDELT·ACLED 레이어 캐시에서 먼저 찾고, 없으면 None.
+    GDELT·ACLED 레이어 캐시에서 먼저 찾고, 캐시가 비어 있으면 레이어를 직접 fetch해 채운다.
     """
-    from api.layers import _gdelt_cache, _conflict_cache
+    from api.layers import _gdelt_cache, _conflict_cache, get_conflict_events, get_gdelt
+
+    # 캐시가 비어 있으면 레이어 fetch로 채움 (서버 재시작 직후 등)
+    if not _conflict_cache.get("geojson"):
+        try:
+            await get_conflict_events()
+        except Exception:
+            pass
+    if not _gdelt_cache.get("geojson"):
+        try:
+            await get_gdelt()
+        except Exception:
+            pass
 
     # GDELT 레이어 캐시
     gdelt_geojson = _gdelt_cache.get("geojson") or {}

@@ -15,6 +15,8 @@ from typing import Any
 
 import yaml
 
+from services.region import region_for_point
+
 logger = logging.getLogger(__name__)
 
 _CONFIG = Path(__file__).resolve().parents[2] / "config"
@@ -52,6 +54,15 @@ def stage1_event_facts(event: dict) -> dict:
         or payload.get("actor2") or payload.get("Actor2Name", "")
     )
 
+    # region_code가 없으면 좌표 기반 geofence 역조회 (대부분의 ACLED 이벤트가 해당)
+    region_code = props.get("region_code", "") or ""
+    if not region_code:
+        coords = event.get("geometry", {}).get("coordinates", [])
+        if len(coords) >= 2:
+            # GeoJSON은 [lon, lat] 순서
+            derived = region_for_point(float(coords[1]), float(coords[0]))
+            region_code = derived or ""
+
     return {
         "stage": 1,
         "name_ko": "사건 팩트",
@@ -60,7 +71,7 @@ def stage1_event_facts(event: dict) -> dict:
         "timestamp": props.get("timestamp", ""),
         "location": event.get("geometry", {}).get("coordinates", []),
         "source_type": props.get("source_type", ""),
-        "region_code": props.get("region_code", ""),
+        "region_code": region_code,
         "severity": props.get("severity", 0),
         "importance_score": props.get("importance_score", 0.0),
         "confidence_score": props.get("confidence_score", 1.0),

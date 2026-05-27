@@ -65,6 +65,7 @@ class CascadeLink(BaseModel):
     correlation_score: float        # 0-1, Phase 2 초기엔 규칙 충족도 기반 단순값
     link_type: Literal["rule", "statistical", "manual"] = "rule"
     rule_id: str | None = None
+    rule_name: str | None = None    # 룰 name 필드 (한국어 레이블 표시용)
     evidence: dict                  # 근거: 지역 매칭, 관찰된 변동률 등
     theory_ref: str | None = None   # 관련 이론 한 줄 (학습 노트)
     # Phase 3: 다단계 체이닝 필드
