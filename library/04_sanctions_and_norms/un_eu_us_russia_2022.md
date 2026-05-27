@@ -1,23 +1,30 @@
 ---
-theory_id: sanction_un_eu_us_russia_2022
-title: "제재: 러시아 (EU, US, UK, JP, CA, AU)"
-sector_tag: energy
-theorists: 
-  - EU
-  - US
-  - UK
-  - JP
-  - CA
-  - AU
-year: 2022
 asset_type: norm
 era: multipolar
-summary: "현대 최대 규모 서방 제재. SWIFT 배제, 러 중앙은행 자산 동결, 석유 가격 상한제 ($60/배럴). 에너지 무기화의 역제재 사례."
-regions: 
-  - ukraine
+geopol_region: ukraine
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- ukraine
 sanction_type: multilateral_western
+sector_tag: energy
+strategic_posture: status_quo
+summary: 현대 최대 규모 서방 제재. SWIFT 배제, 러 중앙은행 자산 동결, 석유 가격 상한제 ($60/배럴). 에너지 무기화의 역제재
+  사례.
 target_country: RU
+temporal_era: us_china_rivalry
+theorists:
+- EU
+- US
+- UK
+- JP
+- CA
+- AU
+theory_id: sanction_un_eu_us_russia_2022
+title: '제재: 러시아 (EU, US, UK, JP, CA, AU)'
+year: 2022
 ---
+
 ## 개요
 
 현대 최대 규모 서방 제재. SWIFT 배제, 러 중앙은행 자산 동결, 석유 가격 상한제 ($60/배럴). 에너지 무기화의 역제재 사례.

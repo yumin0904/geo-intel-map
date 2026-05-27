@@ -1,20 +1,26 @@
 ---
-theory_id: sanction_un_eu_haiti
-title: "제재: 아이티 (UN, US, CA)"
-sector_tag: gray_zone
-theorists: 
-  - UN
-  - US
-  - CA
-year: 2022
 asset_type: norm
 era: multipolar
-summary: "UN SC 케냐 주도 다국적경찰지원임무(MSS) 승인. 비전통 안보 위협의 국제화 사례."
-regions: 
-  - global
+geopol_region: null
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- global
 sanction_type: multilateral_un
+sector_tag: gray_zone
+strategic_posture: status_quo
+summary: UN SC 케냐 주도 다국적경찰지원임무(MSS) 승인. 비전통 안보 위협의 국제화 사례.
 target_country: HT
+temporal_era: us_china_rivalry
+theorists:
+- UN
+- US
+- CA
+theory_id: sanction_un_eu_haiti
+title: '제재: 아이티 (UN, US, CA)'
+year: 2022
 ---
+
 ## 개요
 
 UN SC 케냐 주도 다국적경찰지원임무(MSS) 승인. 비전통 안보 위협의 국제화 사례.

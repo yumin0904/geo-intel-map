@@ -186,3 +186,17 @@ def _count_source_hits(keywords: list[str], articles: list[dict]) -> int:
             hit_sources.add(art["source"])
 
     return len(hit_sources)
+
+
+async def fetch_rss_articles() -> list[dict]:
+    """RSS 기사 목록을 일괄 fetch해 반환한다 (외부 모듈용 공개 인터페이스).
+
+    verification_funnel 등에서 RSS 피드를 한 번만 fetch하고 여러 이벤트에 재사용할 때 호출.
+    """
+    return await _fetch_all_feeds()
+
+
+def check_rss_match(evt: "Event", articles: list[dict]) -> bool:
+    """이벤트 키워드가 기사 목록에서 2개 이상 매체 히트 여부를 반환한다."""
+    keywords = _extract_keywords(evt)
+    return _count_source_hits(keywords, articles) >= _CROSS_VALIDATE_THRESHOLD

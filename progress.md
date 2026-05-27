@@ -285,17 +285,28 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 - `main.css` — `.sandbox__chain-*` 스타일 추가
 - fetch URL `/api/cascade/build` → `/api/cascade/links` 수정
 
-**미완료 사항 (내일 계속)**
-- 브라우저에서 실제 클릭 플로우 검증 (이벤트 팝업 → AI분析 → 분析실 열기 → 체인 트리 표시)
-- 레이어 경로 `/api/layers/conflict` → `/api/layers/conflict-events` 확인 필요
-- 체인 뷰어 depth 필터 검증 (현재 기간 D2/D3 미발화 → 트리 D1만 표시되는 케이스)
+### ✅ SandboxLab 체인 뷰어 버그 수정 (2026-05-27)
+
+**버그 1 — `stages.py` region_code 누락**
+- `backend/services/reasoning/stages.py` — `stage1_event_facts()` 반환값에 `region_code` 필드 추가
+- 증상: `stage1.region_code`가 항상 `undefined` → 체인 뷰어가 `'unknown'` region으로 탐색, D1 링크 미발견
+
+**버그 2 — `SandboxLabView.js` stages 타입 불일치**
+- `frontend/src/views/SandboxLabView.js` — `_openWithChain()` 수정
+  - `report.stages`는 `{"1_facts": {...}, ...}` object인데 `.find()`(array 메서드) 호출 → TypeError
+  - `stages['1_facts']` 직접 접근으로 교체
+  - `stage1.region` → `stage1.region_code`, `stage1.event_title` → `stage1.title` 필드명 수정
+
+**검증**
+- `/api/reasoning/{event_id}` Stage 1에서 `region_code: "south_china_sea"` 정상 반환 확인
+- cascade/links D1 링크 region 분포: south_china_sea 14건 / bab_el_mandeb 4건 / middle_east 4건 / ukraine 3건 / suez 1건
 
 ### 현재 버전
-`version.json`: **3.15.0**
+`version.json`: **3.15.1**
 
 ### 다음 세션 우선순위
 
-1. **SandboxLab 체인 뷰어 브라우저 검증** — 이벤트 클릭 → AI분析 → 분析실 → 체인 트리 실제 동작 확인
+1. **SandboxLab 체인 뷰어 브라우저 최종 검증** — south_china_sea 이벤트 클릭 → AI분析 → 분析실 → D1 체인 트리 14건 표시 확인
 2. 이후 추가 기능 논의
 
 ---

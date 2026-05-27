@@ -1,19 +1,25 @@
 ---
-theory_id: gray_zone_information_warfare
-title: "정보전·인지전 (Information & Cognitive Warfare)"
-sector_tag: gray_zone
-theorists:
-  - Thomas Rid
-  - P.W. Singer
-  - Emerson Brooking
-year: 2018
 asset_type: theory
 era: multipolar
-summary: "디지털 네트워크를 통해 상대방의 인식·판단·의지를 조작하는 비전통 전쟁. 총성 없이 사회 분열, 선거 개입, 전략적 내러티브 장악으로 국가 목표를 달성한다."
+geopol_region: korean_peninsula
+instrument_of_power: informational
+level_of_analysis: non_state
 regions:
-  - korean_peninsula
-  - taiwan_strait
-  - ukraine
+- korean_peninsula
+- taiwan_strait
+- ukraine
+sector_tag: gray_zone
+strategic_posture: revisionist
+summary: 디지털 네트워크를 통해 상대방의 인식·판단·의지를 조작하는 비전통 전쟁. 총성 없이 사회 분열, 선거 개입, 전략적 내러티브 장악으로
+  국가 목표를 달성한다.
+temporal_era: us_china_rivalry
+theorists:
+- Thomas Rid
+- P.W. Singer
+- Emerson Brooking
+theory_id: gray_zone_information_warfare
+title: 정보전·인지전 (Information & Cognitive Warfare)
+year: 2018
 ---
 
 ## 핵심 주장

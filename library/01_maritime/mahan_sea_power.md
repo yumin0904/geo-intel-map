@@ -1,19 +1,24 @@
 ---
-theory_id: maritime_mahan_sea_power
-title: "마한의 해양력 이론 (Sea Power Theory)"
-sector_tag: maritime
-theorists:
-  - Alfred Thayer Mahan
-year: 1890
 asset_type: theory
 era: cold_war
-summary: "해양을 지배하는 국가가 세계 패권을 장악한다. 해군력·상선대·해외기지의 삼위일체가 국가 번영의 핵심이다."
+geopol_region: taiwan_strait
+instrument_of_power: military
+level_of_analysis: systemic
 regions:
-  - taiwan_strait
-  - south_china_sea
-  - malacca
-  - hormuz
-  - indian_ocean
+- taiwan_strait
+- south_china_sea
+- malacca
+- hormuz
+- indian_ocean
+sector_tag: maritime
+strategic_posture: status_quo
+summary: 해양을 지배하는 국가가 세계 패권을 장악한다. 해군력·상선대·해외기지의 삼위일체가 국가 번영의 핵심이다.
+temporal_era: cold_war
+theorists:
+- Alfred Thayer Mahan
+theory_id: maritime_mahan_sea_power
+title: 마한의 해양력 이론 (Sea Power Theory)
+year: 1890
 ---
 
 ## 핵심 주장

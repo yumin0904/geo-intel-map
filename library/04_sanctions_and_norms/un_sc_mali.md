@@ -1,20 +1,26 @@
 ---
-theory_id: sanction_un_sc_mali
-title: "제재: 말리 (UN, EU, US)"
-sector_tag: gray_zone
-theorists: 
-  - UN
-  - EU
-  - US
-year: 2017
 asset_type: norm
 era: multipolar
-summary: 러시아 바그너 그룹의 아프리카 회색지대 작전 교두보. EU CSDP 훈련임무 축출 → 러시아 영향력 대체.
-regions: 
-  - global
+geopol_region: null
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- global
 sanction_type: multilateral_un
+sector_tag: gray_zone
+strategic_posture: status_quo
+summary: 러시아 바그너 그룹의 아프리카 회색지대 작전 교두보. EU CSDP 훈련임무 축출 → 러시아 영향력 대체.
 target_country: ML
+temporal_era: us_china_rivalry
+theorists:
+- UN
+- EU
+- US
+theory_id: sanction_un_sc_mali
+title: '제재: 말리 (UN, EU, US)'
+year: 2017
 ---
+
 ## 개요
 
 러시아 바그너 그룹의 아프리카 회색지대 작전 교두보. EU CSDP 훈련임무 축출 → 러시아 영향력 대체.

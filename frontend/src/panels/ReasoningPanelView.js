@@ -66,8 +66,11 @@ function summarizeStage(key, data) {
       return list.slice(0, 2).map(s => s.issuer || s.name || s.id).join(', ');
     }
     case '7_cascade': {
-      const n = (data.cascade_chain ?? []).length;
-      return n ? `인과 링크 ${n}개` : 'Cascade 연결 없음';
+      const chain = data.cascade_chain ?? [];
+      if (!chain.length) return 'Cascade 연결 없음';
+      const maxDepth = Math.max(...chain.map(c => c.depth ?? 1));
+      const depthBadge = maxDepth >= 3 ? ' 🟠D3' : maxDepth === 2 ? ' 🟡D2' : '';
+      return `인과 링크 ${chain.length}개${depthBadge}`;
     }
     case '8_alliance': {
       const list = data.relevant_alliances ?? [];
@@ -107,9 +110,12 @@ function buildDetailLines(key, data) {
       ).join('\n\n') || null;
 
     case '7_cascade':
-      return (data.cascade_chain ?? []).map(c =>
-        `▸ ${c.source_id?.slice(0, 8)} → ${c.target_id?.slice(0, 8)}\n  상관 ${((c.correlation_score ?? 0) * 100).toFixed(0)}% · ${c.time_delta_hours}h 후`
-      ).join('\n') || null;
+      return (data.cascade_chain ?? []).map(c => {
+        const depth = c.depth ?? 1;
+        const badge = depth >= 3 ? '🟠D3' : depth === 2 ? '🟡D2' : '⬜D1';
+        const score = ((c.correlation_score ?? 0) * 100).toFixed(0);
+        return `${badge} ${c.source_id?.slice(0, 8)} → ${c.target_id?.slice(0, 8)}\n  상관 ${score}% · ${c.time_delta_hours ?? '?'}h 후`;
+      }).join('\n') || null;
 
     default:
       return null;

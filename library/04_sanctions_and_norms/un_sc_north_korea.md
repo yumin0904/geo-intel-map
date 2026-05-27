@@ -1,23 +1,29 @@
 ---
-theory_id: sanction_un_sc_north_korea
-title: "제재: 북한 (UN, US, EU, JP, KR)"
-sector_tag: indo_pacific
-theorists: 
-  - UN
-  - US
-  - EU
-  - JP
-  - KR
-year: 2006
 asset_type: norm
 era: multipolar
-summary: "가장 포괄적인 UN 다자 제재 레짐. 핵·미사일 프로그램 억제 목적. 석탄·수산물 수출 전면 금지, 원유 수입 상한제 포함."
-regions: 
-  - korean_strait
-  - korean_peninsula
+geopol_region: korean_strait
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- korean_strait
+- korean_peninsula
 sanction_type: multilateral_un
+sector_tag: indo_pacific
+strategic_posture: status_quo
+summary: 가장 포괄적인 UN 다자 제재 레짐. 핵·미사일 프로그램 억제 목적. 석탄·수산물 수출 전면 금지, 원유 수입 상한제 포함.
 target_country: KP
+temporal_era: us_china_rivalry
+theorists:
+- UN
+- US
+- EU
+- JP
+- KR
+theory_id: sanction_un_sc_north_korea
+title: '제재: 북한 (UN, US, EU, JP, KR)'
+year: 2006
 ---
+
 ## 개요
 
 가장 포괄적인 UN 다자 제재 레짐. 핵·미사일 프로그램 억제 목적. 석탄·수산물 수출 전면 금지, 원유 수입 상한제 포함.

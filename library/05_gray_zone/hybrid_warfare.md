@@ -1,20 +1,26 @@
 ---
-theory_id: gray_zone_hybrid_warfare
-title: "하이브리드 전쟁 (Hybrid Warfare)"
-sector_tag: gray_zone
-theorists:
-  - Frank Hoffman
-  - Valery Gerasimov
-  - Lawrence Freedman
-year: 2007
 asset_type: theory
 era: multipolar
-summary: "정규전·비정규전·사이버·정보전·경제압박을 동시 결합해 전쟁 선포 없이 전략 목표를 달성하는 복합 전쟁 방식 — 우크라이나·홍해가 현재 진행형 교과서."
+geopol_region: ukraine
+instrument_of_power: military
+level_of_analysis: non_state
 regions:
-  - ukraine
-  - bab_el_mandeb
-  - taiwan_strait
-  - south_china_sea
+- ukraine
+- bab_el_mandeb
+- taiwan_strait
+- south_china_sea
+sector_tag: gray_zone
+strategic_posture: revisionist
+summary: 정규전·비정규전·사이버·정보전·경제압박을 동시 결합해 전쟁 선포 없이 전략 목표를 달성하는 복합 전쟁 방식 — 우크라이나·홍해가 현재
+  진행형 교과서.
+temporal_era: us_china_rivalry
+theorists:
+- Frank Hoffman
+- Valery Gerasimov
+- Lawrence Freedman
+theory_id: gray_zone_hybrid_warfare
+title: 하이브리드 전쟁 (Hybrid Warfare)
+year: 2007
 ---
 
 ## 핵심 주장

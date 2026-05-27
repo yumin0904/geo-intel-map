@@ -7,10 +7,12 @@
  *   좌측 30% — 칩 필터 3행 + 검색 + 이론 카드 목록
  *   우측 70% — 선택된 이론 상세 (marked.js 본문 + AI 스트리밍)
  *
- * 필터 칩 (3행, 행 내 단일 선택, AND 조건):
+ * 필터 칩 (5행, 행 내 단일 선택, AND 조건):
  *   1행 용도:  전체 / 🔍개념 / 📚사례 / 📊데이터 / ⚖️규범
  *   2행 지역:  전체 / 인도-태평양 / 중동 / 유럽 / 아프리카 / 전지구
- *   3행 시대:  전체 / 냉전 / 탈냉전 / 다극화 / 현재
+ *   3행 시대:  전체 / 냉전 / 탈냉전 / 미중경쟁 / 현재
+ *   4행 분석수준: 전체 / 체계 / 국가 / 비국가  (Waltz 3수준, §15)
+ *   5행 권력수단: 전체 / 외교 / 정보 / 군사 / 경제  (DIME 프레임워크, §15)
  *
  * 열기/닫기: EventBus 'library:toggle' 또는 ✕ 버튼
  */
@@ -37,12 +39,29 @@ const REGION_CHIPS = [
   { key: 'global',       label: '전지구' },
 ];
 
+// temporal_era: 7대 축 §15 (cold_war/post_cold/us_china_rivalry/hot)
 const ERA_CHIPS = [
   { key: 'all',               label: '전체' },
-  { key: 'cold_war',         label: '냉전 (1947-91)' },
-  { key: 'unipolar',         label: '탈냉전 (91-08)' },
-  { key: 'multipolar_early', label: '다극화 (08-20)' },
-  { key: 'multipolar_now',   label: '현재 (2020-)' },
+  { key: 'cold_war',          label: '냉전 (1947-91)' },
+  { key: 'post_cold',         label: '탈냉전 (91-17)' },
+  { key: 'us_china_rivalry',  label: '미중경쟁 (17-)' },
+];
+
+// level_of_analysis: Waltz 3수준 이론 (§15)
+const LEVEL_CHIPS = [
+  { key: 'all',           label: '전체' },
+  { key: 'systemic',      label: '체계' },
+  { key: 'state_domestic',label: '국가' },
+  { key: 'non_state',     label: '비국가' },
+];
+
+// instrument_of_power: DIME 프레임워크 (§15)
+const INSTRUMENT_CHIPS = [
+  { key: 'all',           label: '전체' },
+  { key: 'diplomatic',    label: '외교' },
+  { key: 'informational', label: '정보' },
+  { key: 'military',      label: '군사' },
+  { key: 'economic',      label: '경제' },
 ];
 
 // 지역 코드 → 클러스터 매핑
@@ -102,12 +121,25 @@ function _matchesRegion(theory, key) {
 }
 
 function _matchesEra(theory, key) {
-  if (key === 'all')               return true;
-  if (key === 'cold_war')          return theory.era === 'cold_war';
-  if (key === 'unipolar')          return theory.era === 'unipolar';
-  if (key === 'multipolar_early')  return theory.era === 'multipolar' && (!theory.year || theory.year < 2020);
-  if (key === 'multipolar_now')    return theory.era === 'multipolar' && theory.year >= 2020;
-  return true;
+  if (key === 'all') return true;
+  // temporal_era 우선, fallback: 레거시 era 필드 매핑
+  const te = theory.temporal_era;
+  if (te) return te === key;
+  // 레거시 era → temporal_era 근사 매핑 (DB 재인덱싱 전 호환)
+  if (key === 'cold_war')         return theory.era === 'cold_war';
+  if (key === 'post_cold')        return theory.era === 'unipolar';
+  if (key === 'us_china_rivalry') return theory.era === 'multipolar';
+  return false;
+}
+
+function _matchesLevel(theory, key) {
+  if (key === 'all') return true;
+  return theory.level_of_analysis === key;
+}
+
+function _matchesInstrument(theory, key) {
+  if (key === 'all') return true;
+  return theory.instrument_of_power === key;
 }
 
 // ── 뷰 클래스 ────────────────────────────────────────────────────────────────
@@ -149,6 +181,14 @@ export class TheoryLibraryView {
       `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="era" data-value="${key}">${label}</button>`
     ).join('');
 
+    const levelChips = LEVEL_CHIPS.map(({ key, label }) =>
+      `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="level" data-value="${key}">${label}</button>`
+    ).join('');
+
+    const instrumentChips = INSTRUMENT_CHIPS.map(({ key, label }) =>
+      `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="instrument" data-value="${key}">${label}</button>`
+    ).join('');
+
     return `
       <div class="lib__header">
         <span class="lib__header-title">📚 라이브러리</span>
@@ -175,6 +215,14 @@ export class TheoryLibraryView {
             <div class="lib-chip-row" data-row="era">
               <span class="lib-chip-label">시대</span>
               ${eraChips}
+            </div>
+            <div class="lib-chip-row" data-row="level">
+              <span class="lib-chip-label">분석수준</span>
+              ${levelChips}
+            </div>
+            <div class="lib-chip-row" data-row="instrument">
+              <span class="lib-chip-label">권력수단</span>
+              ${instrumentChips}
             </div>
           </div>
 
@@ -295,12 +343,15 @@ export class TheoryLibraryView {
     if (!list) return;
     const {
       theories, loading,
-      useCaseFilter, regionFilter, eraFilter, searchQuery,
+      useCaseFilter, regionFilter, eraFilter, levelFilter, instrumentFilter, searchQuery,
     } = store.getState('library');
 
     if (loading) { list.innerHTML = '<div class="lib-loading">로딩 중…</div>'; return; }
 
-    const filtered = this._filter(theories || [], useCaseFilter, regionFilter, eraFilter, searchQuery);
+    const filtered = this._filter(
+      theories || [], useCaseFilter, regionFilter, eraFilter,
+      levelFilter, instrumentFilter, searchQuery,
+    );
     if (!filtered.length) { list.innerHTML = '<div class="lib-empty">이론이 없습니다.</div>'; return; }
 
     list.innerHTML = filtered.map(t => this._cardHTML(t)).join('');
@@ -313,11 +364,13 @@ export class TheoryLibraryView {
     });
   }
 
-  _filter(theories, useCase, region, era, query) {
+  _filter(theories, useCase, region, era, level, instrument, query) {
     let r = theories;
-    r = r.filter(t => _matchesUseCase(t, useCase || 'all'));
-    r = r.filter(t => _matchesRegion(t, region   || 'all'));
-    r = r.filter(t => _matchesEra(t,   era       || 'all'));
+    r = r.filter(t => _matchesUseCase(t,   useCase    || 'all'));
+    r = r.filter(t => _matchesRegion(t,    region     || 'all'));
+    r = r.filter(t => _matchesEra(t,       era        || 'all'));
+    r = r.filter(t => _matchesLevel(t,     level      || 'all'));
+    r = r.filter(t => _matchesInstrument(t,instrument || 'all'));
     if (query) {
       const q = query.toLowerCase();
       r = r.filter(t =>

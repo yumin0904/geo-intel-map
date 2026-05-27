@@ -1,19 +1,24 @@
 ---
-theory_id: energy_weaponized_interdependence
-title: "상호의존의 무기화 (Weaponized Interdependence)"
-sector_tag: energy
-theorists:
-  - Henry Farrell
-  - Abraham Newman
-year: 2019
 asset_type: theory
 era: multipolar
-summary: "글로벌 네트워크의 비대칭성을 이용해 의존 관계 자체를 강압 수단으로 전환하는 전략 — 에너지·금융·반도체 공급망이 주요 무기가 된다."
+geopol_region: hormuz
+instrument_of_power: economic
+level_of_analysis: systemic
 regions:
-  - hormuz
-  - bab_el_mandeb
-  - taiwan_strait
-  - ukraine
+- hormuz
+- bab_el_mandeb
+- taiwan_strait
+- ukraine
+sector_tag: energy
+strategic_posture: revisionist
+summary: 글로벌 네트워크의 비대칭성을 이용해 의존 관계 자체를 강압 수단으로 전환하는 전략 — 에너지·금융·반도체 공급망이 주요 무기가 된다.
+temporal_era: us_china_rivalry
+theorists:
+- Henry Farrell
+- Abraham Newman
+theory_id: energy_weaponized_interdependence
+title: 상호의존의 무기화 (Weaponized Interdependence)
+year: 2019
 ---
 
 ## 핵심 주장

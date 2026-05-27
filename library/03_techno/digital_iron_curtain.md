@@ -1,19 +1,25 @@
 ---
-theory_id: techno_digital_iron_curtain
-title: "디지털 철의 장막 (Digital Iron Curtain)"
-sector_tag: techno
-theorists:
-  - Alec Ross
-  - Rebecca MacKinnon
-  - Evgeny Morozov
-year: 2011
 asset_type: theory
 era: multipolar
-summary: "인터넷 공간이 자유주의 진영과 권위주의 진영으로 분열되는 현상 — 중국의 만리방화벽, 러시아의 루넷이 '디지털 베스트팔렌' 질서를 형성한다."
+geopol_region: taiwan_strait
+instrument_of_power: informational
+level_of_analysis: state_domestic
 regions:
-  - taiwan_strait
-  - south_china_sea
-  - east_china_sea
+- taiwan_strait
+- south_china_sea
+- east_china_sea
+sector_tag: techno
+strategic_posture: revisionist
+summary: 인터넷 공간이 자유주의 진영과 권위주의 진영으로 분열되는 현상 — 중국의 만리방화벽, 러시아의 루넷이 '디지털 베스트팔렌' 질서를
+  형성한다.
+temporal_era: us_china_rivalry
+theorists:
+- Alec Ross
+- Rebecca MacKinnon
+- Evgeny Morozov
+theory_id: techno_digital_iron_curtain
+title: 디지털 철의 장막 (Digital Iron Curtain)
+year: 2011
 ---
 
 ## 핵심 주장

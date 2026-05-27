@@ -21,8 +21,8 @@ from connectors.gdelt_connector import (
     _actor_ko,
     _generate_description,
 )
-from connectors.news_cross_validator import cross_validate
 from models.event import Event
+from services.verification_funnel import enrich_with_funnel
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +42,11 @@ async def run_gdelt_pipeline() -> list[Event]:
 
     logger.info("[Pipeline] Stage 1 완료: %d개 이벤트", len(stage1))
 
-    # Stage 2: RSS 교차검증 (네트워크 실패 시 stage1 결과 그대로 반환)
-    stage2 = await cross_validate(stage1)
+    # Stages 2-3: Verification Funnel (ACLED 베이스라인 + RSS 교차검증 + 물리 센서)
+    # confidence_score 최종 확정 + is_staging 플래그 설정
+    stage2 = await enrich_with_funnel(stage1)
 
-    # Stage 3: confidence 변경된 이벤트의 description 재생성
-    # cross_validate가 confidence 0.5→0.8로 올린 경우 "미검증" → "교차검증 완료" 반영
+    # description 재생성: confidence 상향된 이벤트에 "교차검증 완료" 반영
     stage3: list[Event] = []
     for evt in stage2:
         if evt.confidence_score >= 0.8:
@@ -65,24 +65,26 @@ async def run_gdelt_pipeline() -> list[Event]:
         else:
             stage3.append(evt)
 
-    confirmed  = sum(1 for e in stage3 if e.confidence_score >= 0.8)
-    unverified = len(stage3) - confirmed
+    promoted   = sum(1 for e in stage3 if not e.is_staging)
+    staging    = len(stage3) - promoted
     logger.info(
-        "[Pipeline] 완료 — 교차검증=%d, 미검증=%d, 합계=%d",
-        confirmed, unverified, len(stage3),
+        "[Pipeline] 완료 — 승격=%d, 버퍼=%d, 합계=%d",
+        promoted, staging, len(stage3),
     )
     return stage3
 
 
 def to_geojson(events: list[Event]) -> dict:
-    """
-    Event 목록 → GeoJSON FeatureCollection.
+    """Event 목록 → GeoJSON FeatureCollection.
 
-    confidence_score < 0.8인 Feature에는 'unverified': True 프로퍼티 추가
+    is_staging=True인 이벤트는 제외 (대시보드 노출 차단, CLAUDE.md §16).
+    confidence_score < 0.8인 Feature에는 unverified=True 프로퍼티 추가
     (프론트엔드 ⚠️ 뱃지·점선 테두리 렌더링용).
     """
     features = []
     for evt in events:
+        if evt.is_staging:
+            continue  # 검증 미달 자산은 대시보드에 노출하지 않음
         lat, lon = evt.location
         feature = {
             "type": "Feature",

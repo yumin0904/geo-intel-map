@@ -29,6 +29,7 @@ import httpx
 
 from models.event import Event
 from services.region import region_for_point
+from utils.cameo_mapper import map_gdelt_to_intelligence_tags
 
 logger = logging.getLogger(__name__)
 
@@ -73,22 +74,23 @@ _SECTOR_FIPS: frozenset[str] = frozenset({
 
 # ── GDELT 2.0 export CSV 컬럼 인덱스 (0-based, 탭 구분) ────────────────────
 _COL = {
-    "event_id":        0,
-    "sqldate":         1,
-    "actor1":          6,
-    "actor2":         16,
-    "event_code":     26,
-    "event_root_code": 28,   # 2자리 CAMEO 루트코드 (EventCode 앞 2자리와 다름에 주의)
-    "quad_class":     29,
-    "goldstein":      30,
-    "mentions":       31,
-    "sources":        32,
-    "avg_tone":       34,
-    "geo_name":       52,
-    "geo_country":    53,
-    "lat":            56,
-    "lon":            57,
-    "url":            60,
+    "event_id":           0,
+    "sqldate":            1,
+    "actor1":             6,
+    "actor1_type1_code": 14,  # Actor1Type1Code — cameo_mapper level_of_analysis 입력값
+    "actor2":            16,
+    "event_code":        26,
+    "event_root_code":   28,  # 2자리 CAMEO 루트코드 (EventCode 앞 2자리와 다름에 주의)
+    "quad_class":        29,
+    "goldstein":         30,
+    "mentions":          31,
+    "sources":           32,
+    "avg_tone":          34,
+    "geo_name":          52,
+    "geo_country":       53,
+    "lat":               56,
+    "lon":               57,
+    "url":               60,
 }
 
 # 허용 EventRootCode: 18=Assault, 19=Fight 계열만 실제 물리적 분쟁
@@ -407,12 +409,13 @@ def _to_event(
     if lat == 0.0 and lon == 0.0:
         return None
 
-    actor1   = row[_COL["actor1"]].strip() or "Unknown"
-    actor2   = row[_COL["actor2"]].strip() or "Unknown"
-    geo_name = row[_COL["geo_name"]].strip() or row[_COL["geo_country"]].strip()
-    event_code = row[_COL["event_code"]].strip()
-    url      = row[_COL["url"]].strip()
-    sqldate  = row[_COL["sqldate"]].strip()
+    actor1            = row[_COL["actor1"]].strip() or "Unknown"
+    actor2            = row[_COL["actor2"]].strip() or "Unknown"
+    actor1_type_code  = row[_COL["actor1_type1_code"]].strip() if len(row) > _COL["actor1_type1_code"] else ""
+    geo_name          = row[_COL["geo_name"]].strip() or row[_COL["geo_country"]].strip()
+    event_code        = row[_COL["event_code"]].strip()
+    url               = row[_COL["url"]].strip()
+    sqldate           = row[_COL["sqldate"]].strip()
 
     # 오피니언·분석 기사 URL 거부 — Stage 2에서 키워드 히트로 오상향되는 오분류 방지
     if _is_opinion_url(url):
@@ -449,6 +452,15 @@ def _to_event(
         confidence_score=confidence,
     )
 
+    # CAMEO → 7대 축 태그 결정론적 매핑 (LLM 호출 없음, §14 Token-Zero Rule)
+    intel_meta = map_gdelt_to_intelligence_tags(
+        actor1_type_code=actor1_type_code,
+        event_root_code=root_code,
+        goldstein_scale=goldstein,
+        region_code=region_code,
+        timestamp=ts,
+    )
+
     return Event(
         id=str(uuid.uuid4()),
         timestamp=ts,
@@ -474,6 +486,7 @@ def _to_event(
         },
         theory_tags=theory_tags,
         confidence_score=confidence,
+        intelligence_meta=intel_meta,
     )
 
 

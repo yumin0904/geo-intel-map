@@ -1,20 +1,26 @@
 ---
-theory_id: indo_pacific_a2ad
-title: "A2/AD 전략 (반접근·지역거부)"
-sector_tag: indo_pacific
-theorists:
-  - Andrew Krepinevich
-  - Jan van Tol
-  - Aaron Friedberg
-year: 2010
 asset_type: theory
 era: multipolar
-summary: "강대국의 군사력 투사를 거부하기 위해 미사일·잠수함·전자전 등 비대칭 전력으로 작전 접근 자체를 차단하는 전략. 중국의 제1열도선 방어 논리의 핵심."
+geopol_region: taiwan_strait
+instrument_of_power: military
+level_of_analysis: state_domestic
 regions:
-  - taiwan_strait
-  - south_china_sea
-  - east_china_sea
-  - korean_peninsula
+- taiwan_strait
+- south_china_sea
+- east_china_sea
+- korean_peninsula
+sector_tag: indo_pacific
+strategic_posture: revisionist
+summary: 강대국의 군사력 투사를 거부하기 위해 미사일·잠수함·전자전 등 비대칭 전력으로 작전 접근 자체를 차단하는 전략. 중국의 제1열도선
+  방어 논리의 핵심.
+temporal_era: us_china_rivalry
+theorists:
+- Andrew Krepinevich
+- Jan van Tol
+- Aaron Friedberg
+theory_id: indo_pacific_a2ad
+title: A2/AD 전략 (반접근·지역거부)
+year: 2010
 ---
 
 ## 핵심 주장

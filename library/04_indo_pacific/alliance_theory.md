@@ -1,20 +1,25 @@
 ---
-theory_id: indo_pacific_alliance_theory
-title: "동맹 이론 (Alliance Theory)"
-sector_tag: indo_pacific
-theorists:
-  - Stephen Walt
-  - Glenn Snyder
-  - Thomas Christensen
-year: 1987
 asset_type: theory
 era: cold_war
-summary: "국가들은 위협에 맞서 동맹을 형성하며, 동맹 내부에서는 연루(entrapment)와 방기(abandonment)의 딜레마가 항상 존재한다."
+geopol_region: taiwan_strait
+instrument_of_power: diplomatic
+level_of_analysis: systemic
 regions:
-  - taiwan_strait
-  - south_china_sea
-  - korean_peninsula
-  - east_china_sea
+- taiwan_strait
+- south_china_sea
+- korean_peninsula
+- east_china_sea
+sector_tag: indo_pacific
+strategic_posture: status_quo
+summary: 국가들은 위협에 맞서 동맹을 형성하며, 동맹 내부에서는 연루(entrapment)와 방기(abandonment)의 딜레마가 항상 존재한다.
+temporal_era: cold_war
+theorists:
+- Stephen Walt
+- Glenn Snyder
+- Thomas Christensen
+theory_id: indo_pacific_alliance_theory
+title: 동맹 이론 (Alliance Theory)
+year: 1987
 ---
 
 ## 핵심 주장

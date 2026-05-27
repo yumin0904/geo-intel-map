@@ -60,6 +60,7 @@ def stage1_event_facts(event: dict) -> dict:
         "timestamp": props.get("timestamp", ""),
         "location": event.get("geometry", {}).get("coordinates", []),
         "source_type": props.get("source_type", ""),
+        "region_code": props.get("region_code", ""),
         "severity": props.get("severity", 0),
         "importance_score": props.get("importance_score", 0.0),
         "confidence_score": props.get("confidence_score", 1.0),
@@ -347,6 +348,7 @@ def stage7_temporal_cascade(event_id: str, cascade_links: list[dict]) -> dict:
             "link_type": lk.get("link_type"),
             "correlation_score": lk.get("correlation_score"),
             "time_delta_hours": round(lk.get("time_delta_seconds", 0) / 3600, 1),
+            "depth": lk.get("depth", 1),
         })
 
     return {

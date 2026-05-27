@@ -1,20 +1,26 @@
 ---
-theory_id: sanction_un_sc_libya
-title: "제재: 리비아 (UN, EU, US)"
-sector_tag: maritime
-theorists: 
-  - UN
-  - EU
-  - US
-year: 2011
 asset_type: norm
 era: multipolar
-summary: "UN SC 무기 금수 (결의 1970). 다수 세력이 연루된 석유 밀수로 실효성 논란. 지중해 이민 위기와 연계."
-regions: 
-  - global
+geopol_region: null
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- global
 sanction_type: multilateral_un
+sector_tag: maritime
+strategic_posture: status_quo
+summary: UN SC 무기 금수 (결의 1970). 다수 세력이 연루된 석유 밀수로 실효성 논란. 지중해 이민 위기와 연계.
 target_country: LY
+temporal_era: us_china_rivalry
+theorists:
+- UN
+- EU
+- US
+theory_id: sanction_un_sc_libya
+title: '제재: 리비아 (UN, EU, US)'
+year: 2011
 ---
+
 ## 개요
 
 UN SC 무기 금수 (결의 1970). 다수 세력이 연루된 석유 밀수로 실효성 논란. 지중해 이민 위기와 연계.

@@ -1,20 +1,26 @@
 ---
-theory_id: sanction_un_sc_sudan
-title: "제재: 수단 (UN, US, EU)"
-sector_tag: gray_zone
-theorists: 
-  - UN
-  - US
-  - EU
-year: 2004
 asset_type: norm
 era: multipolar
-summary: 다르푸르 이후 부분 해제·재부과 반복. 2023년 내전 이후 EU 추가 제재.
-regions: 
-  - global
+geopol_region: null
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- global
 sanction_type: multilateral_un
+sector_tag: gray_zone
+strategic_posture: status_quo
+summary: 다르푸르 이후 부분 해제·재부과 반복. 2023년 내전 이후 EU 추가 제재.
 target_country: SD
+temporal_era: us_china_rivalry
+theorists:
+- UN
+- US
+- EU
+theory_id: sanction_un_sc_sudan
+title: '제재: 수단 (UN, US, EU)'
+year: 2004
 ---
+
 ## 개요
 
 다르푸르 이후 부분 해제·재부과 반복. 2023년 내전 이후 EU 추가 제재.

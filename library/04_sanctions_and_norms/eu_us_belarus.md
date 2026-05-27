@@ -1,21 +1,27 @@
 ---
-theory_id: sanction_eu_us_belarus
-title: "제재: 벨라루스 (EU, US, UK, CA)"
-sector_tag: gray_zone
-theorists: 
-  - EU
-  - US
-  - UK
-  - CA
-year: 2020
 asset_type: norm
 era: multipolar
-summary: "하이브리드전의 전형. 난민 흐름을 무기화해 EU 국경 압박. 염화칼륨(비료) 제재가 핵심."
-regions: 
-  - global
+geopol_region: null
+instrument_of_power: economic
+level_of_analysis: state_domestic
+regions:
+- global
 sanction_type: multilateral_western
+sector_tag: gray_zone
+strategic_posture: status_quo
+summary: 하이브리드전의 전형. 난민 흐름을 무기화해 EU 국경 압박. 염화칼륨(비료) 제재가 핵심.
 target_country: BY
+temporal_era: us_china_rivalry
+theorists:
+- EU
+- US
+- UK
+- CA
+theory_id: sanction_eu_us_belarus
+title: '제재: 벨라루스 (EU, US, UK, CA)'
+year: 2020
 ---
+
 ## 개요
 
 하이브리드전의 전형. 난민 흐름을 무기화해 EU 국경 압박. 염화칼륨(비료) 제재가 핵심.

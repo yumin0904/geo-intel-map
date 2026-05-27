@@ -1,20 +1,26 @@
 ---
-theory_id: sanction_us_eu_venezuela
-title: "제재: 베네수엘라 (US, EU, CA)"
-sector_tag: energy
-theorists: 
-  - US
-  - EU
-  - CA
-year: 2015
 asset_type: norm
 era: multipolar
-summary: "원유 수출 제한으로 PDVSA(국영석유) 수익 봉쇄. 자원 무기화 역효과 — 중국·러시아 우회 수출 증가."
-regions: 
-  - global
+geopol_region: null
+instrument_of_power: economic
+level_of_analysis: state_domestic
+regions:
+- global
 sanction_type: multilateral_western
+sector_tag: energy
+strategic_posture: status_quo
+summary: 원유 수출 제한으로 PDVSA(국영석유) 수익 봉쇄. 자원 무기화 역효과 — 중국·러시아 우회 수출 증가.
 target_country: VE
+temporal_era: us_china_rivalry
+theorists:
+- US
+- EU
+- CA
+theory_id: sanction_us_eu_venezuela
+title: '제재: 베네수엘라 (US, EU, CA)'
+year: 2015
 ---
+
 ## 개요
 
 원유 수출 제한으로 PDVSA(국영석유) 수익 봉쇄. 자원 무기화 역효과 — 중국·러시아 우회 수출 증가.

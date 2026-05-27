@@ -1,21 +1,28 @@
 ---
-theory_id: sanction_un_sc_houthis_yemen
-title: "제재: 후티 (예멘) (US, UK, UN)"
-sector_tag: maritime
-theorists: 
-  - US
-  - UK
-  - UN
-year: 2024
 asset_type: norm
 era: multipolar
-summary: "미국, 후티를 특별지정글로벌테러리스트(SDGT) 재지정. 홍해 운임 급등·글로벌 공급망 교란. Cascade 룰 bab_el_mandeb_tension_to_oil 이론 근거."
-regions: 
-  - bab_el_mandeb
-  - suez
+geopol_region: bab_el_mandeb
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- bab_el_mandeb
+- suez
 sanction_type: multilateral_un
+sector_tag: maritime
+strategic_posture: status_quo
+summary: 미국, 후티를 특별지정글로벌테러리스트(SDGT) 재지정. 홍해 운임 급등·글로벌 공급망 교란. Cascade 룰 bab_el_mandeb_tension_to_oil
+  이론 근거.
 target_country: YE
+temporal_era: us_china_rivalry
+theorists:
+- US
+- UK
+- UN
+theory_id: sanction_un_sc_houthis_yemen
+title: '제재: 후티 (예멘) (US, UK, UN)'
+year: 2024
 ---
+
 ## 개요
 
 미국, 후티를 특별지정글로벌테러리스트(SDGT) 재지정. 홍해 운임 급등·글로벌 공급망 교란. Cascade 룰 bab_el_mandeb_tension_to_oil 이론 근거.

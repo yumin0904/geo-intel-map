@@ -1,9 +1,10 @@
 """
 stats.py — 상단 2단 바 집계 통계 API.
 
-GET /api/stats/tension    — 섹터별 평균 긴장도 (5분 캐시)
-GET /api/stats/pizza-index — BigMac 지수 기반 구매력 피자지수 (1시간 캐시)
+GET /api/stats/tension    — 섹터별 긴장도 (ACLED 30일 × 0.7 + GDELT 24h × 0.3)
 GET /api/stats/markets    — WTI·금·반도체·원달러 시장 지표 (5분 캐시)
+
+피자지수는 프론트엔드(TopBarView.js)에서 tension 응답의 pizza_weight로 계산한다.
 """
 from __future__ import annotations
 
@@ -19,28 +20,29 @@ router = APIRouter(prefix="/api/stats", tags=["stats"])
 logger = logging.getLogger(__name__)
 
 # ── 캐시 ──────────────────────────────────────────────────────────────────────
-_tension_cache: dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
-_pizza_cache:   dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
-_market_cache:  dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
+# ACLED 30일 평균: 자주 안 바뀜 → 1시간 캐시
+# GDELT 실시간: 5분마다 새 데이터 → 5분 캐시
+# 최종 혼합 결과: 5분 캐시
+_acled_tension_cache: dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
+_gdelt_tension_cache: dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
+_tension_cache:       dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
+_market_cache:        dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
 
+_ACLED_TTL  = timedelta(hours=1)
+_GDELT_TTL  = timedelta(minutes=5)
 _TENSION_TTL = timedelta(minutes=5)
-_PIZZA_TTL   = timedelta(hours=1)
 _MARKET_TTL  = timedelta(minutes=5)
 
-# ── 섹터-국가 매핑 ────────────────────────────────────────────────────────────
-# CLAUDE.md 5대 섹터 기준, region_code 우선 → country 폴백 순으로 판단한다.
-
+# ── 섹터-지역 매핑 ────────────────────────────────────────────────────────────
 _REGION_SECTOR: dict[str, str] = {
-    # 섹터 2: 에너지 지정학 (호르무즈·바브엘만데브·수에즈) + 섹터 1 일부
-    "hormuz":         "중동",
-    "bab_el_mandeb":  "중동",
-    "suez":           "중동",
-    # 섹터 4: 인도-태평양 군사 대치
-    "taiwan_strait":  "인태",
+    "bab_el_mandeb":   "중동",
+    "hormuz":          "중동",
+    "middle_east":     "중동",
+    "suez":            "중동",
+    "taiwan_strait":   "인태",
     "south_china_sea": "인태",
-    "malacca":        "인태",
-    # 섹터 5: 회색지대 (우크라이나 전쟁)
-    "ukraine":        "유럽",
+    "malacca":         "인태",
+    "ukraine":         "유럽",
 }
 
 _COUNTRY_SECTOR: dict[str, str] = {
@@ -68,6 +70,14 @@ _COUNTRY_SECTOR: dict[str, str] = {
 
 _SECTORS = ["중동", "인태", "유럽", "아프리카"]
 
+# 피자지수 가중치 — 지정학적 중요도 반영 (중동·인태 비중 높게)
+_PIZZA_WEIGHTS: dict[str, float] = {
+    "중동":    0.4,
+    "인태":    0.3,
+    "유럽":    0.2,
+    "아프리카": 0.1,
+}
+
 
 def _feature_to_sector(props: dict) -> str | None:
     """GeoJSON feature props → 섹터명. region_code 우선, country 폴백."""
@@ -84,101 +94,129 @@ def _feature_to_sector(props: dict) -> str | None:
     return None
 
 
+def _parse_ts(ts_str: str) -> datetime | None:
+    """ISO 타임스탬프 문자열 → UTC datetime. 실패 시 None."""
+    try:
+        ts = datetime.fromisoformat(ts_str)
+        return ts if ts.tzinfo else ts.replace(tzinfo=timezone.utc)
+    except Exception:
+        return None
+
+
 def _severity_level(avg: float) -> str:
     """평균 severity → 색상 레벨 문자열."""
-    if avg >= 80:
-        return "critical"
-    if avg >= 60:
-        return "high"
-    if avg >= 40:
-        return "medium"
+    if avg >= 80: return "critical"
+    if avg >= 60: return "high"
+    if avg >= 40: return "medium"
     return "low"
+
+
+def _calc_acled_tensions(now: datetime) -> dict[str, list[float]]:
+    """_conflict_cache에서 최근 30일 ACLED 이벤트 severity 수집."""
+    from api.layers import _conflict_cache
+
+    cutoff = now - timedelta(days=30)
+    sevs: dict[str, list[float]] = {s: [] for s in _SECTORS}
+
+    if _conflict_cache.get("geojson") is None:
+        return sevs
+
+    for feat in _conflict_cache["geojson"].get("features", []):
+        props = feat.get("properties", {})
+        ts = _parse_ts(props.get("timestamp") or props.get("event_date") or "")
+        if ts and ts < cutoff:
+            continue
+        sector = _feature_to_sector(props)
+        if sector:
+            sevs[sector].append(float(props.get("severity", 0)))
+
+    return sevs
+
+
+def _calc_gdelt_tensions(now: datetime) -> dict[str, list[float]]:
+    """_gdelt_cache에서 최근 24시간 + confidence≥0.8 이벤트 severity 수집."""
+    from api.layers import _gdelt_cache
+
+    cutoff = now - timedelta(hours=24)
+    sevs: dict[str, list[float]] = {s: [] for s in _SECTORS}
+
+    if _gdelt_cache.get("geojson") is None:
+        return sevs
+
+    for feat in _gdelt_cache["geojson"].get("features", []):
+        props = feat.get("properties", {})
+        if float(props.get("confidence_score", 0)) < 0.8:
+            continue
+        ts = _parse_ts(props.get("timestamp") or "")
+        if ts and ts < cutoff:
+            continue
+        sector = _feature_to_sector(props)
+        if sector:
+            sevs[sector].append(float(props.get("severity", 0)))
+
+    return sevs
 
 
 @router.get("/tension")
 async def get_tension():
-    """섹터별 평균 긴장도.
+    """섹터별 긴장도 (ACLED 30일 베이스라인 × 0.7 + GDELT 24h 실시간 × 0.3).
 
-    캐시된 conflict GeoJSON에서 집계. 캐시가 비어있으면 0을 반환하고,
-    다음 호출에서 자동으로 채워진다 (conflict 레이어 defaultVisible=true).
+    응답에 pizza_weight 포함 → 프론트엔드가 가중 평균으로 피자지수 산출.
     """
     now = datetime.now(timezone.utc)
     if _tension_cache["data"] is not None and now < _tension_cache["expires_at"]:
         return _tension_cache["data"]
 
-    # layers 모듈 캐시에서 직접 읽기 (순환 import 방지를 위한 지연 import)
-    from api.layers import _conflict_cache, _gdelt_cache
+    # ACLED 서브캐시 (1시간)
+    if _acled_tension_cache["data"] is None or now >= _acled_tension_cache["expires_at"]:
+        _acled_tension_cache["data"] = _calc_acled_tensions(now)
+        _acled_tension_cache["expires_at"] = now + _ACLED_TTL
+        logger.debug("[tension] ACLED 서브캐시 갱신")
 
-    sector_severities: dict[str, list[float]] = {s: [] for s in _SECTORS}
+    # GDELT 서브캐시 (5분)
+    if _gdelt_tension_cache["data"] is None or now >= _gdelt_tension_cache["expires_at"]:
+        _gdelt_tension_cache["data"] = _calc_gdelt_tensions(now)
+        _gdelt_tension_cache["expires_at"] = now + _GDELT_TTL
+        logger.debug("[tension] GDELT 서브캐시 갱신")
 
-    for cache in (_conflict_cache, _gdelt_cache):
-        if cache.get("geojson") is None:
-            continue
-        for feat in cache["geojson"].get("features", []):
-            props = feat.get("properties", {})
-            severity = float(props.get("severity", 0))
-            sector = _feature_to_sector(props)
-            if sector and sector in sector_severities:
-                sector_severities[sector].append(severity)
+    acled_sevs = _acled_tension_cache["data"]
+    gdelt_sevs = _gdelt_tension_cache["data"]
 
     result = []
     for sector in _SECTORS:
-        severities = sector_severities[sector]
-        avg = sum(severities) / len(severities) if severities else 0.0
+        al = acled_sevs.get(sector, [])
+        gl = gdelt_sevs.get(sector, [])
+        acled_avg = sum(al) / len(al) if al else 0.0
+        gdelt_avg = sum(gl) / len(gl) if gl else 0.0
+
+        # 두 소스가 모두 있으면 혼합, 하나만 있으면 그 값 사용
+        if al and gl:
+            blended = acled_avg * 0.7 + gdelt_avg * 0.3
+        elif al:
+            blended = acled_avg
+        elif gl:
+            blended = gdelt_avg
+        else:
+            blended = 0.0
+
         result.append({
             "sector":       sector,
-            "avg_severity": round(avg, 1),
-            "event_count":  len(severities),
-            "level":        _severity_level(avg),
+            "avg_severity": round(blended, 1),
+            "event_count":  len(al) + len(gl),
+            "level":        _severity_level(blended),
+            "pizza_weight": _PIZZA_WEIGHTS[sector],
+            # 디버그 breakdown
+            "acled_avg":    round(acled_avg, 1),
+            "gdelt_avg":    round(gdelt_avg, 1),
+            "acled_count":  len(al),
+            "gdelt_count":  len(gl),
         })
+        logger.debug("[tension] %s: ACLED %.1f(%d) × 0.7 + GDELT %.1f(%d) × 0.3 = %.1f",
+                     sector, acled_avg, len(al), gdelt_avg, len(gl), blended)
 
     _tension_cache["data"] = result
     _tension_cache["expires_at"] = now + _TENSION_TTL
     return result
-
-
-# ── 피자지수 ──────────────────────────────────────────────────────────────────
-# 한국 빅맥 가격(고정) + 실시간 환율로 구매력 지수를 계산한다.
-# 100 = 미국과 동등, < 100 = 한국 원화 저평가(달러 대비 저렴)
-_BIGMAC_KRW = 6_300   # 한국 빅맥 가격 추정치 (2024 기준, 원)
-_BIGMAC_USD = 5.58    # 미국 빅맥 가격 (USD, 2024 기준)
-
-
-def _fetch_pizza_sync() -> dict:
-    """KRW=X 환율 기반 피자지수 동기 계산."""
-    try:
-        fi = yf.Ticker("KRW=X").fast_info
-        krw_per_usd = float(fi.last_price)
-    except Exception as e:
-        logger.warning("[pizza] KRW=X 조회 실패: %s", e)
-        # 폴백: 1380 고정값 (대략적 2024 환율)
-        krw_per_usd = 1380.0
-
-    bigmac_usd_korea = _BIGMAC_KRW / krw_per_usd
-    pizza_index = (bigmac_usd_korea / _BIGMAC_USD) * 100
-
-    return {
-        "index":       round(pizza_index, 1),
-        "krw_per_usd": round(krw_per_usd, 2),
-        "label":       f"🍕 {pizza_index:.1f}",
-    }
-
-
-@router.get("/pizza-index")
-async def get_pizza_index():
-    """BigMac 지수 기반 한국 구매력 피자지수.
-
-    100 = 미국과 동등한 구매력, < 100 = 원화 저평가 (달러 기준 한국이 저렴).
-    환율은 yfinance KRW=X 실시간 데이터 사용.
-    """
-    now = datetime.now(timezone.utc)
-    if _pizza_cache["data"] is not None and now < _pizza_cache["expires_at"]:
-        return _pizza_cache["data"]
-
-    data = await asyncio.to_thread(_fetch_pizza_sync)
-    _pizza_cache["data"] = data
-    _pizza_cache["expires_at"] = now + _PIZZA_TTL
-    return data
 
 
 # ── 시장 지표 ────────────────────────────────────────────────────────────────

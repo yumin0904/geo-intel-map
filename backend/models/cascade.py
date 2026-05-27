@@ -16,8 +16,8 @@ from pydantic import BaseModel, Field
 
 class RuleTrigger(BaseModel):
     """룰의 발동 조건 — 어떤 이벤트가 들어오면 cascade를 검사할지."""
-    source_type: str          # "conflict" | "naval_activity" | "chain_signal" | ...
-    region: str               # regions.yaml의 region_code (예: "hormuz")
+    source_type: str          # "conflict" | "naval_activity" | "chain_signal" | "market" | ...
+    region: str = ""          # regions.yaml의 region_code. chain_input 전용 룰은 빈 문자열 허용
     severity_min: int = 0     # 이 값 이상일 때만 트리거로 인정
     # Phase 3 체이닝: 이전 단계의 chain_output 값을 이 룰의 입력으로 받을 때 지정
     chain_input: Optional[str] = None

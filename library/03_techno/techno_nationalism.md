@@ -1,19 +1,24 @@
 ---
-theory_id: techno_techno_nationalism
-title: "기술 민족주의 (Techno-Nationalism)"
-sector_tag: techno
-theorists:
-  - Koji Watanabe
-  - Sylvia Ostry
-  - Richard Nelson
-year: 1995
 asset_type: theory
 era: unipolar
-summary: "기술 혁신 역량을 국가 경쟁력·안보의 핵심으로 보고, 핵심 기술의 자국 내 통제를 추구하는 전략적 기술 국유화 경향."
+geopol_region: taiwan_strait
+instrument_of_power: informational
+level_of_analysis: state_domestic
 regions:
-  - taiwan_strait
-  - south_china_sea
-  - east_china_sea
+- taiwan_strait
+- south_china_sea
+- east_china_sea
+sector_tag: techno
+strategic_posture: revisionist
+summary: 기술 혁신 역량을 국가 경쟁력·안보의 핵심으로 보고, 핵심 기술의 자국 내 통제를 추구하는 전략적 기술 국유화 경향.
+temporal_era: post_cold
+theorists:
+- Koji Watanabe
+- Sylvia Ostry
+- Richard Nelson
+theory_id: techno_techno_nationalism
+title: 기술 민족주의 (Techno-Nationalism)
+year: 1995
 ---
 
 ## 핵심 주장

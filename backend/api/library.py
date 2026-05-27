@@ -68,22 +68,32 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
         "year":        None,
         "summary":     "",
         "file_path":   None,
-        "asset_type":  "theory",
-        "use_case":    "concept",
-        "era":         None,
+        "asset_type":          "theory",
+        "use_case":            "concept",
+        "era":                 None,
+        "geopol_region":       None,
+        "temporal_era":        None,
+        "level_of_analysis":   None,
+        "instrument_of_power": None,
+        "strategic_posture":   None,
     }
     if include_body:
         out["body"] = ""
 
     if db_row:
         out.update({
-            "theorists":  _parse_json_field(db_row.get("theorists")),
-            "year":       db_row.get("year"),
-            "summary":    db_row.get("summary") or "",
-            "file_path":  db_row.get("file_path"),
-            "asset_type": db_row.get("asset_type") or "theory",
-            "use_case":   db_row.get("use_case") or "concept",
-            "era":        db_row.get("era"),
+            "theorists":           _parse_json_field(db_row.get("theorists")),
+            "year":                db_row.get("year"),
+            "summary":             db_row.get("summary") or "",
+            "file_path":           db_row.get("file_path"),
+            "asset_type":          db_row.get("asset_type") or "theory",
+            "use_case":            db_row.get("use_case") or "concept",
+            "era":                 db_row.get("era"),
+            "geopol_region":       db_row.get("geopol_region"),
+            "temporal_era":        db_row.get("temporal_era"),
+            "level_of_analysis":   db_row.get("level_of_analysis"),
+            "instrument_of_power": db_row.get("instrument_of_power"),
+            "strategic_posture":   db_row.get("strategic_posture"),
         })
         if include_body:
             out["body"] = db_row.get("body") or ""
@@ -103,9 +113,14 @@ def _merge_db_only(db_row: dict, include_body: bool = False) -> dict:
         "year":            db_row.get("year"),
         "summary":         db_row.get("summary") or "",
         "file_path":       db_row.get("file_path"),
-        "asset_type":      db_row.get("asset_type") or "norm",
-        "use_case":        db_row.get("use_case") or "norm",
-        "era":             db_row.get("era"),
+        "asset_type":          db_row.get("asset_type") or "norm",
+        "use_case":            db_row.get("use_case") or "norm",
+        "era":                 db_row.get("era"),
+        "geopol_region":       db_row.get("geopol_region"),
+        "temporal_era":        db_row.get("temporal_era"),
+        "level_of_analysis":   db_row.get("level_of_analysis"),
+        "instrument_of_power": db_row.get("instrument_of_power"),
+        "strategic_posture":   db_row.get("strategic_posture"),
     }
     if include_body:
         out["body"] = db_row.get("body") or ""
@@ -116,14 +131,20 @@ def _merge_db_only(db_row: dict, include_body: bool = False) -> dict:
 
 @router.get("/items")
 async def list_items(
-    sector:     Optional[str] = Query(None),
-    asset_type: Optional[str] = Query(None),
-    use_case:   Optional[str] = Query(None),
-    era:        Optional[str] = Query(None),
-    region:     Optional[str] = Query(None),
+    sector:              Optional[str] = Query(None),
+    asset_type:          Optional[str] = Query(None),
+    use_case:            Optional[str] = Query(None),
+    era:                 Optional[str] = Query(None),
+    region:              Optional[str] = Query(None),
+    temporal_era:        Optional[str] = Query(None),
+    level_of_analysis:   Optional[str] = Query(None),
+    instrument_of_power: Optional[str] = Query(None),
+    strategic_posture:   Optional[str] = Query(None),
 ):
-    """
-    통합 라이브러리 목록. 5축 필터(sector·asset_type·use_case·era·region) 지원.
+    """통합 라이브러리 목록. 8축 필터 지원.
+
+    기존 5축: sector·asset_type·use_case·era·region
+    신규 3축 (7대 축 §15): temporal_era·level_of_analysis·instrument_of_power·strategic_posture
 
     body 제외 (목록 뷰 성능).
     theory_library.yaml 등록 항목 + SQLite-only 항목(norm 등) 모두 포함.
@@ -141,6 +162,7 @@ async def list_items(
         if db_row["theory_id"] not in linked_ids:
             results.append(_merge_db_only(db_row))
 
+    # ── 기존 5축 필터 ────────────────────────────────────────────────
     if asset_type:
         results = [r for r in results if r["asset_type"] == asset_type]
     if use_case:
@@ -149,6 +171,16 @@ async def list_items(
         results = [r for r in results if r["era"] == era]
     if region:
         results = [r for r in results if region in (r.get("related_regions") or [])]
+
+    # ── 신규 7대 축 필터 (§15) ───────────────────────────────────────
+    if temporal_era:
+        results = [r for r in results if r.get("temporal_era") == temporal_era]
+    if level_of_analysis:
+        results = [r for r in results if r.get("level_of_analysis") == level_of_analysis]
+    if instrument_of_power:
+        results = [r for r in results if r.get("instrument_of_power") == instrument_of_power]
+    if strategic_posture:
+        results = [r for r in results if r.get("strategic_posture") == strategic_posture]
 
     return results
 

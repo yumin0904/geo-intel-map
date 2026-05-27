@@ -1,18 +1,24 @@
 ---
-theory_id: sanction_us_cuba_embargo
-title: "제재: 쿠바 (US)"
-sector_tag: gray_zone
-theorists: 
-  - US
-year: 1962
 asset_type: norm
 era: cold_war
-summary: "현존 최장기 양자 제재 (60년+). 냉전 시대 경제 봉쇄 전략의 유물. UN 총회는 매년 압도적 다수로 해제 촉구."
-regions: 
-  - global
+geopol_region: null
+instrument_of_power: economic
+level_of_analysis: state_domestic
+regions:
+- global
 sanction_type: unilateral
+sector_tag: gray_zone
+strategic_posture: status_quo
+summary: 현존 최장기 양자 제재 (60년+). 냉전 시대 경제 봉쇄 전략의 유물. UN 총회는 매년 압도적 다수로 해제 촉구.
 target_country: CU
+temporal_era: cold_war
+theorists:
+- US
+theory_id: sanction_us_cuba_embargo
+title: '제재: 쿠바 (US)'
+year: 1962
 ---
+
 ## 개요
 
 현존 최장기 양자 제재 (60년+). 냉전 시대 경제 봉쇄 전략의 유물. UN 총회는 매년 압도적 다수로 해제 촉구.

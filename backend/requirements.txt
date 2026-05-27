@@ -23,3 +23,6 @@ yfinance==1.3.0
 
 # TheoryLibrary — 마크다운 YAML front matter 파싱 (Phase 3)
 python-frontmatter==1.0.1
+
+# 백그라운드 스케줄러 — 아카이브 TTL, 데이터 갱신 크론 잡 (CLAUDE.md §4)
+apscheduler>=3.10,<4.0

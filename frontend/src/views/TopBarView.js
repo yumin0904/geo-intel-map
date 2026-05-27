@@ -73,8 +73,13 @@ function _pizzaLevel(index) {
 
 function _calcPizzaIndex(sectors) {
   if (!sectors || sectors.length === 0) return 0;
-  const sum = sectors.reduce((acc, s) => acc + (s.avg_severity || 0), 0);
-  return sum / sectors.length;
+  // pizza_weight(백엔드 지정)로 가중 평균 — 중동(0.4)·인태(0.3)·유럽(0.2)·아프리카(0.1)
+  let total = 0;
+  for (const s of sectors) {
+    const w = s.pizza_weight ?? (1 / sectors.length);
+    total += (s.avg_severity || 0) * w;
+  }
+  return total;
 }
 
 function _renderPizzaBadge() {

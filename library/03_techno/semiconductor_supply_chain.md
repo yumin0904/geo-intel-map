@@ -1,18 +1,24 @@
 ---
-theory_id: techno_semiconductor_supply_chain
-title: "반도체 공급망 집중 리스크 (TSMC 딜레마)"
-sector_tag: techno
-theorists:
-  - Chris Miller
-  - Henry Farrell
-  - Abraham Newman
-year: 2022
 asset_type: theory
 era: multipolar
-summary: "첨단 반도체 생산이 대만(TSMC)에 극도로 집중되어, 대만해협 위기 시 글로벌 기술·경제 충격이 불가피한 구조적 취약성. 지정학과 기술 공급망의 교차점."
+geopol_region: taiwan_strait
+instrument_of_power: economic
+level_of_analysis: systemic
 regions:
-  - taiwan_strait
-  - south_china_sea
+- taiwan_strait
+- south_china_sea
+sector_tag: techno
+strategic_posture: status_quo
+summary: 첨단 반도체 생산이 대만(TSMC)에 극도로 집중되어, 대만해협 위기 시 글로벌 기술·경제 충격이 불가피한 구조적 취약성. 지정학과
+  기술 공급망의 교차점.
+temporal_era: us_china_rivalry
+theorists:
+- Chris Miller
+- Henry Farrell
+- Abraham Newman
+theory_id: techno_semiconductor_supply_chain
+title: 반도체 공급망 집중 리스크 (TSMC 딜레마)
+year: 2022
 ---
 
 ## 핵심 주장

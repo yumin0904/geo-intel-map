@@ -5,6 +5,7 @@ FastAPI 앱을 초기화하고 기본 엔드포인트를 등록한다.
 
 from contextlib import asynccontextmanager
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,13 +20,34 @@ from api.stats import router as stats_router
 from api.study import router as study_router
 from api.translate import router as translate_router
 from api.version import router as version_router
+from db.archive_manager import ArchiveManager
+
+# ── 글로벌 싱글톤 ─────────────────────────────────────────────────────────
+_archive_mgr = ArchiveManager()
+_scheduler   = BackgroundScheduler(timezone="UTC")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """앱 시작 시 sandbox.db가 비어있으면 튜토리얼 캔버스를 자동 생성한다."""
+    """앱 시작/종료 시 초기화 및 정리 작업."""
+    # DB 스키마 초기화 (테이블 없으면 생성)
+    _archive_mgr.init_schema()
+
+    # 아카이브 TTL 사이클 — 1시간마다 실행
+    _scheduler.add_job(
+        _archive_mgr.run_full_cycle,
+        trigger="interval",
+        hours=1,
+        id="archive_cycle",
+        replace_existing=True,
+        misfire_grace_time=300,
+    )
+    _scheduler.start()
+
     seed_tutorial_canvas()
     yield
+
+    _scheduler.shutdown(wait=False)
 
 
 # ── 앱 인스턴스 생성 ──────────────────────────────────────────────

@@ -9,6 +9,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from models.intelligence import IntelligenceMetadata
+
 
 class Event(BaseModel):
     id: str                        # uuid4
@@ -25,3 +27,5 @@ class Event(BaseModel):
     confidence_score: float = 1.0  # ACLED=1.0, 교차검증=0.8, GDELT 미검증=0.5
     importance_score: float = 0.0  # 복합 중요도 0-1 (severity·recency·cascade·반복·gdelt)
     cluster_count: int = 1         # 지역+7일+inter1 기준 통합된 원본 이벤트 수
+    intelligence_meta: IntelligenceMetadata | None = None  # 7대 축 태그 (GDELT 자동 주입)
+    is_staging: bool = False  # True = 검증 미달, 대시보드 노출 차단 (CLAUDE.md §16)

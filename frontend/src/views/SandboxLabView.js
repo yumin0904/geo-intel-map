@@ -486,11 +486,12 @@ export class SandboxLabView {
     this._chainMode = true;
 
     // report에서 region 추출 (Stage 1)
-    const stages = report.stages ?? [];
-    const stage1 = stages.find(s => s.stage === 1) ?? {};
-    const region = stage1.region ?? 'unknown';
+    // report.stages는 {"1_facts": {...}, "2_sector": {...}, ...} 형태의 object
+    const stagesObj = report.stages ?? {};
+    const stage1 = stagesObj['1_facts'] ?? {};
+    const region = stage1.region_code || 'unknown';
     const regionLabel = REGION_LABEL_KO[region] ?? region;
-    const eventTitle  = stage1.event_title ?? event_id.slice(0, 8);
+    const eventTitle  = stage1.title ?? event_id.slice(0, 8);
 
     // cascade 데이터가 없으면 새로 fetch
     if (!this._cascadeLinks.length) {

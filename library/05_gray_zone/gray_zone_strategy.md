@@ -1,20 +1,25 @@
 ---
-theory_id: gray_zone_gray_zone_strategy
-title: "회색지대 전략 (Gray Zone Strategy)"
-sector_tag: gray_zone
-theorists:
-  - Michael Mazarr
-  - Hal Brands
-  - Christopher Dougherty
-year: 2015
 asset_type: theory
 era: multipolar
-summary: "전쟁과 평화의 경계에서 분쟁 문턱 아래를 유지하면서 점진적으로 현상을 바꾸는 전략 — 상대의 대응을 억제하면서 기정사실을 축적한다."
+geopol_region: south_china_sea
+instrument_of_power: informational
+level_of_analysis: non_state
 regions:
-  - south_china_sea
-  - taiwan_strait
-  - east_china_sea
-  - bab_el_mandeb
+- south_china_sea
+- taiwan_strait
+- east_china_sea
+- bab_el_mandeb
+sector_tag: gray_zone
+strategic_posture: revisionist
+summary: 전쟁과 평화의 경계에서 분쟁 문턱 아래를 유지하면서 점진적으로 현상을 바꾸는 전략 — 상대의 대응을 억제하면서 기정사실을 축적한다.
+temporal_era: us_china_rivalry
+theorists:
+- Michael Mazarr
+- Hal Brands
+- Christopher Dougherty
+theory_id: gray_zone_gray_zone_strategy
+title: 회색지대 전략 (Gray Zone Strategy)
+year: 2015
 ---
 
 ## 핵심 주장

@@ -23,10 +23,14 @@ DB_PATH = Path(__file__).parent.parent.parent / "db" / "library.db"
 
 # ── 도메인 상수 ────────────────────────────────────────────────────────────────
 # CLAUDE.md 5대 섹터와 1:1 매핑 — 이 범위 밖 태그는 거부
-ALLOWED_SECTOR_TAGS = frozenset({"maritime", "energy", "techno", "indo_pacific", "gray_zone"})
-ALLOWED_ASSET_TYPES = frozenset({"theory", "case_study", "profile", "norm"})
-ALLOWED_ERAS        = frozenset({"cold_war", "unipolar", "multipolar"})
-ALLOWED_USE_CASES   = frozenset({"concept", "case_study", "data", "norm"})
+ALLOWED_SECTOR_TAGS    = frozenset({"maritime", "energy", "techno", "indo_pacific", "gray_zone"})
+ALLOWED_ASSET_TYPES    = frozenset({"theory", "case_study", "profile", "norm"})
+ALLOWED_ERAS           = frozenset({"cold_war", "unipolar", "multipolar"})  # 레거시 era 필드
+ALLOWED_TEMPORAL_ERAS  = frozenset({"cold_war", "post_cold", "us_china_rivalry", "hot"})  # 7대 축 §15
+ALLOWED_USE_CASES      = frozenset({"concept", "case_study", "data", "norm"})
+ALLOWED_LEVELS         = frozenset({"systemic", "state_domestic", "non_state"})
+ALLOWED_INSTRUMENTS    = frozenset({"diplomatic", "informational", "military", "economic"})
+ALLOWED_POSTURES       = frozenset({"status_quo", "revisionist"})
 
 # asset_type → use_case 자동 파생 (front matter에 use_case 없을 때 적용)
 _ASSET_TO_USE_CASE = {"theory": "concept", "case_study": "case_study", "profile": "data", "norm": "norm"}
@@ -36,19 +40,25 @@ REQUIRED_FIELDS = ("theory_id", "title", "sector_tag", "theorists", "year", "sum
 # ── DDL ────────────────────────────────────────────────────────────────────────
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS theories (
-    theory_id  TEXT PRIMARY KEY,
-    title      TEXT NOT NULL,
-    sector_tag TEXT NOT NULL,
-    theorists  TEXT NOT NULL,   -- JSON 배열 문자열 (["Mahan", ...])
-    year       INTEGER,
-    summary    TEXT NOT NULL,
-    regions    TEXT NOT NULL,   -- JSON 배열 문자열 (["taiwan_strait", ...])
-    body       TEXT DEFAULT '',
-    file_path  TEXT,
-    updated_at TEXT NOT NULL,
-    asset_type TEXT DEFAULT 'theory',
-    era        TEXT,
-    use_case   TEXT DEFAULT 'concept'
+    theory_id          TEXT PRIMARY KEY,
+    title              TEXT NOT NULL,
+    sector_tag         TEXT NOT NULL,
+    theorists          TEXT NOT NULL,   -- JSON 배열 문자열 (["Mahan", ...])
+    year               INTEGER,
+    summary            TEXT NOT NULL,
+    regions            TEXT NOT NULL,   -- JSON 배열 문자열 (["taiwan_strait", ...])
+    body               TEXT DEFAULT '',
+    file_path          TEXT,
+    updated_at         TEXT NOT NULL,
+    asset_type         TEXT DEFAULT 'theory',
+    era                TEXT,
+    use_case           TEXT DEFAULT 'concept',
+    -- 7대 축 다차원 태그 (CLAUDE.md §15) ─────────────────────────────
+    geopol_region      TEXT,            -- 주 지정학 지역 코드
+    temporal_era       TEXT,            -- cold_war|post_cold|us_china_rivalry|hot
+    level_of_analysis  TEXT,            -- systemic|state_domestic|non_state
+    instrument_of_power TEXT,           -- diplomatic|informational|military|economic
+    strategic_posture  TEXT             -- status_quo|revisionist
 );
 
 -- FTS5 가상 테이블: theories 테이블을 content source로 사용
@@ -72,7 +82,17 @@ def _get_conn() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.executescript(_SCHEMA_SQL)
     # 기존 DB에 신규 컬럼이 없으면 추가 (마이그레이션)
-    for col, default in [("asset_type", "'theory'"), ("era", "NULL"), ("use_case", "'concept'")]:
+    _new_cols = [
+        ("asset_type",          "'theory'"),
+        ("era",                 "NULL"),
+        ("use_case",            "'concept'"),
+        ("geopol_region",       "NULL"),
+        ("temporal_era",        "NULL"),
+        ("level_of_analysis",   "NULL"),
+        ("instrument_of_power", "NULL"),
+        ("strategic_posture",   "NULL"),
+    ]
+    for col, default in _new_cols:
         try:
             conn.execute(f"ALTER TABLE theories ADD COLUMN {col} TEXT DEFAULT {default}")
             conn.commit()
@@ -146,6 +166,30 @@ def parse_front_matter(path: Path) -> dict:
         use_case = _ASSET_TO_USE_CASE.get(meta["asset_type"], "concept")
     meta["use_case"] = use_case
 
+    # ── 7대 축 필드 (§15) — 선택 필드, 허용값 외 값은 None으로 정규화 ──────
+    geopol_region = meta.get("geopol_region")  # None이면 그대로 None
+    meta["geopol_region"] = geopol_region
+
+    temporal_era = meta.get("temporal_era")
+    if temporal_era not in ALLOWED_TEMPORAL_ERAS:
+        temporal_era = None
+    meta["temporal_era"] = temporal_era
+
+    level = meta.get("level_of_analysis")
+    if level not in ALLOWED_LEVELS:
+        level = None
+    meta["level_of_analysis"] = level
+
+    instrument = meta.get("instrument_of_power")
+    if instrument not in ALLOWED_INSTRUMENTS:
+        instrument = None
+    meta["instrument_of_power"] = instrument
+
+    posture = meta.get("strategic_posture")
+    if posture not in ALLOWED_POSTURES:
+        posture = None
+    meta["strategic_posture"] = posture
+
     # list 타입 필드를 JSON 문자열로 직렬화 (SQLite TEXT 컬럼 저장용)
     for field in ("theorists", "regions"):
         val = meta[field]
@@ -194,8 +238,10 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                 INSERT OR REPLACE INTO theories
                     (theory_id, title, sector_tag, theorists, year,
                      summary, regions, body, file_path, updated_at,
-                     asset_type, era, use_case)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     asset_type, era, use_case,
+                     geopol_region, temporal_era, level_of_analysis,
+                     instrument_of_power, strategic_posture)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     meta["theory_id"],
@@ -211,6 +257,11 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                     meta["asset_type"],
                     meta["era"],
                     meta["use_case"],
+                    meta["geopol_region"],
+                    meta["temporal_era"],
+                    meta["level_of_analysis"],
+                    meta["instrument_of_power"],
+                    meta["strategic_posture"],
                 ),
             )
             upserted += 1

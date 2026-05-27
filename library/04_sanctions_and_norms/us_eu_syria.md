@@ -1,22 +1,28 @@
 ---
-theory_id: sanction_us_eu_syria
-title: "제재: 시리아 (US, EU, UK, CA)"
-sector_tag: gray_zone
-theorists: 
-  - US
-  - EU
-  - UK
-  - CA
-year: 2011
 asset_type: norm
 era: multipolar
-summary: 러시아·중국 거부권으로 UN SC 제재 무력화 — 단자 서방 제재만 시행. 강대국 거부권의 제도적 한계 사례.
-regions: 
-  - middle_east
-  - hormuz
+geopol_region: middle_east
+instrument_of_power: economic
+level_of_analysis: state_domestic
+regions:
+- middle_east
+- hormuz
 sanction_type: multilateral_western
+sector_tag: gray_zone
+strategic_posture: status_quo
+summary: 러시아·중국 거부권으로 UN SC 제재 무력화 — 단자 서방 제재만 시행. 강대국 거부권의 제도적 한계 사례.
 target_country: SY
+temporal_era: us_china_rivalry
+theorists:
+- US
+- EU
+- UK
+- CA
+theory_id: sanction_us_eu_syria
+title: '제재: 시리아 (US, EU, UK, CA)'
+year: 2011
 ---
+
 ## 개요
 
 러시아·중국 거부권으로 UN SC 제재 무력화 — 단자 서방 제재만 시행. 강대국 거부권의 제도적 한계 사례.

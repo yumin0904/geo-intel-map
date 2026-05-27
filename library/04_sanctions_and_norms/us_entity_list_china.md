@@ -1,19 +1,25 @@
 ---
-theory_id: sanction_us_entity_list_china
-title: "제재: 중국 기술기업 (미 Entity List) (US)"
-sector_tag: techno
-theorists: 
-  - US
-year: 2019
 asset_type: norm
 era: multipolar
-summary: 미 상무부 BIS Entity List. 미국산 반도체·장비 수출 금지. 반도체 공급망 무기화의 핵심 사례.
-regions: 
-  - south_china_sea
-  - taiwan_strait
+geopol_region: south_china_sea
+instrument_of_power: economic
+level_of_analysis: state_domestic
+regions:
+- south_china_sea
+- taiwan_strait
 sanction_type: unilateral
+sector_tag: techno
+strategic_posture: status_quo
+summary: 미 상무부 BIS Entity List. 미국산 반도체·장비 수출 금지. 반도체 공급망 무기화의 핵심 사례.
 target_country: CN
+temporal_era: us_china_rivalry
+theorists:
+- US
+theory_id: sanction_us_entity_list_china
+title: '제재: 중국 기술기업 (미 Entity List) (US)'
+year: 2019
 ---
+
 ## 개요
 
 미 상무부 BIS Entity List. 미국산 반도체·장비 수출 금지. 반도체 공급망 무기화의 핵심 사례.

@@ -1,21 +1,28 @@
 ---
-theory_id: sanction_un_sc_iran
-title: "제재: 이란 (UN, US, EU, UK)"
-sector_tag: energy
-theorists: 
-  - UN
-  - US
-  - EU
-  - UK
-year: 2006
 asset_type: norm
 era: multipolar
-summary: 미국 OFAC 제재가 가장 광범위. 원유 수출 사실상 봉쇄. 호르무즈 해협 긴장과 직결 — Cascade 룰 hormuz_tension_to_oil 이론 근거.
-regions: 
-  - hormuz
+geopol_region: hormuz
+instrument_of_power: economic
+level_of_analysis: systemic
+regions:
+- hormuz
 sanction_type: multilateral_un
+sector_tag: energy
+strategic_posture: status_quo
+summary: 미국 OFAC 제재가 가장 광범위. 원유 수출 사실상 봉쇄. 호르무즈 해협 긴장과 직결 — Cascade 룰 hormuz_tension_to_oil
+  이론 근거.
 target_country: IR
+temporal_era: us_china_rivalry
+theorists:
+- UN
+- US
+- EU
+- UK
+theory_id: sanction_un_sc_iran
+title: '제재: 이란 (UN, US, EU, UK)'
+year: 2006
 ---
+
 ## 개요
 
 미국 OFAC 제재가 가장 광범위. 원유 수출 사실상 봉쇄. 호르무즈 해협 긴장과 직결 — Cascade 룰 hormuz_tension_to_oil 이론 근거.

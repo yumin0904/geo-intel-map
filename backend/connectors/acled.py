@@ -357,6 +357,66 @@ class AcledConnector(BaseConnector):
     OAuth Resource Owner Password Credentials Grant 방식 사용.
     """
 
+    async def fetch_range(
+        self,
+        since: datetime,
+        until: datetime,
+        countries: list[str] | None = None,
+        page_size: int = 500,
+    ) -> list[Event]:
+        """날짜 범위로 ACLED 이벤트를 페이지네이션 전체 조회한다.
+
+        ACLED API는 page=1,2,... 파라미터로 페이지네이션을 지원한다.
+        빈 응답이 오면 마지막 페이지로 간주한다.
+
+        Args:
+            since:     조회 시작일 (UTC, 포함)
+            until:     조회 종료일 (UTC, 포함)
+            countries: 조회 대상 국가 목록 (None → INDO_PACIFIC_COUNTRIES)
+            page_size: 페이지당 이벤트 수 (ACLED 권장 최대 500)
+
+        Returns:
+            해당 기간의 모든 Event (중복 없음, confidence_score=1.0)
+        """
+        countries = countries or INDO_PACIFIC_COUNTRIES
+        token = await self._get_token()
+        date_range = f"{since.strftime('%Y-%m-%d')}|{until.strftime('%Y-%m-%d')}"
+
+        all_events: list[Event] = []
+        page = 1
+
+        while True:
+            params = {
+                "event_date":       date_range,
+                "event_date_where": "BETWEEN",
+                "country":          "|".join(countries),
+                "limit":            page_size,
+                "page":             page,
+            }
+            resp = await self._get_with_retry(token, params)
+            resp.raise_for_status()
+
+            records = resp.json().get("data", [])
+            if not records:
+                break  # 빈 응답 = 마지막 페이지
+
+            for raw in records:
+                try:
+                    all_events.append(self._normalize(raw))
+                except Exception as e:
+                    logger.warning(
+                        "[ACLED bulk] 정규화 실패 (id=%s): %s", raw.get("event_id_cnty"), e
+                    )
+
+            logger.info(
+                "[ACLED bulk] %s ~ %s page=%d → %d건 (누적 %d)",
+                since.strftime("%Y-%m-%d"), until.strftime("%Y-%m-%d"),
+                page, len(records), len(all_events),
+            )
+            page += 1
+
+        return all_events
+
     async def fetch(self, countries: list[str] | None = None) -> list[Event]:
         """최근 30일 분쟁 이벤트를 Event 리스트로 반환한다.
 
@@ -578,7 +638,9 @@ class AcledConnector(BaseConnector):
                 "inter1":         inter1,
                 "inter2":         inter2,
                 "source":         raw.get("source", ""),
+                "data_source":    "ACLED",  # archive_manager ACLED 식별용 (§18)
             },
+            confidence_score=1.0,  # ACLED는 사후 검증 완료 데이터 — 항상 1.0 (CLAUDE.md §16)
             theory_tags=_build_theory_tags(
                 event_type, sub_event_type, inter1, inter2, region_code,
                 country=country,

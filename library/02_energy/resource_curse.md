@@ -1,19 +1,24 @@
 ---
-theory_id: energy_resource_curse
-title: "자원의 저주 (Resource Curse)"
-sector_tag: energy
-theorists:
-  - Richard Auty
-  - Terry Lynn Karl
-  - Michael Ross
-year: 1993
 asset_type: theory
 era: unipolar
-summary: "천연자원이 풍부한 국가일수록 경제 성장이 더디고 권위주의·내전이 심화되는 역설적 현상 — 에너지 지정학 불안정의 구조적 원인."
+geopol_region: hormuz
+instrument_of_power: economic
+level_of_analysis: systemic
 regions:
-  - hormuz
-  - middle_east
-  - bab_el_mandeb
+- hormuz
+- middle_east
+- bab_el_mandeb
+sector_tag: energy
+strategic_posture: status_quo
+summary: 천연자원이 풍부한 국가일수록 경제 성장이 더디고 권위주의·내전이 심화되는 역설적 현상 — 에너지 지정학 불안정의 구조적 원인.
+temporal_era: post_cold
+theorists:
+- Richard Auty
+- Terry Lynn Karl
+- Michael Ross
+theory_id: energy_resource_curse
+title: 자원의 저주 (Resource Curse)
+year: 1993
 ---
 
 ## 핵심 주장

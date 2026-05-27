@@ -251,6 +251,7 @@ async def _evaluate_trigger(
         correlation_score=round(score, 2),
         link_type="rule",
         rule_id=rule.id,
+        target_timestamp=response_event.timestamp,  # 체이닝 synthetic event 타임스탬프 기준점
         evidence={
             "region": rule.trigger.region,
             "trigger_severity": trigger.severity,
