@@ -74,12 +74,14 @@ _SECTOR_FIPS: frozenset[str] = frozenset({
 
 # ── GDELT 2.0 export CSV 컬럼 인덱스 (0-based, 탭 구분) ────────────────────
 _COL = {
-    "event_id":           0,
-    "sqldate":            1,
-    "actor1":             6,
-    "actor1_type1_code": 14,  # Actor1Type1Code — cameo_mapper level_of_analysis 입력값
-    "actor2":            16,
-    "event_code":        26,
+    "event_id":             0,
+    "sqldate":              1,
+    "actor1":               6,
+    "actor1_country_code":  7,   # Actor1CountryCode — 자국 내 이벤트 필터용
+    "actor1_type1_code":   14,  # Actor1Type1Code — cameo_mapper level_of_analysis 입력값
+    "actor2":              16,
+    "actor2_country_code": 17,   # Actor2CountryCode — 자국 내 이벤트 필터용
+    "event_code":          26,
     "event_root_code":   28,  # 2자리 CAMEO 루트코드 (EventCode 앞 2자리와 다름에 주의)
     "quad_class":        29,
     "goldstein":         30,
@@ -387,6 +389,13 @@ def _filter_and_normalize(rows: list[list[str]]) -> list[Event]:
         # Stage 1 필터 ④: 5대 섹터 국가 코드
         country = row[_COL["geo_country"]].strip().upper()
         if country not in _SECTOR_FIPS:
+            continue
+
+        # Stage 1 필터 ⑤: 자국 내 행위자 중복 이벤트 제거
+        # Actor1CountryCode == Actor2CountryCode이면 국내 사건 — 국제 지정학 분석 대상 외
+        a1c = row[_COL["actor1_country_code"]].strip().upper()
+        a2c = row[_COL["actor2_country_code"]].strip().upper()
+        if a1c and a2c and a1c == a2c:
             continue
 
         event = _to_event(row, quad, gold, mentions, lat_f, lon_f)

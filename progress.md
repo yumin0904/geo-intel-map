@@ -301,13 +301,19 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 - `/api/reasoning/{event_id}` Stage 1에서 `region_code: "south_china_sea"` 정상 반환 확인
 - cascade/links D1 링크 region 분포: south_china_sea 14건 / bab_el_mandeb 4건 / middle_east 4건 / ukraine 3건 / suez 1건
 
+### ✅ 브라우저 검증 + 버그 수정 (2026-05-27)
+
+- [✅] GDELT IRAN vs IRAN 중복 필터 — `_COL`에 `actor1_country_code: 7` / `actor2_country_code: 17` 추가, `_filter_and_normalize()` 필터 ⑤ 삽입 (양쪽 비어있지 않고 동일 시 skip)
+- [✅] `/api/sandbox/canvases` 404 원인 파악 — 엔드포인트·router 등록·cytoscape 로드 순서 모두 정상 확인
+- [⏳] 분析실 체인 트리 미표시 — cascade_links `region_code` 불일치 (다음 세션)
+
 ### 현재 버전
-`version.json`: **3.15.1**
+`version.json`: **3.15.2**
 
 ### 다음 세션 우선순위
 
-1. **SandboxLab 체인 뷰어 브라우저 최종 검증** — south_china_sea 이벤트 클릭 → AI분析 → 분析실 → D1 체인 트리 14건 표시 확인
-2. 이후 추가 기능 논의
+1. **분析실 체인 트리** — cascade_links `region_code` vs SandboxLab `region` 불일치 수정
+2. **cytoscape-dagre graphlib 오류** 해결
 
 ---
 
