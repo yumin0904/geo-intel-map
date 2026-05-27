@@ -318,13 +318,48 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 - [✅] 실측: 우크라이나 → 밀선물 D1 3개 체인 트리 렌더링 성공
 - [✅] `gdelt_connector.py` — GDELT Actor1CountryCode == Actor2CountryCode 동일국가 중복 필터
 
+### ✅ FRED + Comtrade 베이스라인 + Stage 4/8 연동 (2026-05-27)
+
+**스키마 확장**
+- `backend/db/schema.sql` — `historical_macro_indices` (FRED 일별 종가) + `historical_trade_matrix` (Comtrade 무역 의존도) 테이블 추가
+
+**베이스라인 적재 스크립트**
+- `backend/scripts/baseline_bulk_ingest.py` (신규) — FRED + Comtrade CSV 통합 적재
+  - FRED: WTI(DCOILWTICO)·금(GOLDAMGBD228NLBM)·원달러(DEXKOUS)·대만달러(DEXTAUS)·VIX(VIXCLS) 3년치
+  - Comtrade: HS 27(에너지)·8542(반도체)·26(희토류) CSV 자동 감지 파싱 (v1/v2 포맷 대응), dependency_ratio 자동 계산
+  - `--fred` / `--comtrade <files>` / `--years 3` / `--dry-run` 옵션
+
+**Stage 4 로컬 쿼리 교체**
+- `backend/services/reasoning/stages.py` — `stage4_macro_variables()` 전면 교체
+  - yfinance 실시간 호출 → `historical_macro_indices` 로컬 쿼리
+  - 섹터·지역 → FRED 지표명 매핑 (_SECTOR_INDICATORS, _REGION_INDICATORS)
+  - DB 미적재 시 yfinance fallback (source 필드로 구분)
+
+**Stage 8 무역 의존도 추가**
+- `stage8_alliance_spread()` — `trade_dependencies` 필드 추가
+  - actor 쌍 간 HS 27/8542/26 dependency_ratio 조회
+  - Farrell & Newman Weaponized Interdependence 계량화
+- `.env.example` — `FRED_API_KEY` 항목 추가
+
+실행 방법:
+```bash
+cd backend && source .venv/bin/activate
+# FRED_API_KEY를 .env에 추가 후:
+python scripts/baseline_bulk_ingest.py --fred --dry-run   # 건수 확인
+python scripts/baseline_bulk_ingest.py --fred             # 실제 적재 (~3년 × 5시리즈)
+# Comtrade CSV 준비 후:
+python scripts/baseline_bulk_ingest.py --comtrade path/to/comtrade.csv
+```
+
 ### 현재 버전
-`version.json`: **3.15.3**
+`version.json`: **3.16.0**
 
 ### 다음 세션 우선순위
 
 1. **ZW=F 티커 한국어 레이블** — TICKER_LABEL_KO에 `ZW=F: '밀선물\n(ZW=F)'` 추가 (SandboxLabView + CascadeGraphView)
 2. **SCS 이벤트 체인 트리** 브라우저 최종 확인
+3. **FRED 키 발급 후 실적재** — dry-run 확인 후 `--fred` 실행
+4. **ReasoningPanel Stage 4/8 UI** — indicators/trade_dependencies 필드 프론트엔드 렌더링
 
 ---
 

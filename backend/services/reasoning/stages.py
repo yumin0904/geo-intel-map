@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,7 @@ from services.region import region_for_point
 logger = logging.getLogger(__name__)
 
 _CONFIG = Path(__file__).resolve().parents[2] / "config"
+_INTEL_DB = Path(__file__).resolve().parents[2] / "db" / "intel.db"
 _CASE_STUDIES_PATH  = _CONFIG / "case_studies.yaml"
 _ALLIANCE_GRAPH_PATH = _CONFIG / "alliance_graph.yaml"
 _THEORY_LIBRARY_PATH = _CONFIG / "theory_library.yaml"
@@ -35,6 +37,127 @@ def _load_yaml(path: Path) -> dict | list:
     except Exception as e:
         logger.warning("[reasoning] YAML 로드 실패 %s: %s", path.name, e)
         return {}
+
+
+# ── 로컬 DB 헬퍼 ─────────────────────────────────────────────────────────
+
+# 섹터·지역 → FRED 지표명 매핑 (yfinance 티커 대체)
+_SECTOR_INDICATORS: dict[str, list[str]] = {
+    "energy":       ["wti", "brent"],
+    "maritime":     ["wti", "brent"],
+    "techno":       ["usd_twd"],
+    "indo_pacific": ["usd_twd", "usd_krw"],
+    "gray_zone":    ["vix"],  # gold은 yfinance fallback
+}
+_REGION_INDICATORS: dict[str, list[str]] = {
+    "hormuz":           ["wti", "brent"],
+    "taiwan_strait":    ["usd_twd", "usd_krw"],
+    "ukraine":          ["wti", "brent"],
+    "red_sea":          ["wti", "brent"],
+    "south_china_sea":  ["usd_twd"],
+    "korean_peninsula": ["usd_krw"],
+}
+_INDICATOR_LABEL: dict[str, str] = {
+    "wti":     "WTI 원유 (달러/배럴)",
+    "brent":   "브렌트유 (달러/배럴)",
+    "usd_krw": "원달러 환율 (KRW/USD)",
+    "usd_twd": "대만달러 환율 (TWD/USD)",
+    "vix":     "VIX 변동성 지수",
+    "gold":    "금 현물 (달러/온스)",  # yfinance fallback
+}
+
+# HS 코드 레이블 (Stage 8 무역 의존도 표시용)
+_HS_LABEL: dict[str, str] = {
+    "27":   "에너지(HS27)",
+    "8542": "반도체(HS8542)",
+    "26":   "희토류(HS26)",
+}
+
+
+def _query_macro_indicators(indicators: set[str]) -> list[dict]:
+    """historical_macro_indices에서 최신 2건을 조회해 변화율을 반환한다."""
+    if not _INTEL_DB.exists():
+        return []
+    results = []
+    try:
+        with sqlite3.connect(_INTEL_DB) as con:
+            for indicator in sorted(indicators):
+                rows = con.execute(
+                    """
+                    SELECT indicator, date, value FROM historical_macro_indices
+                    WHERE indicator = ?
+                    ORDER BY date DESC LIMIT 2
+                    """,
+                    (indicator,),
+                ).fetchall()
+                if not rows:
+                    continue
+                latest = rows[0][2]
+                prev = rows[1][2] if len(rows) >= 2 else latest
+                pct = (latest - prev) / prev * 100 if prev else 0.0
+                results.append({
+                    "indicator": indicator,
+                    "label":     _INDICATOR_LABEL.get(indicator, indicator),
+                    "date":      rows[0][1],
+                    "value":     round(latest, 4),
+                    "change_pct": round(pct, 2),
+                    "direction": "up" if pct > 0.01 else ("down" if pct < -0.01 else "flat"),
+                    "source": "FRED",
+                })
+    except Exception as e:
+        logger.warning("[stage4] 로컬 DB 조회 오류: %s", e)
+    return results
+
+
+def _query_trade_dependency(actor_codes: set[str]) -> list[dict]:
+    """historical_trade_matrix에서 actor 간 무역 의존도를 조회한다.
+
+    Farrell & Newman Weaponized Interdependence 이론 계량화:
+    dependency_ratio = 양자 무역액 / 보고국 세계 전체 무역액
+    """
+    if not _INTEL_DB.exists() or not actor_codes:
+        return []
+    results = []
+    codes = sorted(actor_codes)
+    try:
+        with sqlite3.connect(_INTEL_DB) as con:
+            for reporter in codes:
+                for partner in codes:
+                    if reporter == partner:
+                        continue
+                    rows = con.execute(
+                        """
+                        SELECT hs_code, trade_flow, trade_value_usd,
+                               dependency_ratio, period
+                        FROM historical_trade_matrix
+                        WHERE reporter_iso = ? AND partner_iso = ?
+                          AND dependency_ratio IS NOT NULL
+                          AND partner_iso NOT IN ('WLD','0','WORLD')
+                        ORDER BY period DESC, hs_code
+                        LIMIT 9
+                        """,
+                        (reporter, partner),
+                    ).fetchall()
+                    if not rows:
+                        continue
+                    results.append({
+                        "reporter": reporter,
+                        "partner":  partner,
+                        "items": [
+                            {
+                                "hs_code":   r[0],
+                                "hs_label":  _HS_LABEL.get(r[0], r[0]),
+                                "flow":      "수입" if r[1] == "M" else "수출",
+                                "value_usd": r[2],
+                                "dependency_ratio": round(r[3], 4),
+                                "period":    r[4],
+                            }
+                            for r in rows
+                        ],
+                    })
+    except Exception as e:
+        logger.warning("[stage8] 무역 의존도 조회 오류: %s", e)
+    return results
 
 
 # ── Stage 1: 사건 팩트 ───────────────────────────────────────────────────
@@ -206,72 +329,74 @@ def stage3_historical_comparison(event: dict, sectors: list[str]) -> dict:
 # ── Stage 4: 거시 변수 ───────────────────────────────────────────────────
 
 async def stage4_macro_variables(sectors: list[str], region: str) -> dict:
-    """관련 시장 지표(yfinance)를 조회한다. 실패 시 빈 목록 반환."""
-    # 섹터·지역별 관련 티커
-    ticker_map = {
-        "energy": ["CL=F", "BNO", "NG=F"],      # WTI, Brent ETF, 천연가스
-        "maritime": ["FRO", "BDRY", "ZIM"],      # 해운 관련
-        "techno": ["TSM", "NVDA", "SOXX"],       # 반도체
-        "indo_pacific": ["TSM", "KWEB"],         # 대만·중국 노출
-        "gray_zone": ["GLD", "VIX"],             # 안전자산·변동성
-    }
-    region_tickers = {
-        "hormuz": ["CL=F", "BNO"],
-        "taiwan_strait": ["TSM", "KWEB"],
-        "ukraine": ["NG=F", "WEAT"],
-        "red_sea": ["FRO", "ZIM", "BNO"],
-        "south_china_sea": ["TSM", "KWEB"],
-    }
+    """FRED 베이스라인 DB에서 거시 지표를 조회한다.
 
-    tickers: set[str] = set()
+    DB 미적재 시 yfinance 실시간 호출로 fallback.
+    baseline_bulk_ingest.py --fred 로 사전 적재 필요.
+    """
+    indicators: set[str] = set()
     for s in sectors:
-        tickers.update(ticker_map.get(s, []))
-    tickers.update(region_tickers.get(region, []))
+        indicators.update(_SECTOR_INDICATORS.get(s, []))
+    indicators.update(_REGION_INDICATORS.get(region, []))
+    if not indicators:
+        indicators = {"wti", "gold"}
 
+    # 1순위: 로컬 FRED DB 쿼리
+    results = _query_macro_indicators(indicators)
+    if results:
+        return {
+            "stage": 4,
+            "name_ko": "거시 변수",
+            "indicators": results,
+            "source": "FRED 베이스라인 DB",
+            "note_ko": "FRED 베이스라인 기준 전일 대비 변화율.",
+        }
+
+    # fallback: yfinance (DB 미적재 상태)
+    _INDICATOR_TO_TICKER = {
+        "wti": "CL=F", "gold": "GLD", "vix": "^VIX",
+        "usd_krw": "KRW=X", "usd_twd": "TWD=X",
+    }
+    tickers = {_INDICATOR_TO_TICKER[i] for i in indicators if i in _INDICATOR_TO_TICKER}
     if not tickers:
-        tickers = {"CL=F", "GLD"}  # 기본 지표
+        return {"stage": 4, "name_ko": "거시 변수", "indicators": [], "note_ko": "FRED DB 미적재. baseline_bulk_ingest.py --fred 실행 필요."}
 
-    results = []
+    fallback_results = []
     try:
-        import yfinance as yf  # 선택 의존성
-
-        # 하루치 데이터로 충분 (전일 종가 vs 현재)
+        import yfinance as yf
         tickers_str = " ".join(tickers)
         data = yf.download(tickers_str, period="5d", progress=False, auto_adjust=True)
-
-        if hasattr(data.columns, "levels"):
-            # 멀티인덱스 (복수 티커)
-            close = data["Close"] if "Close" in data.columns.get_level_values(0) else data
-        else:
-            close = data["Close"] if "Close" in data.columns else data
-
+        close = data["Close"] if hasattr(data.columns, "levels") or "Close" in data.columns else data
         for ticker in tickers:
             try:
                 series = close[ticker] if ticker in close.columns else None
                 if series is None or series.dropna().empty:
                     continue
                 latest = float(series.dropna().iloc[-1])
-                prev   = float(series.dropna().iloc[-2]) if len(series.dropna()) >= 2 else latest
-                pct_chg = (latest - prev) / prev * 100 if prev else 0.0
-                results.append({
-                    "ticker": ticker,
-                    "price": round(latest, 2),
-                    "change_pct": round(pct_chg, 2),
-                    "direction": "up" if pct_chg > 0 else ("down" if pct_chg < 0 else "flat"),
+                prev = float(series.dropna().iloc[-2]) if len(series.dropna()) >= 2 else latest
+                pct = (latest - prev) / prev * 100 if prev else 0.0
+                fallback_results.append({
+                    "indicator": ticker,
+                    "label": ticker,
+                    "date": "",
+                    "value": round(latest, 4),
+                    "change_pct": round(pct, 2),
+                    "direction": "up" if pct > 0.01 else ("down" if pct < -0.01 else "flat"),
+                    "source": "yfinance(fallback)",
                 })
             except Exception:
                 pass
     except ImportError:
-        return {"stage": 4, "name_ko": "거시 변수", "error": "yfinance 미설치", "tickers": []}
+        pass
     except Exception as e:
-        logger.warning("[stage4] yfinance 오류: %s", e)
-        return {"stage": 4, "name_ko": "거시 변수", "error": str(e), "tickers": []}
+        logger.warning("[stage4] yfinance fallback 오류: %s", e)
 
     return {
         "stage": 4,
         "name_ko": "거시 변수",
-        "tickers": results,
-        "note_ko": "전일 종가 기준 변화율. 실시간 아님.",
+        "indicators": fallback_results,
+        "source": "yfinance(fallback)",
+        "note_ko": "FRED DB 미적재. yfinance 실시간 fallback. baseline_bulk_ingest.py --fred 실행 권장.",
     }
 
 
@@ -417,11 +542,15 @@ def stage8_alliance_spread(actors: list[str]) -> dict:
                 })
                 involved_countries.update(alliance["members"])
 
+    # 무역 의존도 조회 (Weaponized Interdependence 계량화)
+    trade_deps = _query_trade_dependency(actor_codes)
+
     return {
         "stage": 8,
         "name_ko": "동맹 확산",
         "actor_codes_resolved": list(actor_codes),
         "relevant_alliances": relevant_alliances,
         "potentially_involved_countries": list(involved_countries - actor_codes),
-        "note_ko": "조약 의무 발동 시 잠재적으로 관여할 수 있는 국가 목록.",
+        "trade_dependencies": trade_deps,
+        "note_ko": "조약 의무 발동 시 잠재적으로 관여할 수 있는 국가 목록. 무역 의존도는 Farrell & Newman(2019) Weaponized Interdependence 지표.",
     }

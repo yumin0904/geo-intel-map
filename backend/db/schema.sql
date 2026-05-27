@@ -66,3 +66,38 @@ CREATE TABLE IF NOT EXISTS sensor_snapshots (
 CREATE INDEX IF NOT EXISTS idx_sensor_ts     ON sensor_snapshots(timestamp);
 CREATE INDEX IF NOT EXISTS idx_sensor_type   ON sensor_snapshots(source_type);
 CREATE INDEX IF NOT EXISTS idx_sensor_latlon ON sensor_snapshots(lat, lon);
+
+-- ── FRED 거시지표 베이스라인 ───────────────────────────────────────────────
+-- WTI·금·원달러·대만달러·VIX 일별 종가. baseline_bulk_ingest.py 로 적재.
+CREATE TABLE IF NOT EXISTS historical_macro_indices (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    series_id   TEXT NOT NULL,   -- FRED series ID (예: 'DCOILWTICO')
+    indicator   TEXT NOT NULL,   -- 지표명 (예: 'wti', 'gold', 'usd_krw', 'usd_twd', 'vix')
+    date        TEXT NOT NULL,   -- YYYY-MM-DD
+    value       REAL NOT NULL,
+    source      TEXT DEFAULT 'FRED',
+    ingested_at TEXT NOT NULL,
+    UNIQUE (series_id, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_macro_indicator ON historical_macro_indices(indicator, date);
+
+-- ── UN Comtrade 무역 의존도 베이스라인 ────────────────────────────────────
+-- HS 27(에너지)·8542(반도체)·26(희토류) 연간 수출입. baseline_bulk_ingest.py 로 적재.
+-- dependency_ratio: 양자 무역액 / 보고국 전체(WLD) 무역액 (0~1)
+CREATE TABLE IF NOT EXISTS historical_trade_matrix (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    period           TEXT NOT NULL,   -- 'YYYY'
+    reporter_iso     TEXT NOT NULL,   -- ISO 3자리 (예: 'TWN', 'CHN', 'USA')
+    partner_iso      TEXT NOT NULL,   -- ISO 3자리 또는 'WLD' (전 세계 합계)
+    hs_code          TEXT NOT NULL,   -- '27' | '8542' | '26'
+    trade_flow       TEXT NOT NULL,   -- 'M' (수입) | 'X' (수출)
+    trade_value_usd  REAL,
+    netweight_kg     REAL,
+    dependency_ratio REAL,           -- 자동 계산: bilateral / world_total
+    source           TEXT DEFAULT 'UN_Comtrade',
+    ingested_at      TEXT NOT NULL,
+    UNIQUE (period, reporter_iso, partner_iso, hs_code, trade_flow)
+);
+
+CREATE INDEX IF NOT EXISTS idx_trade_reporter ON historical_trade_matrix(reporter_iso, partner_iso, hs_code);
