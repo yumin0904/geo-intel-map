@@ -1,68 +1,83 @@
-# 🌍 geo-intel-map
+# 🌍 Geo-Intel Map
 
-정치외교학 학습을 위한 지정학 인텔리전스 지도
+**An open-source geopolitical intelligence tool for political science education**
 
-## 핵심 기능
+Geo-Intel Map is a cascade analysis platform that connects real-world conflict events 
+to international relations theory. Designed for political science students and researchers, 
+it transforms raw geopolitical data into structured, theory-linked learning experiences.
 
-- 🗺️ 5대 섹터 통합 시각화 (해양/에너지/기술/군사/회색지대)
-- 🔗 **Cascade Analysis**: 사건 → 지표 → 사건의 연쇄 추적
-- 📚 정치외교학 이론과 연결된 학습 모드
-- 📊 실시간 + 정적 데이터 통합 (ACLED, OpenSky, AIS, FIRMS 등)
+## 🔑 Key Features
 
-## 기술 스택
+- **5-Sector Intelligence Dashboard** — Maritime, Energy, Technology, Military, Gray Zone
+- **Cascade Analysis Engine** — Multi-stage causal chain tracking (event → indicator → event), 15 rules, depth 4
+- **8-Stage Geopolitical Reasoning** — Automated reasoning from facts to alliance diffusion
+- **232,533 ACLED conflict events** as historical baseline (41 countries, 12 months)
+- **Trade Dependency Matrix** — WITS data (6,116 records, 16 countries, 3 commodities)
+- **FRED Macro Indicators** — WTI, VIX, exchange rates (3,757 records)
+- **Theory Library** — 29 IR theories linked to live events (Weaponized Interdependence, Alliance Dilemma, A2/AD, etc.)
+- **Country Intelligence Panel** — Per-country geopolitical profile with macro indicators, trade dependency, sanctions, and theory connections
 
-- Backend: FastAPI (Python 3.12)
-- Frontend: Vanilla JS + Leaflet
-- DB: SQLite (Phase 1) → PostgreSQL+TimescaleDB (Phase 2)
-- Visualization: Leaflet + vis-timeline + Cytoscape.js
+## 🎓 Educational Value
 
-## 개발 단계
+This tool bridges the gap between IR theory and real-world data:
 
-- [ ] Phase 0: 기반 (헬로월드 + 첫 지도)
-- [ ] Phase 1: MVP (5개 레이어 + 첫 Cascade Rule)
-- [ ] Phase 2: 핵심 차별화 (실시간 + 룰북 + 인과 그래프)
-- [ ] Phase 3: 학습 도구 완성
+| Theory | Scholar | Live Application |
+|--------|---------|-----------------|
+| Weaponized Interdependence | Farrell & Newman (2019) | Semiconductor supply chain → TSMC cascade |
+| Resource Weaponization | Hirschman (1945) | Hormuz tension → Oil price cascade |
+| Alliance Dilemma | Snyder | Japan/Korea entrapment scoring via WITS |
+| Levels of Analysis | Waltz | CAMEO actor type auto-tagging |
 
-## 로컬 개발 시작하기
+## 🏗️ Architecture
+Real-time Intelligence (GDELT/RSS)
+→ Token-Zero Tagging (CAMEO mapper, no LLM)
+→ 3-Stage Fact Verification (baseline / RSS cross / physical sensor)
+→ Event Normalization (single Event model)
+→ Cascade Engine (YAML rulebook, chainable)
+→ 3-View Visualization (Map / Sandbox Lab / Reasoning Panel)
+→ Theory Library (29 .md files, 7-axis metadata)
 
-### 1. 가상환경 활성화 (매번 작업 시작 전)
+## 🛠️ Tech Stack
+
+- **Backend**: FastAPI (Python 3.12), SQLite, APScheduler
+- **Frontend**: Vanilla JS ES6, Leaflet, Cytoscape.js, vis-timeline
+- **Data**: ACLED, GDELT, NASA FIRMS, AISStream, OpenSky, FRED, WITS/UN Comtrade
+- **Analysis**: Cascade Engine (YAML rules), 8-stage reasoning pipeline
+
+## 🚀 Getting Started
 
 ```bash
-# 프로젝트 루트에서 실행
+# 1. Activate virtual environment
 source backend/.venv/bin/activate
 
-# 비활성화할 때
-deactivate
-```
-
-### 2. 백엔드 서버 실행
-
-```bash
-# backend 폴더 안으로 이동 후 실행해야 한다 (main.py가 있는 위치)
+# 2. Run backend
 cd backend
 uvicorn main:app --reload --port 8000
+
+# 3. Open frontend
+open frontend/index.html
 ```
 
-- `--reload` : 코드를 수정하면 서버가 자동으로 재시작됨. 개발 중에만 사용.
-- `--port 8000` : 8000번 포트에서 실행. 브라우저에서 http://localhost:8000 으로 접근.
-- 종료는 터미널에서 `Ctrl + C`
+## 📊 Data Sources
 
-### 3. 동작 확인
+| Source | Type | Records |
+|--------|------|---------|
+| ACLED | Conflict events (baseline) | 232,533 |
+| GDELT | Real-time conflict | Live |
+| FRED | Macro indicators | 3,757 |
+| WITS/UN Comtrade | Trade dependency | 6,116 |
+| NASA FIRMS | Fire/hotspots | Live |
+| AISStream | Naval AIS | Live |
+| OpenSky | Military ADS-B | Live |
 
-서버 실행 후 아래 URL을 브라우저나 터미널에서 확인:
+## 📖 Development Roadmap
 
-| 경로 | 설명 |
-|------|------|
-| http://localhost:8000/ | API 루트 |
-| http://localhost:8000/api/health | 헬스체크 |
-| http://localhost:8000/docs | 자동 생성 API 문서 (Swagger UI) |
+- [x] Phase 0: Foundation
+- [x] Phase 1: MVP (5 layers + first Cascade rule)
+- [x] Phase 2: Core differentiation (realtime + rulebook + causal graph)
+- [x] Phase 3: Learning tool completion (in progress, v3.18.0)
+- [ ] Phase 4: Statistical validation + multi-agent automation
 
-```bash
-# 터미널에서 확인 (curl)
-curl http://localhost:8000/api/health
-# → {"status":"ok","service":"geo-intel-map","version":"0.0.1"}
-```
+## 📄 License
 
-## 라이선스
-
-개인 학습 프로젝트 (비공개)
+MIT License
