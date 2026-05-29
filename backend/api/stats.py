@@ -450,3 +450,121 @@ async def get_markets():
     _market_cache["data"] = items
     _market_cache["expires_at"] = now + _MARKET_TTL
     return items
+
+
+# ── 품질 게이트 대시보드 ─────────────────────────────────────────────────────
+_QUALITY_TTL = timedelta(minutes=5)
+_quality_cache: dict = {"data": None, "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc)}
+
+
+def _calc_quality_metrics(now: datetime) -> dict:
+    """intel.db events 테이블에서 소스별 confidence·importance 분포 집계.
+
+    데이터 품질 게이트 기준 (CLAUDE.md §16):
+      - 승격 (confidence ≥ 0.8): 대시보드 표시
+      - 버퍼 (0.5 ≤ confidence < 0.8): 검증 대기
+      - GKG 보강 (0.65): GKG 적대성 확인으로 중간 상향
+      - 중요도 높음 (importance ≥ 0.7): Cascade·AI 분석 대상
+    """
+    if not _DB_PATH.exists():
+        return {}
+
+    cutoff_72h = (now - timedelta(hours=72)).strftime("%Y-%m-%dT%H:%M:%S")
+    cutoff_24h = (now - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")
+
+    try:
+        con = sqlite3.connect(_DB_PATH)
+        con.row_factory = sqlite3.Row
+
+        # 최근 72h 이벤트 소스별 집계
+        rows = con.execute("""
+            SELECT
+                json_extract(payload, '$.data_source') AS source,
+                COUNT(*) AS total,
+                SUM(CASE WHEN confidence_score >= 0.8 THEN 1 ELSE 0 END) AS promoted,
+                SUM(CASE WHEN confidence_score >= 0.65 AND confidence_score < 0.8 THEN 1 ELSE 0 END) AS gkg_enriched,
+                SUM(CASE WHEN confidence_score < 0.65 THEN 1 ELSE 0 END) AS staging,
+                SUM(CASE WHEN importance_score >= 0.7 THEN 1 ELSE 0 END) AS high_importance,
+                ROUND(AVG(confidence_score), 3) AS avg_confidence,
+                ROUND(AVG(importance_score), 3) AS avg_importance
+            FROM events
+            WHERE timestamp >= ?
+            GROUP BY source
+            ORDER BY total DESC
+        """, (cutoff_72h,)).fetchall()
+
+        # 최근 24h 스테이징 버퍼 현황
+        staging_count = con.execute("""
+            SELECT COUNT(*) FROM events
+            WHERE timestamp >= ? AND confidence_score < 0.8
+        """, (cutoff_24h,)).fetchone()[0]
+
+        # GKG 조인율 (payload에 gkg_themes 있는 GDELT 이벤트)
+        gkg_join_row = con.execute("""
+            SELECT
+                COUNT(*) AS gdelt_total,
+                SUM(CASE WHEN json_extract(payload, '$.gkg_themes') IS NOT NULL
+                    AND json_extract(payload, '$.gkg_themes') != '[]' THEN 1 ELSE 0 END) AS gkg_joined
+            FROM events
+            WHERE json_extract(payload, '$.data_source') = 'GDELT'
+              AND timestamp >= ?
+        """, (cutoff_72h,)).fetchone()
+
+        con.close()
+
+        sources = []
+        total_all = 0
+        promoted_all = 0
+        for r in rows:
+            src = r["source"] or "unknown"
+            total    = r["total"] or 0
+            promoted = r["promoted"] or 0
+            total_all    += total
+            promoted_all += promoted
+            sources.append({
+                "source":       src,
+                "total":        total,
+                "promoted":     promoted,
+                "gkg_enriched": r["gkg_enriched"] or 0,
+                "staging":      r["staging"] or 0,
+                "high_importance": r["high_importance"] or 0,
+                "avg_confidence":  r["avg_confidence"] or 0.0,
+                "avg_importance":  r["avg_importance"] or 0.0,
+                "promotion_rate":  round(promoted / total * 100, 1) if total else 0.0,
+            })
+
+        gkg_total  = gkg_join_row["gdelt_total"] if gkg_join_row else 0
+        gkg_joined = gkg_join_row["gkg_joined"]  if gkg_join_row else 0
+
+        return {
+            "sources":              sources,
+            "total_72h":            total_all,
+            "promoted_72h":         promoted_all,
+            "staging_24h":          staging_count,
+            "overall_promotion_rate": round(promoted_all / total_all * 100, 1) if total_all else 0.0,
+            "gkg_join_rate":        round(gkg_joined / gkg_total * 100, 1) if gkg_total else 0.0,
+            "gkg_joined":           gkg_joined,
+            "gkg_total":            gkg_total,
+            "generated_at":         now.isoformat(),
+        }
+
+    except Exception as e:
+        logger.warning("[quality] DB 집계 실패: %s", e)
+        return {}
+
+
+@router.get("/quality")
+async def get_quality():
+    """데이터 품질 게이트 대시보드 (5분 캐시).
+
+    소스별 confidence·importance 분포, 승격률, GKG 조인율, 스테이징 현황.
+    CLAUDE.md §16 3단계 지정학 팩트체커 모니터링 용도.
+    """
+    now = datetime.now(timezone.utc)
+    if _quality_cache["data"] is not None and now < _quality_cache["expires_at"]:
+        return _quality_cache["data"]
+
+    result = await asyncio.to_thread(_calc_quality_metrics, now)
+    _quality_cache["data"] = result
+    _quality_cache["expires_at"] = now + _QUALITY_TTL
+    return result

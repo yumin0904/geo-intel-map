@@ -2891,6 +2891,20 @@ body:not(.study-mode) .notebook { display: none; }
 .cp-sector--indo_pacific{ background: rgba(248,81,73,0.15); color: #f85149; }
 .cp-sector--gray_zone   { background: rgba(139,148,158,0.2); color: #8b949e; }
 
+/* 품질 게이트 배지 */
+.quality-badge {
+  flex: none;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  cursor: default;
+  padding: 1px 4px;
+  border: 1px solid rgba(88,166,255,0.15);
+  border-radius: 3px;
+  background: rgba(88,166,255,0.05);
+  transition: color 0.3s;
+}
+
 /* 지정학 프로파일 섹션 */
 .cp-geo-section {
   border-top: 1px solid rgba(48,54,61,0.6);

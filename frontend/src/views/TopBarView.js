@@ -339,15 +339,44 @@ async function _refreshTicker() {
   } catch (e) { console.debug('[TopBar] ticker 실패:', e.message); }
 }
 
+async function _refreshQuality() {
+  try {
+    const q = await _get('/api/stats/quality');
+    _renderQualityBadge(q);
+  } catch (e) { console.debug('[TopBar] quality 실패:', e.message); }
+}
+
+function _renderQualityBadge(q) {
+  const el = document.getElementById('quality-badge');
+  if (!el || !q || !q.total_72h) return;
+
+  const rate   = q.overall_promotion_rate ?? 0;
+  const gkgRate= q.gkg_join_rate ?? 0;
+  const staging= q.staging_24h ?? 0;
+
+  // 색상: 승격률 기준
+  const color = rate >= 80 ? '#3fb950' : rate >= 50 ? '#f0a500' : '#f85149';
+  el.style.color = color;
+  el.title = [
+    `승격률 ${rate}% (conf≥0.8)`,
+    `GKG 조인 ${gkgRate}%`,
+    `24h 버퍼 ${staging}건`,
+    `72h 총 ${q.total_72h}건`,
+  ].join(' | ');
+  el.textContent = `🔬 ${rate}%`;
+}
+
 // ── 초기화 ───────────────────────────────────────────────────────────────────
 export function initTopBar() {
   _refreshTension();
   _refreshMarkets();
-  setTimeout(_refreshTicker, 3000);
+  setTimeout(_refreshTicker,  3000);
+  setTimeout(_refreshQuality, 5000);   // 다른 요청 완료 후 로드
 
-  setInterval(_refreshTension, 10 * 60 * 1000);
-  setInterval(_refreshMarkets,  5 * 60 * 1000);
-  setInterval(_refreshTicker,  TICKER_REFRESH_MS);
+  setInterval(_refreshTension,  10 * 60 * 1000);
+  setInterval(_refreshMarkets,   5 * 60 * 1000);
+  setInterval(_refreshTicker,   TICKER_REFRESH_MS);
+  setInterval(_refreshQuality,  10 * 60 * 1000);  // 10분 갱신
 
   // 티커 클릭 → 원문 새 탭
   document.getElementById('news-ticker-wrap')?.addEventListener('click', e => {
