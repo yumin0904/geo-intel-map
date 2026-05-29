@@ -23,6 +23,7 @@ from api.translate import router as translate_router
 from api.version import router as version_router
 from db.archive_manager import ArchiveManager
 from jobs.gdelt_job import run_gdelt_batch
+from jobs.reliefweb_job import run_reliefweb_batch
 
 # ── 글로벌 싱글톤 ─────────────────────────────────────────────────────────
 _archive_mgr = ArchiveManager()
@@ -41,6 +42,16 @@ async def lifespan(app: FastAPI):
         trigger="interval",
         minutes=15,
         id="gdelt_pipeline",
+        replace_existing=True,
+        misfire_grace_time=120,
+    )
+
+    # ReliefWeb UN OCHA — 30분마다 캐시 만료 (다음 요청 시 fresh fetch)
+    _scheduler.add_job(
+        run_reliefweb_batch,
+        trigger="interval",
+        minutes=30,
+        id="reliefweb_pipeline",
         replace_existing=True,
         misfire_grace_time=120,
     )

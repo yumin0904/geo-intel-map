@@ -18,6 +18,7 @@ from connectors.opensky import OpenSkyConnector
 from models.event import Event
 from services.gdelt_pipeline import run_gdelt_pipeline, to_geojson as gdelt_to_geojson
 from connectors.sanctions_connector import load_sanctions
+from connectors.reliefweb import fetch_reliefweb_events
 from services.importance_scorer import cluster_events, score_events, score_gdelt_events
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
@@ -155,6 +156,13 @@ _gdelt_cache: dict = {
 # 제재 데이터: 정적 YAML 기반 — 24시간 캐시 (UN SC·OFAC 결의는 매일 바뀌지 않음)
 _SANCTIONS_TTL = timedelta(hours=24)
 _sanctions_cache: dict = {
+    "geojson":    None,
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
+# ReliefWeb: UN OCHA 30분 캐시
+_RELIEFWEB_TTL = timedelta(minutes=30)
+_reliefweb_cache: dict = {
     "geojson":    None,
     "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
 }
@@ -726,6 +734,62 @@ def _sanctions_to_geojson(events) -> dict:
         "metadata": {
             "count":     len(features),
             "source":    "sanctions.yaml (UN SC·OFAC·EU)",
+            "generated": datetime.now(timezone.utc).isoformat(),
+        },
+    }
+
+
+@router.get("/reliefweb")
+async def get_reliefweb():
+    """
+    ReliefWeb (UN OCHA) 분쟁·인도주의 이벤트 GeoJSON (30분 캐시).
+
+    5대 섹터 핵심 분쟁국 10개 피드 병렬 수집 → 분쟁 키워드 필터 →
+    confidence_score=0.65 (UN 기관 출처, 비검증 GDELT보다 신뢰도 높음).
+
+    연관 이론:
+      - Gray Zone Strategy (Hoffman 2007) — 분쟁과 인도주의 위기의 경계
+      - Hybrid Warfare — 비정규 행위자 추적
+    """
+    now = datetime.now(timezone.utc)
+    if _reliefweb_cache["geojson"] is not None and now < _reliefweb_cache["expires_at"]:
+        return _reliefweb_cache["geojson"]
+
+    events = await fetch_reliefweb_events()
+    result = _reliefweb_to_geojson(events)
+    _reliefweb_cache["geojson"]    = result
+    _reliefweb_cache["expires_at"] = now + _RELIEFWEB_TTL
+    return result
+
+
+def _reliefweb_to_geojson(events: list) -> dict:
+    """ReliefWeb Event 리스트 → GeoJSON FeatureCollection."""
+    features = []
+    for e in events:
+        lat, lon = e.location
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [lon, lat]},
+            "properties": {
+                "id":               e.id,
+                "title":            e.title,
+                "description":      e.description,
+                "source_type":      e.source_type,
+                "region_code":      e.region_code,
+                "severity":         e.severity,
+                "theory_tags":      e.theory_tags,
+                "confidence_score": e.confidence_score,
+                "timestamp":        e.timestamp.isoformat(),
+                **e.payload,
+            },
+        })
+
+    return {
+        "type":     "FeatureCollection",
+        "features": features,
+        "metadata": {
+            "count":     len(features),
+            "source":    "ReliefWeb / UN OCHA",
             "generated": datetime.now(timezone.utc).isoformat(),
         },
     }
