@@ -379,10 +379,33 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 ### 현재 버전
 `version.json`: **3.20.0**
 
+### ✅ Cascade 룰 추가 + 엔진 DB fallback (2026-05-29) — v3.21.0
+
+**신규 룰 5개** (`backend/config/cascade_rules.yaml`, 15→21개)
+
+| 룰 ID | 트리거 | 지표 | 발화 | 이론 |
+|-------|--------|------|------|------|
+| `korean_peninsula_to_krw` | korean_peninsula sev≥35 | KRW=X↑ | 0건(시위 sev=15 다수, 시장 미반응 실증) | Alliance Dilemma |
+| `east_china_sea_to_defense` | east_china_sea sev≥50 | ITA↑ | 7건 ✅ | A2/AD, 일본 재무장 |
+| `malacca_to_lng` | malacca sev≥40 | NG=F↑ | 10건 ✅ | Mahan SLOC, LNG 초크포인트 |
+| `food_price_spike_to_tip` | food_price_spike 체인 | TIP↑ | 2건 ✅ | 식량→인플레이션 D2 |
+| `risk_off_to_qqq_drop` | risk_off_sentiment 체인 | QQQ↓ | 1건 ✅ | 리스크오프 D2 |
+
+**cascade engine DB fallback** (`backend/services/cascade/engine.py`)
+- `_TRIGGER_COUNTRIES`에 korean_peninsula/north_korea/east_china_sea/malacca 추가
+- `_load_region_events_from_db(region)` 함수 신설
+- `_fetch_region_events()`: live API 결과 없을 시 DB 자동 fallback
+- 총 cascade links: 23→44건
+
+**학습 인사이트**: `korean_peninsula_to_krw` 0건 = 한반도 '시위' 이벤트(sev=15)는 KRW에 유의미한 영향 없음을 실증. 고강도 북한 도발(north_korea_missile_to_krw)과 명확히 구분됨.
+
+### 현재 버전
+`version.json`: **3.21.0**
+
 ### 다음 세션 우선순위
 
 1. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
-2. **Cascade 룰 추가** — 한반도 긴장 → 방산주(ITA↑), 남중국해 → LNG선물 등 미발화 룰
+2. **cascade chain 브라우저 검증** — 새 규칙 지도 레이어에서 점선 화살표 표시 확인
 3. **DB→API 경로 테스트** — live ACLED API 없이도 앱 완전 동작 검증
 
 ---

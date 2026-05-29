@@ -409,3 +409,136 @@
       ITA↑(방산)과 QQQ↓(기술)이 동시에 발화하는 구조 — 같은 위기가 승자와 패자를 만든다.
       Weaponized Interdependence의 분배적 결과: 공급망 위기는 특정 섹터를 망가뜨리고
       다른 섹터(국방·소재)를 부상시킨다.
+
+# ── 신규 섹터 커버리지 확장 (2026-05-29) ──────────────────────────────────────
+# 한반도 직접 트리거, 동중국해, 말라카 초크포인트, D2 체인 완성
+
+- id: korean_peninsula_to_krw
+  name: "한반도 긴장 → 원/달러 환율 상승(원화 약세)"
+  # 직접 트리거: north_korea_missile_to_krw와 달리 '한반도 전체' 분쟁 이벤트에 반응
+  # korean_tension_to_kospi는 chain_input 룰 — 이 룰이 krw_depreciation을 먼저 생성해야 체인이 발화
+  # sev=35: 무력 충돌/원격폭력 기준 (DB 실측: sev≥35는 19건, sev≥50는 1건)
+  trigger:
+    source_type: conflict
+    region: korean_peninsula
+    severity_min: 35
+  expected_response:
+    source_type: market
+    ticker: "KRW=X"            # USD/KRW 환율. 상승 = 달러 강세/원화 약세
+    direction: up
+    window_hours: 24           # 한국 외환시장은 지정학 충격에 당일 반응
+    threshold_pct: 0.5         # KRW는 일변동 작음 — 낮은 임계치
+  chainable: true
+  chain_output: "krw_depreciation"
+  next_rule_hint: "korean_tension_to_kospi"   # krw 약세 → KOSPI 외국인 매도 체인
+  theory:
+    framework: "Alliance Dilemma (Snyder) / Korea Discount"
+    reference: "Snyder (1984) 동맹 딜레마, 국제금융센터 한국 외환 민감도 보고서"
+    learning_note: >-
+      한반도 긴장 고조 시 외국인 투자자는 원화 자산을 달러로 전환한다('원화 약세 포지션').
+      한국은 GDP 대비 무역의존도 80%+, 외국인 주식 보유 비중 ~30%로 지정학 충격에
+      구조적으로 취약하다. 이 룰은 north_korea_missile_to_krw(북한 직접 도발)보다 넓은 범위,
+      즉 한반도 전역의 군사적 긴장이 외환시장에 미치는 영향을 포착한다.
+      krw_depreciation 신호 생성 → korean_tension_to_kospi 체인이 자동 발화됨.
+
+- id: east_china_sea_to_defense
+  name: "동중국해 긴장 → 방산주(ITA) 상승"
+  trigger:
+    source_type: conflict
+    region: east_china_sea
+    severity_min: 50
+  expected_response:
+    source_type: market
+    ticker: "ITA"              # iShares 미국 항공우주·방산 ETF (LMT·RTX·NOC 포함)
+    direction: up
+    window_hours: 72           # 동중국해 에스컬레이션 → 일본 방위비 기대 → 방산주는 1~3거래일
+    threshold_pct: 0.8
+  chainable: true
+  chain_output: "defense_spending_surge"
+  next_rule_hint: "defense_surge_to_japan_remilitarization"
+  theory:
+    framework: "A2/AD Strategy / Japan Remilitarization"
+    reference: "Krepinevich (2010) A2/AD, 일본 방위성 방위대강 (2022)"
+    learning_note: >-
+      중국의 센카쿠(尖閣)/댜오위다오 분쟁 강압과 동중국해 군사 행동은 일본의 방위비 증액을
+      정당화하는 기제로 작동한다. 일본은 2022년 GDP 1% → 2% 방위비 목표를 선언했으며,
+      동중국해 긴장이 고조될수록 미국 방산업체(레이시온·록히드·노스롭 등)의 수주 기대가 커진다.
+      Mahan 해양력 이론에서 '교통로 통제'는 해군력 우위를 필요로 하므로,
+      동중국해 초크포인트 경쟁은 직접적으로 방산 지출 사이클과 연결된다.
+
+- id: malacca_to_lng
+  name: "말라카 해협 위협 → LNG 선물(NG=F) 상승"
+  trigger:
+    source_type: conflict       # 말라카는 해적·비국가 위협이 주 — conflict 타입 사용
+    region: malacca
+    severity_min: 40            # 말라카는 소규모 해적도 글로벌 LNG 가격에 영향 → 낮은 임계치
+  expected_response:
+    source_type: market
+    ticker: "NG=F"             # Henry Hub 천연가스 선물. LNG 직접 선물 없어 근사치
+    direction: up
+    window_hours: 48
+    threshold_pct: 1.0
+  chainable: true
+  chain_output: "lng_price_spike"
+  next_rule_hint: "lng_spike_to_south_korea_energy_cost"
+  theory:
+    framework: "SLOC Theory (Mahan) / LNG Supply Chain Chokepoint"
+    reference: "Mahan 'The Influence of Sea Power' (1890), IEA LNG 시장 보고서 (2023)"
+    learning_note: >-
+      말라카 해협은 글로벌 LNG 해상 물동량의 약 40%가 통과하는 에너지 동맥이다.
+      특히 한국·일본·중국의 LNG 수입 의존도가 높아 말라카 차단 시 동북아 에너지 가격에
+      즉각 파장이 온다. 해적 공격·소규모 분쟁도 항로 우회 위험을 높여 보험료·운임을 끌어올린다.
+      Mahan이 주목한 '좁은 목(chokepoint)'의 전략적 가치는 현대 LNG 공급망에서도 그대로 유효하다.
+      남중국해 룰(south_china_sea_to_lng)과 비교하면 '초크포인트 vs 분쟁 수역'의 가격 전달 차이를 관찰 가능.
+
+- id: food_price_spike_to_tip
+  name: "식량가격 급등 → 물가연동채(TIP) 상승"
+  # D2 체인: ukraine_conflict_to_wheat → food_price_spike → inflation (TIP)
+  # oil_spike_to_inflation과 구조가 동일하지만 충격 원인이 다름:
+  #   유가→인플레이션(에너지비용 상승) vs 식량가격→인플레이션(소비자물가 직접 압박)
+  trigger:
+    source_type: market
+    chain_input: "food_price_spike"   # ukraine_conflict_to_wheat의 chain_output
+  expected_response:
+    source_type: market
+    ticker: "TIP"
+    direction: up
+    window_hours: 96            # 식량가격 상승 → CPI 반영 → 시장 인플레이션 기대는 3~4거래일
+    threshold_pct: 0.2          # TIP 변동성 낮음
+  chainable: true
+  chain_output: "inflation_pressure"
+  next_rule_hint: "inflation_to_fed_rate"
+  theory:
+    framework: "Food Security → CPI Transmission"
+    reference: "IMF WEO (2022) 식량가격 인플레이션, Patel & Moore (2009)"
+    learning_note: >-
+      우크라이나 전쟁으로 밀·해바라기유 가격이 급등하면 글로벌 CPI의 식품 항목(비중 ~15~30%)이
+      직접 상승한다. TIP(물가연동채) 상승은 시장이 미래 인플레이션을 반영하는 신호다.
+      oil_spike_to_inflation과 달리 이 체인은 '에너지 비용'이 아닌 '식품 직접 가격'이 인플레를 유발하는
+      경로로, 개도국·식량수입국에서 충격이 더 크게 나타난다(아랍의 봄 선행지표 역할).
+      두 인플레이션 경로(에너지·식량)를 비교 관찰하면 지정학 충격의 소비자 전달 메커니즘을 이해하게 된다.
+
+- id: risk_off_to_qqq_drop
+  name: "리스크오프(안전자산 선호) → 나스닥(QQQ) 하락"
+  # D2 체인: middle_east_conflict_to_gold → risk_off_sentiment → QQQ↓
+  # gold↑ (safe haven)와 QQQ↓ (위험자산 매도)는 같은 'risk-off' 국면의 양면
+  trigger:
+    source_type: market
+    chain_input: "risk_off_sentiment"   # middle_east_conflict_to_gold의 chain_output
+  expected_response:
+    source_type: market
+    ticker: "QQQ"              # Invesco 나스닥100 ETF — 고베타 기술주, 리스크오프에 가장 민감
+    direction: down
+    window_hours: 48           # 금↑과 QQQ↓의 동시 발화는 1~2 거래일
+    threshold_pct: 0.5         # QQQ는 금보다 변동 크므로 임계치 낮게 유지
+  chainable: false             # 체인 종점
+  chain_output: "tech_sector_selloff"
+  theory:
+    framework: "Risk-off / Safe Haven Rotation"
+    reference: "Baur & Lucey (2010), Fama & French (1993) 리스크 팩터 이론"
+    learning_note: >-
+      지정학 위기에서 투자자는 고위험자산(주식, 특히 기술주)을 팔고 안전자산(금, 국채)으로 이동한다.
+      이 '리스크오프 로테이션'은 중동 분쟁(금↑) → 나스닥 기술주(QQQ↓) 연결로 관찰된다.
+      QQQ는 나스닥100 중 애플·마이크로소프트·엔비디아 등 고밸류에이션 기술주 비중이 커서
+      시장 불안 심리에 가장 먼저 매도 압력을 받는다.
+      middle_east_conflict_to_gold와 함께 보면 '분쟁 → 리스크오프 → 시장 전반 재편' 전체 경로를 추적 가능.

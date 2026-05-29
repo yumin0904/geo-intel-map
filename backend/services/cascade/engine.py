@@ -22,11 +22,12 @@ military_flight 평가 방식:
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
+import sqlite3
 import uuid
-from datetime import datetime, timezone
-
-from datetime import timedelta
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
 
 from connectors.acled import (
     AcledConnector,
@@ -60,12 +61,67 @@ _TRIGGER_COUNTRIES: dict[str, list[str]] = {
     "middle_east":    MIDDLE_EAST_COUNTRIES,               # → GLD ↑ (안전자산)
     "south_china_sea": SOUTH_CHINA_SEA_COUNTRIES,          # → ITA ↑, NG=F ↑
     "suez":           SUEZ_COUNTRIES,                      # → ZIM ↑ (해운주)
-    # ── 대기 — 현재 ACLED bbox 내 severity 부족, 해군·ADS-B 도입 시 자동 동작 ──
-    "hormuz":         GULF_COUNTRIES,                      # → CL=F ↑ (걸프 고강도 분쟁 없음)
-    # "taiwan_strait": 전술적 군사 도발 → ACLED에 전투 이벤트 없음, ADS-B 필요
-    # "north_korea":   ACLED 데이터 극도 희박(11건, sev<40)
-    # "korean_peninsula": 남한 시위 위주(sev≤20), 북한 도발 이벤트 없음
+    # ── DB 우선 지역 (live API sev 부족 → events DB에서 로드) ───────────
+    "hormuz":         GULF_COUNTRIES,                      # → CL=F ↑
+    "korean_peninsula": ["South Korea"],                   # → KRW=X ↑ (한반도 긴장)
+    "north_korea":    ["North Korea"],                     # → KRW=X ↑ (북한 도발)
+    "east_china_sea": ["China", "Japan"],                  # → ITA ↑ (센카쿠 분쟁)
+    "malacca":        ["Malaysia", "Singapore", "Indonesia"],  # → NG=F ↑ (LNG 초크포인트)
+    # "taiwan_strait": 전술적 군사 도발 → ACLED 전투 이벤트 없음, ADS-B 필요
 }
+
+_INTEL_DB = Path(__file__).resolve().parents[2] / "db" / "intel.db"
+
+
+def _load_region_events_from_db(region: str) -> list[Event]:
+    """events 테이블에서 특정 region_code의 ACLED 이벤트를 로드한다.
+
+    live ACLED API가 희박한 지역(한반도·동중국해·말라카 등)에서
+    DB baseline 데이터를 cascade 트리거로 활용한다.
+    """
+    if not _INTEL_DB.exists():
+        return []
+    try:
+        with sqlite3.connect(_INTEL_DB) as con:
+            con.row_factory = sqlite3.Row
+            rows = con.execute(
+                """
+                SELECT id, timestamp, source_type, region_code, severity,
+                       confidence_score, lat, lon, title, description, payload, theory_tags
+                FROM events
+                WHERE source_type = 'conflict'
+                  AND region_code = ?
+                  AND confidence_score >= 1.0
+                ORDER BY timestamp DESC
+                LIMIT 500
+                """,
+                (region,),
+            ).fetchall()
+        events: list[Event] = []
+        for r in rows:
+            try:
+                payload = json.loads(r["payload"] or "{}")
+                evt = Event(
+                    id=r["id"],
+                    timestamp=datetime.fromisoformat(r["timestamp"]),
+                    source_type=r["source_type"],
+                    source_id=payload.get("source_id", r["id"]),
+                    location=(r["lat"] or 0.0, r["lon"] or 0.0),
+                    region_code=r["region_code"],
+                    severity=r["severity"] or 0,
+                    title=r["title"] or "",
+                    description=r["description"] or "",
+                    payload=payload,
+                    theory_tags=json.loads(r["theory_tags"] or "[]"),
+                    confidence_score=r["confidence_score"] or 1.0,
+                )
+                events.append(evt)
+            except Exception:
+                continue
+        return events
+    except Exception as e:
+        logger.warning("[cascade] DB region load 실패 (region=%s): %s", region, e)
+        return []
 
 
 async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
@@ -174,31 +230,39 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
 async def _fetch_region_events(region: str) -> list[Event]:
     """region에 속하는 ACLED 이벤트를 fetch하고 지오펜스 필터만 적용해 반환한다.
 
+    데이터 소스 우선순위:
+      1) live ACLED API (region별 국가 목록으로 조회, 최근 30일)
+      2) DB fallback (live API 결과가 없거나 부족할 때)
     severity 필터는 룰마다 다르므로 여기서 적용하지 않는다(_sample_triggers가 담당).
-    같은 region의 여러 룰이 이 함수를 공유해 ACLED HTTP 호출을 region당 1회로 줄인다.
     """
     countries = _TRIGGER_COUNTRIES.get(region)
     if not countries:
         logger.warning(f"[cascade] region={region}에 대한 ACLED 국가 매핑 없음")
         return []
 
+    # 1) live ACLED API 시도
+    api_events: list[Event] = []
     connector = AcledConnector()
     try:
-        events = await connector.fetch(countries=countries)
+        raw = await connector.fetch(countries=countries)
+        for e in raw:
+            lat, lon = e.location
+            code = region_for_point(lat, lon)
+            if code == region:
+                e.region_code = code
+                api_events.append(e)
+        logger.info(f"[cascade] region={region}: API {len(raw)}건 → 지오펜스 통과 {len(api_events)}건")
     except Exception as e:
-        logger.warning(f"[cascade] ACLED 조회 실패(region={region}): {e}")
-        return []
+        logger.warning(f"[cascade] ACLED API 조회 실패(region={region}): {e}")
 
-    result: list[Event] = []
-    for e in events:
-        lat, lon = e.location
-        code = region_for_point(lat, lon)
-        if code == region:
-            e.region_code = code
-            result.append(e)
+    if api_events:
+        return api_events
 
-    logger.info(f"[cascade] region={region}: ACLED {len(events)}건 → 지오펜스 통과 {len(result)}건")
-    return result
+    # 2) DB fallback — live API에 데이터 없는 지역(한반도·동중국해·말라카 등)
+    db_events = _load_region_events_from_db(region)
+    if db_events:
+        logger.info(f"[cascade] region={region}: DB fallback {len(db_events)}건")
+    return db_events
 
 
 def _sample_triggers(raw_events: list[Event], severity_min: int) -> list[Event]:
