@@ -448,8 +448,36 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 ### 현재 버전
 `version.json`: **3.23.0**
 
+### ✅ GDELT 24h 파이프라인 검증 (2026-05-29)
+
+- `run_gdelt_pipeline()` 직접 실행: 총 5건, 승격(confidence≥0.8) 2건, 스테이징 3건
+- `_save_gdelt_events()` → `_load_gdelt_events_from_db(24h)` DB 저장/로드 정상
+- 서버 실행 중 `/api/layers/gdelt` 호출 시 자동 누적 확인 (10건 저장 → 11건 로드)
+- **코드 변경 없음** — 기존 v3.23.0 파이프라인 그대로 작동 확인
+
+### ⏳ CountryPanel 지도 flyTo 연동 (미완, 2026-05-29)
+
+**시도한 접근 및 실패 원인 분석**
+
+- 1차 시도: `onEachFeature` click 핸들러 추가 → 실패
+  - 원인: `preferCanvas: true` 환경에서 overlayPane 캔버스(z-index 400)가 모든 click 이벤트를 선점, countryPane(z-index 201) GeoJSON 이벤트 미도달
+- 2차 시도: `map.on('click', _onMapClick)` + bounds containment 히트 테스트 → 여전히 미동작
+
+**현재 코드 상태** (`frontend/src/layers/CountryLayer.js`)
+- constructor에 `this._map.on('click', this._onMapClick, this)` 등록
+- `_onMapClick()`: bounds 기반 국가 히트 테스트 → `flyToCountry()` + `country:open` 이벤트 발신
+- `destroy()`에 `this._map.off('click', ...)` 정리 추가
+
+**추가 조사 필요**
+- `map.on('click')` 이 실제로 발화하는지 콘솔 로그로 확인
+- CountryLayer `defaultVisible: true` 이지만 실제로 GeoJSON이 로드되는지 확인
+- CDN URL(jsDelivr) 접근 실패 가능성 점검
+
+### 현재 버전
+`version.json`: **3.23.0** (이번 세션 코드 변경 없음 — 검증 + 미완 디버깅)
+
 ### 다음 세션 우선순위
 
-1. **Cascade 통계 검증** — Granger 인과분석 (`services/cascade/correlation.py`)
-2. **GDELT 24h 데이터 밀도 모니터링** — 누적 후 GDELT 레이어 이벤트 수 확인
-3. **CountryPanel 지도 flyTo 연동** — 국가 검색 후 지도 자동 이동 확인
+1. **CountryPanel flyTo 디버깅** — 브라우저 콘솔 확인 (`map.on('click')` 발화 여부, GeoJSON 로드 여부)
+2. **Cascade 통계 검증** — Granger 인과분석 (`services/cascade/correlation.py`)
+3. **GDELT 24h 누적 밀도 확인** — 서버 실행 후 시간 경과 → GDELT 레이어 이벤트 수 추이

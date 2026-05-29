@@ -69,6 +69,9 @@ export class CountryLayer {
 
     this._initPane();
     this._bus.on('country:flyto', ({ iso3 }) => this.flyToCountry(iso3));
+    // overlayPane 캔버스(z-index 400)가 GeoJSON 클릭을 가로막으므로
+    // map 레벨 click 이벤트로 받아서 bounds 기반 국가 히트 테스트
+    this._map.on('click', this._onMapClick, this);
   }
 
   _initPane() {
@@ -130,8 +133,35 @@ export class CountryLayer {
   }
 
   destroy() {
+    this._map.off('click', this._onMapClick, this);
     this._layer?.remove();
     this._layer = null;
+  }
+
+  /**
+   * 지도 클릭 → 가장 작은 bounds를 가진 국가 폴리곤을 찾아 패널 오픈.
+   * overlayPane 캔버스가 GeoJSON 이벤트를 가로막으므로 map 레벨에서 처리.
+   */
+  _onMapClick(e) {
+    if (!this._layer || !this._visible) return;
+    const latlng = e.latlng;
+    let best = null;
+    let bestArea = Infinity;
+    this._layer.eachLayer(l => {
+      if (!l.getBounds) return;
+      const bounds = l.getBounds();
+      if (!bounds.contains(latlng)) return;
+      // bounds가 여러 개 매칭될 경우 가장 작은 것(더 정확한 국가) 선택
+      const area = (bounds.getNorth() - bounds.getSouth()) * (bounds.getEast() - bounds.getWest());
+      if (area < bestArea) { bestArea = area; best = l; }
+    });
+    if (!best) return;
+    const props = best.feature?.properties ?? {};
+    const iso3  = props.ISO_A3 || props.iso_a3 || '';
+    const name  = props.ADMIN || props.name || '';
+    if (!iso3 || iso3 === '-99') return;
+    this.flyToCountry(iso3);
+    this._bus.emit('country:open', { iso3, name_en: name });
   }
 
   /**
