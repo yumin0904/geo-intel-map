@@ -627,16 +627,26 @@ Phase 3 체크리스트 8/8 완성. CLAUDE.md §11 Phase 3 → ✅ 상태 갱신
 
 Phase 5 (추론 지능화)는 Phase 4 완료 후 착수. CLAUDE.md §11에 로드맵 추가됨.
 
+### ✅ Phase 3 브라우저 검증 완료 (2026-05-29)
+
+- 드라이버 툴팁: 4개 지역 tension-item 렌더 → 중동 호버 시 소스·드라이버 3개 정상 표시 ✅
+- 피자 레벨: 호버 시 현재 지수(37.0 ELEVATED)·4단계 가이드·역사 사례 전부 표시 ✅
+- 콘솔 에러 0건
+
+### ✅ Phase 3 공식 완료 선언 (2026-05-29) — v4.0.0
+
+**Phase 3 체크리스트 8/8 완성. version.json → 4.0.0 / phase 4 bump.**
+
+---
+
+## Phase 4 — 데이터 확충 & 적재 기반 강화 (착수)
+
 ### 현재 버전
-`version.json`: **3.27.0**
+`version.json`: **4.0.0**
 
 ### 다음 세션 우선순위
 
-#### Phase 3 잔여
-- [ ] 브라우저 검증 — 드라이버 툴팁 호버 동작, 피자 레벨 상세 표시 확인
-- [ ] Phase 3 완성 공식 선언 → version.json 4.0.0 / phase 4 bump
-
-#### Phase 4 착수 (Phase 3 선언 후)
+#### Phase 4 착수 순서
 1. **[P4-0] 국가 지정학 프로파일** — `country_geopolitics.yaml` 시드(핵심국 15개) + `_query_geopolitics()` + CountryPanelView 기본정보 탭 확장
 2. **[P4-1] 실시간 소스 다변화** — ReliefWeb API 편입
 3. **[P4-2] GDELT GKG 적재** — Stage 5 선행 데이터 확보
