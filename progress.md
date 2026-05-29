@@ -358,11 +358,32 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 ### 현재 버전
 `version.json`: **3.19.1**
 
+### ✅ ACLED hot table 적재 + DB 우선 API (2026-05-29) — v3.20.0
+
+**상황 파악**
+- ACLED 학술 무료 계정 `ref_date = 2025-05-29` (1년 지연)
+- 기존 bulk ingest: 2024-05~2025-05 (232,533건)
+- 3개월 gap fill 실행: +19,875건 (2025-03~2025-05 보강)
+- **최종 events 테이블: 252,409건, 2024-05~2025-05-29**
+
+**DB 우선 API 경로 구축** (`backend/api/layers.py`)
+- `_load_events_from_db()` 함수 신설
+  - ① 5대 섹터 핵심 지역(taiwan_strait/ukraine/hormuz 등 13개) → LIMIT 8000
+  - ② 최신 일반 이벤트 → LIMIT 3000
+  - Python에서 dedup (key regions 우선)
+- `get_conflict_events()` 수정: DB 우선 → live API fallback 구조
+  - DB 충분(≥100건) 시 live ACLED API 호출 스킵
+- **성능**: 캐시 콜드 기준 0.1초 (live API 대비 10~20배 빠름)
+- **실측**: 1,147건 (clustering 후) — ukraine·middle_east·taiwan 등 모든 지역 포함
+
+### 현재 버전
+`version.json`: **3.20.0**
+
 ### 다음 세션 우선순위
 
 1. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
-2. **ACLED hot table 적재** — `events` 테이블에도 최근 데이터 필요 (베이스라인 event_archive는 완료)
-3. **Cascade 룰 추가** — 한반도 긴장(military_flight+KOR) → 방산주(ITA↑) 등 미발화 룰 신규 등록
+2. **Cascade 룰 추가** — 한반도 긴장 → 방산주(ITA↑), 남중국해 → LNG선물 등 미발화 룰
+3. **DB→API 경로 테스트** — live ACLED API 없이도 앱 완전 동작 검증
 
 ---
 

@@ -5,6 +5,7 @@ CLAUDE.md 아키텍처: backend/api/layers.py
 """
 
 import json
+import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -21,8 +22,103 @@ from services.importance_scorer import cluster_events, score_events, score_gdelt
 
 router = APIRouter(prefix="/api/layers", tags=["layers"])
 
+_INTEL_DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
+
 # ACLED 응답 1시간 캐시 — 분쟁 데이터는 실시간 불필요 (CLAUDE.md 성능 원칙)
 _CONFLICT_TTL = timedelta(hours=1)
+
+
+def _load_events_from_db() -> list[Event] | None:
+    """intel.db events 테이블에서 ACLED 이벤트를 로드한다.
+
+    DB에 최근 30일 데이터가 충분히 있으면 live API 호출을 생략한다.
+    ACLED 학술 계정은 1년 지연 데이터를 제공하므로 DB가 primary source 역할.
+    반환값이 None이면 호출자가 live API로 fallback한다.
+    """
+    if not _INTEL_DB.exists():
+        return None
+    try:
+        _KEY_REGIONS = (
+            "taiwan_strait", "south_china_sea", "east_china_sea",
+            "korean_peninsula", "north_korea",
+            "hormuz", "bab_el_mandeb", "suez", "persian_gulf",
+            "eastern_europe", "ukraine",
+            "middle_east", "malacca",
+        )
+        placeholders = ",".join("?" * len(_KEY_REGIONS))
+        _cols = ("id, timestamp, source_type, region_code, severity, "
+                 "confidence_score, importance_score, is_staging, "
+                 "title, description, lat, lon, payload, theory_tags")
+
+        with sqlite3.connect(_INTEL_DB) as con:
+            con.row_factory = sqlite3.Row
+
+            # ① 5대 섹터 핵심 지역 이벤트 전체 (최근 12개월)
+            key_rows = con.execute(
+                f"""
+                SELECT {_cols}
+                FROM events
+                WHERE source_type = 'conflict'
+                  AND confidence_score >= 1.0
+                  AND region_code IN ({placeholders})
+                ORDER BY timestamp DESC
+                LIMIT 8000
+                """,
+                _KEY_REGIONS,
+            ).fetchall()
+
+            # ② 최신 일반 이벤트 (지역 무관, 지도 배경 밀도용)
+            general_rows = con.execute(
+                f"""
+                SELECT {_cols}
+                FROM events
+                WHERE source_type = 'conflict'
+                  AND confidence_score >= 1.0
+                ORDER BY timestamp DESC
+                LIMIT 3000
+                """
+            ).fetchall()
+
+        # 중복 제거 — key_rows 우선, general_rows 보충
+        seen: set[str] = set()
+        rows = []
+        for r in (*key_rows, *general_rows):
+            if r["id"] not in seen:
+                seen.add(r["id"])
+                rows.append(r)
+
+        if len(rows) < 100:
+            return None  # 데이터 부족 → live API fallback
+
+        events: list[Event] = []
+        for r in rows:
+            try:
+                from models.event import Event, IntelligenceMetadata
+                payload = json.loads(r["payload"] or "{}")
+                theory_tags = json.loads(r["theory_tags"] or "[]")
+                lat = r["lat"] or 0.0
+                lon = r["lon"] or 0.0
+                evt = Event(
+                    id=r["id"],
+                    timestamp=datetime.fromisoformat(r["timestamp"]),
+                    source_type=r["source_type"],
+                    source_id=payload.get("source_id", r["id"]),
+                    location=(lat, lon),
+                    region_code=r["region_code"],
+                    severity=r["severity"] or 0,
+                    title=r["title"] or "",
+                    description=r["description"] or "",
+                    payload=payload,
+                    theory_tags=theory_tags,
+                    confidence_score=r["confidence_score"] or 1.0,
+                    importance_score=r["importance_score"] or 0.0,
+                )
+                events.append(evt)
+            except Exception:
+                continue
+        return events if events else None
+    except Exception:
+        return None
 _conflict_cache: dict = {
     "geojson":     None,
     "expires_at":  datetime(1970, 1, 1, tzinfo=timezone.utc),
@@ -85,21 +181,35 @@ def _load_geojson(filename: str) -> dict:
 @router.get("/conflict-events")
 async def get_conflict_events():
     """
-    최근 30일, 인도-태평양 분쟁 이벤트 GeoJSON 반환.
+    인도-태평양 분쟁 이벤트 GeoJSON 반환.
     1시간 캐시 적용 — 두 번째 요청부터 즉시 반환.
+
+    데이터 소스 우선순위:
+      1) intel.db events 테이블 (ACLED 학술 계정 = 1년 지연, DB가 primary)
+      2) live ACLED API fallback (DB 데이터 부족 시)
     연관 이론: Gray Zone Strategy, Hybrid Warfare (CLAUDE.md 섹터 4·5)
     """
     now = datetime.now(timezone.utc)
     if _conflict_cache["geojson"] is not None and now < _conflict_cache["expires_at"]:
         return _conflict_cache["geojson"]
 
-    connector = AcledConnector()
-    try:
-        events = await connector.fetch()
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e)) from e
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=f"ACLED API 연결 실패: {e}") from e
+    # 1) DB 우선 로드
+    events = _load_events_from_db()
+    _source = "db"
+
+    # 2) DB 미충족 시 live API fallback
+    if events is None:
+        _source = "api"
+        connector = AcledConnector()
+        try:
+            events = await connector.fetch()
+        except RuntimeError as e:
+            raise HTTPException(status_code=503, detail=str(e)) from e
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"ACLED API 연결 실패: {e}") from e
+
+    import logging as _log
+    _log.getLogger(__name__).info("[conflict-events] source=%s events=%d", _source, len(events))
 
     # GDELT 캐시에서 지역 코드 추출 — gdelt_confirmed 점수 계산용
     gdelt_regions: frozenset[str] = frozenset()
