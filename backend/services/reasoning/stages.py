@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -498,32 +499,118 @@ def stage7_temporal_cascade(event_id: str, cascade_links: list[dict]) -> dict:
 
 # ── Stage 8: 동맹 확산 ───────────────────────────────────────────────────
 
-def stage8_alliance_spread(actors: list[str]) -> dict:
-    """alliance_graph.yaml에서 관련 동맹 네트워크를 조회한다."""
+def stage8_alliance_spread(actors: list[str], region_code: str = "") -> dict:
+    """alliance_graph.yaml에서 관련 동맹 네트워크를 조회한다.
+
+    actor 문자열에서 국가 코드를 추출하는 방법 (우선순위 순):
+    1) 직접 ISO3 코드 (예: CHN, USA)
+    2) "Military/Police/Government Forces of [Country]" 패턴 정규식 추출
+    3) "Protesters ([Country])" 등 괄호 내 국가명 추출
+    4) 전체 문자열을 국가명으로 직접 매핑
+    5) region_code → 관여 국가 fallback (예: hormuz → IRN)
+    """
     data = _load_yaml(_ALLIANCE_GRAPH_PATH)
     alliances = data.get("alliances", [])
     memberships = data.get("country_memberships", {})
 
-    # 3자리 코드 매핑 (간단한 국가명 → 코드 변환)
-    _NAME_TO_CODE = {
-        "usa": "USA", "united states": "USA", "america": "USA",
-        "russia": "RUS", "china": "CHN", "prc": "CHN",
-        "japan": "JPN", "korea": "KOR", "south korea": "KOR",
-        "iran": "IRN", "israel": "ISR", "ukraine": "UKR",
-        "australia": "AUS", "india": "IND", "uk": "GBR", "britain": "GBR",
-        "france": "FRA", "germany": "DEU", "turkey": "TUR",
-        "north korea": "PRK", "dprk": "PRK",
+    # 포괄적 국가명 → ISO3 매핑 (5대 섹터 핵심 국가 전체 포함)
+    _NAME_TO_CODE: dict[str, str] = {
+        # 영어 단수 표현
+        "usa": "USA", "united states": "USA", "the united states": "USA",
+        "united states of america": "USA",
+        "russia": "RUS", "russian federation": "RUS",
+        "china": "CHN", "people's republic of china": "CHN", "prc": "CHN",
+        "japan": "JPN", "south korea": "KOR", "republic of korea": "KOR",
+        "north korea": "PRK", "dprk": "PRK", "democratic people's republic of korea": "PRK",
+        "taiwan": "TWN",
+        # 중동
+        "iran": "IRN", "islamic republic of iran": "IRN",
+        "israel": "ISR", "state of israel": "ISR",
+        "saudi arabia": "SAU", "ksa": "SAU",
+        "yemen": "YEM", "houthi": "YEM",
+        "iraq": "IRQ", "syria": "SYR", "lebanon": "LBN",
+        "turkey": "TUR", "turkiye": "TUR",
+        "uae": "ARE", "united arab emirates": "ARE",
+        "qatar": "QAT", "kuwait": "KWT", "bahrain": "BHR", "oman": "OMN",
+        # 유럽
+        "ukraine": "UKR", "uk": "GBR", "united kingdom": "GBR", "britain": "GBR",
+        "france": "FRA", "germany": "DEU", "poland": "POL",
+        "nato": "USA",  # NATO 이벤트는 미국 주도로 처리
+        # 인도-태평양
+        "india": "IND", "australia": "AUS",
+        "philippines": "PHL", "the philippines": "PHL",
+        "indonesia": "IDN", "malaysia": "MYS", "vietnam": "VNM",
+        "singapore": "SGP", "thailand": "THA",
+        # 아프리카 회색지대 (5대 섹터 포함)
+        "ethiopia": "ETH", "somalia": "SOM", "sudan": "SDN",
+        "libya": "LBY", "mali": "MLI", "niger": "NER",
+        "nigeria": "NGA", "kenya": "KEN",
+        # 코카서스
+        "armenia": "ARM", "azerbaijan": "AZE", "georgia": "GEO",
     }
+
+    # region_code → 핵심 관여 국가 fallback
+    _REGION_ACTORS: dict[str, list[str]] = {
+        "taiwan_strait":    ["TWN", "CHN", "USA"],
+        "south_china_sea":  ["CHN", "PHL", "VNM", "USA"],
+        "east_china_sea":   ["CHN", "JPN", "USA"],
+        "korean_peninsula": ["KOR", "PRK", "USA", "CHN"],
+        "north_korea":      ["PRK", "KOR", "USA"],
+        "hormuz":           ["IRN", "USA", "SAU"],
+        "bab_el_mandeb":    ["YEM", "USA"],
+        "suez":             ["EGY", "USA"],
+        "eastern_europe":   ["UKR", "RUS", "USA"],
+        "ukraine":          ["UKR", "RUS"],
+        "middle_east":      ["ISR", "IRN", "USA"],
+        "persian_gulf":     ["IRN", "SAU", "USA"],
+    }
+
+    # ACLED actor 문자열에서 국가명 추출
+    # 패턴 예: "Military Forces of Yemen (2022-)", "Protesters (Israel)", "Government of Iraq (2022-2026)"
+    _OF_PATTERN  = re.compile(r'(?:Military|Police|Government|Naval|Air)\s+Forces?\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
+    _GOV_PATTERN = re.compile(r'Government\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
+    _PAREN_PATTERN = re.compile(r'\(([A-Za-z ]+?)\)\s*$')  # 문자열 끝 괄호: "Protesters (Yemen)"
+
+    def _extract_country(actor: str) -> str | None:
+        """actor 문자열에서 국가명 추출 → ISO3 반환."""
+        s = actor.strip()
+
+        # 1) 직접 ISO3 (3글자 대문자)
+        if len(s) == 3 and s.isupper() and s in memberships:
+            return s
+
+        # 2) "... Forces of [Country]" 패턴
+        for pat in (_OF_PATTERN, _GOV_PATTERN):
+            m = pat.search(s)
+            if m:
+                country_name = m.group(1).strip().lower()
+                if country_name in _NAME_TO_CODE:
+                    return _NAME_TO_CODE[country_name]
+
+        # 3) 끝 괄호에서 국가명 추출: "Protesters (Yemen)"
+        m = _PAREN_PATTERN.search(s)
+        if m:
+            country_name = m.group(1).strip().lower()
+            if country_name in _NAME_TO_CODE:
+                return _NAME_TO_CODE[country_name]
+
+        # 4) 전체 문자열 직접 매핑
+        return _NAME_TO_CODE.get(s.lower())
 
     actor_codes: set[str] = set()
     for actor in actors:
         if not actor:
             continue
-        code = _NAME_TO_CODE.get(actor.lower())
+        code = _extract_country(actor)
         if code:
             actor_codes.add(code)
-        elif len(actor) == 3 and actor.upper() in memberships:
-            actor_codes.add(actor.upper())
+
+    # 5) region_code fallback: actor에서 코드를 못 찾으면 지역 기반 국가 추가
+    if not actor_codes and region_code:
+        for rc_key, rc_codes in _REGION_ACTORS.items():
+            if rc_key in region_code:
+                actor_codes.update(rc_codes)
+                break
 
     relevant_alliances: list[dict] = []
     involved_countries: set[str] = set()

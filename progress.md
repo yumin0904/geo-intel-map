@@ -331,11 +331,38 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 ### 현재 버전
 `version.json`: **3.19.0**
 
+### ✅ Stage 8 actor 매칭 강화 (2026-05-29) — v3.19.1
+
+**문제**: `_NAME_TO_CODE` 18개 단순 매핑으로 ACLED 패턴 미처리 → 대부분 "관련 동맹 없음"
+
+**수정** (`backend/services/reasoning/stages.py`):
+- `import re` 추가
+- `_extract_country()` 함수 신설 — 4단계 우선순위 추출:
+  1. 직접 ISO3 (예: `CHN`) — membership 확인
+  2. `Military/Police/Government Forces of [Country]` 정규식
+  3. `Protesters ([Country])` 등 끝 괄호 패턴
+  4. 전체 문자열 직접 매핑
+- `_NAME_TO_CODE` 18개 → 50개+ 확장 (5대 섹터 핵심 국가 전체 + "the [Country]" 변종)
+- `_REGION_ACTORS` fallback 추가 — actor 매핑 실패 시 region_code로 핵심 국가 추론
+  (taiwan_strait→TWN/CHN/USA, hormuz→IRN/SAU/USA 등 11개 지역)
+- `stage8_alliance_spread(actors, region_code="")` 시그니처 확장
+- `engine.py` — `stage8_alliance_spread(actors, region)` 호출로 수정
+
+**실측 결과**:
+- `Protesters (Japan)` → `JPN` → 미일안보조약·쿼드 → USA·AUS·IND 잠재 연루 ✅
+- `Military Forces of China + United States` → CHN+USA → NATO·AUKUS·QUAD ✅
+- `Military Forces of Ukraine + Russia` → UKR+RUS → CSTO·SCO ✅
+- `Protesters (Iran) + Military Forces of Israel` → IRN+ISR → 저항의 축·I2U2 ✅
+- region=hormuz fallback → IRN+SAU+USA → 걸프협력회의·NATO 발화 ✅
+
+### 현재 버전
+`version.json`: **3.19.1**
+
 ### 다음 세션 우선순위
 
-1. **Stage 8 actor 매칭 강화** — GDELT/ACLED actor 필드 → ISO3 코드 매핑 확대 (현재 한정된 이름 매핑으로 동맹 분석 미발화)
-2. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
-3. **ACLED 실제 적재** — `acled_bulk_ingest.py --months 12` (베이스라인 232,533건은 완료, hot table은 별도)
+1. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
+2. **ACLED hot table 적재** — `events` 테이블에도 최근 데이터 필요 (베이스라인 event_archive는 완료)
+3. **Cascade 룰 추가** — 한반도 긴장(military_flight+KOR) → 방산주(ITA↑) 등 미발화 룰 신규 등록
 
 ---
 

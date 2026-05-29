@@ -67,7 +67,7 @@ async def _run_stages(event: dict, cascade_links: list[dict]) -> dict:
     s5 = stage5_intent_placeholder()  # 즉시
     s6_fut = loop.run_in_executor(None, stage6_institutional_constraints, actors, sectors)
     s7_fut = loop.run_in_executor(None, stage7_temporal_cascade, event_id, cascade_links)
-    s8_fut = loop.run_in_executor(None, stage8_alliance_spread, actors)
+    s8_fut = loop.run_in_executor(None, stage8_alliance_spread, actors, region)
 
     # ── Stage 4 (비동기, yfinance HTTP) ─────────────────────────────────
     s4_fut = stage4_macro_variables(sectors, region)
