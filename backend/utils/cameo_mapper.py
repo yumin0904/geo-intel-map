@@ -154,6 +154,83 @@ def _map_temporal_era(timestamp: datetime) -> Literal["cold_war", "post_cold", "
     return "cold_war"
 
 
+# ── GKG 테마 → 7대 축 매핑 ──────────────────────────────────────────────────
+# GKG 테마 코드 → (instrument_of_power, strategic_posture 보정 여부)
+# Token-Zero: 결정론적 prefix 매칭만 사용
+_GKG_THEME_TO_INSTRUMENT: dict[str, str] = {
+    "WA_":                 "military",      # 무기류
+    "MILITARY":            "military",
+    "CONFLICT":            "military",
+    "TAX_FNCACT_REBEL":    "military",
+    "TAX_FNCACT_MILPERS":  "military",
+    "CRISISLEX_":          "military",
+    "PROTEST":             "informational", # 시위는 정보전 범주
+    "SANCTIONS":           "economic",
+    "EPU_POLICY_":         "economic",
+    "MARITIME_":           "military",
+    "UNGP_":               "diplomatic",
+}
+
+_GKG_THEME_TO_SECTOR: dict[str, str] = {
+    "MARITIME_":   "maritime",
+    "WA_":         "gray_zone",
+    "SANCTIONS":   "energy",
+    "CRISISLEX_":  "gray_zone",
+    "MILITARY":    "alliance",
+    "CONFLICT":    "gray_zone",
+}
+
+
+def map_gkg_themes_to_tags(
+    themes: list[str],
+    tone: float,
+    existing_instrument: str | None = None,
+    existing_sector: str | None = None,
+) -> dict:
+    """GKG 테마 목록 + 톤 점수 → 7대 축 보강 정보 반환.
+
+    CLAUDE.md §14-A Token-Zero Rule 준수: LLM 호출 없이 결정론적 매핑.
+
+    Args:
+        themes:              GkgRecord.themes (분쟁 관련 테마 코드 목록)
+        tone:                V2Tone overall (음수 = 적대적)
+        existing_instrument: 기존 CAMEO 매핑 결과 (있으면 GKG 결과로 덮어쓰지 않음)
+        existing_sector:     기존 sector_lead
+
+    Returns:
+        dict with keys: instrument_of_power, sector_lead, strategic_posture,
+                        gkg_theme_count, hostility_confirmed
+    """
+    instrument = existing_instrument
+    sector     = existing_sector
+
+    for theme in themes:
+        for prefix, instr in _GKG_THEME_TO_INSTRUMENT.items():
+            if theme.startswith(prefix) and not instrument:
+                instrument = instr
+                break
+        for prefix, sec in _GKG_THEME_TO_SECTOR.items():
+            if theme.startswith(prefix) and not sector:
+                sector = sec
+                break
+
+    # 톤 기반 strategic_posture 보정
+    # V2Tone ≤ -5 → revisionist 신호 (CAMEO GoldsteinScale 기준과 동일 임계치)
+    posture = "revisionist" if tone <= -5.0 else "status_quo"
+
+    # 적대성 확인: 분쟁 테마 2개 이상 + 강한 부정 톤
+    hostility_confirmed = len(themes) >= 2 and tone <= -3.0
+
+    return {
+        "instrument_of_power":  instrument or "informational",
+        "sector_lead":          sector,
+        "strategic_posture":    posture,
+        "gkg_theme_count":      len(themes),
+        "hostility_confirmed":  hostility_confirmed,
+        "top_themes":           themes[:5],  # 최대 5개만 저장
+    }
+
+
 # ── 공개 인터페이스 ──────────────────────────────────────────────────────────
 def map_gdelt_to_intelligence_tags(
     actor1_type_code: str,

@@ -318,16 +318,48 @@ async def fetch_latest_gdelt() -> list[Event]:
 
 
 async def _get_export_url() -> str | None:
-    """lastupdate.txt에서 최신 export CSV ZIP URL을 추출한다."""
+    """lastupdate.txt에서 최신 export CSV ZIP URL을 추출한다.
+
+    GDELT CDN은 최대 15-30분 지연이 있으므로 404 시 이전 슬롯으로 fallback.
+    """
+    import re as _re
+    from datetime import datetime as _dt, timedelta as _td
+
     async with httpx.AsyncClient(timeout=10) as client:
         resp = await client.get(LASTUPDATE_URL)
         resp.raise_for_status()
 
-    # 형식: "size md5hash url" (공백 구분 3필드)
+    primary_url: str | None = None
     for line in resp.text.strip().splitlines():
         parts = line.split()
         if len(parts) >= 3 and "export.CSV.zip" in parts[2]:
-            return parts[2]
+            primary_url = parts[2]
+            break
+
+    if not primary_url:
+        return None
+
+    # CDN 가용성 확인 + 최대 4슬롯(1시간) 후퇴
+    ts_match = _re.search(r"/(\d{14})\.export\.CSV\.zip$", primary_url)
+    if not ts_match:
+        return primary_url
+
+    base_ts = _dt.strptime(ts_match.group(1), "%Y%m%d%H%M%S")
+    base_prefix = primary_url[:primary_url.rfind("/") + 1]
+
+    async with httpx.AsyncClient(timeout=8) as client:
+        for i in range(5):
+            ts = base_ts - _td(minutes=15 * i)
+            url = f"{base_prefix}{ts.strftime('%Y%m%d%H%M%S')}.export.CSV.zip"
+            try:
+                r = await client.head(url, follow_redirects=True)
+                if r.status_code == 200:
+                    if i > 0:
+                        logger.info("[GDELT] %d슬롯 후퇴하여 가용 파일: %s", i, url)
+                    return url
+            except Exception:
+                continue
+
     return None
 
 
