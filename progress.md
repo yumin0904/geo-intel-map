@@ -399,71 +399,20 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 
 **학습 인사이트**: `korean_peninsula_to_krw` 0건 = 한반도 '시위' 이벤트(sev=15)는 KRW에 유의미한 영향 없음을 실증. 고강도 북한 도발(north_korea_missile_to_krw)과 명확히 구분됨.
 
+
+### ✅ Cascade chain 브라우저 검증 (2026-05-29) — v3.21.0
+
+- Playwright 실측: `[CascadeLayer] 44개 인과 링크 로드 완료` 로그 확인
+- canvas 35,950 non-transparent pixels — `preferCanvas: true` 환경에서 polyline canvas 렌더링 확인
+- cascade-target/arrowhead 마커 60개 viewport 표시
+- 팝업: rule_name·ticker·가격변동·반응시간·상관도·이론 설명 완전 표시, 콘솔 에러 0건
+- 신규 룰 API 반환 확인: malacca×10, east_china_sea×7, food_price_spike×2, risk_off×1
+
 ### 현재 버전
 `version.json`: **3.21.0**
 
 ### 다음 세션 우선순위
 
-1. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
-2. **cascade chain 브라우저 검증** — 새 규칙 지도 레이어에서 점선 화살표 표시 확인
-3. **DB→API 경로 테스트** — live ACLED API 없이도 앱 완전 동작 검증
-
----
-
-## Phase 3 후속 — 분석실 8단계 추론 루틴
-
-학습자가 체계적인 지정학 추론을 수행하도록 하는 프레임워크.
-
-| # | 단계 | 데이터 소스 | 상태 |
-|---|------|------------|------|
-| 1 | 사건 팩트 | ACLED, GDELT, FIRMS, AIS, ADS-B | ✅ 기존 자산 |
-| 2 | 섹터 분류 | theory_library.yaml sector_tag | ✅ 기존 자산 |
-| 3 | 역사적 비교 | case_studies.yaml (신규) | ⏳ |
-| 4 | 거시 변수 | yfinance + FRED (환율/원자재) | 🔧 확장 필요 |
-| 5 | 명분과 의도 | 외교 성명 RSS + Gemini 분석 | 🔮 Phase 4 |
-| 6 | 제도적 저항 | UN 안보리, GSDB 제재 | ⏳ Step 8에 포함 |
-| 7 | 시간적 추이 | cascade depth=4 체이닝 | ✅ 기존 자산 |
-| 8 | 동맹 확산 | alliance_graph.yaml (신규) | ⏳ |
-
-**신규 필요 파일**: `case_studies.yaml`, `alliance_graph.yaml`, `fred_adapter.py`, `backend/services/reasoning/`, `ReasoningPanelView.js`
-
----
-
----
-
-## 서브 에이전트 도입 계획
-
-### Phase 3 후반 (즉시 착수)
-
-**8단계 추론 자동화**
-- 사용자가 사건 선택 → 서브 에이전트가 8단계 자동 채움
-- 서브 A: 사건 팩트 수집 (GDELT/ACLED)
-- 서브 B: 역사 사례 매칭 (케이스 스터디 DB)
-- 서브 C: 시장 반응 분석 (yfinance)
-- 서브 D: 제재 레짐 조회
-- 메인: 결과 종합 → 분석실 캔버스 자동 생성
-
-**라이브러리 자동 확장**
-- 새 이벤트 감지 → 관련 논문/보고서 자동 요약
-- .md 파일 자동 생성 → library.db 업데이트
-- 싱크탱크 보고서 자동 아카이브
-  - CSIS (미국), RAND (미국)
-  - IISS (영국), Chatham House (영국)
-  - INSS — Institute for National Security Studies (이스라엘)
-  - INSS — 국가안보전략연구원 (한국)
-  - 한국 국방과학연구원 (ADD)
-
-### Phase 4 (장기)
-- 데이터 수집 병렬화 (GDELT/RSS/AIS/ADS-B)
-- Cascade 자동 검증 (통계 + 실시간 + 역사 사례)
-
----
-
-## 다음 세션 시작점
-
-### 우선순위 작업 (다음 세션)
-
-1. **Gemini 번역 재확인** — KST 2026-05-27 09:00 이후 뉴스 티커 + 맥락 요약 한국어 동작 확인 (오늘 할당량 소진 → 내일 리셋)
-2. **ReasoningPanelView.js** — 8단계 추론 결과를 프론트엔드 패널로 표시 (이벤트 클릭 시 좌측 또는 하단 패널 오픈)
-3. **데이터 계층형 보관 설계** — GDELT/ACLED 이벤트 TTL 정책, 오래된 데이터 아카이브
-4. **라이브러리 데이터 채우기** — `library/` .md 신규 추가, theory_library.yaml 항목 보강
+1. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가 (CountryPanel 지원 국가 늘리기)
+2. **GDELT 핫 데이터 보강** — 학술 ACLED 1년 지연 → GDELT 실시간으로 보완 (confidence 파이프라인 점검)
+3. **Cascade 통계 검증** — Phase 3 목표: Granger 인과분석으로 룰 유효성 사후 검증 (`services/cascade/correlation.py`)
