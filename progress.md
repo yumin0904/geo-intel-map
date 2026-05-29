@@ -416,3 +416,40 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 1. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가 (CountryPanel 지원 국가 늘리기)
 2. **GDELT 핫 데이터 보강** — 학술 ACLED 1년 지연 → GDELT 실시간으로 보완 (confidence 파이프라인 점검)
 3. **Cascade 통계 검증** — Phase 3 목표: Granger 인과분석으로 룰 유효성 사후 검증 (`services/cascade/correlation.py`)
+
+### ✅ 국가 레지스트리 33→41개 확장 (2026-05-30) — v3.22.0
+
+- `_COUNTRY_INFO`에 8개 추가: AUS·TUR·QAT·NLD·EGY·PAK·POL·ETH
+  - AUS/QAT/TUR/NLD: 무역 데이터 보유 (historical_trade_matrix)
+  - EGY(수에즈)/PAK(SCO)/POL(NATO동방)/ETH(아프리카최대분쟁) 지정학 핵심
+- `sector_tags` 폴백 추가: region_code=None 국가도 이론 표시
+  - AUS → maritime/indo_pacific 8개, NLD → techno 4개, PAK → gray_zone 8개
+- `_query_theories()` 시그니처 확장: `sector_tags` 폴백 쿼리 지원
+- Playwright 실측: 8개 신규 국가 드롭다운·CountryPanel 오픈 확인
+
+### ✅ GDELT 핫 데이터 보강 (2026-05-30) — v3.23.0
+
+**RSS 소스 4→8개 교체** (`news_cross_validator.py`)
+- Reuters/AP: DNS 실패로 제거
+- 추가: Guardian·DW(독일공영)·France24·NHK World·NDTV·RFA(자유아시아)
+- RSS 기사: 50건 → 230건 (4.6배↑), 8개 소스 전체 작동 확인
+
+**부분 RSS 점수** (이분법 → 그라데이션)
+- 이전: 2소스+ → +0.2 / 미달 → 0
+- 이후: 1소스 → +0.1, 2소스+ → +0.2
+- 새 승격 경로: ACLED(+0.1) + RSS1(+0.1) + Sensor(+0.1) = 0.8 ✅
+
+**GDELT 24h DB 누적** (`layers.py`)
+- `_save_gdelt_events()`: 승격 이벤트 events 테이블 저장 (INSERT OR IGNORE)
+- `_load_gdelt_events_from_db(hours=24)`: DB 누적 이벤트 로드
+- `get_gdelt()`: 최신 15분 + DB24h 병합, ID dedup
+- 효과: 시간이 지날수록 GDELT 레이어 이벤트 밀도 증가
+
+### 현재 버전
+`version.json`: **3.23.0**
+
+### 다음 세션 우선순위
+
+1. **Cascade 통계 검증** — Granger 인과분석 (`services/cascade/correlation.py`)
+2. **GDELT 24h 데이터 밀도 모니터링** — 누적 후 GDELT 레이어 이벤트 수 확인
+3. **CountryPanel 지도 flyTo 연동** — 국가 검색 후 지도 자동 이동 확인
