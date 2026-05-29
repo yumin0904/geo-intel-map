@@ -71,6 +71,8 @@ app.add_middleware(
         "http://localhost:5500",   # VS Code Live Server 기본 포트
         "http://127.0.0.1:5500",
         "http://localhost:3000",   # 다른 로컬 개발 서버 대비
+        "http://localhost:8080",   # python -m http.server 검증용
+        "http://127.0.0.1:8080",
     ],
     allow_methods=["*"],           # GET, POST 등 모든 HTTP 메서드 허용
     allow_headers=["*"],

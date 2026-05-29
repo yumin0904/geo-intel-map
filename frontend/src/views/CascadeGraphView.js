@@ -38,7 +38,7 @@ const REGION_LABEL = {
 // ticker → 표시용 레이블
 const TICKER_LABEL = {
   'CL=F':  '원유\n(WTI)',
-  'ZW=F':  '밀\n선물',
+  'ZW=F':  '밀선물\n(ZW=F)',
   'GLD':   '금 ETF',
   'ITA':   '방산\nETF',
   'NG=F':  'LNG\n선물',

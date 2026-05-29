@@ -207,14 +207,114 @@ python3 scripts/acled_bulk_ingest.py --dry-run    # 건수 확인
 python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35분)
 ```
 
+### ✅ ACLED 베이스라인 적재 + Stage 1 검증 (2026-05-26)
+
+- `backend/scripts/acled_bulk_ingest.py` 실행 완료 — **232,533건** `event_archive` 적재 (41개국, 12개월, 29분)
+- `backend/services/verification_funnel.py` — Stage 1 버그 2개 수정
+  - `_stage1_baseline()` timestamp 필터 제거 (베이스라인은 전체 이력 참조)
+  - `_REGION_ALIASES` 추가 (eastern_europe→ukraine, indo_pacific→taiwan_strait 등 광역 매핑)
+- 실측: taiwan_strait 902건 / hormuz 221건 / eastern_europe(ukraine) 81,707건 → Stage1 +0.1 ✅
+
+### ✅ Cascade 다단계 체이닝 구현 완료 (2026-05-26)
+
+- `backend/models/cascade.py` — `region: str = ""` (chain-only 룰 `region` 필드 optional 허용)
+- `backend/services/cascade/engine.py` — `_evaluate_trigger()`에 `target_timestamp` 누락 버그 수정
+- `backend/config/cascade_rules.yaml` — 2단계 체인 2룰 추가 (총 13룰)
+  - `bab_el_mandeb_to_oil_spike` (conflict → CL=F +1.5%, chain_output: "oil_spike")
+  - `oil_spike_to_inflation` (chain_input: "oil_spike" → TIP +0.2%, chain_output: "inflation_pressure")
+- 실데이터 검증: 2023-11-19 홍해 위기 → CL=F +2.25% ✅ → TIP +0.30% ✅ — 2단계 체인 발화 확인
+- 이론: Resource Weaponization (Hirschman 1945) → 거시경제 전이 (Drezner 2015)
+
+### ✅ 3단계 반도체 체인 + CascadeGraphView 다단계 시각화 (2026-05-26)
+
+**3단계 체인 룰 추가** (`cascade_rules.yaml`)
+- `semiconductor_supply_risk_to_sector_decline` — chain_input: "semiconductor_supply_risk" → SOXX↓2%
+- `semiconductor_sector_decline_to_defense` — chain_input: "semiconductor_sector_decline" → ITA↑1.0% (방산·국방기술주, 종점)
+- 전체 경로: `대만해협긴장(military_flight≥50)` → `TSM↓` → `SOXX↓` → `ITA↑` (depth=1/2/3)
+- 총 15개 룰, chain_input 룰 4개
+
+**CascadeGraphView 다단계 노드 시각화**
+- depth별 노드 색상: depth=1 황금, depth=2 갈색+노랑 테두리, depth=3 진갈색+주황 테두리
+- 체인 엣지(depth≥2) 점선(`line-style: dashed`) 구분, `_highlightRegion()` `successors()`로 전체 체인 경로 하이라이트
+
+**ReasoningPanel cascade depth 배지**
+- Stage 7 요약: depth≥3 → `🟠D3`, depth=2 → `🟡D2` 배지
+- `stages.py` — cascade_chain 항목에 `depth` 필드 추가
+
+### ✅ 3단계 체인 실데이터 검증 + SandboxLab 체인 뷰어 버그 수정 (2026-05-27)
+
+**검증 결과 (yfinance 실데이터)**
+- 2022 펠로시 위기(08-01): D1(TSM↓2.45%)✅ → D2 미발화(SOXX +0.19% buy-the-dip)
+- 2023 Joint Sword(04-05): D1(TSM↓2.14%)✅ → D2(SOXX↓0.52%)✅ → D3(ITA↑2.16%, 1주)✅ **3단계 전체 발화!**
+- 핵심: D2 INTC↑ 가설 폐기 → SOXX↓(공급망 공포)로 교체. D3 윈도우 72h→168h(1주).
+
+**SandboxLab 체인 뷰어 버그 수정 (v3.15.1)**
+- `stages.py` — `stage1_event_facts()` 반환값에 `region_code` 필드 추가
+- `SandboxLabView.js` — `_openWithChain()` stages object/array 타입 불일치 수정, 필드명 수정
+
+**브라우저 검증 + 추가 버그 수정 (v3.15.2)**
+- [✅] GDELT IRAN vs IRAN 중복 필터 — `_filter_and_normalize()` 필터 ⑤ 삽입 (동일 국가 이벤트 skip)
+- [⏳] 분析실 체인 트리 미표시 → region_code 불일치 (v3.15.3에서 해결)
+
+### ✅ 분析실 체인 트리 렌더링 완료 (2026-05-27) — v3.15.3
+
+- `stages.py` — `region_code` geofence 역조회 fallback (`region_for_point` import, 좌표 → 지역 자동 파생, 1,323개 None 이벤트 해결)
+- `reasoning.py` — `_resolve_event()` 캐시 미스 시 `get_conflict_events()` / `get_gdelt()` warm-up 자동 호출
+- `index.html` — `dagre@0.8.5` peer dependency 추가, cytoscape → dagre → cytoscape-dagre 순서 확정 (graphlib 오류 해결)
+- `CascadeLink` 모델 — `rule_name: str | None` 필드 추가, engine.py D1·D2/D3 생성 시 `rule.name` 세팅
+- `CascadeGraphView.js` / `SandboxLabView.js` — 엣지 레이블 `rule_name[:10]\n${pctStr}` 형식
+- 실측: 우크라이나 → 밀선물 D1 3개 체인 트리 렌더링 성공
+
+### ✅ FRED + Comtrade 베이스라인 + Stage 4/8 연동 (2026-05-27) — v3.16.0
+
+**스키마 확장**
+- `backend/db/schema.sql` — `historical_macro_indices` (FRED 일별 종가) + `historical_trade_matrix` (Comtrade 무역 의존도) 테이블 추가
+
+**베이스라인 적재 스크립트**
+- `backend/scripts/baseline_bulk_ingest.py` (신규)
+  - FRED: WTI·금·원달러·대만달러·VIX 3년치 3,757건
+  - WITS/Comtrade: HS 27(에너지)·8542(반도체)·26(희토류) CSV 파싱, dependency_ratio 자동 계산 6,116건
+
+**Stage 4 로컬 쿼리 교체**
+- `stages.py` — `stage4_macro_variables()` yfinance 실시간 → `historical_macro_indices` 로컬 쿼리, DB 미적재 시 yfinance fallback
+
+**Stage 8 무역 의존도 추가**
+- `stage8_alliance_spread()` — `trade_dependencies` 필드 추가 (Farrell & Newman Weaponized Interdependence 계량화)
+
+### ✅ 국가 클릭 정보 패널 구현 완료 (2026-05-27) — v3.18.0
+
+**백엔드**
+- `backend/api/country.py` (신규) — `GET /api/country/{iso3}` + `GET /api/country/list`
+  - 30분 캐시, 30개 주요 국가 정보 레지스트리
+  - `_query_macro()` — FRED `historical_macro_indices` 최근 30일 (환율·원유·VIX)
+  - `_query_trade()` — Comtrade `historical_trade_matrix` HS 8542/27/26 상위 5개 파트너
+  - `_query_sanctions()` — `sanctions.yaml` ISO2 매칭 (target_country)
+  - `_query_theories()` — `library.db` regions/geopol_region 매칭 (최대 12개)
+  - 실측: KOR → macro 3개·trade 3 HS·theories 4개 / IRN → sanction 1건·theories 7개
+- `backend/main.py` — `country_router` 등록
+
+**프론트엔드**
+- `frontend/src/layers/CountryLayer.js` (신규)
+  - Natural Earth 110m GeoJSON CDN (jsDelivr → datasets/geo-countries)
+  - sessionStorage 2차 캐시, Leaflet `countryPane` (z-index 201)
+  - 호버 반투명 하이라이트 + 국가명 툴팁, 클릭 → `country:open { iso3, name_en }` 이벤트
+- `frontend/src/panels/CountryPanelView.js` (신규)
+  - 우측 슬라이드인 360px 패널 (ReasoningPanel 구조 재활용)
+  - 5탭: 기본정보 / 거시지표 / 무역의존도 / 제재 / 관련이론
+  - 거시지표: SVG sparkline (30일 추이) + 변동률 %
+  - 무역의존도: 3 HS코드 × 5파트너 테이블 + 의존도 배지
+- `data/trade/wits_trade_world.csv` — 16개국 491건, KOR 반도체 대중 의존도 76.7% 정상 출력
+- 이론 연결: Farrell & Newman 'Weaponized Interdependence', Drezner 'Economic Coercion'
+
 ### 현재 버전
-`version.json`: **3.11.0**
+`version.json`: **3.18.0**
 
 ### 다음 세션 우선순위
 
-1. **ACLED 실제 적재 실행** — `python3 scripts/acled_bulk_ingest.py --months 3` 또는 `--months 12` (~35분, `event_archive` 베이스라인)
-2. **Stage 1 베이스라인 검증** — `verification_funnel.py` Stage 1 ACLED 대조 활성화 확인 (taiwan_strait / hormuz 지역 +0.1 점수 동작 여부)
-3. **다음 기능 결정** — SandboxLab 고도화 / Cascade 체이닝 / 라이브러리 보강 중 선택
+1. **브라우저 검증** — 국가 클릭 → CountryPanel 5탭 데이터 확인
+2. **ZW=F 티커 한국어 레이블** — `TICKER_LABEL_KO`에 `ZW=F: '밀선물\n(ZW=F)'` 추가 (SandboxLabView + CascadeGraphView)
+3. **ReasoningPanel Stage 4/8 UI** — indicators/trade_dependencies 필드 프론트엔드 렌더링
+4. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
 
 ---
 

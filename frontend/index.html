@@ -202,6 +202,14 @@
       defaultVisible: false,
     });
 
+    // Phase 3: 국가 폴리곤 레이어 — panel.mount 전에 등록해야 토글이 패널에 포함됨
+    const countryLayer = new CountryLayer(ctrl.map, ctrl.eventBus);
+    ctrl.layerManager.register('countries', countryLayer, {
+      name: '국가 경계',
+      icon: '🗺',
+      defaultVisible: true,
+    });
+
     const panel = new LayerPanel(ctrl.layerManager, ctrl.eventBus);
     panel.mount('layer-panel');
 
@@ -214,14 +222,6 @@
 
     // Phase 3: 국가 클릭 정보 패널 — country:open 이벤트로 열기
     new CountryPanelView(ctrl.eventBus).mount('country-panel');
-
-    // Phase 3: 국가 폴리곤 레이어 (Natural Earth 110m)
-    const countryLayer = new CountryLayer(ctrl.map, ctrl.eventBus);
-    ctrl.layerManager.register('countries', countryLayer, {
-      name: '국가 경계',
-      icon: '🗺',
-      defaultVisible: true,
-    });
 
     // Phase 3: 이론 라이브러리 뷰 — library:toggle 이벤트로 열기/닫기
     new TheoryLibraryView(ctrl.map, ctrl.eventBus, ctrl.layerManager);

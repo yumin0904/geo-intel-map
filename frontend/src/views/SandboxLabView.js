@@ -27,7 +27,7 @@ const REGION_LABEL_KO = {
 
 // ticker → 한국어 레이블
 const TICKER_LABEL_KO = {
-  'CL=F': '원유(WTI)', 'ZW=F': '밀선물', 'GLD': '금ETF',
+  'CL=F': '원유(WTI)', 'ZW=F': '밀선물(ZW=F)', 'GLD': '금ETF',
   'ITA': '방산ETF', 'NG=F': 'LNG선물', 'ZIM': '해운(ZIM)',
   'TSM': 'TSMC', 'SOXX': '반도체ETF', 'KRW=X': '원/달러',
   '^KS11': '코스피', 'TIP': '물가연동채', 'INTC': '인텔',
