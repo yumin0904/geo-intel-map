@@ -191,16 +191,22 @@ class ArchiveManager:
         return count
 
     def _promote_high_value(self, con: sqlite3.Connection) -> int:
-        """고가치 GDELT 이벤트를 event_archive로 이관하고 핫 테이블에서 제거."""
+        """고가치 GDELT 이벤트를 event_archive로 이관하고 핫 테이블에서 제거.
+
+        24h 최소 보관 조건: GDELT 24h 누적 밀도 기능 보호.
+        생성 후 24h 이내 이벤트는 이관 대상에서 제외한다.
+        """
+        cutoff_24h = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
         rows = con.execute(
             """
             SELECT * FROM events
              WHERE source_type = 'conflict'
                AND json_extract(payload, '$.data_source') = 'GDELT'
                AND (confidence_score >= ? OR importance_score >= ?)
+               AND created_at < ?
                AND id NOT IN (SELECT id FROM event_archive)
             """,
-            (_ARCHIVE_CONFIDENCE_MIN, _ARCHIVE_IMPORTANCE_MIN),
+            (_ARCHIVE_CONFIDENCE_MIN, _ARCHIVE_IMPORTANCE_MIN, cutoff_24h),
         ).fetchall()
 
         count = 0

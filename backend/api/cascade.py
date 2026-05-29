@@ -12,6 +12,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter
 
 from services.cascade.engine import build_cascade
+from services.cascade.correlation import run_correlation_analysis, summarize_results
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,13 @@ router = APIRouter(prefix="/api/cascade", tags=["cascade"])
 # Cascade 결과 1시간 캐시 — ACLED(분쟁) + yfinance(유가) 호출 비용이 크다.
 _CASCADE_TTL = timedelta(hours=1)
 _cache: dict = {
+    "result":     None,
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
+# Granger 분석은 계산 비용이 크므로 24시간 캐시
+_CORR_TTL = timedelta(hours=24)
+_corr_cache: dict = {
     "result":     None,
     "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
 }
@@ -40,3 +48,27 @@ async def get_cascade_links():
     _cache["result"] = result
     _cache["expires_at"] = now + _CASCADE_TTL
     return result
+
+
+@router.get("/correlation")
+async def get_correlation():
+    """Cascade 룰의 Granger 인과성 사후 검증 결과를 반환한다.
+
+    각 룰에 대해 "분쟁 강도 시계열 → 시장 지표" Granger F-test를 수행한다.
+    계산 비용이 크므로 24시간 캐시.
+
+    이론 연결:
+      Granger (1969) — 시간 선행성 기반 인과 추론
+      적용: 지정학적 충격이 시장 변동을 통계적으로 예측하는가를 검증
+    """
+    now = datetime.now(timezone.utc)
+    if _corr_cache["result"] is not None and now < _corr_cache["expires_at"]:
+        return _corr_cache["result"]
+
+    results = await run_correlation_analysis()
+    summary = summarize_results(results)
+    payload = {"summary": summary, "rules": results}
+
+    _corr_cache["result"] = payload
+    _corr_cache["expires_at"] = now + _CORR_TTL
+    return payload

@@ -552,29 +552,55 @@ def _save_gdelt_events(events: list[Event]) -> None:
 
 
 def _load_gdelt_events_from_db(hours: int = 24) -> list[Event]:
-    """events 테이블에서 최근 N시간 내 GDELT 이벤트를 로드한다."""
+    """events 테이블과 event_archive에서 최근 N시간 내 GDELT 이벤트를 로드한다.
+
+    archive_manager가 24h 이후 고가치 GDELT를 event_archive로 이관하므로
+    두 테이블을 UNION으로 함께 조회한다.
+    """
     if not _INTEL_DB.exists():
         return []
     cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
     try:
         with sqlite3.connect(_INTEL_DB) as con:
             con.row_factory = sqlite3.Row
-            rows = con.execute(
+            # events 핫 테이블 (lat/lon 컬럼 있음)
+            hot_rows = con.execute(
                 """
                 SELECT id, timestamp, source_type, region_code, severity,
                        confidence_score, importance_score, lat, lon,
                        title, description, payload, theory_tags
                 FROM events
                 WHERE payload LIKE '%"data_source": "GDELT"%'
-                  AND timestamp >= ?
+                  AND created_at >= ?
                   AND confidence_score >= 0.8
-                ORDER BY timestamp DESC
+                ORDER BY created_at DESC
                 LIMIT 200
                 """,
                 (cutoff,),
             ).fetchall()
+            # event_archive (lat/lon 없음 → payload에서 추출)
+            arc_rows = con.execute(
+                """
+                SELECT id, timestamp, source_type, region_code, severity,
+                       confidence_score, importance_score,
+                       NULL AS lat, NULL AS lon,
+                       title, description, payload, theory_tags
+                FROM event_archive
+                WHERE payload LIKE '%"data_source": "GDELT"%'
+                  AND archived_at >= ?
+                  AND confidence_score >= 0.8
+                ORDER BY archived_at DESC
+                LIMIT 200
+                """,
+                (cutoff,),
+            ).fetchall()
+            rows = list(hot_rows) + list(arc_rows)
+        seen_ids: set[str] = set()
         events: list[Event] = []
         for r in rows:
+            if r["id"] in seen_ids:
+                continue
+            seen_ids.add(r["id"])
             try:
                 payload = json.loads(r["payload"] or "{}")
                 evt = Event(
@@ -582,7 +608,8 @@ def _load_gdelt_events_from_db(hours: int = 24) -> list[Event]:
                     timestamp=datetime.fromisoformat(r["timestamp"]),
                     source_type=r["source_type"],
                     source_id=payload.get("source_id", r["id"]),
-                    location=(r["lat"] or 0.0, r["lon"] or 0.0),
+                    location=(r["lat"] or payload.get("lat") or 0.0,
+                           r["lon"] or payload.get("lon") or 0.0),
                     region_code=r["region_code"],
                     severity=r["severity"] or 0,
                     title=r["title"] or "",

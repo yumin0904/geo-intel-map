@@ -26,7 +26,15 @@
 const GEOJSON_URL =
   'https://cdn.jsdelivr.net/gh/datasets/geo-countries/data/countries.geojson';
 
-const SESSION_KEY = 'geo-intel:countries-geojson';
+const SESSION_KEY = 'geo-intel:countries-geojson-v2';
+
+/** datasets/geo-countries GeoJSON은 ISO_A3 대신 'ISO3166-1-Alpha-3' 키 사용 */
+function getIso3(props) {
+  return props['ISO3166-1-Alpha-3'] || props.ISO_A3 || props.iso_a3 || '';
+}
+function getName(props) {
+  return props.ADMIN || props.name || '';
+}
 
 const STYLE_DEFAULT = {
   fillColor:   '#000000',
@@ -67,10 +75,10 @@ export class CountryLayer {
     this._hovered  = null;
     this._selected = null;
 
+    this._lastClickMs = 0; // onEachFeature click ↔ map-level click 중복 방지용 타임스탬프
     this._initPane();
     this._bus.on('country:flyto', ({ iso3 }) => this.flyToCountry(iso3));
-    // overlayPane 캔버스(z-index 400)가 GeoJSON 클릭을 가로막으므로
-    // map 레벨 click 이벤트로 받아서 bounds 기반 국가 히트 테스트
+    // onEachFeature click이 동작하지 않는 환경을 위한 map 레벨 폴백
     this._map.on('click', this._onMapClick, this);
   }
 
@@ -113,6 +121,7 @@ export class CountryLayer {
         layerFeat.on({
           mouseover: () => this._onHover(layerFeat),
           mouseout:  () => this._onOut(layerFeat),
+          click:     (e) => this._onFeatureClick(e, feature),
         });
       },
     }).addTo(this._map);
@@ -139,11 +148,32 @@ export class CountryLayer {
   }
 
   /**
-   * 지도 클릭 → 가장 작은 bounds를 가진 국가 폴리곤을 찾아 패널 오픈.
-   * overlayPane 캔버스가 GeoJSON 이벤트를 가로막으므로 map 레벨에서 처리.
+   * onEachFeature click 핸들러 — Canvas 히트테스트가 성공했을 때 직접 호출.
+   * preferCanvas:true 환경에서 CountryLayer Canvas가 overlayPane 최상단에 위치하면
+   * 이 경로가 우선 발화한다.
+   */
+  /**
+   * onEachFeature click 핸들러 — Canvas 히트테스트가 성공했을 때 직접 호출.
+   * preferCanvas:true에서 CountryLayer Canvas가 overlayPane 최상단에 있으면 이 경로가 발화.
+   */
+  _onFeatureClick(e, feature) {
+    this._lastClickMs = Date.now(); // 폴백 핸들러 중복 방지
+    const props = feature?.properties ?? {};
+    const iso3  = getIso3(props);
+    const name  = getName(props);
+    if (!iso3 || iso3 === '-99') return;
+    this.flyToCountry(iso3);
+    this._bus.emit('country:open', { iso3, name_en: name });
+  }
+
+  /**
+   * map.on('click') 폴백 — onEachFeature click이 발화하지 않는 환경에서 bounds 기반 히트테스트.
+   * _onFeatureClick이 이미 처리했으면 (100ms 이내) 스킵.
    */
   _onMapClick(e) {
     if (!this._layer || !this._visible) return;
+    // onEachFeature click이 이미 처리한 경우 중복 방지
+    if (Date.now() - this._lastClickMs < 100) return;
     const latlng = e.latlng;
     let best = null;
     let bestArea = Infinity;
@@ -157,8 +187,8 @@ export class CountryLayer {
     });
     if (!best) return;
     const props = best.feature?.properties ?? {};
-    const iso3  = props.ISO_A3 || props.iso_a3 || '';
-    const name  = props.ADMIN || props.name || '';
+    const iso3  = getIso3(props);
+    const name  = getName(props);
     if (!iso3 || iso3 === '-99') return;
     this.flyToCountry(iso3);
     this._bus.emit('country:open', { iso3, name_en: name });
@@ -176,7 +206,7 @@ export class CountryLayer {
     this._layer.eachLayer(l => {
       if (target) return;
       const props = l.feature?.properties ?? {};
-      if ((props.ISO_A3 || props.iso_a3) === iso3) target = l;
+      if (getIso3(props) === iso3) target = l;
     });
     if (!target) return;
 

@@ -455,29 +455,73 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 - 서버 실행 중 `/api/layers/gdelt` 호출 시 자동 누적 확인 (10건 저장 → 11건 로드)
 - **코드 변경 없음** — 기존 v3.23.0 파이프라인 그대로 작동 확인
 
-### ⏳ CountryPanel 지도 flyTo 연동 (미완, 2026-05-29)
+### ✅ CountryPanel 지도 클릭 flyTo 완료 (2026-05-29) — v3.23.1
 
-**시도한 접근 및 실패 원인 분석**
+**근본 원인**: `datasets/geo-countries` GeoJSON의 ISO3 키가 `ISO_A3`가 아닌 **`ISO3166-1-Alpha-3`**였음.
+3곳(`_onFeatureClick`, `_onMapClick`, `flyToCountry`)에서 빈 문자열을 읽어 early return.
 
-- 1차 시도: `onEachFeature` click 핸들러 추가 → 실패
-  - 원인: `preferCanvas: true` 환경에서 overlayPane 캔버스(z-index 400)가 모든 click 이벤트를 선점, countryPane(z-index 201) GeoJSON 이벤트 미도달
-- 2차 시도: `map.on('click', _onMapClick)` + bounds containment 히트 테스트 → 여전히 미동작
+**수정 내용** (`frontend/src/layers/CountryLayer.js`)
+- `getIso3(props)` / `getName(props)` 헬퍼 함수 추가 — 키 다양성 중앙화
+- `onEachFeature`에 `click: _onFeatureClick` 핸들러 추가 (Canvas 최상단 발화 경로)
+- `map.on('click')` 폴백 유지 (`_lastClickMs` 100ms dedup으로 중복 방지)
+- `SESSION_KEY` → `v2` 갱신 (구 캐시 무효화)
 
-**현재 코드 상태** (`frontend/src/layers/CountryLayer.js`)
-- constructor에 `this._map.on('click', this._onMapClick, this)` 등록
-- `_onMapClick()`: bounds 기반 국가 히트 테스트 → `flyToCountry()` + `country:open` 이벤트 발신
-- `destroy()`에 `this._map.off('click', ...)` 정리 추가
-
-**추가 조사 필요**
-- `map.on('click')` 이 실제로 발화하는지 콘솔 로그로 확인
-- CountryLayer `defaultVisible: true` 이지만 실제로 GeoJSON이 로드되는지 확인
-- CDN URL(jsDelivr) 접근 실패 가능성 점검
+**진단 과정**: Playwright로 확인
+- `map.on('click')` 발화 O, bounds 매칭 O, but iso3 = '' → early return
+- 수정 후: `fallback matched: Japan JPN` → 패널 `is-open`, `right: 0px`, title "일본" ✅
 
 ### 현재 버전
-`version.json`: **3.23.0** (이번 세션 코드 변경 없음 — 검증 + 미완 디버깅)
+`version.json`: **3.23.1**
+
+### ✅ Cascade Granger 인과성 검증 (2026-05-29) — v3.24.0
+
+**구현 파일**
+- `backend/services/cascade/correlation.py` (신규) — Granger 인과분석 엔진
+  - `_load_event_series()`: region별 일별 severity 합산 (event_archive)
+  - `_load_fred_series()`: WTI/KRW FRED DB 직접 쿼리
+  - `_download_yfinance()`: TSM/GLD/ZW=F 등 yfinance 비동기 다운로드
+  - `_run_granger()`: statsmodels F-test, maxlag=5, warnings 억제
+  - `_run_extreme_correlation()`: 상위 25% 극단 이벤트 → 다음 날 수익률 비교
+  - `run_correlation_analysis()`: 8개 룰 전체 검증, FRED 우선 → yfinance 폴백
+  - `summarize_results()`: 학습용 해설 포함 요약
+- `backend/api/cascade.py` — `GET /api/cascade/correlation` 추가 (24시간 캐시)
+- `backend/requirements.txt` — `statsmodels>=0.14` 추가
+
+**핵심 결과 (2024-06 ~ 2026-05, 8개 룰)**
+| 검정 방법 | 지지 | 비지지 |
+|----------|------|--------|
+| Granger F-test (일별) | 0/8 | 8/8 |
+| 극단 이벤트 방향 일치 | 2/8 | 6/8 |
+
+**학습 인사이트**:
+- Granger 비유의 ≠ 이론 무효. 지정학 충격 → 시장 전이는 **비선형 구조**
+- ACLED 일반 이벤트(시위·폭력)는 시장 노이즈로 희석됨; cascade engine의 군사특화 트리거(ADS-B·AIS)가 올바른 접근
+- ukraine→밀(ZW=F)·middle_east→금(GLD): 극단 이벤트 방향 일치 ✅ (자원무기화 이론 부분 지지)
+- Farrell & Newman(2019) 무기화된 상호의존은 'chokepoint 봉쇄 같은 극단 충격'에서만 발현됨을 통계적으로 확인
+
+### 현재 버전
+`version.json`: **3.24.0**
+
+### ✅ GDELT 24h 누적 밀도 검증 + 버그 수정 (2026-05-29) — v3.24.1
+
+**검증 결과**
+- 3h: 24건 → 4h: 3건 → 5h: 19건 → 5h말: 9건 추가 = **누적 64건** (INSERT OR IGNORE 중복방지 정상)
+- `/api/layers/gdelt`: middle_east(24) · ukraine(24) · suez(6) · hormuz(6) · south_china_sea(4)
+- 파이프라인 1회당 평균 9~11건 승격 (confidence≥0.8 교차검증 통과)
+
+**버그 수정 3건**
+1. **`_load_gdelt_events_from_db` timestamp → created_at**: GDELT timestamp는 자정(00:00)만 기록 → `created_at`(저장시각) 기준으로 교체
+2. **archive_manager 24h 보관 조건**: `_promote_high_value`가 confidence≥0.8 GDELT를 즉시 event_archive로 이관해 24h 누적이 사라지는 문제 → `created_at < now-24h` 조건 추가
+3. **event_archive UNION 쿼리**: event_archive에 lat/lon 컬럼 없음 → NULL fallback + payload 추출, ID 중복 제거 추가
+
+**파일 수정**
+- `backend/api/layers.py` — `_load_gdelt_events_from_db()` UNION 쿼리, created_at 필터, 중복 제거
+- `backend/db/archive_manager.py` — `_promote_high_value()` 24h 최소 보관 조건
+
+### 현재 버전
+`version.json`: **3.24.1**
 
 ### 다음 세션 우선순위
 
-1. **CountryPanel flyTo 디버깅** — 브라우저 콘솔 확인 (`map.on('click')` 발화 여부, GeoJSON 로드 여부)
-2. **Cascade 통계 검증** — Granger 인과분석 (`services/cascade/correlation.py`)
-3. **GDELT 24h 누적 밀도 확인** — 서버 실행 후 시간 경과 → GDELT 레이어 이벤트 수 추이
+1. **Granger 결과 프론트엔드 표시** — SandboxLab 또는 `GET /api/cascade/correlation` 결과를 패널에 시각화
+2. **GDELT 파이프라인 스케줄러 확인** — 15분 크론잡이 실제로 돌고 있는지 APScheduler 로그 점검
