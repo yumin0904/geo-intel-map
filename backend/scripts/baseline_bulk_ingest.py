@@ -1,5 +1,5 @@
 """
-baseline_bulk_ingest.py — FRED 거시지표 + Comtrade 무역 베이스라인 적재
+baseline_bulk_ingest.py — FRED 거시지표 + Comtrade 무역 + yfinance 시장 베이스라인 적재
 
 사용법:
     cd backend
@@ -8,11 +8,14 @@ baseline_bulk_ingest.py — FRED 거시지표 + Comtrade 무역 베이스라인 
     # FRED만 (3년치 WTI·금·원달러·대만달러·VIX)
     python scripts/baseline_bulk_ingest.py --fred
 
+    # yfinance 시장 지표 (ZW=F·GLD·TSM·ITA·NG=F 로컬 캐시 — Granger 분석 안정화)
+    python scripts/baseline_bulk_ingest.py --yfinance
+
     # Comtrade CSV만
     python scripts/baseline_bulk_ingest.py --comtrade data/comtrade_hs27.csv
 
-    # 둘 다
-    python scripts/baseline_bulk_ingest.py --fred --comtrade data/*.csv
+    # 전부
+    python scripts/baseline_bulk_ingest.py --fred --yfinance --comtrade data/*.csv
 
     # dry-run (DB 저장 없이 건수 확인)
     python scripts/baseline_bulk_ingest.py --fred --dry-run
@@ -64,6 +67,16 @@ FRED_SERIES: dict[str, str] = {
     "usd_twd": "DEXTAUS",      # 대만달러 환율 (TWD per 1 USD)
     "vix":     "VIXCLS",       # CBOE VIX 변동성 지수
     # gold: GOLDAMGBD228NLBM — LBMA 라이선스 제한으로 FRED API 400, stages.py yfinance fallback 사용
+}
+
+# yfinance 로컬 캐시 대상 — Granger 분석 시 네트워크 의존 제거
+# indicator 이름은 correlation.py _TICKER_TO_FRED 매핑과 반드시 일치해야 한다
+YFINANCE_TICKERS: dict[str, str] = {
+    "ZW=F": "wheat_futures",   # 밀 선물 — 우크라이나 곡물 루트 (Resource Weaponization)
+    "GLD":  "gold_etf",        # 금 ETF — 리스크오프 안전자산 (Kahneman & Tversky)
+    "TSM":  "tsm_stock",       # TSMC — 반도체 공급망 집중 (Weaponized Interdependence)
+    "ITA":  "defense_etf",     # 방산 ETF — A2/AD 긴장 → 방산투자 (Biddle 2001)
+    "NG=F": "natgas_futures",  # 천연가스 선물 — 말라카 LNG 초크포인트 (Mahan 1890)
 }
 
 # 적재 대상 HS 코드 (Comtrade)
@@ -199,6 +212,81 @@ async def ingest_fred(con: sqlite3.Connection, years: int, dry_run: bool) -> dic
         logger.info("[FRED] %s (%s): %d건 → INSERT %d건", indicator, series_id, len(observations), inserted)
         summary[indicator] = inserted
         await asyncio.sleep(0.5)  # FRED API rate limit 방지
+
+    return summary
+
+
+# ── yfinance 로컬 캐시 적재 ──────────────────────────────────────────────────
+
+async def ingest_yfinance(con: sqlite3.Connection, years: int, dry_run: bool) -> dict:
+    """
+    YFINANCE_TICKERS를 historical_macro_indices에 적재한다.
+
+    Granger 분석(correlation.py)이 네트워크 없이 DB에서 직접 읽을 수 있도록
+    일별 종가를 미리 캐시한다. 이렇게 하면 yfinance 일시 장애·rate limit 시에도
+    분석이 "데이터 없음"으로 실패하지 않는다.
+    """
+    try:
+        import yfinance as yf
+    except ImportError:
+        logger.error("[yfinance] yfinance 미설치. pip install yfinance")
+        return {}
+
+    now = datetime.now(timezone.utc)
+    start_date = f"{now.year - years}-{now.month:02d}-{now.day:02d}"
+    end_date = now.strftime("%Y-%m-%d")
+    now_iso = now.isoformat()
+
+    logger.info("[yfinance] 기간: %s ~ %s (%d년치)", start_date, end_date, years)
+    summary: dict[str, int] = {}
+
+    for ticker, indicator in YFINANCE_TICKERS.items():
+        try:
+            df = await asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda t=ticker: yf.download(
+                    t,
+                    start=start_date,
+                    end=end_date,
+                    auto_adjust=True,
+                    progress=False,
+                ),
+            )
+            if df is None or len(df) < 10:
+                logger.warning("[yfinance] %s: 데이터 부족 (%d행)", ticker, len(df) if df is not None else 0)
+                summary[ticker] = 0
+                continue
+
+            close = df["Close"].squeeze()
+            rows = [(d.strftime("%Y-%m-%d"), float(v)) for d, v in close.items() if v == v]
+
+            if dry_run:
+                logger.info("[yfinance] dry-run — %s (%s): %d건", ticker, indicator, len(rows))
+                summary[ticker] = len(rows)
+                continue
+
+            inserted = 0
+            with con:
+                for date_str, value in rows:
+                    try:
+                        con.execute(
+                            """
+                            INSERT OR IGNORE INTO historical_macro_indices
+                            (series_id, indicator, date, value, ingested_at)
+                            VALUES (?,?,?,?,?)
+                            """,
+                            (ticker, indicator, date_str, value, now_iso),
+                        )
+                        inserted += 1
+                    except sqlite3.Error as e:
+                        logger.debug("[yfinance] INSERT 실패 (%s %s): %s", indicator, date_str, e)
+
+            logger.info("[yfinance] %s (%s): %d건 → INSERT %d건", ticker, indicator, len(rows), inserted)
+            summary[ticker] = inserted
+
+        except Exception as exc:
+            logger.error("[yfinance] %s 실패: %s", ticker, exc)
+            summary[ticker] = 0
 
     return summary
 
@@ -392,6 +480,7 @@ def ingest_comtrade(con: sqlite3.Connection, filepaths: list[Path], dry_run: boo
 
 async def main(
     run_fred: bool,
+    run_yfinance: bool,
     comtrade_files: list[Path],
     years: int,
     dry_run: bool,
@@ -403,11 +492,16 @@ async def main(
         logger.info("[Baseline] DB 스키마 확인: %s", _DB_PATH)
 
     fred_summary: dict = {}
+    yf_summary: dict = {}
     comtrade_summary: dict = {}
 
     if run_fred:
         logger.info("[Baseline] FRED 적재 시작 (%d개 시리즈, %d년치)", len(FRED_SERIES), years)
         fred_summary = await ingest_fred(con, years, dry_run)
+
+    if run_yfinance:
+        logger.info("[Baseline] yfinance 로컬 캐시 적재 시작 (%d개 티커, %d년치)", len(YFINANCE_TICKERS), years)
+        yf_summary = await ingest_yfinance(con, years, dry_run)
 
     if comtrade_files:
         logger.info("[Baseline] Comtrade 적재 시작 (%d개 파일)", len(comtrade_files))
@@ -424,26 +518,32 @@ async def main(
         for indicator, cnt in fred_summary.items():
             series_id = FRED_SERIES[indicator]
             print(f"  {indicator:10s} ({series_id}): {cnt:,}건")
+    if yf_summary:
+        print("\n[yfinance 결과]")
+        for ticker, cnt in yf_summary.items():
+            indicator = YFINANCE_TICKERS[ticker]
+            print(f"  {ticker:8s} ({indicator}): {cnt:,}건")
     if comtrade_summary:
         print("\n[Comtrade 결과]")
         for fname, cnt in comtrade_summary.items():
             print(f"  {fname}: {cnt:,}건")
-    if not run_fred and not comtrade_files:
-        print("  실행 옵션 없음. --fred 또는 --comtrade <파일> 을 지정하세요.")
+    if not run_fred and not run_yfinance and not comtrade_files:
+        print("  실행 옵션 없음. --fred, --yfinance, 또는 --comtrade <파일> 을 지정하세요.")
     print("=" * 60)
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="FRED 거시지표 + Comtrade 무역 데이터를 intel.db에 적재한다.",
+        description="FRED 거시지표 + yfinance 시장 + Comtrade 무역 데이터를 intel.db에 적재한다.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
     parser.add_argument("--fred", action="store_true", help="FRED 거시지표 적재")
+    parser.add_argument("--yfinance", action="store_true", help="yfinance 시장 지표 로컬 캐시 적재 (ZW=F·GLD·TSM·ITA·NG=F)")
     parser.add_argument(
         "--comtrade", nargs="+", metavar="CSV", help="Comtrade CSV 파일 경로 (복수 가능)"
     )
-    parser.add_argument("--years", type=int, default=3, help="FRED 조회 연수 (기본: 3)")
+    parser.add_argument("--years", type=int, default=3, help="FRED/yfinance 조회 연수 (기본: 3)")
     parser.add_argument("--dry-run", action="store_true", help="DB 저장 없이 건수 확인")
     return parser.parse_args()
 
@@ -453,6 +553,7 @@ if __name__ == "__main__":
     comtrade_paths = [Path(p) for p in (args.comtrade or [])]
     asyncio.run(main(
         run_fred=args.fred,
+        run_yfinance=args.yfinance,
         comtrade_files=comtrade_paths,
         years=args.years,
         dry_run=args.dry_run,

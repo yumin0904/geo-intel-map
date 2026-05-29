@@ -42,10 +42,16 @@ logger = logging.getLogger(__name__)
 
 _DB_PATH = Path(__file__).resolve().parents[2] / "db" / "intel.db"
 
-# FRED DB에서 직접 조회 가능한 티커 → indicator 매핑
+# historical_macro_indices DB에서 직접 조회 가능한 티커 → indicator 매핑
+# FRED 원본 + yfinance 로컬 캐시 (baseline_bulk_ingest.py --yfinance 로 적재)
 _TICKER_TO_FRED: dict[str, str] = {
     "CL=F":  "wti",
     "KRW=X": "usd_krw",
+    "ZW=F":  "wheat_futures",
+    "GLD":   "gold_etf",
+    "TSM":   "tsm_stock",
+    "ITA":   "defense_etf",
+    "NG=F":  "natgas_futures",
 }
 
 # Cascade 룰 → Granger 검증 페어 정의
@@ -119,7 +125,7 @@ _VALIDATION_PAIRS: list[dict] = [
 
 # ── 분석 기간 (이벤트 아카이브 × 거시지표 겹치는 구간) ───────────────────────
 _START_DATE = date(2024, 6, 1)
-_END_DATE   = date(2026, 5, 1)
+_END_DATE   = date.today()  # 항상 오늘까지 분석
 
 # Granger 검정 최대 지연일 (거래일 1주)
 _MAX_LAG = 5

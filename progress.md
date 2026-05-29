@@ -552,10 +552,67 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 - `gdelt_pipeline` | interval[0:15:00]
 - `archive_cycle`  | interval[1:00:00]
 
+### ✅ yfinance 로컬 캐시 + Granger 8/8 완전 검증 (2026-05-29) — v3.26.0
+
+**문제**: ZW=F·GLD·TSM·ITA·NG=F 5개 티커가 yfinance 네트워크 의존 → 일시 장애 시 "데이터 없음"
+
+**해결**
+- `backend/scripts/baseline_bulk_ingest.py` — `--yfinance` 플래그 + `ingest_yfinance()` 추가
+  - `YFINANCE_TICKERS` dict (5개 티커 → indicator 이름 매핑)
+  - 3년치 종가 → `historical_macro_indices` INSERT OR IGNORE 적재
+- `backend/services/cascade/correlation.py`
+  - `_TICKER_TO_FRED` 7개로 확장 (ZW=F/GLD/TSM/ITA/NG=F 로컬 DB 우선 조회)
+  - `_END_DATE = date.today()` — 항상 오늘까지 분석 (고정 날짜 제거)
+- 적재 실행: 3,764건 (ZW=F 753 + GLD 752 + TSM 752 + ITA 752 + NG=F 755)
+
+**결과 (2024-06-01 ~ 2026-05-29, 8/8 데이터 확보)**
+
+`korean_peninsula_to_krw` — 분석 기간 확장(+29일)으로 p=0.054 → **p=0.047 (Granger 유의 전환!)**
+Snyder 동맹 딜레마: 한반도 지역 severity 누적이 원달러 환율에 선행하는 패턴 통계적 확인.
+
 ### 현재 버전
-`version.json`: **3.25.1**
+`version.json`: **3.26.0**
+
+### ✅ 상단 바 긴장도·피자 지수 신뢰도 개선 (2026-05-29) — v3.27.0
+
+**문제점 3가지**
+1. 단순 severity 평균 → 저강도 시위가 고강도 전투를 희석
+2. 호버 시 이유 없음 (건수·평균만 표시)
+3. 피자 레벨 설명 추상적 ("야근 감지", "작전 임박")
+
+**백엔드 개선** (`backend/api/stats.py` 전면 재작성)
+- 이벤트 유형 가중치: 전투/폭발 ×1.5, 민간인 공격 ×1.3, 폭동 ×0.7, 시위 ×0.4
+- 최근성 가중치: 0-3일 ×1.8, 4-7일 ×1.4, 8-14일 ×1.1, 15일+ ×1.0
+- ACLED/GDELT 별도 쿼리 (UNION 중복 버그 수정)
+- ACLED 400일 베이스라인 + GDELT 72h 실시간 신호 혼합 (0.65:0.35)
+- Africa 국가 매핑 추가 (region_code=NULL → payload.country 폴백)
+- 드라이버 top 3 추출: GDELT 실시간 우선 → ACLED 90일 → ACLED 전체 최신 폴백
+- 응답에 `drivers`, `acled_count`, `gdelt_count` 필드 추가
+
+**프론트엔드 개선** (`frontend/src/views/TopBarView.js`)
+- 지역 호버 시 커스텀 드라이버 툴팁 표시
+  - 데이터 소스(ACLED N건 + GDELT N건), 계산 방식 설명
+  - 드라이버 최대 3개: 소스 출처·이벤트 유형·행위자·경과 시간
+- 피자 레벨 설명 구체화 (4단계 × 역사 사례):
+  - 🟢 NORMAL (0-35): "외교·제재 중심, 분쟁 국지전 수준" + 역사 사례
+  - 🟡 ELEVATED (36-55): "전투 강도 상승, 우발 확전 위험" + 사례
+  - 🟠 GUARDED (56-75): "복수 전선 동시 충돌, 공급망 압박" + 사례
+  - 🔴 CRITICAL (76+): "강대국 직접 개입, 공급망 동시 붕괴 위험" + 사례
+- 드라이버 툴팁 CSS (`frontend/styles/main.css`): `.driver-tooltip`, `.dt-*` 클래스
+- `frontend/index.html`: `#driver-tooltip` div 추가
+
+**현재 섹터 점수 (2026-05-29 기준)**
+| 섹터 | 점수 | 레벨 | ACLED | GDELT |
+|------|------|------|-------|-------|
+| 중동 | 36.4 | medium | 8,626 | 66 |
+| 인태 | 26.8 | low | 11,539 | 12 |
+| 유럽 | 53.0 | medium | 18,853 | 81 |
+| 아프리카 | 33.4 | low | 4,002 | 0 |
+
+### 현재 버전
+`version.json`: **3.27.0**
 
 ### 다음 세션 우선순위
 
-1. **Granger 데이터 없음 수정** — `ukraine_conflict_to_wheat`, `middle_east_conflict_to_gold`, `taiwan_strait_to_tsm` 등 yfinance 로드 실패 원인 파악 (5개 룰 데이터 확보 → 8/8 완전 검증)
-2. **`분析실` → `분석실` 전면 수정** ✅ (완료됨)
+1. **브라우저 검증** — 드라이버 툴팁 호버 동작, 피자 레벨 상세 표시 확인
+2. **Phase 4 계획 수립** — Phase 3 완성 선언 후 다음 단계 결정

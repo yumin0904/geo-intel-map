@@ -228,7 +228,7 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
-  white-space: pre;
+  white-space: normal;
 }
 
 .pizza-wrap:hover .pizza-tooltip {
@@ -236,14 +236,51 @@ body {
   pointer-events: auto;
 }
 
-.pzt-title  { color: #e6edf3; font-weight: bold; margin-bottom: 2px; }
-.pzt-rule   { color: #00b4d8; overflow: hidden; max-height: 1.2em; }
-.pzt-cur    { color: #e6edf3; margin: 2px 0; }
-.pzt-cur b  { color: #f0f6fc; }
-.pzt-desc   { color: #8b949e; margin: 4px 0; }
-.pzt-guide-hdr { color: #e6edf3; margin-top: 4px; }
-.pzt-guide  { color: #8b949e; }
-.pzt-footer { color: #8b949e; margin-top: 4px; border-top: 1px solid #21262d; padding-top: 4px; }
+.pzt-title      { color: #e6edf3; font-weight: bold; margin-bottom: 1px; }
+.pzt-sub        { color: #8b949e; font-size: 10px; margin-bottom: 2px; }
+.pzt-rule       { color: #00b4d8; overflow: hidden; max-height: 1.2em; }
+.pzt-cur        { color: #e6edf3; margin: 3px 0 2px; }
+.pzt-cur b      { color: #f0f6fc; }
+.pzt-detail     { margin: 3px 0 4px; }
+.pzt-detail-line { color: #8b949e; }
+.pzt-guide-hdr  { color: #e6edf3; margin: 3px 0 1px; }
+.pzt-guide      { color: #8b949e; }
+.pzt-concept    { color: #8b949e; margin-top: 3px; }
+.pzt-footer     { color: #6e7681; margin-top: 4px; border-top: 1px solid #21262d; padding-top: 4px; white-space: normal; }
+
+/* ── 드라이버 툴팁 (지역 호버) ────────────────────────────────── */
+.driver-tooltip {
+  position: fixed;
+  width: 360px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: 'Share Tech Mono', 'SF Mono', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  z-index: 2200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.driver-tooltip.is-visible {
+  opacity: 1;
+}
+.dt-header   { color: #e6edf3; font-weight: bold; margin-bottom: 2px; }
+.dt-level    { color: #8b949e; font-weight: normal; font-size: 10px; }
+.dt-source   { color: #6e7681; font-size: 10px; margin-bottom: 4px; }
+.dt-sep      { border-top: 1px solid #21262d; margin: 4px 0; }
+.dt-drivers-label { color: #00b4d8; font-size: 10px; margin-bottom: 4px; }
+.dt-driver   { display: flex; align-items: baseline; gap: 4px; margin-bottom: 3px; flex-wrap: wrap; }
+.dt-src      { flex-shrink: 0; font-size: 10px; color: #6e7681; }
+.dt-etype    { flex-shrink: 0; background: #161b22; border: 1px solid #30363d;
+               border-radius: 3px; padding: 0 4px; font-size: 10px; color: #8b949e; }
+.dt-name     { color: #e6edf3; flex: 1; }
+.dt-time     { flex-shrink: 0; color: #6e7681; font-size: 10px; }
+.dt-driver-empty { color: #6e7681; font-size: 10px; }
 
 /* ── 정보 패널 ─────────────────────────────────────────────── */
 .info-panel {
