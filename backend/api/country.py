@@ -28,8 +28,25 @@ _INTEL_DB       = _ROOT / "db" / "intel.db"
 _LIBRARY_DB     = _ROOT / "db" / "library.db"
 _SANCTIONS_YAML = _ROOT / "config" / "sanctions.yaml"
 
+_GEOPOLITICS_YAML = _ROOT / "config" / "country_geopolitics.yaml"
+
 _CACHE_TTL = timedelta(minutes=30)
 _cache: dict[str, tuple[datetime, dict]] = {}
+
+# country_geopolitics.yaml 1회 로드 후 메모리 보관
+_GEO_PROFILES: dict[str, dict] = {}
+
+
+def _load_geo_profiles() -> None:
+    global _GEO_PROFILES
+    if _GEO_PROFILES or not _GEOPOLITICS_YAML.exists():
+        return
+    try:
+        with open(_GEOPOLITICS_YAML, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        _GEO_PROFILES = data.get("profiles", {})
+    except Exception as e:
+        logger.warning("[country] country_geopolitics.yaml 로드 실패: %s", e)
 
 # ── HS 코드 한국어 이름 ──────────────────────────────────────────────────────
 _HS_NAMES: dict[str, str] = {
@@ -417,6 +434,27 @@ def _query_theories(
         con.close()
 
 
+def _query_geopolitics(iso3: str) -> dict | None:
+    """country_geopolitics.yaml에서 국가 지정학 프로파일 반환.
+
+    전략적 위치·포지션·동맹·주요 리스크·관련 이론·학습 요점을 포함.
+    Waltz 3수준 분석 + Snyder 동맹 딜레마 기반 구조화.
+    """
+    _load_geo_profiles()
+    profile = _GEO_PROFILES.get(iso3)
+    if not profile:
+        return None
+    return {
+        "strategic_position":  profile.get("strategic_position"),
+        "strategic_posture":   profile.get("strategic_posture"),
+        "alliances":           profile.get("alliances", []),
+        "key_risks":           profile.get("key_risks", []),
+        "instrument_of_power": profile.get("instrument_of_power"),
+        "theory_refs":         profile.get("theory_refs", []),
+        "learning_note":       profile.get("learning_note"),
+    }
+
+
 # ── 엔드포인트 ────────────────────────────────────────────────────────────────
 
 @router.get("/list")
@@ -454,6 +492,7 @@ async def get_country(iso3: str):
         "name_ko":     info.get("name_ko", iso3),
         "name_en":     info.get("name_en", iso3),
         "region_code": region,
+        "geopolitics": _query_geopolitics(iso3),
         "macro":       _query_macro(iso3),
         "trade":       _query_trade(iso3),
         "sanctions":   _query_sanctions(iso2),

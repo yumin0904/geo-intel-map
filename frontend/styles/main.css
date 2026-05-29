@@ -2891,6 +2891,81 @@ body:not(.study-mode) .notebook { display: none; }
 .cp-sector--indo_pacific{ background: rgba(248,81,73,0.15); color: #f85149; }
 .cp-sector--gray_zone   { background: rgba(139,148,158,0.2); color: #8b949e; }
 
+/* 지정학 프로파일 섹션 */
+.cp-geo-section {
+  border-top: 1px solid rgba(48,54,61,0.6);
+  padding-top: 10px;
+}
+.cp-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.cp-geo-position {
+  font-size: 11px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.cp-geo-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.cp-geo-posture {
+  font-size: 11px;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+.cp-geo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.cp-geo-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  background: rgba(63,185,80,0.1);
+  border: 1px solid rgba(63,185,80,0.25);
+  border-radius: 3px;
+  font-size: 9px;
+  color: var(--color-success);
+}
+.cp-geo-list {
+  list-style: none;
+  margin: 0 0 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cp-geo-risk {
+  font-size: 10px;
+  color: #f0a500;
+  line-height: 1.5;
+}
+.cp-geo-theory {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+.cp-geo-note {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: rgba(0,180,216,0.07);
+  border-left: 2px solid var(--color-accent);
+  border-radius: 0 3px 3px 0;
+  font-size: 10px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
 /* 국가 호버 툴팁 (pointer-events: none → 클릭 이벤트 차단 없음) */
 .country-hover-tooltip.leaflet-tooltip {
   background: rgba(22,27,34,0.9);

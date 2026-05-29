@@ -1,0 +1,280 @@
+# country_geopolitics.yaml
+# 국가별 지정학 프로파일 — CountryPanel 기본정보 탭 확장 데이터
+# 이론적 근거: Waltz 3수준 분석 / Snyder 동맹 딜레마 / Farrell & Newman Weaponized Interdependence
+
+profiles:
+  CHN:
+    strategic_position: "인도-태평양의 수정주의 강대국. 제1열도선 돌파와 대만 통일을 핵심 목표로 A2/AD 전략 구사."
+    strategic_posture: revisionist
+    alliances:
+      - "상하이협력기구(SCO)"
+      - "중·러 전략적 동반자 관계"
+      - "BRICS"
+    key_risks:
+      - "대만해협 군사 충돌 (A2/AD vs. 미해군 개입)"
+      - "남중국해 인공섬 분쟁 (필리핀·베트남·말레이시아)"
+      - "반도체 수출통제 — ASML EUV 차단, 기술패권 압박"
+    instrument_of_power: economic
+    theory_refs:
+      - "Mearsheimer '공격적 현실주의' (2001) — 패권국은 지역 패권 추구"
+      - "Farrell & Newman 'Weaponized Interdependence' — 달러·반도체 네트워크 역이용"
+      - "Techno-nationalism — 화웨이·SMIC 제재로 공급망 분리 가속"
+    learning_note: "미중 경쟁은 단순 군사 대결이 아닌 공급망·표준·인프라를 무기화하는 '네트워크 전쟁'이다."
+
+  USA:
+    strategic_position: "역외균형자(Offshore Balancer). 동맹 허브로 인도-태평양·유럽·중동 3개 전선 동시 관리."
+    strategic_posture: status_quo
+    alliances:
+      - "NATO"
+      - "AUKUS"
+      - "QUAD"
+      - "미·일 안보조약"
+      - "미·한 상호방위조약"
+      - "Five Eyes"
+    key_risks:
+      - "동맹 확산(Entrapment) — 대만·이스라엘 분쟁 직접 개입 압력"
+      - "재정 부담 — 2개 전선 동시 억제의 군사비 지속 가능성"
+      - "기술 패권 경쟁 — 반도체·AI 수출통제 효과 한계"
+    instrument_of_power: military
+    theory_refs:
+      - "Walt '위협균형이론' — 소프트파워·동맹으로 봉쇄 유지"
+      - "Nye '소프트파워' — 규칙 기반 질서의 정당성 유지"
+      - "Kindleberger Trap — 패권 약화 시 공공재 공급 공백"
+    learning_note: "미국의 핵심 딜레마는 '연루(Entrapment) vs. 방기(Abandonment)': 개입하면 전쟁 위험, 빠지면 동맹 붕괴."
+
+  RUS:
+    strategic_position: "유라시아 육상 강대국. 에너지 수출과 핵 억제력으로 영향권 유지, 우크라이나 전쟁으로 NATO와 직접 대립."
+    strategic_posture: revisionist
+    alliances:
+      - "집단안보조약기구(CSTO)"
+      - "상하이협력기구(SCO)"
+      - "중·러 전략적 동반자 관계"
+    key_risks:
+      - "우크라이나 전쟁 장기화 — 서방 제재·공급망 차단"
+      - "에너지 무기화 역풍 — 유럽 의존도 탈피 가속"
+      - "핵 위협 상시화 — 전술핵 사용 가능성과 확전 억제"
+    instrument_of_power: military
+    theory_refs:
+      - "Hirschman 비대칭 의존 — 가스관을 정치적 레버리지로 전환"
+      - "Gray Zone Strategy — 하이브리드전으로 귀책 모호화"
+      - "Snyder 동맹 딜레마 — CSTO 공약의 실효성 한계(카자흐스탄 사례)"
+    learning_note: "러시아의 에너지 무기화는 '상호의존의 무기화(Weaponized Interdependence)' 가장 교과서적 사례다."
+
+  IRN:
+    strategic_position: "호르무즈 관문 통제자. '저항의 축' 네트워크(헤즈볼라·후티·PMF)로 중동 전략 종심 확보."
+    strategic_posture: revisionist
+    alliances:
+      - "저항의 축 (Axis of Resistance)"
+      - "SCO 정식 회원 (2023)"
+      - "중·이란 25년 포괄적 협력협정"
+    key_risks:
+      - "호르무즈 봉쇄 — 글로벌 원유 20% 차단 카드"
+      - "핵 프로그램 — 농축도 60% 돌파, 역내 핵 도미노 우려"
+      - "IRGC 대리전 — 후티·헤즈볼라로 비대칭 전력 투사"
+    instrument_of_power: military
+    theory_refs:
+      - "자원무기화 — 호르무즈 통행세·봉쇄 위협으로 원유 가격 레버리지"
+      - "Hybrid Warfare — IRGC 쿠드스군의 국경 초월 비정규전"
+      - "Nuclear Deterrence — 핵 모호성으로 선제공격 억제"
+    learning_note: "이란은 재래식 전력 열세를 '비대칭 거부 전략'으로 보완하는 회색지대 전술의 마스터다."
+
+  TWN:
+    strategic_position: "반도체 공급망 병목점이자 미중 충돌의 최전선. TSMC의 반도체 생산이 지정학적 억제력으로 기능."
+    strategic_posture: status_quo
+    alliances:
+      - "미·대만 관계법(TRA) — 비공식 안보 공약"
+      - "비공식: 미국·일본·호주 우호국"
+    key_risks:
+      - "중국 인민해방군 봉쇄 연습 — 1, 2, 3차 Joint Sword"
+      - "반도체 공급망 인질화 — TSMC 파괴 시 글로벌 경제 직격"
+      - "회색지대 압박 — 방공식별구역(ADIZ) 침범 일상화"
+    instrument_of_power: economic
+    theory_refs:
+      - "Silicon Shield — 반도체 지배력이 군사 억제력으로 전환"
+      - "Weaponized Interdependence — 중국도 TSMC 없으면 자국 산업 타격"
+      - "A2/AD 돌파 — 제1열도선에서의 해상 차단 시나리오"
+    learning_note: "대만은 '경제적 억제(Economic Deterrence)'의 현재진행형 실험장이다. TSMC가 F-16보다 강력한 방패일 수 있다."
+
+  KOR:
+    strategic_position: "미·중 경쟁의 지정학적 단층선 위 중견국. 한미동맹과 대중 경제의존 사이 전략적 모호성 유지."
+    strategic_posture: status_quo
+    alliances:
+      - "한미 상호방위조약 (1953)"
+      - "QUAD 파트너십 (준회원)"
+      - "한·일 GSOMIA (정보공유)"
+    key_risks:
+      - "북한 핵·ICBM — 전술핵 배치 요구와 확장억제 신뢰성"
+      - "사드 딜레마 — 중국 보복(한한령)과 미국 요구 사이"
+      - "반도체 공급망 — 대중 의존도 76.7% (HS 8542)"
+    instrument_of_power: economic
+    theory_refs:
+      - "Alliance Dilemma (Snyder) — 연루와 방기 사이에서 헤징 전략"
+      - "Middle Power Diplomacy — 규칙 기반 질서 수호로 자율성 확보"
+      - "Weaponized Interdependence — 반도체 대중 의존이 취약점이자 레버리지"
+    learning_note: "한국의 전략적 모호성은 '헤징(Hedging)': 미국과 동맹, 중국과 경제협력을 동시에 유지하는 고위험 균형."
+
+  JPN:
+    strategic_position: "미일동맹 허브, 제1열도선 핵심 고리. 2022년 방위비 GDP 2% 목표로 '전후 체제' 탈피 본격화."
+    strategic_posture: status_quo
+    alliances:
+      - "미·일 안보조약"
+      - "QUAD"
+      - "AUKUS 필러2 (기술 협력)"
+      - "Five Eyes (준회원)"
+    key_risks:
+      - "센카쿠(댜오위다오) 분쟁 — 중국 해경 침범 일상화"
+      - "북한 미사일 — 2023년 홋카이도 상공 통과"
+      - "역사 문제 — 위안부·강제징용으로 한·일 협력 제약"
+    instrument_of_power: military
+    theory_refs:
+      - "A2/AD 대응 — 반격능력(적기지공격) 보유로 억제력 강화"
+      - "동맹이론 — 미·일동맹의 비대칭성: 일본이 기지 제공, 미국이 핵우산"
+      - "Mearsheimer — 중국 부상에 맞선 일본의 편승 vs. 균형 선택"
+    learning_note: "일본의 재무장은 '전략적 자율성' 확보 시도. 그러나 헌법 9조 제약과 미일동맹 의존 사이에서 여전히 갈등."
+
+  SAU:
+    strategic_position: "글로벌 원유 시장 스윙 프로듀서. OPEC+ 감산으로 유가를 정치적 레버리지로 활용하는 에너지 강대국."
+    strategic_posture: status_quo
+    alliances:
+      - "걸프협력회의(GCC)"
+      - "아랍연맹"
+      - "OPEC+"
+      - "비공식: 미국·이스라엘 아브라함 협정"
+    key_risks:
+      - "이란 위협 — 후티 드론·미사일, 아람코 공격(2019)"
+      - "Vision 2030 취약성 — 석유 의존 탈피 지연"
+      - "왕위 계승 — MBS 권위주의 강화와 서방 인권 압력"
+    instrument_of_power: economic
+    theory_refs:
+      - "자원무기화 — 1973년 오일쇼크부터 이어진 에너지 레버리지"
+      - "Petro-state Paradox — 자원 부국의 정치적 취약성(Rentier State)"
+      - "아브라함 협정 — 이란 위협 공유로 아랍·이스라엘 정상화"
+    learning_note: "사우디는 '에너지 지정학'의 교과서. OPEC+ 감산 결정 하나가 글로벌 인플레이션·중앙은행 정책을 바꾼다."
+
+  ISR:
+    strategic_position: "중동 유일의 핵 보유국(미확인). 이란 핵 프로그램과 '저항의 축'을 실존적 위협으로 규정, 선제타격 독트린 유지."
+    strategic_posture: status_quo
+    alliances:
+      - "비공식: 미국 (무기·정보 지원)"
+      - "아브라함 협정 (UAE·바레인·수단·모로코)"
+      - "Five Eyes (부분 협력)"
+    key_risks:
+      - "이란 핵 프로그램 — 농축도 60% 돌파, 수개월 내 핵 능력 논란"
+      - "가자·레바논 다중 전선 — 하마스·헤즈볼라 동시 대응"
+      - "국제법 압력 — ICJ 제소, 유럽 제재 논의"
+    instrument_of_power: military
+    theory_refs:
+      - "Begin Doctrine — 적의 핵·WMD 시설 선제 파괴 (1981 오시라크, 2007 시리아)"
+      - "Deterrence by Denial — 억제 실패 시 반드시 보복하는 공식 천명"
+      - "비대칭 억제 — 핵 모호성(Nuclear Ambiguity)으로 선제공격 억제"
+    learning_note: "이스라엘의 안보 딜레마는 '소국의 실존 위협 인식'. 국제규범보다 자국 생존을 우선하는 현실주의의 극단적 사례."
+
+  UKR:
+    strategic_position: "러시아-NATO 완충지대에서 NATO 가입 신청국으로 전환. 서방 지원으로 영토 수복을 목표로 전쟁 지속."
+    strategic_posture: status_quo
+    alliances:
+      - "NATO 가입 신청 (2022)"
+      - "서방 무기 지원 연합 (람슈타인 그룹)"
+      - "EU 가입 후보국 (2022)"
+    key_risks:
+      - "서방 지원 피로 — 미국 지원 감소·유럽 국내 정치 변화"
+      - "영토 동결 협상 압력 — 크림·돈바스 포기 요구"
+      - "전후 재건 비용 — IMF 추산 7,500억 달러"
+    instrument_of_power: military
+    theory_refs:
+      - "Buffer Zone Theory — 강대국 사이 완충국의 안보 딜레마"
+      - "NATO 확장 논쟁 — Mearsheimer vs. Ikenberry: 러시아 안보 우려 vs. 주권 원칙"
+      - "제도적 억제 — 국제형사재판소(ICC) 영장, 유엔 총회 결의로 러시아 고립"
+    learning_note: "우크라이나 전쟁은 '주권 원칙 vs. 세력권' 논쟁의 현재진행형. 국제법 vs. 현실주의의 충돌 교과서."
+
+  PRK:
+    strategic_position: "핵·ICBM 보유로 미국 본토 타격 능력 확보. 중·러에 군사 협력으로 기대며 대미 억제력 극대화."
+    strategic_posture: revisionist
+    alliances:
+      - "조·러 포괄적 전략적 동반자 관계 (2024)"
+      - "북·중 우호협력조약 (1961, 자동개입 조항)"
+    key_risks:
+      - "ICBM 고도화 — 화성-17·18형, 미 본토 전역 사정거리"
+      - "전술핵 다종화 — 핵 어뢰·포탄·순항미사일"
+      - "러·북 군사협력 — 포탄 수출·파병으로 유엔 제재 형해화"
+    instrument_of_power: military
+    theory_refs:
+      - "Nuclear Deterrence — 핵 보유로 정권 생존 보장 (카다피·후세인 교훈)"
+      - "Brinkmanship — 긴장 고조로 양보를 끌어내는 벼랑 끝 전술"
+      - "Alliance Dilemma — 중국의 연루 우려와 북한 통제력 한계"
+    learning_note: "북한의 핵은 '생존 보험'이다. 리비아·이라크의 전례가 비핵화 협상을 구조적으로 불가능하게 만든다."
+
+  IND:
+    strategic_position: "전략적 자율성 신봉자. QUAD 참여로 중국 견제, 러시아와 에너지 협력 유지, 글로벌 사우스 리더십 추구."
+    strategic_posture: status_quo
+    alliances:
+      - "QUAD"
+      - "SCO"
+      - "BRICS"
+      - "Commonwealth"
+    key_risks:
+      - "중·인 국경 분쟁 — LAC(실효지배선) 충돌, 갈완 계곡 (2020)"
+      - "파키스탄 핵 대치 — 카슈미르 분쟁과 핵 사용 임계점"
+      - "기술 자립 압박 — 반도체 공장 유치(TSMC·마이크론)와 공급망 독립"
+    instrument_of_power: diplomatic
+    theory_refs:
+      - "Non-Alignment 2.0 — 냉전 비동맹의 현대판: 어느 편도 아닌 전략적 자율성"
+      - "Hedging Strategy — 중국 견제(QUAD)와 러시아 협력(S-400) 동시 추구"
+      - "Neighborhood First — 남아시아 내 인도 패권 유지 독트린"
+    learning_note: "인도는 '전략적 자율성'의 현대 교과서. '다자 편향(Multi-alignment)'으로 강대국 경쟁을 레버리지로 활용."
+
+  AUS:
+    strategic_position: "AUKUS·QUAD 핵심 멤버로 인도-태평양 안보 구조 재편 중. 핵잠수함 도입으로 중국 A2/AD에 대응."
+    strategic_posture: status_quo
+    alliances:
+      - "AUKUS"
+      - "QUAD"
+      - "Five Eyes"
+      - "ANZUS 조약 (미·호 상호방위)"
+    key_risks:
+      - "중국 경제 보복 — 와인·보리·석탄 수입 중단(2020-2023)"
+      - "핵잠 도입 지연 — 버지니아급 전달 2030년대 초 예상"
+      - "태평양 도서국 경쟁 — 중국의 솔로몬 제도 안보 협정"
+    instrument_of_power: military
+    theory_refs:
+      - "AUKUS — 핵추진 잠수함으로 A2/AD 돌파, 미·영·호 기술 통합"
+      - "Weaponized Interdependence — 중국의 경제 보복이 오히려 공급망 다변화 가속"
+      - "Alliance Reliability — 동맹 신뢰성 회복을 위한 군사적 투자"
+    learning_note: "호주의 핵잠 도입은 '억제력 현대화'의 사례. 중국 경제 보복이 역설적으로 안보 강화로 이어진 케이스."
+
+  NLD:
+    strategic_position: "ASML EUV 노광기 독점으로 글로벌 반도체 공급망 병목을 쥔 기술 강국. 대중 수출통제의 핵심 노드."
+    strategic_posture: status_quo
+    alliances:
+      - "NATO"
+      - "EU"
+      - "Five Eyes (부분 협력)"
+      - "바세나르 체제 (전략물자 통제)"
+    key_risks:
+      - "ASML 수출통제 — 미국 압박으로 EUV·DUV 대중 수출 제한"
+      - "중국 기술 유출 — ASML 전직 직원·지식재산 탈취 시도"
+      - "에너지 전환 — 그로닝겐 가스전 폐쇄로 러시아 의존 잔재"
+    instrument_of_power: economic
+    theory_refs:
+      - "Techno-nationalism — EUV 노광기 = 반도체 주권의 물리적 구현"
+      - "Weaponized Interdependence — 미국이 네덜란드 통해 중국 반도체 굴절점 통제"
+      - "Chokepoint Control — 생산 장비 독점이 군사 기지보다 강력한 지렛대"
+    learning_note: "네덜란드는 '보이지 않는 인프라 지정학'의 핵심. EUV 1대 없이는 최첨단 반도체 생산 불가 — 기술이 지정학이다."
+
+  TUR:
+    strategic_position: "NATO 회원국이면서 러시아 S-400 구매, 우크라이나 드론(Bayraktar) 수출. 전략적 모호성으로 양측에서 레버리지 추출."
+    strategic_posture: status_quo
+    alliances:
+      - "NATO (창설 멤버, 1952)"
+      - "G20"
+      - "이스탄불 조약 (흑해 통행 통제)"
+    key_risks:
+      - "S-400 구매 — F-35 축출, CAATSA 제재 위협"
+      - "쿠르드 문제 — PKK와 시리아 북부 작전으로 NATO와 갈등"
+      - "경제 불안 — 리라화 폭락, 고물가로 정치적 압력"
+    instrument_of_power: diplomatic
+    theory_refs:
+      - "Hedging Strategy — NATO 유지 + 러시아 협력으로 전략적 자율성 극대화"
+      - "Montreux Convention — 흑해 해협 통제권으로 전쟁 중 러시아 해군 제한"
+      - "Swing State Diplomacy — 강대국 경쟁에서 중립 브로커 역할 자임"
+    learning_note: "튀르키예는 '전략적 모호성'의 극단적 사례. NATO 내부에서 러시아와 협력하며 양측에서 최대 이익을 추출한다."

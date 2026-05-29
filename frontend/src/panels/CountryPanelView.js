@@ -49,6 +49,8 @@ function renderInfo(data) {
     ? `<span class="cp-badge">${esc(data.region_code)}</span>`
     : '<span class="cp-na">—</span>';
 
+  const geoHtml = _renderGeopolitics(data.geopolitics);
+
   return `
     <div class="cp-section">
       <div class="cp-kv">
@@ -71,6 +73,70 @@ function renderInfo(data) {
         <span class="cp-key">지역 코드</span>
         <span class="cp-val">${region}</span>
       </div>
+    </div>
+    ${geoHtml}
+  `;
+}
+
+function _renderGeopolitics(geo) {
+  if (!geo) return '';
+
+  const postureEmoji = geo.strategic_posture === 'revisionist' ? '🔴' : '🟢';
+  const postureLabel = geo.strategic_posture === 'revisionist' ? '수정주의' : '현상유지';
+
+  // DIME 이모지 매핑
+  const dimeEmoji = {
+    diplomatic:    '🤝',
+    informational: '📡',
+    military:      '⚔️',
+    economic:      '💰',
+  };
+  const dimeLabel = {
+    diplomatic:    '외교',
+    informational: '정보',
+    military:      '군사',
+    economic:      '경제',
+  };
+  const instrEmoji = dimeEmoji[geo.instrument_of_power] ?? '—';
+  const instrLabel = dimeLabel[geo.instrument_of_power] ?? geo.instrument_of_power ?? '—';
+
+  const allianceTags = (geo.alliances ?? [])
+    .map(a => `<span class="cp-geo-tag">${esc(a)}</span>`).join('');
+
+  const riskItems = (geo.key_risks ?? [])
+    .map(r => `<li class="cp-geo-risk">⚠ ${esc(r)}</li>`).join('');
+
+  const theoryItems = (geo.theory_refs ?? [])
+    .map(t => `<li class="cp-geo-theory">📚 ${esc(t)}</li>`).join('');
+
+  const noteHtml = geo.learning_note
+    ? `<div class="cp-geo-note">💡 ${esc(geo.learning_note)}</div>` : '';
+
+  return `
+    <div class="cp-section cp-geo-section">
+      <div class="cp-section-title">지정학 프로파일</div>
+
+      <div class="cp-geo-position">${esc(geo.strategic_position ?? '')}</div>
+
+      <div class="cp-geo-row">
+        <span class="cp-key">전략 포지션</span>
+        <span class="cp-geo-posture">${postureEmoji} ${postureLabel}</span>
+        <span class="cp-key" style="margin-left:12px">핵심 수단</span>
+        <span class="cp-geo-posture">${instrEmoji} ${instrLabel}</span>
+      </div>
+
+      <div class="cp-geo-row">
+        <span class="cp-key">동맹·기구</span>
+      </div>
+      <div class="cp-geo-tags">${allianceTags || '<span class="cp-na">—</span>'}</div>
+
+      <div class="cp-geo-row"><span class="cp-key">주요 리스크</span></div>
+      <ul class="cp-geo-list">${riskItems}</ul>
+
+      <div class="cp-geo-row"><span class="cp-key">관련 이론</span></div>
+      <ul class="cp-geo-list">${theoryItems}</ul>
+
+      ${noteHtml}
     </div>
   `;
 }
