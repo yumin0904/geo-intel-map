@@ -50,6 +50,7 @@ _ISO3_TO_ISO2: dict[str, str] = {
     "UKR": "UA", "POL": "PL", "EGY": "EG", "IDN": "ID",
     "PAK": "PK", "IRQ": "IQ", "AFG": "AF", "ETH": "ET",
     "NGA": "NG", "ZAF": "ZA", "MEX": "MX", "ARE": "AE",
+    "NLD": "NL",
     "KWT": "KW", "QAT": "QA", "OMN": "OM", "PHL": "PH",
     "VNM": "VN", "MYS": "MY", "SGP": "SG", "THA": "TH",
 }
@@ -164,6 +165,42 @@ _COUNTRY_INFO: dict[str, dict] = {
             "fred_indicators": ["wti", "vix"]},
     "SGP": {"name_ko": "싱가포르",     "name_en": "Singapore",
             "region_code": "south_china_sea",
+            "fred_indicators": ["wti", "vix"]},
+    # ── 확장 (2026-05-30): 5대 섹터 추가 커버리지 ─────────────────────────
+    "AUS": {"name_ko": "호주",         "name_en": "Australia",
+            "region_code": None,
+            # AUKUS·QUAD 핵심 멤버, 철광석·LNG 수출로 Weaponized Interdependence 직접 노출
+            "fred_indicators": ["wti", "brent", "vix"],
+            "sector_tags": ["maritime", "indo_pacific"]},
+    "TUR": {"name_ko": "튀르키예",     "name_en": "Turkey",
+            "region_code": "middle_east",
+            # NATO 회원국이면서 러시아 에너지 의존 — 동맹 딜레마(Snyder)의 생생한 사례
+            "fred_indicators": ["brent", "wti", "vix"]},
+    "QAT": {"name_ko": "카타르",       "name_en": "Qatar",
+            "region_code": "hormuz",
+            # 세계 최대 LNG 수출국 — 호르무즈 봉쇄 시 유럽·아시아 에너지 안보 직격
+            "fred_indicators": ["wti", "brent", "vix"]},
+    "NLD": {"name_ko": "네덜란드",     "name_en": "Netherlands",
+            "region_code": None,
+            # ASML: EUV 노광기 독점 → 반도체 공급망 병목점. 테크노내셔널리즘 핵심 사례
+            "fred_indicators": ["brent", "vix"],
+            "sector_tags": ["techno"]},
+    "EGY": {"name_ko": "이집트",       "name_en": "Egypt",
+            "region_code": "suez",
+            # 수에즈 운하 운영국 — 홍해 위기 시 통행료·통과 허용 여부가 핵심 변수
+            "fred_indicators": ["wti", "brent", "vix"]},
+    "PAK": {"name_ko": "파키스탄",     "name_en": "Pakistan",
+            "region_code": None,
+            # SCO 회원국·핵보유국·중인 완충지대. 미중 경쟁 속 '전략적 모호성' 실습 사례
+            "fred_indicators": ["wti", "vix"],
+            "sector_tags": ["gray_zone", "indo_pacific"]},
+    "POL": {"name_ko": "폴란드",       "name_en": "Poland",
+            "region_code": "ukraine",
+            # NATO 동방 진영 핵심, 우크라이나 접경 — 동맹 확산(Alliance Diffusion) 연루 위험
+            "fred_indicators": ["brent", "vix"]},
+    "ETH": {"name_ko": "에티오피아",   "name_en": "Ethiopia",
+            "region_code": "bab_el_mandeb",
+            # DB 81,707건 아프리카 최대 분쟁국 — 회색지대·비전통 안보의 교과서적 사례
             "fred_indicators": ["wti", "vix"]},
 }
 
@@ -317,34 +354,20 @@ def _query_sanctions(iso2: str | None) -> list[dict]:
     ]
 
 
-def _query_theories(region_code: str | None) -> list[dict]:
-    """library.db에서 region_code 매칭 이론 조회.
+def _query_theories(
+    region_code: str | None,
+    sector_tags: list[str] | None = None,
+) -> list[dict]:
+    """library.db에서 region_code 또는 sector_tag 매칭 이론 조회.
 
-    regions JSON 배열 또는 geopol_region 컬럼을 우선 참조한다.
-    매칭 없으면 빈 목록 반환.
+    1차: region_code로 매칭 (regions JSON / geopol_region)
+    2차 폴백: sector_tags 리스트로 매칭 (region_code=None인 국가용)
     """
-    if not region_code:
-        return []
-
     con = _open_library()
     if not con:
         return []
 
-    try:
-        # regions JSON 배열에 region_code 포함 여부 (LIKE 근사 매칭)
-        rows = con.execute(
-            """
-            SELECT theory_id, title, sector_tag, summary, use_case, geopol_region
-            FROM theories
-            WHERE regions LIKE ? OR geopol_region LIKE ?
-            ORDER BY
-                CASE use_case WHEN 'case_study' THEN 0 WHEN 'norm' THEN 1 ELSE 2 END,
-                title ASC
-            LIMIT 12
-            """,
-            (f"%{region_code}%", f"%{region_code}%"),
-        ).fetchall()
-
+    def _format(rows) -> list[dict]:
         return [
             {
                 "id":         r["theory_id"],
@@ -355,6 +378,41 @@ def _query_theories(region_code: str | None) -> list[dict]:
             }
             for r in rows
         ]
+
+    try:
+        if region_code:
+            rows = con.execute(
+                """
+                SELECT theory_id, title, sector_tag, summary, use_case, geopol_region
+                FROM theories
+                WHERE regions LIKE ? OR geopol_region LIKE ?
+                ORDER BY
+                    CASE use_case WHEN 'case_study' THEN 0 WHEN 'norm' THEN 1 ELSE 2 END,
+                    title ASC
+                LIMIT 12
+                """,
+                (f"%{region_code}%", f"%{region_code}%"),
+            ).fetchall()
+            return _format(rows)
+
+        # region_code 없는 국가 — sector_tags 폴백
+        if sector_tags:
+            placeholders = ",".join("?" * len(sector_tags))
+            rows = con.execute(
+                f"""
+                SELECT theory_id, title, sector_tag, summary, use_case, geopol_region
+                FROM theories
+                WHERE sector_tag IN ({placeholders})
+                ORDER BY
+                    CASE use_case WHEN 'case_study' THEN 0 WHEN 'norm' THEN 1 ELSE 2 END,
+                    title ASC
+                LIMIT 8
+                """,
+                sector_tags,
+            ).fetchall()
+            return _format(rows)
+
+        return []
     finally:
         con.close()
 
@@ -399,7 +457,7 @@ async def get_country(iso3: str):
         "macro":       _query_macro(iso3),
         "trade":       _query_trade(iso3),
         "sanctions":   _query_sanctions(iso2),
-        "theories":    _query_theories(region),
+        "theories":    _query_theories(region, info.get("sector_tags")),
         "cached":      False,
     }
 
