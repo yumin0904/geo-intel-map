@@ -392,7 +392,7 @@ geomap/
 - [ ] Theory Panel
 - [ ] Study Mode
 
-### Phase 3 — 학습 도구 완성 (진행 중)
+### Phase 3 — 학습 도구 완성 ✅ (완료)
 
 **Veto 확정 (구현 금지)**
 - MapLibre 3D Globe → Phase 4 격리
@@ -412,6 +412,36 @@ geomap/
 - CascadeLink: depth(int), parent_link_id, chain_output
 - Event: confidence_score (ACLED=1.0, GDELT미검증=0.5, 교차검증=0.8)
 - 무한루프 방지: _MAX_CHAIN_DEPTH=4
+
+### Phase 4 — 데이터 확충 & 적재 기반 강화
+
+목표: 추론의 연료 확충 + 데이터 신뢰도 강화
+
+**게이트**: Phase 3 완성 공식 선언 후 착수. 항목 4는 Granger 데이터 6개월+ 누적 후(§11-A 게이트).
+
+| # | 항목 | 파일 | 상태 |
+|---|------|------|------|
+| 0 | 국가 지정학 프로파일 — CountryPanel 기본정보 탭 확장 | `country_geopolitics.yaml` / `country.py` / `CountryPanelView.js` | [ ] |
+| 1 | 실시간 소스 다변화 — ReliefWeb API(UN OCHA) 편입, RSS 분쟁전문 피드 추가 | `connectors/reliefweb.py` | [ ] |
+| 2 | GDELT GKG 적재 — 테마·톤 필드 결정론적 매핑 (Token-Zero 유지) | `connectors/gdelt_gkg.py` / `cameo_mapper.py` 확장 | [ ] |
+| 3 | 데이터 품질 게이트 대시보드 — confidence·importance 모니터링 상단바 확장 | `api/stats.py` / `TopBarView.js` | [ ] |
+| 4 | Cascade 룰 자동 후보 생성 — Granger 유의쌍 스캔 → YAML draft 제안 (인간 승인 필수) | `services/cascade/correlation.py` 확장 | [ ] |
+
+---
+
+### Phase 5 — 추론 지능화
+
+목표: 규칙·매칭 기반 → 가설 생성·반증 추론
+
+**게이트**: Phase 4 전체 완료 후. 항목 8은 §14 Token-Zero 원칙 위반이 아님을 명문화 후 착수
+(사용자 명시 요청 기반 LLM 호출 = §14 허용 범위).
+
+| # | 항목 | 파일 | 상태 |
+|---|------|------|------|
+| 5 | Stage 5 (명분·의도) 구현 — GKG 톤/테마 + actor posture 결합 | `services/reasoning/stages.py` | [ ] |
+| 6 | 추론 체인 자기검증 — 8단계 ↔ Sandbox BFS 가설·반증 루프 | `services/reasoning/engine.py` / `sandbox_solver.py` | [ ] |
+| 7 | 멀티에이전트 — 섹터별 추론 에이전트 병렬 + 종합 에이전트 | `services/reasoning/agents/` (신규) | [ ] |
+| 8 | LLM 종합 브리핑 계층 — importance≥0.7 게이트, 사용자 명시 요청만, 태깅 금지(§14) | `api/briefing.py` | [ ] |
 
 ---
 

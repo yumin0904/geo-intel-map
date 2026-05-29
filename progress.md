@@ -612,7 +612,24 @@ Snyder 동맹 딜레마: 한반도 지역 severity 누적이 원달러 환율에
 ### 현재 버전
 `version.json`: **3.27.0**
 
+### ✅ Phase 3 공식 완료 선언 (2026-05-29)
+
+Phase 3 체크리스트 8/8 완성. CLAUDE.md §11 Phase 3 → ✅ 상태 갱신.
+
+### Phase 4 — 데이터 확충 & 적재 기반 강화 (착수)
+
+우선순위 순:
+1. 국가 지정학 프로파일 (`country_geopolitics.yaml` + CountryPanel 기본정보 탭 확장)
+2. 실시간 소스 다변화 (ReliefWeb API/UN OCHA + RSS 분쟁전문 피드)
+3. GDELT GKG 적재 (테마·톤 결정론적 매핑, Token-Zero 유지)
+4. 데이터 품질 게이트 대시보드 (confidence·importance 모니터링)
+5. Cascade 룰 자동 후보 생성 (Granger 유의쌍 → YAML draft, 인간 승인 필수)
+
+Phase 5 (추론 지능화)는 Phase 4 완료 후 착수. CLAUDE.md §11에 로드맵 추가됨.
+
+### 현재 버전
+`version.json`: **3.27.0**
+
 ### 다음 세션 우선순위
 
-1. **브라우저 검증** — 드라이버 툴팁 호버 동작, 피자 레벨 상세 표시 확인
-2. **Phase 4 계획 수립** — Phase 3 완성 선언 후 다음 단계 결정
+1. **Phase 4-0**: 국가 지정학 프로파일 — `country_geopolitics.yaml` 설계 + CountryPanel 기본정보 탭 확장
