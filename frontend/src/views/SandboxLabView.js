@@ -12,6 +12,10 @@
  * cytoscape, cytoscape-dagre는 index.html에서 전역 로드됨
  */
 
+import { api } from '../services/api.js';
+
+const BASE = api.BASE_URL; // http://localhost:8000
+
 // region → 한국어 레이블 (CascadeGraphView와 동일)
 const REGION_LABEL_KO = {
   bab_el_mandeb:   '바브엘만데브',
@@ -60,6 +64,7 @@ export class SandboxLabView {
     this._chainMode = false;    // 체인 뷰어 모드 플래그
     this._cascadeLinks = [];    // cascade:loaded 캐시
     this._cascadeEvents = {};   // event_id → event
+    this._grangerLoaded = false; // Granger 탭 첫 로드 여부
 
     this._mount();
     this._bindEvents();
@@ -87,41 +92,60 @@ export class SandboxLabView {
         </div>
       </div>
 
-      <div class="sandbox__body">
+      <!-- 탭 바 -->
+      <div class="sandbox__tabs">
+        <button class="sandbox__tab-btn is-active" data-tab="builder">🔬 가설 빌더</button>
+        <button class="sandbox__tab-btn" data-tab="granger">📊 Granger 검증</button>
+      </div>
 
-        <!-- 좌측 20%: 캔버스 목록 -->
-        <aside class="sandbox__sidebar">
-          <div class="sandbox__sidebar-title">저장된 가설</div>
-          <div class="sandbox__canvas-list"></div>
+      <!-- 가설 빌더 패널 -->
+      <div class="sandbox__pane" id="sandbox-pane-builder">
+        <div class="sandbox__body">
 
-          <div class="sandbox__node-toolbar">
-            <div class="sandbox__sidebar-title" style="margin-top:12px">노드 추가</div>
-            <button class="sandbox__add-node-btn" data-type="event">＋ 사건</button>
-            <button class="sandbox__add-node-btn" data-type="indicator">＋ 지표</button>
-            <button class="sandbox__add-node-btn" data-type="outcome">＋ 결과</button>
-            <div class="sandbox__sidebar-title" style="margin-top:12px">레이아웃</div>
-            <button class="sandbox__layout-btn">⚙ 자동 정렬</button>
+          <!-- 좌측 20%: 캔버스 목록 -->
+          <aside class="sandbox__sidebar">
+            <div class="sandbox__sidebar-title">저장된 가설</div>
+            <div class="sandbox__canvas-list"></div>
+
+            <div class="sandbox__node-toolbar">
+              <div class="sandbox__sidebar-title" style="margin-top:12px">노드 추가</div>
+              <button class="sandbox__add-node-btn" data-type="event">＋ 사건</button>
+              <button class="sandbox__add-node-btn" data-type="indicator">＋ 지표</button>
+              <button class="sandbox__add-node-btn" data-type="outcome">＋ 결과</button>
+              <div class="sandbox__sidebar-title" style="margin-top:12px">레이아웃</div>
+              <button class="sandbox__layout-btn">⚙ 자동 정렬</button>
+            </div>
+          </aside>
+
+          <!-- 중앙 60%: Cytoscape 그래프 -->
+          <main class="sandbox__graph">
+            <div class="sandbox__graph-hint" id="sandbox-hint">
+              ← 좌측에서 가설을 선택하거나 새로 만드세요.
+            </div>
+            <div id="sandbox-cy" class="sandbox__cy"></div>
+          </main>
+
+          <!-- 우측 20%: 검증 결과 -->
+          <aside class="sandbox__result">
+            <div class="sandbox__sidebar-title">검증 결과</div>
+            <div class="sandbox__result-empty" id="sandbox-result-empty">
+              "✓ 검증" 버튼을 눌러<br>가설을 검증하세요.
+            </div>
+            <div class="sandbox__result-body" id="sandbox-result-body" style="display:none"></div>
+            <button class="sandbox__verify-btn" id="sandbox-verify-btn" disabled>✓ 검증</button>
+          </aside>
+
+        </div>
+      </div>
+
+      <!-- Granger 검증 패널 -->
+      <div class="sandbox__pane" id="sandbox-pane-granger" style="display:none">
+        <div class="granger__container">
+          <div class="granger__summary" id="granger-summary">
+            <div class="granger__loading">📊 Granger 인과성 분석 데이터 로딩 중...</div>
           </div>
-        </aside>
-
-        <!-- 중앙 60%: Cytoscape 그래프 -->
-        <main class="sandbox__graph">
-          <div class="sandbox__graph-hint" id="sandbox-hint">
-            ← 좌측에서 가설을 선택하거나 새로 만드세요.
-          </div>
-          <div id="sandbox-cy" class="sandbox__cy"></div>
-        </main>
-
-        <!-- 우측 20%: 검증 결과 -->
-        <aside class="sandbox__result">
-          <div class="sandbox__sidebar-title">검증 결과</div>
-          <div class="sandbox__result-empty" id="sandbox-result-empty">
-            "✓ 검증" 버튼을 눌러<br>가설을 검증하세요.
-          </div>
-          <div class="sandbox__result-body" id="sandbox-result-body" style="display:none"></div>
-          <button class="sandbox__verify-btn" id="sandbox-verify-btn" disabled>✓ 검증</button>
-        </aside>
-
+          <div class="granger__rules" id="granger-rules"></div>
+        </div>
       </div>
     `;
   }
@@ -144,6 +168,110 @@ export class SandboxLabView {
 
     document.getElementById('sandbox-verify-btn')
       .addEventListener('click', () => this._verify());
+
+    // 탭 전환
+    this._el.querySelectorAll('.sandbox__tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => this._switchTab(btn.dataset.tab));
+    });
+  }
+
+  _switchTab(tab) {
+    this._el.querySelectorAll('.sandbox__tab-btn').forEach(b => {
+      b.classList.toggle('is-active', b.dataset.tab === tab);
+    });
+    document.getElementById('sandbox-pane-builder').style.display =
+      tab === 'builder' ? '' : 'none';
+    document.getElementById('sandbox-pane-granger').style.display =
+      tab === 'granger' ? '' : 'none';
+
+    if (tab === 'granger' && !this._grangerLoaded) {
+      this._loadGrangerView();
+    }
+  }
+
+  async _loadGrangerView() {
+    try {
+      const data = await api.get('/api/cascade/correlation');
+      this._renderGrangerSummary(data.summary ?? {});
+      this._renderGrangerRules(data.rules ?? []);
+      this._grangerLoaded = true;
+    } catch (e) {
+      const el = document.getElementById('granger-summary');
+      if (el) el.innerHTML = `<div class="granger__loading">⚠ 로드 실패: ${e.message}</div>`;
+    }
+  }
+
+  _renderGrangerSummary(s) {
+    const el = document.getElementById('granger-summary');
+    if (!el) return;
+    const testedPct = s.tested ? Math.round((s.granger_supported / s.tested) * 100) : 0;
+    el.innerHTML = `
+      <div class="granger__stat-row">
+        <div class="granger__stat">
+          <span class="granger__stat-num">${s.total_rules ?? 0}</span>
+          <span class="granger__stat-label">총 검증 룰</span>
+        </div>
+        <div class="granger__stat">
+          <span class="granger__stat-num">${s.tested ?? 0}</span>
+          <span class="granger__stat-label">데이터 확보</span>
+        </div>
+        <div class="granger__stat">
+          <span class="granger__stat-num danger">${s.granger_supported ?? 0}/${s.tested ?? 0}</span>
+          <span class="granger__stat-label">Granger 지지</span>
+        </div>
+        <div class="granger__stat">
+          <span class="granger__stat-num">${s.extreme_directional_match ?? 0}/${s.tested ?? 0}</span>
+          <span class="granger__stat-label">방향 일치</span>
+        </div>
+      </div>
+      <div class="granger__period">분석 기간: ${s.analysis_period ?? ''} · ${s.method ?? ''}</div>
+      <div class="granger__finding">
+        <strong>📌 핵심 발견</strong><br>${s.key_finding ?? ''}<br><br>
+        <strong>💡 이론적 함의</strong><br>${s.theory_implication ?? ''}
+      </div>
+    `;
+  }
+
+  _renderGrangerRules(rules) {
+    const el = document.getElementById('granger-rules');
+    if (!el) return;
+    el.innerHTML = rules.map(r => this._grangerCard(r)).join('');
+  }
+
+  _grangerCard(r) {
+    const regionKo = REGION_LABEL_KO[r.region] ?? r.region;
+    const tickerKo = TICKER_LABEL_KO[r.ticker] ?? r.ticker;
+    const arrow    = r.direction === 'up' ? '↑' : '↓';
+    const hasData  = r.error === null && r.p_value !== null;
+    const verdict  = r.error
+      ? `<span class="granger__card-verdict error">데이터 없음</span>`
+      : r.supported
+        ? `<span class="granger__card-verdict supported">Granger 지지</span>`
+        : `<span class="granger__card-verdict not-supported">비지지 p=${r.p_value?.toFixed(3) ?? '?'}</span>`;
+
+    const statsLine = hasData
+      ? `<div class="granger__card-stats">lag=${r.best_lag} · n=${r.n_obs}일</div>`
+      : '';
+
+    const extremeLine = hasData && r.extreme_return_pct !== null
+      ? `<div class="granger__card-extreme">극단(상위25%, ${r.n_extreme_events}건): <strong>${(r.extreme_return_pct * 100).toFixed(2)}%</strong> | 일반: ${(r.normal_return_pct * 100).toFixed(2)}%</div>`
+      : '';
+
+    const errorLine = r.error
+      ? `<div class="granger__card-error-msg">⚠ ${r.error}</div>`
+      : '';
+
+    return `
+      <div class="granger__card${r.error ? ' granger__card--error' : ''}">
+        <div class="granger__card-header">
+          <span class="granger__card-route">${regionKo} → ${tickerKo} ${arrow}</span>
+          ${verdict}
+        </div>
+        ${statsLine}${extremeLine}${errorLine}
+        <div class="granger__card-theory">${r.theory ?? ''}</div>
+        <div class="granger__card-note">${r.note ?? ''}</div>
+      </div>
+    `;
   }
 
   _bindEvents() {
@@ -182,7 +310,7 @@ export class SandboxLabView {
 
   async _loadCanvasList() {
     try {
-      const res = await fetch('/api/sandbox/canvases');
+      const res = await fetch(`${BASE}/api/sandbox/canvases`);
       this._canvases = await res.json();
     } catch {
       this._canvases = [];
@@ -224,7 +352,7 @@ export class SandboxLabView {
     if (!title?.trim()) return;
 
     const now = new Date().toISOString();
-    const res = await fetch('/api/sandbox/canvases', {
+    const res = await fetch(`${BASE}/api/sandbox/canvases`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: title.trim(), hypothesis: '', sector_tag: null,
@@ -242,7 +370,7 @@ export class SandboxLabView {
 
   async _deleteCanvas(canvasId) {
     if (!confirm('이 가설을 삭제하시겠습니까?')) return;
-    await fetch(`/api/sandbox/canvases/${canvasId}`, { method: 'DELETE' });
+    await fetch(`${BASE}/api/sandbox/canvases/${canvasId}`, { method: 'DELETE' });
     if (this._currentCanvasId === canvasId) {
       this._currentCanvasId = null;
       this._cy?.destroy();
@@ -258,7 +386,7 @@ export class SandboxLabView {
     this._currentCanvasId = canvasId;
     this._renderCanvasList(); // active 상태 갱신
 
-    const res = await fetch(`/api/sandbox/canvases/${canvasId}`);
+    const res = await fetch(`${BASE}/api/sandbox/canvases/${canvasId}`);
     const data = await res.json();
     this._initCy(data.nodes, data.edges);
 
@@ -351,7 +479,7 @@ export class SandboxLabView {
       created_at: now, updated_at: now,
     };
 
-    const res = await fetch(`/api/sandbox/canvases/${this._currentCanvasId}/nodes`, {
+    const res = await fetch(`${BASE}/api/sandbox/canvases/${this._currentCanvasId}/nodes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(node),
@@ -372,7 +500,7 @@ export class SandboxLabView {
     const pos = target.position();
     // 위치만 업데이트 — payload 전체를 PUT하는 대신 REPLACE upsert 재사용
     const now = new Date().toISOString();
-    await fetch(`/api/sandbox/canvases/${this._currentCanvasId}/nodes`, {
+    await fetch(`${BASE}/api/sandbox/canvases/${this._currentCanvasId}/nodes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -401,10 +529,10 @@ export class SandboxLabView {
     btn.disabled = true;
 
     try {
-      const res = await fetch(`/api/sandbox/canvases/${this._currentCanvasId}`);
+      const res = await fetch(`${BASE}/api/sandbox/canvases/${this._currentCanvasId}`);
       const canvasFull = await res.json();
 
-      const vRes = await fetch(`/api/sandbox/canvases/${this._currentCanvasId}/verify`, {
+      const vRes = await fetch(`${BASE}/api/sandbox/canvases/${this._currentCanvasId}/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(canvasFull),
@@ -483,6 +611,8 @@ export class SandboxLabView {
       this._open = true;
       await this._loadCanvasList();
     }
+    // 체인 뷰어는 항상 가설 빌더 탭에서 동작
+    this._switchTab('builder');
     this._chainMode = true;
 
     // report에서 region 추출 (Stage 1)
@@ -496,7 +626,7 @@ export class SandboxLabView {
     // cascade 데이터가 없으면 새로 fetch
     if (!this._cascadeLinks.length) {
       try {
-        const res  = await fetch('/api/cascade/links');
+        const res  = await fetch(`${BASE}/api/cascade/links`);
         const data = await res.json();
         this._cascadeLinks  = data.links ?? [];
         this._cascadeEvents = {};

@@ -1669,12 +1669,162 @@ body:not(.study-mode) .notebook { display: none; }
 }
 .sandbox__close-btn:hover { color: var(--color-text-primary); }
 
+/* ── Sandbox: 탭 바 ─────────────────────────────────────────────── */
+.sandbox__tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  flex-shrink: 0;
+}
+.sandbox__tab-btn {
+  padding: 8px 18px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sandbox__tab-btn:hover { color: var(--color-text-primary); }
+.sandbox__tab-btn.is-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+/* ── Sandbox: 패널 전환 래퍼 ────────────────────────────────────── */
+.sandbox__pane {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ── Sandbox: 3열 본문 ──────────────────────────────────────────── */
 .sandbox__body {
   display: grid;
   grid-template-columns: 20% 60% 20%;
   flex: 1;
   overflow: hidden;
+}
+
+/* ── Granger 검증 뷰 ─────────────────────────────────────────────── */
+.granger__container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+.granger__loading {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  padding: 20px;
+  text-align: center;
+}
+.granger__summary {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.granger__stat-row {
+  display: flex;
+  gap: 28px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.granger__stat { text-align: center; }
+.granger__stat-num {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  display: block;
+}
+.granger__stat-num.danger { color: #f85149; }
+.granger__stat-label {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  display: block;
+}
+.granger__period {
+  font-size: 10px;
+  color: #555;
+  margin-bottom: 8px;
+}
+.granger__finding {
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-border);
+  padding-top: 10px;
+}
+.granger__finding strong { color: var(--color-text-primary); }
+.granger__rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 10px;
+}
+.granger__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.granger__card--error { opacity: 0.65; }
+.granger__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.granger__card-route {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
+}
+.granger__card-verdict {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.granger__card-verdict.supported     { background: rgba(63,185,80,0.2);  color: #3fb950; }
+.granger__card-verdict.not-supported { background: rgba(248,81,73,0.2);  color: #f85149; }
+.granger__card-verdict.error         { background: rgba(139,148,158,0.2); color: #8b949e; }
+.granger__card-stats {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  margin-bottom: 4px;
+}
+.granger__card-extreme {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+.granger__card-extreme strong { color: var(--color-text-primary); }
+.granger__card-theory {
+  font-size: 10px;
+  color: #8b949e;
+  font-style: italic;
+  margin-bottom: 3px;
+}
+.granger__card-note {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+.granger__card-error-msg {
+  font-size: 11px;
+  color: #f0883e;
+  margin-bottom: 4px;
 }
 
 /* ── Sandbox: 좌측 사이드바 (캔버스 목록 + 노드 툴바) ──────────── */

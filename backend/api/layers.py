@@ -507,7 +507,7 @@ async def get_chokepoints():
     return _load_geojson("chokepoints.geojson")
 
 
-def _save_gdelt_events(events: list[Event]) -> None:
+def save_gdelt_events(events: list[Event]) -> None:
     """승격된 GDELT 이벤트(confidence≥0.8)를 events 테이블에 저장한다.
 
     24h TTL 정책(CLAUDE.md §18): 검증 미달 이벤트는 저장하지 않음.
@@ -651,7 +651,7 @@ async def get_gdelt():
     fresh_events: list[Event] = []
     try:
         fresh_events = await run_gdelt_pipeline()
-        _save_gdelt_events(fresh_events)  # 승격 이벤트 DB 저장
+        save_gdelt_events(fresh_events)  # 승격 이벤트 DB 저장
     except Exception as exc:
         _logger.warning("[GDELT endpoint] 파이프라인 오류: %s", exc)
 

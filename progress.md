@@ -146,7 +146,7 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 **8단계 추론 패널 프론트엔드 (ReasoningPanelView.js)**
 - `frontend/src/panels/ReasoningPanelView.js` (신규) — 우측 340px 슬라이드인, Share Tech Mono, z-index 1002
   - `reasoning:open` 이벤트 → `GET /api/reasoning/{event_id}` → 8단계 0.4s 순차 표시
-  - 상세 내용 클릭 펼침 (stages 3·4·6·7·8), `[🔬 분析실에서 열기]` 완료 버튼
+  - 상세 내용 클릭 펼침 (stages 3·4·6·7·8), `[🔬 분석실에서 열기]` 완료 버튼
   - fix: `has-detail` 클래스 누락 수정 (cursor:pointer 미적용 버그)
 - `frontend/src/layers/ConflictEventsLayer.js` — 팝업에 `[🤖 AI 분析]` 버튼 추가, `reasoning:open` 이벤트 발신
 - `frontend/styles/main.css` — `.reasoning-panel`, `.rs-stage`, `.popup-reasoning-btn` 스타일
@@ -254,9 +254,9 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 
 **브라우저 검증 + 추가 버그 수정 (v3.15.2)**
 - [✅] GDELT IRAN vs IRAN 중복 필터 — `_filter_and_normalize()` 필터 ⑤ 삽입 (동일 국가 이벤트 skip)
-- [⏳] 분析실 체인 트리 미표시 → region_code 불일치 (v3.15.3에서 해결)
+- [⏳] 분석실 체인 트리 미표시 → region_code 불일치 (v3.15.3에서 해결)
 
-### ✅ 분析실 체인 트리 렌더링 완료 (2026-05-27) — v3.15.3
+### ✅ 분석실 체인 트리 렌더링 완료 (2026-05-27) — v3.15.3
 
 - `stages.py` — `region_code` geofence 역조회 fallback (`region_for_point` import, 좌표 → 지역 자동 파생, 1,323개 None 이벤트 해결)
 - `reasoning.py` — `_resolve_event()` 캐시 미스 시 `get_conflict_events()` / `get_gdelt()` warm-up 자동 호출
@@ -521,7 +521,41 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 ### 현재 버전
 `version.json`: **3.24.1**
 
+### ✅ Granger 결과 프론트엔드 표시 (2026-05-29) — v3.25.0
+
+**분석실 탭 2분할: 가설 빌더 | Granger 검증**
+- `frontend/src/views/SandboxLabView.js`
+  - `import { api }` 추가 + `const BASE = api.BASE_URL` (기존 `/api/...` 상대경로 버그 전면 수정)
+  - 헤더에 탭 바 추가: `🔬 가설 빌더` / `📊 Granger 검증`
+  - `_switchTab(tab)` — 패널 전환, Granger 탭 첫 진입 시 API 호출
+  - `_loadGrangerView()` — `GET /api/cascade/correlation` → 요약+룰 렌더
+  - `_renderGrangerSummary()` — 통계 4개(총룰/데이터확보/Granger지지/방향일치) + 분석기간 + 핵심발견·이론함의
+  - `_grangerCard()` — 룰별 카드: 지역→티커 방향, 판정뱃지(지지/비지지/데이터없음), p값·lag·n, 극단vs일반수익률, 이론·설명
+  - `_openWithChain()` 진입 시 builder 탭으로 강제 전환 (체인 뷰어 보호)
+- `frontend/styles/main.css` — `.sandbox__tabs`, `.sandbox__tab-btn`, `.sandbox__pane`, `.granger__*` 스타일 추가
+
+**실측 확인**: 8개 룰 전체 표시 — 비지지 5개(p값·lag·n 포함) + 데이터없음 3개, 콘솔 에러 0건
+
+### 현재 버전
+`version.json`: **3.25.0**
+
+### ✅ GDELT 파이프라인 스케줄러 등록 (2026-05-29) — v3.25.1
+
+**문제**: `main.py` 스케줄러에 GDELT 잡이 없어 API 요청 시에만 파이프라인이 실행됨 (수동 트리거 구조)
+
+**수정**
+- `backend/api/layers.py` — `_save_gdelt_events` → `save_gdelt_events` (public export)
+- `backend/jobs/gdelt_job.py` (신규) — `run_gdelt_batch()` 동기 래퍼 (asyncio.run → pipeline → save_gdelt_events)
+- `backend/main.py` — `run_gdelt_batch` import + 스케줄러 15분 잡 등록 (`misfire_grace_time=120`)
+
+**실측**: 18건 수집 → 승격 10건 DB 저장 확인 (`payload.data_source='GDELT'`), 스케줄러 두 잡 정상 등록
+- `gdelt_pipeline` | interval[0:15:00]
+- `archive_cycle`  | interval[1:00:00]
+
+### 현재 버전
+`version.json`: **3.25.1**
+
 ### 다음 세션 우선순위
 
-1. **Granger 결과 프론트엔드 표시** — SandboxLab 또는 `GET /api/cascade/correlation` 결과를 패널에 시각화
-2. **GDELT 파이프라인 스케줄러 확인** — 15분 크론잡이 실제로 돌고 있는지 APScheduler 로그 점검
+1. **Granger 데이터 없음 수정** — `ukraine_conflict_to_wheat`, `middle_east_conflict_to_gold`, `taiwan_strait_to_tsm` 등 yfinance 로드 실패 원인 파악 (5개 룰 데이터 확보 → 8/8 완전 검증)
+2. **`분析실` → `분석실` 전면 수정** ✅ (완료됨)

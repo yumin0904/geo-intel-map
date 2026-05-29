@@ -22,6 +22,7 @@ from api.study import router as study_router
 from api.translate import router as translate_router
 from api.version import router as version_router
 from db.archive_manager import ArchiveManager
+from jobs.gdelt_job import run_gdelt_batch
 
 # ── 글로벌 싱글톤 ─────────────────────────────────────────────────────────
 _archive_mgr = ArchiveManager()
@@ -33,6 +34,16 @@ async def lifespan(app: FastAPI):
     """앱 시작/종료 시 초기화 및 정리 작업."""
     # DB 스키마 초기화 (테이블 없으면 생성)
     _archive_mgr.init_schema()
+
+    # GDELT 3-Stage Funnel — 15분마다 실행 (실시간 첩보 수집)
+    _scheduler.add_job(
+        run_gdelt_batch,
+        trigger="interval",
+        minutes=15,
+        id="gdelt_pipeline",
+        replace_existing=True,
+        misfire_grace_time=120,
+    )
 
     # 아카이브 TTL 사이클 — 1시간마다 실행
     _scheduler.add_job(
