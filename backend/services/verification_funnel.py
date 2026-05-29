@@ -77,7 +77,13 @@ async def enrich_with_funnel(events: list[Event]) -> list[Event]:
         score += s1
 
         # Stage 2: RSS 교차검증 — 이미 fetch된 articles 재사용
-        s2 = _BONUS_STAGE2 if (articles and check_rss_match(evt, articles)) else 0.0
+        # 1개 매체 히트 → +0.1, 2개+ 매체 히트 → +0.2 (부분 점수)
+        if articles:
+            from connectors.news_cross_validator import count_rss_hits, RSS_HIT_BONUS_ONE
+            hits = count_rss_hits(evt, articles)
+            s2 = _BONUS_STAGE2 if hits >= 2 else (RSS_HIT_BONUS_ONE if hits == 1 else 0.0)
+        else:
+            s2 = 0.0
         score += s2
 
         # Stage 3: 물리 센서 결합 — FIRMS·AIS·ADS-B 반경 50km, 12h 이내

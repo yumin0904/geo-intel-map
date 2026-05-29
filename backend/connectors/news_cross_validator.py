@@ -24,14 +24,26 @@ from models.event import Event
 logger = logging.getLogger(__name__)
 
 # ── RSS 피드 목록 (무료·안정적인 국제 뉴스 피드) ──────────────────────────
+# 4개 서방 매체 + 4개 아시아·지역 매체 → 인도-태평양 커버리지 보강
 _RSS_FEEDS: list[tuple[str, str]] = [
-    ("Reuters",    "http://feeds.reuters.com/reuters/worldNews"),
-    ("BBC",        "http://feeds.bbci.co.uk/news/world/rss.xml"),
+    # 서방 주요 매체 (DNS 실패 제거 → 작동 확인된 소스로 교체)
+    ("BBC",        "https://feeds.bbci.co.uk/news/world/rss.xml"),
     ("Al Jazeera", "https://www.aljazeera.com/xml/rss/all.xml"),
-    ("AP News",    "https://feeds.apnews.com/rss/apf-intlnews"),
+    ("Guardian",   "https://www.theguardian.com/world/rss"),
+    ("DW",         "https://rss.dw.com/xml/rss-en-world"),            # 독일 공영, 유럽·글로벌
+    ("France24",   "https://www.france24.com/en/rss"),                # 프랑스 공영, 중동·아프리카 강함
+    # 지역 특화 매체
+    ("NHK World",  "https://www3.nhk.or.jp/rss/news/cat6.xml"),       # 일본·동아시아
+    ("NDTV",       "https://feeds.feedburner.com/ndtvnews-world-news"),# 인도·남아시아
+    ("RFA",        "https://www.rfa.org/english/rss2.xml"),            # 자유아시아방송, 중국·북한 전문
 ]
 
-_CROSS_VALIDATE_THRESHOLD = 2   # 2개 이상 매체 = 교차검증 통과
+# 부분 매칭 시 점수 (1개 매체 히트 → +0.1, 2개+ → +0.2)
+# 이 값은 verification_funnel.py의 _BONUS_STAGE2와 연동됨
+RSS_HIT_BONUS_ONE = 0.1    # 1개 매체 히트
+RSS_HIT_BONUS_TWO = 0.2    # 2개+ 매체 히트 (기존 _BONUS_STAGE2)
+
+_CROSS_VALIDATE_THRESHOLD = 2   # 2개 이상 매체 = 교차검증 "완전" 통과
 _CONFIRMED_CONFIDENCE     = 0.8  # 교차검증 성공 시 confidence_score
 
 # 매체당 fetch 타임아웃 (초). 느린 피드는 건너뜀.
@@ -200,3 +212,9 @@ def check_rss_match(evt: "Event", articles: list[dict]) -> bool:
     """이벤트 키워드가 기사 목록에서 2개 이상 매체 히트 여부를 반환한다."""
     keywords = _extract_keywords(evt)
     return _count_source_hits(keywords, articles) >= _CROSS_VALIDATE_THRESHOLD
+
+
+def count_rss_hits(evt: "Event", articles: list[dict]) -> int:
+    """이벤트 키워드가 히트한 고유 매체 수를 반환한다 (부분 점수 계산용)."""
+    keywords = _extract_keywords(evt)
+    return _count_source_hits(keywords, articles)

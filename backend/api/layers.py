@@ -507,13 +507,107 @@ async def get_chokepoints():
     return _load_geojson("chokepoints.geojson")
 
 
+def _save_gdelt_events(events: list[Event]) -> None:
+    """승격된 GDELT 이벤트(confidence≥0.8)를 events 테이블에 저장한다.
+
+    24h TTL 정책(CLAUDE.md §18): 검증 미달 이벤트는 저장하지 않음.
+    INSERT OR IGNORE — 동일 GDELT ID 중복 저장 방지.
+    """
+    promoted = [e for e in events if not e.is_staging and e.confidence_score >= 0.8]
+    if not promoted or not _INTEL_DB.exists():
+        return
+    try:
+        with sqlite3.connect(_INTEL_DB) as con:
+            for evt in promoted:
+                lat, lon = evt.location
+                con.execute(
+                    """
+                    INSERT OR IGNORE INTO events
+                    (id, timestamp, source_type, region_code, severity,
+                     confidence_score, importance_score, is_staging,
+                     title, description, lat, lon, payload, theory_tags, created_at)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    """,
+                    (
+                        evt.id,
+                        evt.timestamp.isoformat(),
+                        evt.source_type,
+                        evt.region_code,
+                        evt.severity,
+                        evt.confidence_score,
+                        evt.importance_score,
+                        0,
+                        evt.title,
+                        evt.description,
+                        round(lat, 5),
+                        round(lon, 5),
+                        json.dumps(evt.payload, ensure_ascii=False),
+                        json.dumps(evt.theory_tags, ensure_ascii=False),
+                        datetime.now(timezone.utc).isoformat(),
+                    ),
+                )
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning("[GDELT save] DB 저장 오류: %s", exc)
+
+
+def _load_gdelt_events_from_db(hours: int = 24) -> list[Event]:
+    """events 테이블에서 최근 N시간 내 GDELT 이벤트를 로드한다."""
+    if not _INTEL_DB.exists():
+        return []
+    cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+    try:
+        with sqlite3.connect(_INTEL_DB) as con:
+            con.row_factory = sqlite3.Row
+            rows = con.execute(
+                """
+                SELECT id, timestamp, source_type, region_code, severity,
+                       confidence_score, importance_score, lat, lon,
+                       title, description, payload, theory_tags
+                FROM events
+                WHERE payload LIKE '%"data_source": "GDELT"%'
+                  AND timestamp >= ?
+                  AND confidence_score >= 0.8
+                ORDER BY timestamp DESC
+                LIMIT 200
+                """,
+                (cutoff,),
+            ).fetchall()
+        events: list[Event] = []
+        for r in rows:
+            try:
+                payload = json.loads(r["payload"] or "{}")
+                evt = Event(
+                    id=r["id"],
+                    timestamp=datetime.fromisoformat(r["timestamp"]),
+                    source_type=r["source_type"],
+                    source_id=payload.get("source_id", r["id"]),
+                    location=(r["lat"] or 0.0, r["lon"] or 0.0),
+                    region_code=r["region_code"],
+                    severity=r["severity"] or 0,
+                    title=r["title"] or "",
+                    description=r["description"] or "",
+                    payload=payload,
+                    theory_tags=json.loads(r["theory_tags"] or "[]"),
+                    confidence_score=r["confidence_score"] or 0.8,
+                    importance_score=r["importance_score"] or 0.0,
+                )
+                events.append(evt)
+            except Exception:
+                continue
+        return events
+    except Exception:
+        return []
+
+
 @router.get("/gdelt")
 async def get_gdelt():
     """
     GDELT 3-Stage Funnel 결과 GeoJSON 반환 (15분 캐시).
 
-    Stage 1: QuadClass≥3·GoldsteinScale≤-5·NumMentions≥20 필터
-    Stage 2: RSS 교차검증 (≥2매체 → confidence_score 0.8)
+    데이터 소스: 최신 15분 파이프라인 결과 + DB 누적 24h GDELT 이벤트
+    Stage 1: QuadClass≥3·GoldsteinScale≤-5·NumMentions≥3 필터
+    Stage 2: RSS 8개 매체 교차검증 (1매체 +0.1, 2매체+ +0.2)
     confidence_score < 0.8 이벤트는 'unverified': true 프로퍼티 포함.
 
     연관 이론: 정보전 (Information Warfare), Gray Zone Strategy
@@ -523,14 +617,32 @@ async def get_gdelt():
     if _gdelt_cache["geojson"] is not None and now < _gdelt_cache["expires_at"]:
         return _gdelt_cache["geojson"]
 
+    import logging as _log
+    _logger = _log.getLogger(__name__)
+
+    # 1) 최신 15분 파이프라인 실행
+    fresh_events: list[Event] = []
     try:
-        events = await run_gdelt_pipeline()
-        events = score_gdelt_events(events)  # importance_score 계산
-        result = gdelt_to_geojson(events)
+        fresh_events = await run_gdelt_pipeline()
+        _save_gdelt_events(fresh_events)  # 승격 이벤트 DB 저장
     except Exception as exc:
-        import logging
-        logging.getLogger(__name__).warning("[GDELT endpoint] 파이프라인 오류: %s", exc)
-        result = {"type": "FeatureCollection", "features": []}
+        _logger.warning("[GDELT endpoint] 파이프라인 오류: %s", exc)
+
+    # 2) DB에서 24h 누적 GDELT 이벤트 로드
+    db_events = _load_gdelt_events_from_db(hours=24)
+
+    # 3) 병합 (ID 기준 dedup, 최신 15분 우선)
+    seen: set[str] = {e.id for e in fresh_events}
+    merged = list(fresh_events)
+    for e in db_events:
+        if e.id not in seen:
+            seen.add(e.id)
+            merged.append(e)
+
+    _logger.info("[GDELT] 최신=%d DB누적=%d 병합=%d", len(fresh_events), len(db_events), len(merged))
+
+    merged = score_gdelt_events(merged)
+    result = gdelt_to_geojson(merged)
 
     _gdelt_cache["geojson"]    = result
     _gdelt_cache["expires_at"] = now + _GDELT_TTL
