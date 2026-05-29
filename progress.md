@@ -306,15 +306,36 @@ python3 scripts/acled_bulk_ingest.py              # 실제 적재 (12개월, ~35
 - `data/trade/wits_trade_world.csv` — 16개국 491건, KOR 반도체 대중 의존도 76.7% 정상 출력
 - 이론 연결: Farrell & Newman 'Weaponized Interdependence', Drezner 'Economic Coercion'
 
+### ✅ 브라우저 검증 + 버그 수정 2건 (2026-05-29) — v3.18.1
+
+- **CountryLayer 토글 누락 버그**: `index.html`에서 CountryLayer 등록이 `panel.mount()` 이후에 위치 → `panel.mount()` 앞으로 이동 (LayerPanel._render()는 mount 시점 스냅샷만 사용)
+- **CORS 포트 8080 누락**: `backend/main.py` allowed_origins에 `localhost:8080` 추가
+- **ZW=F 티커 레이블 통일**: `CascadeGraphView` `'밀\n선물'` → `'밀선물\n(ZW=F)'`, `SandboxLabView` → `'밀선물(ZW=F)'`
+- Playwright 브라우저 fetch 실측 확인: CountryPanel 5탭(기본정보/거시지표/무역의존도/제재/관련이론) + 콘솔 에러 0건
+
+### ✅ ReasoningPanel Stage 4/8 UI 렌더링 (2026-05-29) — v3.19.0
+
+**Stage 4 (거시 변수) 필드명 수정**
+- `summarizeStage`: `data.tickers` → `data.indicators ?? data.tickers` (v3.16.0 API 변경 대응)
+  - 요약: `t.ticker` → `t.label ?? t.ticker ?? t.indicator`
+- `buildDetailLines`: 필드명 교체 + `t.value` 사용 + `출처: FRED 베이스라인 DB` 표시
+- 실측: `원달러 환율 (KRW/USD) ▲0.6% · 대만달러 환율 (TWD/USD) ▼0.5%` 정상 표시
+
+**Stage 8 (동맹 확산) 상세 확장**
+- `buildDetailLines` Stage 8: `trade_dependencies` 렌더링 추가
+  - `reporter → partner` + HS 코드별 `hs_label (flow) X.X%` 형식
+  - `── 무역 의존도 (Weaponized Interdependence) ──` 섹션 헤더
+- `potentially_involved_countries` (잠재 연루국) 렌더링 추가
+- 이론 연결: Farrell & Newman Weaponized Interdependence (2019)
+
 ### 현재 버전
-`version.json`: **3.18.0**
+`version.json`: **3.19.0**
 
 ### 다음 세션 우선순위
 
-1. **브라우저 검증** — 국가 클릭 → CountryPanel 5탭 데이터 확인
-2. **ZW=F 티커 한국어 레이블** — `TICKER_LABEL_KO`에 `ZW=F: '밀선물\n(ZW=F)'` 추가 (SandboxLabView + CascadeGraphView)
-3. **ReasoningPanel Stage 4/8 UI** — indicators/trade_dependencies 필드 프론트엔드 렌더링
-4. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
+1. **Stage 8 actor 매칭 강화** — GDELT/ACLED actor 필드 → ISO3 코드 매핑 확대 (현재 한정된 이름 매핑으로 동맹 분석 미발화)
+2. **국가 레지스트리 확장** — 현재 30개 → 필요 시 추가
+3. **ACLED 실제 적재** — `acled_bulk_ingest.py --months 12` (베이스라인 232,533건은 완료, hot table은 별도)
 
 ---
 

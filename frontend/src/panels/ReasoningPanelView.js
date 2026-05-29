@@ -51,11 +51,12 @@ function summarizeStage(key, data) {
       return analogues.slice(0, 2).map(a => a.title_ko).join(', ');
     }
     case '4_macro': {
-      const tickers = data.tickers ?? [];
-      if (!tickers.length) return data.error ? `⚠️ ${data.error}` : '데이터 없음';
-      return tickers.slice(0, 3).map(t => {
+      const inds = data.indicators ?? data.tickers ?? [];
+      if (!inds.length) return data.error ? `⚠️ ${data.error}` : '데이터 없음';
+      return inds.slice(0, 3).map(t => {
         const arrow = t.direction === 'up' ? '▲' : (t.direction === 'down' ? '▼' : '─');
-        return `${t.ticker} ${arrow}${Math.abs(t.change_pct).toFixed(1)}%`;
+        const name = t.label ?? t.ticker ?? t.indicator ?? '?';
+        return `${name} ${arrow}${Math.abs(t.change_pct ?? 0).toFixed(1)}%`;
       }).join(' · ');
     }
     case '5_intent':
@@ -91,12 +92,20 @@ function buildDetailLines(key, data) {
         `▸ ${a.title_ko} (${(a.date ?? '').slice(0, 4)})\n  ${a.lessons_ko ?? ''}`
       ).join('\n\n') || null;
 
-    case '4_macro':
-      return (data.tickers ?? []).map(t => {
-        const sign  = t.change_pct >= 0 ? '+' : '';
+    case '4_macro': {
+      const inds = data.indicators ?? data.tickers ?? [];
+      const src  = data.source ?? '';
+      const lines = inds.map(t => {
+        const sign  = (t.change_pct ?? 0) >= 0 ? '+' : '';
         const arrow = t.direction === 'up' ? '▲' : (t.direction === 'down' ? '▼' : '─');
-        return `${t.ticker}: $${t.price} ${arrow}${sign}${t.change_pct.toFixed(2)}%`;
-      }).join('\n') || null;
+        const name  = t.label ?? t.ticker ?? t.indicator ?? '?';
+        const val   = t.value ?? t.price;
+        const valStr = val != null ? ` ${val.toLocaleString()}` : '';
+        return `${name}:${valStr} ${arrow}${sign}${(t.change_pct ?? 0).toFixed(2)}%`;
+      });
+      if (src) lines.push(`출처: ${src}`);
+      return lines.join('\n') || null;
+    }
 
     case '6_sanctions':
       return (data.active_sanctions ?? []).map(s => {
@@ -104,10 +113,33 @@ function buildDetailLines(key, data) {
         return `▸ ${s.issuer || s.target_country || ''} → ${s.name || s.id}\n  분야: ${sectors}`;
       }).join('\n\n') || null;
 
-    case '8_alliance':
-      return (data.relevant_alliances ?? []).map(a =>
-        `▸ ${a.name_ko} (${a.type})\n  ${a.notes_ko ?? ''}`
-      ).join('\n\n') || null;
+    case '8_alliance': {
+      const lines = [];
+      // 동맹 목록
+      for (const a of (data.relevant_alliances ?? [])) {
+        lines.push(`▸ ${a.name_ko} (${a.type})\n  ${a.notes_ko ?? ''}`);
+      }
+      // 무역 의존도 (Weaponized Interdependence)
+      const deps = data.trade_dependencies ?? [];
+      if (deps.length) {
+        lines.push('');
+        lines.push('── 무역 의존도 (Weaponized Interdependence) ──');
+        for (const dep of deps) {
+          lines.push(`${dep.reporter} → ${dep.partner}`);
+          for (const item of (dep.items ?? [])) {
+            const pct = (item.dependency_ratio * 100).toFixed(1);
+            lines.push(`  ${item.hs_label} (${item.flow}) ${pct}%`);
+          }
+        }
+      }
+      // 잠재 연루국
+      const countries = data.potentially_involved_countries ?? [];
+      if (countries.length) {
+        lines.push('');
+        lines.push(`잠재 연루국: ${countries.join(', ')}`);
+      }
+      return lines.join('\n') || null;
+    }
 
     case '7_cascade':
       return (data.cascade_chain ?? []).map(c => {
