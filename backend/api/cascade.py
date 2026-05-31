@@ -12,7 +12,12 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter
 
 from services.cascade.engine import build_cascade
-from services.cascade.correlation import run_correlation_analysis, summarize_results
+from services.cascade.correlation import (
+    run_correlation_analysis,
+    run_candidate_scan,
+    generate_yaml_draft,
+    summarize_results,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +33,13 @@ _cache: dict = {
 # Granger 분석은 계산 비용이 크므로 24시간 캐시
 _CORR_TTL = timedelta(hours=24)
 _corr_cache: dict = {
+    "result":     None,
+    "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
+}
+
+# 후보 스캔은 더 오래 캐시 (region × ticker 전체 조합이라 계산 비용 큼)
+_CANDIDATES_TTL = timedelta(hours=24)
+_candidates_cache: dict = {
     "result":     None,
     "expires_at": datetime(1970, 1, 1, tzinfo=timezone.utc),
 }
@@ -71,4 +83,35 @@ async def get_correlation():
 
     _corr_cache["result"] = payload
     _corr_cache["expires_at"] = now + _CORR_TTL
+    return payload
+
+
+@router.get("/candidates")
+async def get_cascade_candidates():
+    """P4-4: Granger 스캔으로 신규 Cascade 룰 후보를 자동 생성한다.
+
+    모든 region × ticker 조합을 Granger 검정해 유망한 쌍을 발굴한다.
+    기존 8개 검증 페어는 제외. p < 0.10 또는 극단 이벤트 방향 일치 기준.
+
+    ★ 인간 승인 필수: yaml_draft를 검토 후 cascade_rules.yaml에 수동 추가.
+    status: draft 라인을 제거해야 엔진이 해당 룰을 인식한다.
+
+    이론 연결: Granger (1969) 시간 선행성 인과 추론 — 새 룰의 통계적 타당성 근거 제공
+    """
+    now = datetime.now(timezone.utc)
+    if _candidates_cache["result"] is not None and now < _candidates_cache["expires_at"]:
+        return _candidates_cache["result"]
+
+    candidates = await run_candidate_scan()
+    yaml_draft = generate_yaml_draft(candidates, top_n=10)
+
+    payload = {
+        "candidates": candidates,
+        "yaml_draft": yaml_draft,
+        "total":      len(candidates),
+        "note":       "★ 인간 승인 필수: cascade_rules.yaml에 추가 전 반드시 검토",
+    }
+
+    _candidates_cache["result"] = payload
+    _candidates_cache["expires_at"] = now + _CANDIDATES_TTL
     return payload

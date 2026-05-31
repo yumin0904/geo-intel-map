@@ -110,10 +110,12 @@
 
 - id: south_china_sea_to_defense
   name: "남중국해 분쟁 → 방산주(ITA) 상승"
+  # P4-4 Granger 검증 (p=0.037, lag=1d): 저강도 이벤트 포함 시 방향 역전 관찰
+  # → severity_min 50→60 으로 상향: 군사 에스컬레이션급 이벤트만 트리거
   trigger:
     source_type: conflict
     region: south_china_sea
-    severity_min: 50
+    severity_min: 60             # P4-4: 저강도(해적·충돌) 제외, 군사 에스컬레이션급만
   expected_response:
     source_type: market
     ticker: "ITA"              # iShares 미국 항공우주·방산 ETF (LMT·RTX·NOC 포함)
@@ -125,11 +127,13 @@
   next_rule_hint: "defense_surge_to_nato_budget"   # 미래 룰: 방산 지출 급증 → NATO 회원국 국방예산 압박
   theory:
     framework: "Alliance Theory / Security Dilemma"
-    reference: "Waltz (1979), Mearsheimer 공격적 현실주의"
+    reference: "Waltz (1979), Mearsheimer 공격적 현실주의; P4-4 Granger 검증 (2026-05-30)"
     learning_note: >-
       남중국해 긴장 상승은 미국의 대중 억제 전략 강화 기대를 낳고 방산 지출 증가 전망으로 이어진다.
       개별 기업(LMT·RTX) 대신 ETF를 사용하면 섹터 전체의 '안보 기대' 반응을 더 깨끗하게 관찰할 수 있다.
       안보 딜레마: 한 행위자의 군비 증강이 타방의 위협 인식을 높여 군비 경쟁을 촉발하는 구조.
+      [P4-4 교정]: Granger p=0.037이나 저강도 이벤트(sev<60)는 방향 역전 발생.
+      severity_min=60 이상(군사 대치·영공 침범·전함 집결)에서만 ITA 상승 신호 유효.
 
 - id: south_china_sea_to_lng
   name: "남중국해 긴장 → 천연가스(NG=F) 상승"
@@ -542,3 +546,43 @@
       QQQ는 나스닥100 중 애플·마이크로소프트·엔비디아 등 고밸류에이션 기술주 비중이 커서
       시장 불안 심리에 가장 먼저 매도 압력을 받는다.
       middle_east_conflict_to_gold와 함께 보면 '분쟁 → 리스크오프 → 시장 전반 재편' 전체 경로를 추적 가능.
+
+# ── P4-4 Granger 검증 승인 룰 (2026-05-30) ────────────────────────────────────
+# run_candidate_scan() 82개 후보 중 이론·통계·방향 3축 심사를 통과한 신규 룰
+
+- id: taiwan_strait_conflict_to_soxx
+  name: "대만해협 분쟁(ACLED) → 반도체 ETF(SOXX) 직접 하락"
+  # P4-4 Granger 검증: p=0.030, lag=1d, n=498
+  # 극단 수익률 -0.14% vs 일반 +0.03% → Δ=-0.17% (방향·이론 일치)
+  #
+  # 기존 taiwan_strait_to_soxx (source_type: military_flight, ADS-B 트리거)와의 차이:
+  #   이 룰은 ACLED conflict 이벤트로 직접 발화 → ADS-B 데이터 없이도 동작.
+  #   TSM 개별주 체인을 거치지 않고 섹터 ETF에 직접 충격이 전달되는 경로를 관찰.
+  trigger:
+    source_type: conflict
+    region: taiwan_strait
+    severity_min: 50             # ACLED 전투/원격폭력급 이벤트 (폭동·시위 제외)
+  expected_response:
+    source_type: market
+    ticker: "SOXX"               # iShares 반도체 ETF (TSMC 의존 기업 전체 포함)
+    direction: down
+    window_hours: 24             # Granger best_lag=1일 — 시장은 당일 내 반응
+    threshold_pct: 0.8           # SOXX는 개별주(TSM)보다 충격 흡수, 임계치 적절
+  chainable: true
+  chain_output: "semiconductor_sector_fear_direct"
+  next_rule_hint: "semiconductor_sector_fear_direct_to_chips_act"
+  theory:
+    framework: "Weaponized Interdependence (Farrell & Newman 2019)"
+    reference: >-
+      Farrell & Newman (2019), CSIS 'Chips of War' (2023),
+      P4-4 Granger 검증 결과 (2026-05-30, p=0.030)
+    learning_note: >-
+      기존 taiwan_strait_to_tsm → semiconductor_supply_risk_to_sector_decline 2단계 체인과 달리,
+      이 룰은 TSMC 주가를 경유하지 않고 반도체 섹터 전체(SOXX)로 직접 충격이 전달되는 '단락(short-circuit)' 경로다.
+      시장이 개별 기업 실적보다 빠르게 '섹터 전체의 대만 의존도 리스크'를 재평가하는 현상.
+      P4-4 실증: 대만해협 ACLED 극단 이벤트 발생 후 1일 내 SOXX -0.14%, 일반 이벤트 +0.03% (Δ=-0.17%).
+      학습 포인트 — TSM 체인과 비교: 같은 대만해협 충격이 두 경로로 동시에 발화할 수 있다.
+        ① conflict → SOXX (이 룰, 직접·빠름)
+        ② military_flight → TSM → semiconductor_supply_risk → SOXX (체인, 간접·느림)
+      Farrell & Newman의 '허브 의존성(hub dependence)': 지정학 충격이 공급망 허브(대만)에 집중될수록
+      충격은 개별 기업을 넘어 섹터 전체로 즉각 전파된다.

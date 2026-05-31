@@ -54,6 +54,36 @@ _TICKER_TO_FRED: dict[str, str] = {
     "NG=F":  "natgas_futures",
 }
 
+# P4-4 후보 스캔용 티커 확장 목록: ticker → (fred_indicator | None, 한국어 레이블)
+_SCAN_TICKERS: dict[str, tuple[str | None, str]] = {
+    "CL=F":  ("wti",            "WTI 원유 선물"),
+    "GLD":   ("gold_etf",       "금 ETF (SPDR)"),
+    "KRW=X": ("usd_krw",        "원/달러 환율"),
+    "ZW=F":  ("wheat_futures",  "밀 선물 (CBOT)"),
+    "TSM":   ("tsm_stock",      "TSMC ADR"),
+    "ITA":   ("defense_etf",    "미 방산 ETF"),
+    "NG=F":  ("natgas_futures",  "천연가스 선물"),
+    "SOXX":  (None,             "반도체 ETF (iShares)"),
+    "QQQ":   (None,             "나스닥100 ETF"),
+    "TIP":   (None,             "물가연동채 ETF"),
+    "DX=F":  (None,             "달러인덱스 선물"),
+}
+
+# 이미 _VALIDATION_PAIRS에 등록된 페어 — 후보 스캔에서 제외
+_EXISTING_PAIRS: set[tuple[str, str]] = {
+    ("ukraine",          "ZW=F"),
+    ("bab_el_mandeb",    "CL=F"),
+    ("middle_east",      "GLD"),
+    ("korean_peninsula", "KRW=X"),
+    ("north_korea",      "KRW=X"),
+    ("taiwan_strait",    "TSM"),
+    ("east_china_sea",   "ITA"),
+    ("malacca",          "NG=F"),
+    # P4-4 승인 룰 (2026-05-30)
+    ("taiwan_strait",    "SOXX"),   # taiwan_strait_conflict_to_soxx
+    ("south_china_sea",  "ITA"),    # south_china_sea_to_defense (severity 교정)
+}
+
 # Cascade 룰 → Granger 검증 페어 정의
 # chain_input 룰(중간 단계)은 제외, 1차 트리거 룰만 검증
 _VALIDATION_PAIRS: list[dict] = [
@@ -482,3 +512,220 @@ def summarize_results(results: list[dict]) -> dict:
             "'chokepoint 봉쇄 같은 극단 충격'에서만 활성화된다는 이론과 일치."
         ),
     }
+
+
+# ── P4-4 후보 스캔 ────────────────────────────────────────────────────────────
+
+def _get_all_regions(start: date, end: date, min_events: int = 20) -> list[str]:
+    """event_archive에서 이벤트가 충분한 region_code 목록을 반환한다."""
+    con = sqlite3.connect(_DB_PATH)
+    df = pd.read_sql_query(
+        """
+        SELECT region_code, COUNT(*) AS cnt
+        FROM event_archive
+        WHERE region_code IS NOT NULL
+          AND region_code != ''
+          AND DATE(timestamp) BETWEEN ? AND ?
+        GROUP BY region_code
+        HAVING cnt >= ?
+        ORDER BY cnt DESC
+        """,
+        con,
+        params=(start.isoformat(), end.isoformat(), min_events),
+    )
+    con.close()
+    return df["region_code"].tolist()
+
+
+@dataclass
+class CandidateResult(GrangerResult):
+    """Granger 스캔으로 발굴된 신규 룰 후보."""
+    inferred_direction:    str   = "up"
+    inferred_window_hours: int   = 48
+    inferred_threshold_pct: float = 1.0
+    score:                 float = 1.0   # p값 기반 — 낮을수록 유의
+    ticker_label:          str   = ""
+
+
+async def run_candidate_scan(
+    p_threshold:       float = 0.10,  # 기존 룰 검증(0.05)보다 완화된 후보 기준
+    min_extreme_events: int  = 5,
+    start: date = _START_DATE,
+    end:   date = _END_DATE,
+) -> list[dict]:
+    """
+    모든 region × ticker 조합을 스캔해 유망한 Cascade 룰 후보를 반환한다.
+
+    이미 _VALIDATION_PAIRS에 등록된 페어는 제외한다.
+    후보 선별 기준:
+      1. Granger p < p_threshold (기본 0.10)
+      2. 또는 극단 이벤트 방향 일치 + n_extreme >= min_extreme_events
+
+    반환: 후보 목록 (점수 오름차순 — p값 낮을수록 상위)
+    """
+    regions = _get_all_regions(start, end)
+    candidates: list[CandidateResult] = []
+
+    for region in regions:
+        # 이벤트 시계열은 region당 한 번만 로드
+        event_series = await asyncio.get_event_loop().run_in_executor(
+            None, _load_event_series, region, start, end
+        )
+        if len(event_series) == 0 or event_series.sum() == 0:
+            continue
+
+        for ticker, (fred_id, ticker_label) in _SCAN_TICKERS.items():
+            if (region, ticker) in _EXISTING_PAIRS:
+                continue
+
+            try:
+                market_series = await _get_market_series(ticker, start, end)
+                if market_series is None or len(market_series) < 30:
+                    continue
+
+                p_val, best_lag, n_obs = _run_granger(event_series, market_series)
+                extreme = _run_extreme_correlation(event_series, market_series)
+
+                # 후보 여부 판정
+                granger_ok = p_val is not None and p_val < p_threshold
+                n_ext = extreme.get("n_extreme", 0)
+                ext_ret = extreme.get("avg_return_extreme")
+                norm_ret = extreme.get("avg_return_normal")
+                extreme_ok = (
+                    n_ext >= min_extreme_events
+                    and ext_ret is not None
+                    and norm_ret is not None
+                    and ext_ret != norm_ret
+                )
+
+                if not granger_ok and not extreme_ok:
+                    continue
+
+                # 방향 추론: 극단 이벤트 평균 수익률 부호로 판단
+                inferred_dir = "up" if (ext_ret or 0.0) >= 0 else "down"
+
+                # window_hours 추론: best_lag × 24, 최소 24, 최대 168
+                inferred_window = 48
+                if best_lag is not None:
+                    inferred_window = min(max(best_lag * 24, 24), 168)
+
+                # threshold_pct 추론: |극단 수익률| × 0.5, 0.5 단위 반올림, 최소 0.5
+                inferred_threshold = 1.0
+                if ext_ret is not None:
+                    raw = abs(ext_ret) * 0.5
+                    inferred_threshold = max(round(raw * 2) / 2, 0.5)
+
+                score = p_val if p_val is not None else 0.99
+
+                rule_id = (
+                    f"{region}_to_{ticker.replace('=', '').replace('^', '').lower()}"
+                )
+                p_str = f"{p_val:.4f}" if p_val is not None else "N/A"
+                note = (
+                    f"자동 생성 후보 | Granger p={p_str} | "
+                    f"극단 수익률={ext_ret:+.2f}% vs 일반={norm_ret:+.2f}%"
+                    if ext_ret is not None
+                    else f"자동 생성 후보 | Granger p={p_str}"
+                )
+
+                candidates.append(CandidateResult(
+                    rule_id=rule_id,
+                    region=region,
+                    ticker=ticker,
+                    direction=inferred_dir,
+                    p_value=round(p_val, 4) if p_val is not None else None,
+                    best_lag=best_lag,
+                    n_obs=n_obs,
+                    supported=(p_val is not None and p_val < 0.05),
+                    theory="TODO",
+                    note=note,
+                    extreme_return_pct=ext_ret,
+                    normal_return_pct=norm_ret,
+                    n_extreme_events=n_ext,
+                    extreme_threshold_sv=extreme.get("threshold_severity"),
+                    inferred_direction=inferred_dir,
+                    inferred_window_hours=inferred_window,
+                    inferred_threshold_pct=inferred_threshold,
+                    score=score,
+                    ticker_label=ticker_label,
+                ))
+
+            except Exception as exc:
+                logger.warning("[candidate_scan] %s × %s 오류: %s", region, ticker, exc)
+
+    candidates.sort(key=lambda x: x.score)
+    return [asdict(c) for c in candidates]
+
+
+def generate_yaml_draft(candidates: list[dict], top_n: int = 10) -> str:
+    """
+    상위 후보를 YAML draft 형식으로 변환한다.
+    ★ 인간 승인 전까지 cascade_rules.yaml에 포함하지 말 것.
+    status: draft 라인을 제거해야 엔진이 룰을 인식한다.
+    """
+    lines = [
+        "# ═══════════════════════════════════════════════════════════════════════",
+        "# CASCADE RULE CANDIDATES — P4-4 자동 생성 초안",
+        "# ★ 인간 승인 필수: 각 룰을 검토 후 cascade_rules.yaml로 이동할 것",
+        "# ★ status: draft 라인을 제거해야 엔진이 해당 룰을 인식한다",
+        f"# 생성일: {date.today().isoformat()} | "
+        f"후보 수: {len(candidates)} | 상위 {min(top_n, len(candidates))}개 출력",
+        "# ═══════════════════════════════════════════════════════════════════════",
+        "",
+    ]
+
+    for i, c in enumerate(candidates[:top_n]):
+        direction_ko = "상승" if c.get("inferred_direction") == "up" else "하락"
+        name = f"{c['region']} 긴장 → {c.get('ticker_label', c['ticker'])} {direction_ko}"
+
+        p_str = f"{c['p_value']:.4f}" if c.get("p_value") is not None else "N/A"
+        granger_line = (
+            f"Granger p={p_str}, lag={c.get('best_lag')}d, n={c.get('n_obs')}"
+        )
+        ext_ret  = c.get("extreme_return_pct")
+        norm_ret = c.get("normal_return_pct")
+        extreme_line = (
+            f"극단 수익률 {ext_ret:+.2f}% vs 일반 {norm_ret:+.2f}% "
+            f"(n_extreme={c.get('n_extreme_events', 0)})"
+            if ext_ret is not None and norm_ret is not None
+            else "극단 이벤트 분석 없음"
+        )
+
+        # threshold_sv는 일별 severity 합산의 75분위수 — 개별 이벤트 severity(0~100)와 단위가 다름.
+        # 100 초과 시 일별 집계값으로 판단해 기본값 50을 사용한다.
+        sv = c.get("extreme_threshold_sv")
+        severity_min = min(int(sv), 100) if (sv is not None and sv <= 100) else 50
+
+        lines += [
+            f"# ── 후보 #{i+1} ──────────────────────────────────────────────────",
+            f"# {granger_line}",
+            f"# {extreme_line}",
+            f"- id: {c['rule_id']}",
+            f"  name: \"{name}\"  # ★ 검토 후 수정",
+            "  status: draft  # ★ 이 라인 제거 전까지 엔진에서 무시됨",
+            "  trigger:",
+            "    source_type: conflict",
+            f"    region: {c['region']}",
+            f"    severity_min: {severity_min}  "
+            "# 극단 이벤트 임계값 기반 자동 추정 — 검토 필요",
+            "  expected_response:",
+            "    source_type: market",
+            f"    ticker: \"{c['ticker']}\"  # {c.get('ticker_label', '')}",
+            f"    direction: {c.get('inferred_direction', 'up')}  "
+            "# 극단 수익률 부호 기반 추론",
+            f"    window_hours: {c.get('inferred_window_hours', 48)}  "
+            "# Granger best_lag × 24",
+            f"    threshold_pct: {c.get('inferred_threshold_pct', 1.0)}",
+            "  chainable: true  # ★ 검토 후 수정",
+            f"  chain_output: \"TODO_{c['rule_id']}\"  # ★ 입력 필요",
+            "  theory:",
+            "    framework: \"TODO: 이론 프레임워크\"  # ★ 입력 필요",
+            "    reference: \"TODO: 참고문헌\"  # ★ 입력 필요",
+            "    learning_note: >-",
+            "      TODO: 학습 노트 입력 필요.",
+            f"      [자동 생성 근거: {granger_line}]",
+            f"      [{extreme_line}]",
+            "",
+        ]
+
+    return "\n".join(lines)
