@@ -87,10 +87,18 @@ function buildDetailLines(key, data) {
   if (!data || data.error) return null;
 
   switch (key) {
-    case '3_history':
-      return (data.analogues ?? []).map(a =>
+    case '3_history': {
+      const analogueLines = (data.analogues ?? []).map(a =>
         `▸ ${a.title_ko} (${(a.date ?? '').slice(0, 4)})\n  ${a.lessons_ko ?? ''}`
-      ).join('\n\n') || null;
+      );
+      const briefingLines = (data.briefing_refs ?? []).map(b => {
+        const org  = b.source_org  ? `[${b.source_org}] ` : '';
+        const date = b.published_date ? ` (${b.published_date.slice(0, 7)})` : '';
+        return `📋 ${org}${b.title}${date}`;
+      });
+      const all = [...analogueLines, ...(briefingLines.length ? ['── 관련 브리핑 ──', ...briefingLines] : [])];
+      return all.join('\n\n') || null;
+    }
 
     case '4_macro': {
       const inds = data.indicators ?? data.tickers ?? [];

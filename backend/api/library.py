@@ -76,6 +76,9 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
         "level_of_analysis":   None,
         "instrument_of_power": None,
         "strategic_posture":   None,
+        "source_org":          None,
+        "published_date":      None,
+        "source_url":          None,
     }
     if include_body:
         out["body"] = ""
@@ -94,6 +97,9 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
             "level_of_analysis":   db_row.get("level_of_analysis"),
             "instrument_of_power": db_row.get("instrument_of_power"),
             "strategic_posture":   db_row.get("strategic_posture"),
+            "source_org":          db_row.get("source_org"),
+            "published_date":      db_row.get("published_date"),
+            "source_url":          db_row.get("source_url"),
         })
         if include_body:
             out["body"] = db_row.get("body") or ""
@@ -102,7 +108,7 @@ def _merge(theory_link, db_row: Optional[dict], include_body: bool = False) -> d
 
 
 def _merge_db_only(db_row: dict, include_body: bool = False) -> dict:
-    """theory_library.yaml 미등록 항목(norm/sanction 등) — DB만으로 구성."""
+    """theory_library.yaml 미등록 항목(norm/briefing 등) — DB만으로 구성."""
     out = {
         "theory_id":       db_row["theory_id"],
         "display_name":    db_row["title"],
@@ -121,6 +127,9 @@ def _merge_db_only(db_row: dict, include_body: bool = False) -> dict:
         "level_of_analysis":   db_row.get("level_of_analysis"),
         "instrument_of_power": db_row.get("instrument_of_power"),
         "strategic_posture":   db_row.get("strategic_posture"),
+        "source_org":          db_row.get("source_org"),
+        "published_date":      db_row.get("published_date"),
+        "source_url":          db_row.get("source_url"),
     }
     if include_body:
         out["body"] = db_row.get("body") or ""

@@ -26,8 +26,9 @@ const USE_CASE_CHIPS = [
   { key: 'all',        label: '전체',    icon: '' },
   { key: 'concept',    label: '개념',    icon: '🔍' },
   { key: 'case_study', label: '사례',    icon: '📚' },
-  { key: 'data',       label: '데이터',  icon: '📊' },
+  { key: 'briefing',   label: '브리핑',  icon: '📋' },
   { key: 'norm',       label: '규범',    icon: '⚖️' },
+  { key: 'data',       label: '데이터',  icon: '📊' },
 ];
 
 const REGION_CHIPS = [
@@ -383,14 +384,32 @@ export class TheoryLibraryView {
   }
 
   _cardHTML(theory) {
-    const color     = SECTOR_COLORS[theory.sector_tag] || '#888';
-    const label     = SECTOR_LABELS[theory.sector_tag] || theory.sector_tag;
+    const color    = SECTOR_COLORS[theory.sector_tag] || '#888';
+    const label    = SECTOR_LABELS[theory.sector_tag] || theory.sector_tag;
+    const isActive = theory.theory_id === this._activeId ? ' is-active' : '';
+    const summary  = theory.summary
+      ? `<p class="lib-card__summary">${theory.summary}</p>` : '';
+
+    // 브리핑 카드: 기관명 + 날짜 표시
+    if (theory.use_case === 'briefing') {
+      const org  = theory.source_org  ? `<span class="lib-card__org">${theory.source_org}</span>` : '';
+      const date = theory.published_date
+        ? `<span class="lib-card__date">${theory.published_date}</span>` : '';
+      return `
+        <div class="lib-card lib-card--briefing${isActive}" data-id="${theory.theory_id}">
+          <div class="lib-card__header">
+            <span class="lib-card__sector" style="--sector-color:${color}">${label}</span>
+            <span class="lib-card__name">${theory.display_name}</span>
+          </div>
+          <div class="lib-card__meta">${org}${date}</div>
+          ${summary}
+        </div>
+      `;
+    }
+
+    // 일반 이론/사례 카드
     const theorists = (theory.theorists || []).slice(0, 2).join(', ') || '—';
     const year      = theory.year ? ` (${theory.year})` : '';
-    const summary   = theory.summary
-      ? `<p class="lib-card__summary">${theory.summary}</p>` : '';
-    const isActive  = theory.theory_id === this._activeId ? ' is-active' : '';
-
     return `
       <div class="lib-card${isActive}" data-id="${theory.theory_id}">
         <div class="lib-card__header">

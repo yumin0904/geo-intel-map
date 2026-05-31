@@ -24,18 +24,26 @@ DB_PATH = Path(__file__).parent.parent.parent / "db" / "library.db"
 # ── 도메인 상수 ────────────────────────────────────────────────────────────────
 # CLAUDE.md 5대 섹터와 1:1 매핑 — 이 범위 밖 태그는 거부
 ALLOWED_SECTOR_TAGS    = frozenset({"maritime", "energy", "techno", "indo_pacific", "gray_zone"})
-ALLOWED_ASSET_TYPES    = frozenset({"theory", "case_study", "profile", "norm"})
+ALLOWED_ASSET_TYPES    = frozenset({"theory", "case_study", "profile", "norm", "briefing"})
 ALLOWED_ERAS           = frozenset({"cold_war", "unipolar", "multipolar"})  # 레거시 era 필드
 ALLOWED_TEMPORAL_ERAS  = frozenset({"cold_war", "post_cold", "us_china_rivalry", "hot"})  # 7대 축 §15
-ALLOWED_USE_CASES      = frozenset({"concept", "case_study", "data", "norm"})
+ALLOWED_USE_CASES      = frozenset({"concept", "case_study", "data", "norm", "briefing"})
 ALLOWED_LEVELS         = frozenset({"systemic", "state_domestic", "non_state"})
 ALLOWED_INSTRUMENTS    = frozenset({"diplomatic", "informational", "military", "economic"})
 ALLOWED_POSTURES       = frozenset({"status_quo", "revisionist"})
 
 # asset_type → use_case 자동 파생 (front matter에 use_case 없을 때 적용)
-_ASSET_TO_USE_CASE = {"theory": "concept", "case_study": "case_study", "profile": "data", "norm": "norm"}
+_ASSET_TO_USE_CASE = {
+    "theory":     "concept",
+    "case_study": "case_study",
+    "profile":    "data",
+    "norm":       "norm",
+    "briefing":   "briefing",
+}
 
-REQUIRED_FIELDS = ("theory_id", "title", "sector_tag", "theorists", "year", "summary", "regions")
+# briefing은 theorists·year·regions가 불필요 — 최소 필수 필드만 검증
+REQUIRED_FIELDS          = ("theory_id", "title", "sector_tag", "theorists", "year", "summary", "regions")
+REQUIRED_FIELDS_BRIEFING = ("theory_id", "title", "sector_tag", "summary")
 
 # ── DDL ────────────────────────────────────────────────────────────────────────
 _SCHEMA_SQL = """
@@ -58,7 +66,12 @@ CREATE TABLE IF NOT EXISTS theories (
     temporal_era       TEXT,            -- cold_war|post_cold|us_china_rivalry|hot
     level_of_analysis  TEXT,            -- systemic|state_domestic|non_state
     instrument_of_power TEXT,           -- diplomatic|informational|military|economic
-    strategic_posture  TEXT             -- status_quo|revisionist
+    strategic_posture  TEXT,            -- status_quo|revisionist
+    -- 브리핑 전용 필드 ────────────────────────────────────────────────
+    source_org         TEXT,            -- CSIS / INSS / RAND / Brookings 등
+    published_date     TEXT,            -- YYYY-MM-DD
+    source_url         TEXT,            -- 원문 URL
+    event_refs         TEXT             -- JSON 배열: Stage 3 매칭 키워드
 );
 
 -- FTS5 가상 테이블: theories 테이블을 content source로 사용
@@ -91,6 +104,10 @@ def _get_conn() -> sqlite3.Connection:
         ("level_of_analysis",   "NULL"),
         ("instrument_of_power", "NULL"),
         ("strategic_posture",   "NULL"),
+        ("source_org",          "NULL"),
+        ("published_date",      "NULL"),
+        ("source_url",          "NULL"),
+        ("event_refs",          "NULL"),
     ]
     for col, default in _new_cols:
         try:
@@ -134,8 +151,16 @@ def parse_front_matter(path: Path) -> dict:
     post = frontmatter.load(str(path))
     meta = dict(post.metadata)
 
-    # 필수 필드 존재 여부 검증
-    missing = [f for f in REQUIRED_FIELDS if f not in meta]
+    # asset_type 먼저 확정 (필수 필드 검증 분기에 사용)
+    asset_type = meta.get("asset_type", "theory")
+    if asset_type not in ALLOWED_ASSET_TYPES:
+        logger.warning("[%s] 허용되지 않는 asset_type '%s', 'theory'로 대체", path.name, asset_type)
+        asset_type = "theory"
+    meta["asset_type"] = asset_type
+
+    # briefing은 필수 필드가 더 적음 (theorists·year·regions 불필요)
+    required = REQUIRED_FIELDS_BRIEFING if asset_type == "briefing" else REQUIRED_FIELDS
+    missing = [f for f in required if f not in meta]
     if missing:
         raise ValueError(f"[{path.name}] 필수 필드 누락: {missing}")
 
@@ -146,13 +171,6 @@ def parse_front_matter(path: Path) -> dict:
             f"[{path.name}] 허용되지 않는 sector_tag: '{tag}'. "
             f"허용값: {sorted(ALLOWED_SECTOR_TAGS)}"
         )
-
-    # asset_type / era: 선택 필드. 누락 시 기본값 적용
-    asset_type = meta.get("asset_type", "theory")
-    if asset_type not in ALLOWED_ASSET_TYPES:
-        logger.warning("[%s] 허용되지 않는 asset_type '%s', 'theory'로 대체", path.name, asset_type)
-        asset_type = "theory"
-    meta["asset_type"] = asset_type
 
     era = meta.get("era")
     if era and era not in ALLOWED_ERAS:
@@ -167,39 +185,47 @@ def parse_front_matter(path: Path) -> dict:
     meta["use_case"] = use_case
 
     # ── 7대 축 필드 (§15) — 선택 필드, 허용값 외 값은 None으로 정규화 ──────
-    geopol_region = meta.get("geopol_region")  # None이면 그대로 None
-    meta["geopol_region"] = geopol_region
+    meta["geopol_region"] = meta.get("geopol_region")
 
     temporal_era = meta.get("temporal_era")
-    if temporal_era not in ALLOWED_TEMPORAL_ERAS:
-        temporal_era = None
-    meta["temporal_era"] = temporal_era
+    meta["temporal_era"] = temporal_era if temporal_era in ALLOWED_TEMPORAL_ERAS else None
 
     level = meta.get("level_of_analysis")
-    if level not in ALLOWED_LEVELS:
-        level = None
-    meta["level_of_analysis"] = level
+    meta["level_of_analysis"] = level if level in ALLOWED_LEVELS else None
 
     instrument = meta.get("instrument_of_power")
-    if instrument not in ALLOWED_INSTRUMENTS:
-        instrument = None
-    meta["instrument_of_power"] = instrument
+    meta["instrument_of_power"] = instrument if instrument in ALLOWED_INSTRUMENTS else None
 
     posture = meta.get("strategic_posture")
-    if posture not in ALLOWED_POSTURES:
-        posture = None
-    meta["strategic_posture"] = posture
+    meta["strategic_posture"] = posture if posture in ALLOWED_POSTURES else None
 
-    # list 타입 필드를 JSON 문자열로 직렬화 (SQLite TEXT 컬럼 저장용)
-    for field in ("theorists", "regions"):
-        val = meta[field]
+    # ── 브리핑 전용 필드 ──────────────────────────────────────────────────────
+    meta["source_org"]     = meta.get("source_org")
+    meta["published_date"] = str(meta.get("published_date", "")) or None
+    meta["source_url"]     = meta.get("source_url") or None
+
+    event_refs = meta.get("event_refs", [])
+    if isinstance(event_refs, list):
+        meta["event_refs"] = json.dumps(event_refs, ensure_ascii=False)
+    else:
+        meta["event_refs"] = json.dumps([str(event_refs)], ensure_ascii=False)
+
+    # ── list 필드 → JSON 직렬화 (theorists, regions) ──────────────────────────
+    # briefing은 해당 필드가 없으므로 기본값으로 채움
+    for field, default in (("theorists", []), ("regions", [])):
+        val = meta.get(field, default)
         if isinstance(val, list):
             meta[field] = json.dumps(val, ensure_ascii=False)
         else:
-            # YAML에서 단일 문자열로 기재된 경우 1-item 배열로 정규화
             meta[field] = json.dumps([str(val)], ensure_ascii=False)
 
-    return {"meta": meta, "body": post.content}
+    # briefing은 event_refs 키워드를 body 앞에 추가해 FTS 검색 대상에 포함
+    body = post.content
+    if asset_type == "briefing" and event_refs:
+        refs_text = " ".join(event_refs) if isinstance(event_refs, list) else str(event_refs)
+        body = f"[event_refs: {refs_text}]\n\n{body}"
+
+    return {"meta": meta, "body": body}
 
 
 def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
@@ -240,8 +266,9 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                      summary, regions, body, file_path, updated_at,
                      asset_type, era, use_case,
                      geopol_region, temporal_era, level_of_analysis,
-                     instrument_of_power, strategic_posture)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     instrument_of_power, strategic_posture,
+                     source_org, published_date, source_url, event_refs)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     meta["theory_id"],
@@ -262,6 +289,10 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                     meta["level_of_analysis"],
                     meta["instrument_of_power"],
                     meta["strategic_posture"],
+                    meta["source_org"],
+                    meta["published_date"],
+                    meta["source_url"],
+                    meta["event_refs"],
                 ),
             )
             upserted += 1

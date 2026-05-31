@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 _CONFIG = Path(__file__).resolve().parents[2] / "config"
 _INTEL_DB = Path(__file__).resolve().parents[2] / "db" / "intel.db"
+_LIBRARY_DB = Path(__file__).resolve().parents[2] / "db" / "library.db"
 _CASE_STUDIES_PATH  = _CONFIG / "case_studies.yaml"
 _ALLIANCE_GRAPH_PATH = _CONFIG / "alliance_graph.yaml"
 _THEORY_LIBRARY_PATH = _CONFIG / "theory_library.yaml"
@@ -319,11 +320,50 @@ def stage3_historical_comparison(event: dict, sectors: list[str]) -> dict:
         for s, c in scored[:3]
     ]
 
+    # ── 브리핑 FTS 검색 (library.db) ─────────────────────────────────────
+    briefing_refs: list[dict] = []
+    if _LIBRARY_DB.exists():
+        try:
+            con = sqlite3.connect(_LIBRARY_DB)
+            # 이벤트 title+description에서 핵심 토큰 추출 (FTS5 쿼리)
+            tokens = [t for t in title_desc.split() if len(t) >= 3][:6]
+            if tokens:
+                fts_query = " OR ".join(tokens)
+                rows = con.execute(
+                    """
+                    SELECT t.theory_id, t.title, t.summary,
+                           t.source_org, t.published_date, t.source_url,
+                           t.geopol_region, t.sector_tag
+                    FROM theories t
+                    JOIN theories_fts f ON t.rowid = f.rowid
+                    WHERE theories_fts MATCH ?
+                      AND t.use_case = 'briefing'
+                    ORDER BY rank
+                    LIMIT 3
+                    """,
+                    (fts_query,),
+                ).fetchall()
+                for row in rows:
+                    briefing_refs.append({
+                        "theory_id":     row[0],
+                        "title":         row[1],
+                        "summary":       row[2],
+                        "source_org":    row[3],
+                        "published_date":row[4],
+                        "source_url":    row[5] or "",
+                        "geopol_region": row[6],
+                        "sector_tag":    row[7],
+                    })
+            con.close()
+        except Exception as exc:
+            logger.warning("[stage3] briefing FTS 실패: %s", exc)
+
     return {
         "stage": 3,
         "name_ko": "역사적 비교",
         "analogues": top3,
         "total_candidates": len(scored),
+        "briefing_refs": briefing_refs,
     }
 
 

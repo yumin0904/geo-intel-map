@@ -1439,6 +1439,15 @@ body:not(.study-mode) .notebook { display: none; }
   overflow: hidden;
 }
 
+/* ── 브리핑 카드 전용 스타일 ─────────────────────────────────────── */
+.lib-card--briefing { border-left: 2px solid #4fc3f7; }
+.lib-card__org {
+  color: #4fc3f7;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.lib-card__date { color: var(--color-text-secondary); }
+
 /* ── 우측 70%: 상세 뷰 ──────────────────────────────────────────── */
 .lib__detail {
   flex: 1;
