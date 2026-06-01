@@ -23,6 +23,7 @@ from .stages import (
     stage7_temporal_cascade,
     stage8_alliance_spread,
 )
+from .chain_verifier import verify_chain
 
 logger = logging.getLogger(__name__)
 
@@ -79,20 +80,34 @@ async def _run_stages(event: dict, cascade_links: list[dict]) -> dict:
         for r in results
     ]
 
+    stages_dict = {
+        "1_facts": s1,
+        "2_sector": s2,
+        "3_history": s3,
+        "4_macro": s4,
+        "5_intent": s5,
+        "6_sanctions": s6,
+        "7_cascade": s7,
+        "8_alliance": s8,
+    }
+
+    # ── 자기검증 (P5-6): 8단계 결과 BFS 반증 루프 ────────────────────────
+    try:
+        chain_verification = await loop.run_in_executor(
+            None, verify_chain, stages_dict, region
+        )
+    except Exception as e:
+        logger.warning("[reasoning] chain_verifier 실패: %s", e)
+        chain_verification = {"error": str(e)}
+
     elapsed = round(time.monotonic() - started, 3)
-    logger.debug("[reasoning] 완료 %.3fs — event=%s", elapsed, event_id)
+    logger.debug("[reasoning] 완료 %.3fs — event=%s confidence=%.2f",
+                 elapsed, event_id,
+                 chain_verification.get("chain_confidence", 0) if isinstance(chain_verification, dict) else 0)
 
     return {
         "event_id": event_id,
         "elapsed_sec": elapsed,
-        "stages": {
-            "1_facts": s1,
-            "2_sector": s2,
-            "3_history": s3,
-            "4_macro": s4,
-            "5_intent": s5,
-            "6_sanctions": s6,
-            "7_cascade": s7,
-            "8_alliance": s8,
-        },
+        "stages": stages_dict,
+        "chain_verification": chain_verification,
     }

@@ -2562,6 +2562,77 @@ body:not(.study-mode) .notebook { display: none; }
   line-height: 1.6;
 }
 
+/* ── Chain Verification (P5-6) ───────────────────────────────────── */
+.chain-verify {
+  border-top: 1px solid #1e3050;
+  padding: 10px 14px 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+}
+.cv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.cv-verdict {
+  font-size: 12px;
+  font-weight: bold;
+}
+.cv-confidence {
+  font-size: 11px;
+  color: #8ab4d4;
+}
+.cv-bar {
+  height: 4px;
+  background: #1e3050;
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
+.cv-bar__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.cv-claim {
+  padding: 4px 6px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+  border-left: 2px solid transparent;
+}
+.cv-claim--supported { border-left-color: #00c896; background: rgba(0,200,150,0.06); }
+.cv-claim--refuted   { border-left-color: #e63946; background: rgba(230,57,70,0.06); }
+.cv-claim--unverified { border-left-color: #8ab4d4; background: rgba(138,180,212,0.05); }
+.cv-claim__type {
+  display: inline-block;
+  font-size: 10px;
+  color: #8ab4d4;
+  margin-right: 5px;
+  text-transform: uppercase;
+}
+.cv-claim__desc {
+  font-size: 11px;
+  color: #c8d8e8;
+}
+.cv-claim__evidence {
+  font-size: 10px;
+  color: #6a8fa8;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.cv-note {
+  font-size: 10px;
+  color: #6a8fa8;
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid #1e3050;
+  line-height: 1.5;
+}
+.cv-error {
+  color: var(--color-danger);
+  font-size: 10px;
+}
+
 /* ── SandboxLab: 체인 뷰어 ───────────────────────────────────────── */
 .sandbox__chain-info {
   font-size: 12px;

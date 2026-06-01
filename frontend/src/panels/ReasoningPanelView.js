@@ -234,6 +234,49 @@ function escHtml(s) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// ── 체인 검증 렌더링 (P5-6) ──────────────────────────────────────────────
+const _VERDICT_STYLE = {
+  supported:   { icon: '✅', color: '#00c896', label: '지지됨' },
+  contested:   { icon: '⚠️', color: '#f4a261', label: '논쟁적' },
+  unsupported: { icon: '❌', color: '#e63946', label: '반증' },
+};
+
+const _CLAIM_TYPE_KO = {
+  cascade: '인과 체인',
+  intent:  '의도·포지션',
+  alliance:'동맹 확산',
+  history: '역사 선례',
+};
+
+function _renderChainVerification(cv) {
+  if (cv.error) return `<div class="cv-error">검증 실패: ${escHtml(cv.error)}</div>`;
+
+  const vs = _VERDICT_STYLE[cv.verdict] ?? _VERDICT_STYLE.contested;
+  const pct = Math.round((cv.chain_confidence ?? 0) * 100);
+
+  const claimRows = (arr, cssClass) => arr.map(c => `
+    <div class="cv-claim ${cssClass}">
+      <span class="cv-claim__type">${escHtml(_CLAIM_TYPE_KO[c.type] ?? c.type)}</span>
+      <span class="cv-claim__desc">${escHtml(c.description)}</span>
+      <div class="cv-claim__evidence">${escHtml(c.evidence)}</div>
+    </div>
+  `).join('');
+
+  const supported   = claimRows(cv.supported ?? [],   'cv-claim--supported');
+  const refuted     = claimRows(cv.refuted ?? [],     'cv-claim--refuted');
+  const unverified  = claimRows(cv.unverified ?? [],  'cv-claim--unverified');
+
+  return `
+    <div class="cv-header">
+      <span class="cv-verdict" style="color:${vs.color}">${vs.icon} ${vs.label}</span>
+      <span class="cv-confidence">신뢰도 ${pct}%</span>
+    </div>
+    <div class="cv-bar"><div class="cv-bar__fill" style="width:${pct}%;background:${vs.color}"></div></div>
+    ${supported}${refuted}${unverified}
+    <div class="cv-note">${escHtml(cv.note_ko ?? '')}</div>
+  `;
+}
+
 // ── 컴포넌트 ─────────────────────────────────────────────────────────────
 export class ReasoningPanelView {
   /** @param {import('../core/EventBus.js').EventBus} eventBus */
@@ -303,6 +346,16 @@ export class ReasoningPanelView {
         row.classList.add('has-detail');  // CSS: cursor:pointer + hover bg
         row.addEventListener('click', () => row.classList.toggle('is-expanded'));
       }
+    }
+
+    // ── 체인 검증 결과 (P5-6) ────────────────────────────────────────
+    if (report.chain_verification) {
+      const cv = report.chain_verification;
+      const body = this._el.querySelector('.reasoning-panel__body');
+      const cvEl = document.createElement('div');
+      cvEl.className = 'chain-verify';
+      cvEl.innerHTML = _renderChainVerification(cv);
+      body?.appendChild(cvEl);
     }
 
     // ── 완료 푸터 ─────────────────────────────────────────────────────

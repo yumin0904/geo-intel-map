@@ -921,13 +921,41 @@ version.json: 4.8.0
 
 ---
 
+### ✅ [P5-6] 추론 체인 자기검증 (2026-06-01) — v5.1.0
+
+**구현 내용**
+- `backend/services/reasoning/chain_verifier.py` (신규) — BFS 가설·반증 루프
+  - 4종 주장(Claim) 추출: CascadeClaim(cascade_rules 대조) / IntentClaim(의도-포지션 일관성) / AllianceClaim(동맹 확산 경로) / HistoryClaim(역사 선례)
+  - `verify_chain(stages, region_code)` → `chain_confidence: float` + `verdict: supported/contested/unsupported`
+  - `_INTENT_POSTURE_DELTA`: 의도-포지션 8가지 조합 → delta 테이블 (Snyder 동맹 딜레마 계량화)
+  - BFS 탐색: 지역별 cascade_rules 인덱스 → 실제 발화 여부·방향 일관성 대조
+  - `chain_confidence` 계산: 기본 0.5 + Claim별 delta 합산 → [0.1, 0.95] 클리핑
+  - verdict 기준: ≥0.70=supported / ≥0.45=contested / <0.45=unsupported
+- `backend/services/reasoning/engine.py` — `chain_verifier.verify_chain()` 통합
+  - 8단계 병렬 완료 후 executor로 자기검증 실행
+  - 반환 딕셔너리에 `chain_verification` 키 추가
+  - 로그에 `confidence=X.XX` 추가
+- `frontend/src/panels/ReasoningPanelView.js` — `_renderChainVerification()` 추가
+  - 8단계 순차 표시 완료 후 "체인 검증" 섹션 동적 삽입
+  - 신뢰도 바(progress bar) + 판정 뱃지 + 지지/반증/미검증 Claim 목록
+- `frontend/styles/main.css` — `.chain-verify`, `.cv-claim--*`, `.cv-bar` 스타일 추가
+
+**실측 결과**
+- 우크라이나 Battle (RUS revisionist + aggression): `confidence=0.90, supported=5건` ✅
+- 한반도 역설 케이스 (status_quo + aggression): `confidence=0.40, refuted=1건, unsupported` ✅
+- 실제 API 통합 (ukraine, 0건 cascade_chain): `confidence=0.57, contested, 0.061s` ✅
+
+**이론 연결**: Snyder 동맹 딜레마(포지션-의도 일관성) × BFS 반증 탐색 = 추론 투명성 강화
+
+### 현재 버전
+`version.json`: **5.1.0**
+
 ## 다음 세션 우선순위
 
 **Phase 5 잔여 항목**
 
 | # | 항목 | 파일 |
 |---|------|------|
-| 6 | 추론 체인 자기검증 (BFS 가설·반증 루프) | `services/reasoning/engine.py` |
 | 7 | 멀티에이전트 섹터별 추론 병렬 | `services/reasoning/agents/` 신규 |
 | 8 | LLM 종합 브리핑 계층 | `api/briefing.py` importance≥0.7 게이트 |
 
