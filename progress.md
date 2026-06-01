@@ -970,10 +970,15 @@ version.json: 4.8.0
 
 **Phase 5 잔여 항목**
 
-| # | 항목 | 파일 |
-|---|------|------|
-| 7 | 멀티에이전트 섹터별 추론 병렬 | `services/reasoning/agents/` 신규 |
-| 8 | LLM 종합 브리핑 계층 | `api/briefing.py` importance≥0.7 게이트 |
+| # | 항목 | 파일 | 상태 |
+|---|------|------|------|
+| 5 | Stage 5 명분·의도 구현 | `stages.py` | ✅ v5.0.0 |
+| 6 | 추론 체인 자기검증 (BFS 반증 루프) | `chain_verifier.py` / `engine.py` | ✅ v5.1.0 |
+| 6b | cascade_links DB 저장 + 신뢰도 필터 | `schema.sql` / `engine.py` | ✅ v5.1.1 |
+| 7 | 멀티에이전트 섹터별 추론 병렬 | `services/reasoning/agents/` 신규 | ⬜ |
+| 8 | LLM 종합 브리핑 계층 | `api/briefing.py` importance≥0.7 게이트 | ⬜ |
+
+**다음 작업**: P5-7 멀티에이전트 섹터별 추론 병렬
 
 항목 8: §14 Token-Zero 위반 아님 — 사용자 명시 요청 기반 LLM 호출은 허용 범위.
 병행 과제: 브리핑 지속 적재 (INSS, CSIS, RAND 등)
