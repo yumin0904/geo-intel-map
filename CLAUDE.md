@@ -16,17 +16,23 @@
 
 ---
 
-## 1. 핵심 5대 섹터 (도메인 우선순위)
+## 1. 핵심 6대 섹터 (도메인 우선순위)
 
 이 프로젝트가 다루는 영역은 다음으로 한정한다. 그 외 레이어는 **명시적으로 거절**한다.
 
-| # | 섹터 | 정치외교학 연결 이론 |
-|---|------|---------------------|
-| 1 | 해양 초점주의 & SLOC | Mahan 해양력, 진주목걸이 vs 인도-태평양 전략 |
-| 2 | 에너지 지정학 & 인프라 | 자원무기화, 상호의존의 무기화 (Farrell & Newman) |
-| 3 | 기술 패권 & 보이지 않는 인프라 | Techno-nationalism, Digital Iron Curtain |
-| 4 | 인도-태평양 군사 대치 | 동맹이론, A2/AD, 제1열도선 |
-| 5 | 회색지대 & 비전통 안보 | Hybrid Warfare, Gray Zone Strategy |
+| # | 섹터 | `sector_tag` | 정치외교학 연결 이론 |
+|---|------|-------------|---------------------|
+| 1 | 해양 초점주의 & SLOC | `maritime` | Mahan 해양력, 진주목걸이 vs 인도-태평양 전략 |
+| 2 | 에너지 지정학 & 인프라 | `energy` | 자원무기화, 상호의존의 무기화 (Farrell & Newman) |
+| 3 | 기술 패권 & 보이지 않는 인프라 | `techno` | Techno-nationalism, Digital Iron Curtain |
+| 4 | 인도-태평양 군사 대치 | `indo_pacific` | 동맹이론, A2/AD, 제1열도선 |
+| 5 | 회색지대 & 비전통 안보 | `gray_zone` | Hybrid Warfare, Gray Zone Strategy |
+| 6 | 사이버 안보 & 인지전 | `cyber` | Information Operations, APT 귀속, Cognitive Warfare |
+
+**섹터 구분 원칙**:
+- `techno`: 반도체·5G·공급망 등 기술 패권의 **구조적·경제적** 차원
+- `gray_zone`: 비국가 행위자, 프록시전, 하이브리드전의 **물리적** 차원
+- `cyber`: 사이버 공격·방어·인지전의 **작전적** 차원 (2026년 이란전 사이버전, APT, 선거 개입 등)
 
 ---
 
