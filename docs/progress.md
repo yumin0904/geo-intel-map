@@ -176,3 +176,48 @@ cd ~/Projects/geo-intel-map/frontend && python3 -m http.server 5500
 # [브라우저]
 open http://localhost:5500
 ```
+
+---
+
+---
+
+## 2026-06-03 (브리핑 적재 세션 — 18~26번째)
+
+### 완료 항목
+
+**Cyber 카테고리**
+- [x] `briefing_20260318_rand_gamification_narrative_cognitive_warfare` — [Cyber 4/5] 게임 언어의 무기화: 풀뿌리 인지전과 서사 수확 작전 (RAND, 18번째)
+
+**Energy 카테고리** (4/5 완료, 1개 보류)
+- [ ] Energy 1/5 — Does OPEC Still Matter? (WotR) → `status: deferred`
+- [x] `briefing_20260515_ecfr_postwar_uae_gulf_politics` — [Energy 2/5] 전후 UAE와 걸프 정치의 재편 (ECFR, 19번째)
+- [x] `briefing_20260522_ecfr_imec_wartime_redesign` — [Energy 3/5] IMEC 전시 재설계 (ECFR, 20번째)
+- [x] `briefing_20260508_wotr_russia_hormuz_playbook_baltic` — [Energy 4/5] 러시아의 호르무즈 플레이북 (WotR, 21번째)
+- [x] `briefing_20260519_rand_hormuz_mine_clearing` — [Energy 5/5] 호르무즈 소해 작전 (RAND, 22번째)
+
+**Gray Zone 카테고리** (2/4 완료, 2개 보류)
+- [x] `briefing_20260519_wotr_somaliland_recognition_red_sea` — [Gray Zone 1/4] 소말릴란드 승인의 문제 (WotR, 23번째)
+- [ ] Gray Zone 2/4 — Western Withdrawal, Jihadist Expansion: Sahel (WotR) → `status: deferred`
+- [x] `briefing_20260514_wotr_kremlin_battlefield_home` — [Gray Zone 3/4] 크렘린의 진짜 전장은 국내다 (WotR, 24번째)
+- [x] `briefing_20260529_wotr_glass_jaw_economic_fragility` — [Gray Zone 4/4] 유리 턱: 미국 경제 취약성 (WotR, 25번째)
+
+**Maritime 카테고리** (진행 중)
+- [x] `briefing_20260528_wotr_sea_control_revolution` — [Maritime 1/5] 제해권 혁명 (WotR, 26번째)
+
+### 현재 브리핑 라이브러리 현황
+
+| 항목 | 수치 |
+|------|------|
+| 총 적재 브리핑 수 | **26개** |
+| 오늘 세션 추가 | **+9개** (18~26번째) |
+| 큐 잔여 보류 포함 | **deferred 3개** (Energy 1/5, Gray Zone 2/4, 구 세션 1개) |
+
+### 다음 세션 시작점
+
+**Maritime 2/5~5/5 계속 적재 후 Indo-Pacific 카테고리로 이동**
+
+Maritime 잔여 (4개):
+- Missing Navies: Hormuz Crisis (WotR)
+- Japan Should Help Sink China's Invasion Fleet (RAND)
+- South Korea's 500,000 Drone Warriors (WotR)
+- Leading in the Dark: Submarine Commanders (WotR)
