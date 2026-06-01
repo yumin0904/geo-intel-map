@@ -101,3 +101,27 @@ CREATE TABLE IF NOT EXISTS historical_trade_matrix (
 );
 
 CREATE INDEX IF NOT EXISTS idx_trade_reporter ON historical_trade_matrix(reporter_iso, partner_iso, hs_code);
+
+-- ── Cascade 링크 (신뢰도 0.6 이상만 저장) ───────────────────────────────
+-- correlation_score = pct_change / (threshold_pct × 2)
+-- 0.6 이상 = 임계값의 1.2배 이상 시장 반응 → 노이즈 필터 통과
+CREATE TABLE IF NOT EXISTS cascade_links (
+    id                  TEXT PRIMARY KEY,
+    source_event_id     TEXT NOT NULL,
+    target_event_id     TEXT NOT NULL,
+    link_type           TEXT NOT NULL DEFAULT 'rule',  -- 'rule' | 'chain' | 'statistical'
+    rule_id             TEXT,
+    rule_name           TEXT,
+    correlation_score   REAL NOT NULL,
+    time_delta_seconds  INTEGER NOT NULL,
+    depth               INTEGER NOT NULL DEFAULT 1,
+    parent_link_id      TEXT,            -- 체인 2단계+ 링크의 부모 링크 ID
+    theory_ref          TEXT,
+    evidence            TEXT,            -- JSON 직렬화
+    created_at          TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+    UNIQUE (source_event_id, target_event_id, rule_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cascade_source ON cascade_links(source_event_id);
+CREATE INDEX IF NOT EXISTS idx_cascade_target ON cascade_links(target_event_id);
+CREATE INDEX IF NOT EXISTS idx_cascade_score  ON cascade_links(correlation_score DESC);

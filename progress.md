@@ -947,8 +947,24 @@ version.json: 4.8.0
 
 **이론 연결**: Snyder 동맹 딜레마(포지션-의도 일관성) × BFS 반증 탐색 = 추론 투명성 강화
 
+### ✅ cascade_links DB 저장 + 신뢰도 필터 (2026-06-01) — v5.1.1
+
+**문제**: cascade_links가 메모리에서만 계산되고 소멸 → reasoning API에 항상 빈 배열 전달 → chain_confidence 항상 0.57 고착
+
+**수정**
+- `backend/db/schema.sql` — `cascade_links` 테이블 추가 (id·score·depth·rule_name·evidence 등)
+- `backend/services/cascade/engine.py` — `_persist_links()` 신설
+  - `_MIN_PERSIST_SCORE = 0.6` (threshold × 1.2배 이상 = pct_change / (threshold×2) ≥ 0.6)
+  - `score < 0.6`: 노이즈 가능성 → 저장 제외
+  - `score ≥ 0.6`: DB 저장, 점수 높아지면 UPDATE
+  - `build_cascade()` 반환 시 `saved_to_db`, `skipped_low_confidence` 메타데이터 추가
+- `backend/api/reasoning.py` — `_resolve_cascade_links()` 쿼리에 `depth`, `rule_name` 필드 추가, `ORDER BY correlation_score DESC`
+
+**실측**: 35개 링크 평가 → 32건 저장(score 0.62~1.00, 평균 0.94) / 3건 제외
+누적 76건 (첫 호출 후), chain_confidence가 실제 cascade 발화 기록 반영 시작
+
 ### 현재 버전
-`version.json`: **5.1.0**
+`version.json`: **5.1.1**
 
 ## 다음 세션 우선순위
 

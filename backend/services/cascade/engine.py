@@ -215,6 +215,10 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
     chain_count = len(links) - len(first_level_snapshot)
     logger.info(f"[cascade] 체이닝 링크 {chain_count}개 추가 (총 {len(links)}개)")
 
+    # ── 신뢰도 필터 후 DB 저장 (score >= 0.6만 보존) ─────────────────────────
+    saved, skipped = _persist_links(links)
+    logger.info(f"[cascade] DB 저장 {saved}건 (신뢰도 미달 제외 {skipped}건)")
+
     return {
         "links": [l.model_dump() for l in links],
         "events": [e.model_dump() for e in events_by_id.values()],
@@ -222,9 +226,70 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
             "rule_count": len(rules),
             "link_count": len(links),
             "chain_count": chain_count,
+            "saved_to_db": saved,
+            "skipped_low_confidence": skipped,
             "generated": datetime.now(timezone.utc).isoformat(),
         },
     }
+
+
+# 신뢰도 임계값: threshold의 1.2배 이상 시장 반응 = score 0.6
+# score = pct_change / (threshold_pct × 2) 이므로
+# 0.6 = 임계값의 1.2배, 0.8 = 1.6배, 1.0 = 2배+
+_MIN_PERSIST_SCORE = 0.6
+
+
+def _persist_links(links: list[CascadeLink]) -> tuple[int, int]:
+    """
+    신뢰도 0.6 이상 링크만 cascade_links 테이블에 저장한다.
+
+    UNIQUE(source_event_id, target_event_id, rule_id)로 중복 방지.
+    score가 높아졌으면 UPDATE, 동일하면 IGNORE.
+    """
+    saved = skipped = 0
+    try:
+        with sqlite3.connect(_INTEL_DB) as conn:
+            for link in links:
+                if link.correlation_score < _MIN_PERSIST_SCORE:
+                    skipped += 1
+                    continue
+                evidence_json = json.dumps(link.evidence) if link.evidence else None
+                conn.execute(
+                    """
+                    INSERT INTO cascade_links
+                        (id, source_event_id, target_event_id, link_type,
+                         rule_id, rule_name, correlation_score,
+                         time_delta_seconds, depth, parent_link_id,
+                         theory_ref, evidence)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(source_event_id, target_event_id, rule_id)
+                    DO UPDATE SET
+                        correlation_score = excluded.correlation_score,
+                        time_delta_seconds = excluded.time_delta_seconds,
+                        theory_ref = excluded.theory_ref,
+                        evidence = excluded.evidence
+                    WHERE excluded.correlation_score > cascade_links.correlation_score
+                    """,
+                    (
+                        link.id,
+                        link.source_event_id,
+                        link.target_event_id,
+                        link.link_type,
+                        link.rule_id,
+                        link.rule_name,
+                        link.correlation_score,
+                        link.time_delta_seconds,
+                        getattr(link, "depth", 1),
+                        getattr(link, "parent_link_id", None),
+                        link.theory_ref,
+                        evidence_json,
+                    ),
+                )
+                saved += 1
+            conn.commit()
+    except Exception as e:
+        logger.warning("[cascade] DB 저장 실패: %s", e)
+    return saved, skipped
 
 
 async def _fetch_region_events(region: str) -> list[Event]:

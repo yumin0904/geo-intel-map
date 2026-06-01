@@ -89,9 +89,11 @@ async def _resolve_cascade_links(event_id: str) -> list[dict]:
             rows = conn.execute(
                 """
                 SELECT source_event_id, target_event_id, link_type,
-                       correlation_score, time_delta_seconds
+                       correlation_score, time_delta_seconds,
+                       depth, rule_id, rule_name
                 FROM cascade_links
                 WHERE source_event_id = ? OR target_event_id = ?
+                ORDER BY correlation_score DESC
                 LIMIT 20
                 """,
                 (event_id, event_id),
