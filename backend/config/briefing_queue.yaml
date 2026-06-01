@@ -266,13 +266,6 @@ pending:
   published: Tue, 12 May 2026 07:30:20 +0000
   sector_hint: indo_pacific
   collected_at: '2026-06-01'
-- id: war-on-the-rocks-de4f2c6d
-  org: War on the Rocks
-  title: Could Russia Follow the “Hormuz Playbook” in the Baltic and Black Seas?
-  url: https://warontherocks.com/could-russia-follow-the-hormuz-playbook-in-the-baltic-and-black-seas/
-  published: Fri, 08 May 2026 07:15:22 +0000
-  sector_hint: maritime
-  collected_at: '2026-06-01'
 - id: war-on-the-rocks-1f7c866c
   org: War on the Rocks
   title: How the War with Iran Is Shaping U.S.-Chinese Competition
