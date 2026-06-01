@@ -258,6 +258,7 @@ pending:
   published: Tue, 12 May 2026 19:45:38 +0000
   sector_hint: energy
   collected_at: '2026-06-01'
+  status: deferred
 - id: war-on-the-rocks-0740ff47
   org: War on the Rocks
   title: 'The Other Border Problem: How Russia and China’s Lawfare Threaten the Arctic'
@@ -414,13 +415,6 @@ pending:
   url: https://ecfr.eu/article/bypassing-the-straits-the-india-middle-east-europe-corridor-needs-a-wartime-redesign/
   published: Fri, 22 May 2026 10:08:41 +0000
   sector_hint: maritime
-  collected_at: '2026-06-01'
-- id: ecfr-34bdbd1a
-  org: ECFR
-  title: The postwar UAE and the remaking of Gulf politics
-  url: https://ecfr.eu/article/the-postwar-uae-and-the-remaking-of-gulf-politics/
-  published: Fri, 15 May 2026 07:53:17 +0000
-  sector_hint: energy
   collected_at: '2026-06-01'
 - id: foreign-affairs-f4a1e224
   org: Foreign Affairs
