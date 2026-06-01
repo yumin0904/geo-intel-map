@@ -52,6 +52,11 @@ _ACTOR_NAME_TO_CODE: dict[str, str] = {
     "libya": "LBY", "mali": "MLI", "niger": "NER",
     "nigeria": "NGA", "kenya": "KEN",
     "armenia": "ARM", "azerbaijan": "AZE", "georgia": "GEO",
+    "belarus": "BLR", "belarusian": "BLR",
+    "kazakhstan": "KAZ", "kyrgyzstan": "KGZ", "tajikistan": "TJK",
+    "uzbekistan": "UZB", "new zealand": "NZL", "canada": "CAN",
+    "pakistan": "PAK", "sri lanka": "LKA", "bangladesh": "BGD",
+    "myanmar": "MMR", "cambodia": "KHM", "laos": "LAO",
 }
 _OF_PAT    = re.compile(r'(?:Military|Police|Government|Naval|Air)\s+Forces?\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
 _GOV_PAT   = re.compile(r'Government\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
@@ -166,6 +171,67 @@ def _query_macro_indicators(indicators: set[str]) -> list[dict]:
     except Exception as e:
         logger.warning("[stage4] 로컬 DB 조회 오류: %s", e)
     return results
+
+
+def _calc_diffusion_score(
+    actor_codes: set[str],
+    relevant_alliances: list[dict],
+    all_alliances: list[dict],
+) -> tuple[int, str]:
+    """
+    Diffusion_Score 계산 (CLAUDE.md §17, Snyder 동맹 딜레마).
+
+    공식:
+      - 관련 동맹 각각에 대해 involvement_factor 산출
+        * 사건 행위자 양쪽 모두 멤버 → 1.0 (직접 당사국 간 동맹)
+        * 한쪽만 멤버 → 0.6 (일방적 관여)
+      - 가장 강한 동맹 pact_intensity 기여 × 80 (기저)
+      - 나머지 동맹 추가 기여 × 0.5 × 80
+      - 최대 100으로 클리핑
+
+    판정 (§17):
+      - score ≥ 80: Entrapment (연루 위험)
+      - score < 50: Abandonment (방기 징후)
+      - 50~79: normal
+    """
+    if not relevant_alliances:
+        return 0, "abandonment"
+
+    # pact_intensity lookup: all_alliances에서 id → pact_intensity 맵
+    pi_map: dict[str, float] = {
+        a["id"]: a.get("pact_intensity", 0.5)
+        for a in all_alliances
+    }
+
+    scores: list[float] = []
+    for ra in relevant_alliances:
+        pi = pi_map.get(ra["id"], 0.5)
+        members = set(ra.get("members", []))
+        actors_in = len(actor_codes & members)
+        if actors_in >= 2:
+            factor = 1.0   # 분쟁 당사국 쌍방이 동맹 멤버
+        elif actors_in == 1:
+            factor = 0.6   # 한쪽만 멤버 (일방 의무 발동 가능성)
+        else:
+            continue
+        scores.append(pi * factor)
+
+    if not scores:
+        return 0, "abandonment"
+
+    scores.sort(reverse=True)
+    # 가장 강한 동맹이 주요 기여, 나머지는 절반 기여
+    raw = scores[0] + sum(s * 0.5 for s in scores[1:])
+    diffusion_score = min(100, round(raw * 80))
+
+    if diffusion_score >= 80:
+        risk = "entrapment"
+    elif diffusion_score < 50:
+        risk = "abandonment"
+    else:
+        risk = "normal"
+
+    return diffusion_score, risk
 
 
 def _query_trade_dependency(actor_codes: set[str]) -> list[dict]:
@@ -839,6 +905,13 @@ def stage8_alliance_spread(actors: list[str], region_code: str = "") -> dict:
     # 무역 의존도 조회 (Weaponized Interdependence 계량화)
     trade_deps = _query_trade_dependency(actor_codes)
 
+    # ── Diffusion_Score 계산 (CLAUDE.md §17) ───────────────────────────────
+    # 공식: 가장 강한 동맹 pact_intensity × 80 + 나머지 동맹 기여(절반 가중)
+    # 판정: ≥80 → 연루(Entrapment) 위험 / <50 → 방기(Abandonment) 징후
+    diffusion_score, alliance_risk = _calc_diffusion_score(
+        actor_codes, relevant_alliances, alliances
+    )
+
     return {
         "stage": 8,
         "name_ko": "동맹 확산",
@@ -846,5 +919,10 @@ def stage8_alliance_spread(actors: list[str], region_code: str = "") -> dict:
         "relevant_alliances": relevant_alliances,
         "potentially_involved_countries": list(involved_countries - actor_codes),
         "trade_dependencies": trade_deps,
+        "diffusion_score": diffusion_score,
+        "alliance_risk": alliance_risk,
+        "alliance_risk_ko": {"entrapment": "🔴 연루(Entrapment) 위험",
+                              "abandonment": "🟡 방기(Abandonment) 징후",
+                              "normal": "🟢 정상 범위"}.get(alliance_risk, "—"),
         "note_ko": "조약 의무 발동 시 잠재적으로 관여할 수 있는 국가 목록. 무역 의존도는 Farrell & Newman(2019) Weaponized Interdependence 지표.",
     }

@@ -978,6 +978,31 @@ version.json: 4.8.0
 | 7 | 멀티에이전트 섹터별 추론 병렬 | `services/reasoning/agents/` 신규 | ⬜ |
 | 8 | LLM 종합 브리핑 계층 | `api/briefing.py` importance≥0.7 게이트 | ⬜ |
 
+### ✅ §17 Diffusion_Score + §16 Stage 3 센서 누락 보완 (2026-06-01) — v5.2.0
+
+**§17 Stage 8 Diffusion_Score 구현**
+- `alliance_graph.yaml` — 16개 동맹에 `pact_intensity` 필드 추가 (NATO=1.0, us_rok=0.90, CSTO=0.90, us_philippines=0.85 등 §17 기준값 준수)
+- `alliance_graph.yaml` — `country_memberships` 34개국으로 확장 (BLR·KAZ·KGZ·TJK·ARM·PHL·QAT·TUR 등 누락국 추가)
+- `stages.py` — `_calc_diffusion_score()` 신설
+  - 공식: 가장 강한 동맹 pact_intensity × 80 + 나머지 × 0.5 × 80, max 100
+  - involvement_factor: 양쪽 멤버=1.0, 한쪽만=0.6
+  - 판정: ≥80 🔴Entrapment / <50 🟡Abandonment / else 🟢정상
+- `stages.py` — `_ACTOR_NAME_TO_CODE`에 15개국 추가 (Belarus·Kazakhstan·NZ·Canada 등)
+- `stages.py` — Stage 8 반환값에 `diffusion_score`, `alliance_risk`, `alliance_risk_ko` 추가
+- `engine.py` — region을 stage1 결과에서 우선 읽도록 수정 (geofence 역조회 보정 반영)
+- `api/reasoning.py` — `_load_event_from_db()` fallback 추가 (LIMIT에 걸린 이벤트 DB 직접 조회)
+
+**§16 Stage 3 센서 (FIRMS) 구현**
+- `jobs/firms_sensor_job.py` (신규) — NASA FIRMS NRT → sensor_snapshots 저장
+  - 5대 섹터 6개 지역 bbox, FRP≥10 필터
+  - `run_firms_sensor_batch()` 동기 래퍼 (APScheduler용)
+- `main.py` — FIRMS 잡 6시간마다 등록
+
+**실측 결과**
+- CHN vs USA (대만해협): diffusion_score=100, 🔴Entrapment ✅
+- BLR vs UKR (우크라이나): diffusion_score=56, 🟢정상 (우크라이나 NATO 미가입 반영) ✅
+- ETH 시위: diffusion_score=0, 🟡Abandonment ✅
+
 **다음 작업**: P5-7 멀티에이전트 섹터별 추론 병렬
 
 항목 8: §14 Token-Zero 위반 아님 — 사용자 명시 요청 기반 LLM 호출은 허용 범위.

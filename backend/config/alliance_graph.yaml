@@ -10,6 +10,7 @@ alliances:
     name_ko: "북대서양조약기구"
     type: collective_defense
     treaty_article: "Article 5 (집단방위)"
+    pact_intensity: 1.00   # §17 기준값: 최고. Article 5 실전 발동(아프간) 전례 있음
     members: [USA, GBR, DEU, FRA, ITA, CAN, TUR, POL, NOR, DNK, BEL, NLD,
               ESP, PRT, GRC, HUN, CZE, SVK, ROU, BGR, EST, LVA, LTU, HRV,
               ALB, MNE, MKD, FIN, SWE]
@@ -21,6 +22,7 @@ alliances:
     name_ko: "오커스"
     type: security_partnership
     founded: "2021-09-15"
+    pact_intensity: 0.90   # 핵추진 잠수함·AI·사이버 강한 군사 기술 공유
     members: [AUS, GBR, USA]
     sector_tags: [indo_pacific, maritime, techno]
     notes_ko: "핵추진 잠수함 기술 공유 + AI·양자·사이버. 중국 A2/AD 대응 설계."
@@ -29,6 +31,7 @@ alliances:
     name: "Quad"
     name_ko: "쿼드"
     type: strategic_dialogue
+    pact_intensity: 0.45   # 비구속적 전략 대화, 집단방위 조항 없음
     members: [USA, JPN, IND, AUS]
     sector_tags: [indo_pacific, maritime]
     notes_ko: "비공식 안보 협의체. 구속력 없으나 정보 공유·훈련 조율."
@@ -37,6 +40,7 @@ alliances:
     name: "Five Eyes"
     name_ko: "파이브 아이즈"
     type: intelligence_sharing
+    pact_intensity: 0.70   # 군사 발동보다 정보 공유 중심. 대중 반도체 수출 규제 조율
     members: [USA, GBR, CAN, AUS, NZL]
     sector_tags: [techno, gray_zone]
     notes_ko: "SIGINT(신호정보) 공유 동맹. 화웨이 5G 금지 조율의 핵심."
@@ -45,6 +49,7 @@ alliances:
     name: "US-Japan Security Treaty"
     name_ko: "미일안보조약"
     type: bilateral_defense
+    pact_intensity: 0.95   # 강한 양자 방위. 주일미군 5.5만, 대만 위기 직결
     members: [USA, JPN]
     treaty_article: "제5조 (상호방위)"
     sector_tags: [indo_pacific]
@@ -54,6 +59,7 @@ alliances:
     name: "US-ROK Mutual Defense Treaty"
     name_ko: "한미상호방위조약"
     type: bilateral_defense
+    pact_intensity: 0.90   # §17 기준값. 주한미군 2.8만, 확장억제 포함
     members: [USA, KOR]
     sector_tags: [indo_pacific]
     notes_ko: "주한미군 약 2.8만 명. 확장억제(핵우산) 포함."
@@ -62,6 +68,7 @@ alliances:
     name: "ANZUS Treaty"
     name_ko: "ANZUS 조약"
     type: collective_defense
+    pact_intensity: 0.85   # §17 기준값. NZ 핵항 거부로 일부 제한
     members: [USA, AUS, NZL]
     sector_tags: [indo_pacific, maritime]
     notes_ko: "뉴질랜드는 1986년 핵추진함 입항 거부로 군사조항 정지."
@@ -70,6 +77,7 @@ alliances:
     name: "US-Philippines Mutual Defense Treaty"
     name_ko: "미-필리핀 상호방위조약"
     type: bilateral_defense
+    pact_intensity: 0.85   # §17 기준값. EDCA 기지 확장으로 실효성 상승
     members: [USA, PHL]
     sector_tags: [indo_pacific, maritime]
     notes_ko: "2023 EDCA 기지 4곳 추가 (북부 루손 포함). 대만 위기 시 핵심 전진기지."
@@ -80,6 +88,7 @@ alliances:
     name: "SCO"
     name_ko: "상하이협력기구"
     type: strategic_organization
+    pact_intensity: 0.55   # 구속력 약함. 회원국 간 이해충돌(인도-파키스탄)
     members: [CHN, RUS, IND, PAK, KAZ, KGZ, TJK, UZB, IRN, BLR]
     sector_tags: [gray_zone, energy]
     notes_ko: "안보·경제 협의체. 미국·NATO 견제 목적이나 구속력 약함."
@@ -88,6 +97,7 @@ alliances:
     name: "CSTO"
     name_ko: "집단안보조약기구"
     type: collective_defense
+    pact_intensity: 0.90   # §17 기준값(조·러조약 동급). 2022 카자흐 파병으로 실효성 검증
     members: [RUS, BLR, KAZ, KGZ, TJK, ARM]
     sector_tags: [gray_zone]
     notes_ko: "구소련권 집단방위. 2022 카자흐스탄 파병으로 실효성 논란."
@@ -96,6 +106,7 @@ alliances:
     name: "China-Russia Comprehensive Strategic Partnership"
     name_ko: "중-러 전략적 동반자관계"
     type: strategic_partnership
+    pact_intensity: 0.80   # 공식 동맹 아님, 그러나 실질 협력 강도 높음
     members: [CHN, RUS]
     sector_tags: [energy, indo_pacific, gray_zone]
     notes_ko: "동맹 아님(공식). 에너지·기술 협력 + 대미 공동전선. '한계 없는 우정(2022)'."
@@ -104,6 +115,7 @@ alliances:
     name: "Belt and Road Initiative (Key Partners)"
     name_ko: "일대일로 핵심 파트너"
     type: economic_connectivity
+    pact_intensity: 0.35   # 경제적 연결, 군사 의무 없음
     members: [CHN, PAK, MYS, IDN, ETH, KEN, ZMB, SRB, HUN, GRC]
     sector_tags: [energy, maritime]
     notes_ko: "항만·인프라 투자. 진주목걸이(Pearl String) 전략의 경제적 레이어."
@@ -114,6 +126,7 @@ alliances:
     name: "Gulf Cooperation Council"
     name_ko: "걸프협력회의"
     type: regional_organization
+    pact_intensity: 0.65   # 공동방위 조항 있으나 사우디-카타르 단교(2017) 등 균열
     members: [SAU, ARE, KWT, QAT, BHR, OMN]
     sector_tags: [energy, maritime]
     notes_ko: "공동방위 조항 보유. 이란 견제·석유 정책 조율의 핵심 플랫폼."
@@ -122,6 +135,7 @@ alliances:
     name: "Axis of Resistance"
     name_ko: "저항의 축"
     type: informal_network
+    pact_intensity: 0.75   # 비공식이나 실질 군사 지원(무기·훈련) 높음
     members: [IRN, SYR, LBN, YEM, IRQ]
     sector_tags: [gray_zone, energy]
     notes_ko: "비공식 이란 주도 네트워크. 헤즈볼라·후티·PMF 포함."
@@ -132,6 +146,7 @@ alliances:
     name: "I2U2 (India-Israel-UAE-USA)"
     name_ko: "I2U2"
     type: strategic_dialogue
+    pact_intensity: 0.45   # 신생 전략 대화, 군사 구속력 없음
     members: [IND, ISR, ARE, USA]
     sector_tags: [energy, techno]
     notes_ko: "2022 창설. 식량·에너지·인프라 협력. 인도-태평양·중동 연결 시도."
@@ -140,6 +155,7 @@ alliances:
     name: "DPRK-Russia Military Cooperation"
     name_ko: "북러 군사협력"
     type: bilateral_military
+    pact_intensity: 0.85   # 2024 병력·탄약 실전 파견으로 사실상 군사동맹 수준
     members: [PRK, RUS]
     sector_tags: [indo_pacific, gray_zone]
     notes_ko: "2024 북한 병력 러시아 배치. 탄약·미사일 거래. 전략적 수렴 가속."
@@ -148,7 +164,7 @@ alliances:
 country_memberships:
   USA: [nato, aukus, quad, five_eyes, us_japan, us_rok, us_australia, us_philippines, i2u2]
   CHN: [sco, china_russia_partnership, bri_partners]
-  RUS: [sco, csto, china_russia_partnership]
+  RUS: [sco, csto, china_russia_partnership, north_korea_russia]
   JPN: [us_japan, quad]
   KOR: [us_rok]
   AUS: [aukus, quad, five_eyes, us_australia]
@@ -158,3 +174,31 @@ country_memberships:
   PRK: [north_korea_russia]
   SAU: [gcc]
   ISR: [i2u2]
+  # CSTO 회원국
+  BLR: [csto, sco]
+  KAZ: [sco, csto]
+  KGZ: [sco, csto]
+  TJK: [sco, csto]
+  ARM: [csto]
+  # 중동
+  ARE: [gcc, i2u2]
+  KWT: [gcc]
+  QAT: [gcc]
+  BHR: [gcc]
+  OMN: [gcc]
+  SYR: [iran_axis]
+  LBN: [iran_axis]
+  YEM: [iran_axis]
+  IRQ: [iran_axis]
+  # 인도-태평양
+  PHL: [us_philippines]
+  NZL: [us_australia, five_eyes]
+  CAN: [nato, five_eyes]
+  # 일대일로
+  PAK: [sco, bri_partners]
+  MYS: [bri_partners]
+  IDN: [bri_partners]
+  TUR: [nato]
+  POL: [nato]
+  DEU: [nato]
+  FRA: [nato]

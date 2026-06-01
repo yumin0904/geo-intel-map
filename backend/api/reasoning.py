@@ -74,6 +74,48 @@ async def _resolve_event(event_id: str) -> dict | None:
         if feat.get("properties", {}).get("id") == event_id:
             return feat
 
+    # 캐시 미스: DB에서 직접 조회 (LIMIT에 걸린 오래된 이벤트 처리)
+    return _load_event_from_db(event_id)
+
+
+def _load_event_from_db(event_id: str) -> dict | None:
+    """events/event_archive 테이블에서 단일 이벤트를 GeoJSON feature 형태로 반환."""
+    import json as _json
+    import sqlite3 as _sqlite3
+    from pathlib import Path
+
+    db_path = Path(__file__).resolve().parents[1] / "db" / "intel.db"
+    if not db_path.exists():
+        return None
+    try:
+        with _sqlite3.connect(db_path) as conn:
+            conn.row_factory = _sqlite3.Row
+            for table in ("events", "event_archive"):
+                row = conn.execute(
+                    f"SELECT * FROM {table} WHERE id = ? LIMIT 1", (event_id,)
+                ).fetchone()
+                if row:
+                    r = dict(row)
+                    payload = _json.loads(r.get("payload") or "{}")
+                    return {
+                        "type": "Feature",
+                        "geometry": {"type": "Point", "coordinates": [r.get("lon", 0), r.get("lat", 0)]},
+                        "properties": {
+                            "id": r["id"],
+                            "title": r.get("title", ""),
+                            "description": r.get("description", ""),
+                            "timestamp": r.get("timestamp", ""),
+                            "region_code": r.get("region_code") or payload.get("region_code", ""),
+                            "severity": r.get("severity", 50),
+                            "actor1": payload.get("actor1", ""),
+                            "actor2": payload.get("actor2", ""),
+                            "event_type": payload.get("event_type", ""),
+                            "data_source": payload.get("data_source", ""),
+                            "payload": payload,
+                        },
+                    }
+    except Exception as e:
+        logger.debug("[reasoning] DB 직접 조회 실패: %s", e)
     return None
 
 

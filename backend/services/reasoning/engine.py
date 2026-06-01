@@ -55,9 +55,10 @@ async def _run_stages(event: dict, cascade_links: list[dict]) -> dict:
     s1 = stage1_event_facts(event)
     s2 = stage2_sector_classification(event)
 
-    sectors = s2.get("inferred_sectors", []) + s2.get("explicit_tags", [])
-    actors  = [a for a in s1.get("actors", []) if a]
-    region  = props.get("region_code", "")
+    sectors  = s2.get("inferred_sectors", []) + s2.get("explicit_tags", [])
+    actors   = [a for a in s1.get("actors", []) if a]
+    # stage1이 geofence 역조회로 region_code를 보정하므로 props 직접 읽기보다 우선
+    region   = s1.get("region_code") or props.get("region_code", "") or ""
     event_id = s1.get("event_id", "")
 
     # ── Stage 3·5·6·7·8 (동기 or 즉시 결과) ──────────────────────────────

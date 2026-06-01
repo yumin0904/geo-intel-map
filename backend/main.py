@@ -24,6 +24,7 @@ from api.version import router as version_router
 from db.archive_manager import ArchiveManager
 from jobs.gdelt_job import run_gdelt_batch
 from jobs.reliefweb_job import run_reliefweb_batch
+from jobs.firms_sensor_job import run_firms_sensor_batch
 
 # ── 글로벌 싱글톤 ─────────────────────────────────────────────────────────
 _archive_mgr = ArchiveManager()
@@ -54,6 +55,17 @@ async def lifespan(app: FastAPI):
         id="reliefweb_pipeline",
         replace_existing=True,
         misfire_grace_time=120,
+    )
+
+    # NASA FIRMS 화재/열점 → sensor_snapshots — 6시간마다 실행
+    # verification_funnel Stage 3 (_stage3_sensor) 데이터 공급원
+    _scheduler.add_job(
+        run_firms_sensor_batch,
+        trigger="interval",
+        hours=6,
+        id="firms_sensor",
+        replace_existing=True,
+        misfire_grace_time=600,
     )
 
     # 아카이브 TTL 사이클 — 1시간마다 실행
