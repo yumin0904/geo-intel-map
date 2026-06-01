@@ -86,13 +86,6 @@ pending:
   published: Thu, 28 May 2026 08:00:38 +0000
   sector_hint: techno
   collected_at: '2026-06-01'
-- id: war-on-the-rocks-58751b31
-  org: War on the Rocks
-  title: A Sea Control Revolution?
-  url: https://warontherocks.com/a-sea-control-revolution/
-  published: Thu, 28 May 2026 07:30:16 +0000
-  sector_hint: maritime
-  collected_at: '2026-06-01'
 - id: war-on-the-rocks-24620729
   org: War on the Rocks
   title: What Did the NPT Review Conference Achieve?
