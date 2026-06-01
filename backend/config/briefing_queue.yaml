@@ -35,13 +35,6 @@ pending:
   published: '2026-03-18T06:00:00Z'
   sector_hint: cyber
   collected_at: '2026-06-01'
-- id: rand-1a35b26a
-  org: RAND
-  title: Gaza's Reconstruction Must Begin with Its Youth
-  url: https://www.rand.org/pubs/commentary/2026/03/gazas-reconstruction-must-begin-with-its-youth.html
-  published: '2026-03-14T11:00:00Z'
-  sector_hint: maritime
-  collected_at: '2026-06-01'
 - id: rand-7e27fbe7
   org: RAND
   title: 'Investigating the potential use of frontier AI models for offensive cyberattacks:
@@ -301,13 +294,6 @@ pending:
   published: Fri, 08 May 2026 07:15:22 +0000
   sector_hint: maritime
   collected_at: '2026-06-01'
-- id: war-on-the-rocks-b7c9d37b
-  org: War on the Rocks
-  title: What 300 Emails Say About Americans and the Army’s Direct Commission Program
-  url: https://warontherocks.com/what-300-emails-say-about-americans-and-the-armys-direct-commission-program/
-  published: Thu, 07 May 2026 07:30:52 +0000
-  sector_hint: energy
-  collected_at: '2026-06-01'
 - id: war-on-the-rocks-1f7c866c
   org: War on the Rocks
   title: How the War with Iran Is Shaping U.S.-Chinese Competition
@@ -456,20 +442,6 @@ pending:
     redesign'
   url: https://ecfr.eu/article/bypassing-the-straits-the-india-middle-east-europe-corridor-needs-a-wartime-redesign/
   published: Fri, 22 May 2026 10:08:41 +0000
-  sector_hint: maritime
-  collected_at: '2026-06-01'
-- id: ecfr-b76a33bf
-  org: ECFR
-  title: Taysir al-Bardini
-  url: https://ecfr.eu/special/mapping_palestinian_politics/taysir-al-bardini/
-  published: Mon, 18 May 2026 16:43:55 +0000
-  sector_hint: maritime
-  collected_at: '2026-06-01'
-- id: ecfr-16ee8a4b
-  org: ECFR
-  title: Yasser Abbas
-  url: https://ecfr.eu/special/mapping_palestinian_politics/yasser-abbas/
-  published: Mon, 18 May 2026 15:32:36 +0000
   sector_hint: maritime
   collected_at: '2026-06-01'
 - id: ecfr-34bdbd1a
