@@ -1,0 +1,171 @@
+# briefing_sources.yaml — 브리핑 수집 대상 기관 RSS 피드
+#
+# enabled: false로 설정하면 해당 기관 수집 건너뜀
+# min_relevance: 키워드 매칭 점수 최소값 (이 이상이어야 queue에 추가)
+# sector_keywords: 섹터별 관련 키워드 (제목+설명 매칭)
+
+sources:
+  # CSIS: RSS 서버 차단 — 수동 추가 (briefing_queue.yaml에 직접 입력)
+  - id: csis_all
+    org: CSIS
+    name: "CSIS Analysis (수동)"
+    url: "https://www.csis.org/rss.xml"
+    enabled: false   # 서버 차단으로 비활성화
+
+  - id: rand_commentary
+    org: RAND
+    name: "RAND Commentary"
+    url: "https://www.rand.org/pubs/commentary.xml"
+    enabled: true
+    min_relevance: 2
+
+  - id: rand_reports
+    org: RAND
+    name: "RAND Research Reports"
+    url: "https://www.rand.org/pubs/research_reports.xml"
+    enabled: true
+    min_relevance: 2
+
+  - id: war_on_rocks
+    org: "War on the Rocks"
+    name: "War on the Rocks"
+    url: "https://warontherocks.com/feed/"
+    enabled: true
+    min_relevance: 2   # 군사·안보 전문지라 대부분 관련
+
+  - id: ecfr
+    org: ECFR
+    name: "European Council on Foreign Relations"
+    url: "https://ecfr.eu/feed/"
+    enabled: true
+    min_relevance: 2   # 유럽 시각 — 에너지·러시아·중국 풍부
+
+  - id: foreign_affairs
+    org: "Foreign Affairs"
+    name: "Foreign Affairs"
+    url: "https://www.foreignaffairs.com/rss.xml"
+    enabled: true
+    min_relevance: 2
+
+# ── 섹터별 필터 키워드 ─────────────────────────────────────────────────────
+# 제목 또는 설명에 하나라도 포함되면 해당 섹터로 분류
+# 여러 섹터에 해당하면 첫 번째 매칭 섹터 사용
+sector_keywords:
+  cyber:
+    - cyber
+    - hack
+    - ransomware
+    - disinformation
+    - information operation
+    - cognitive war
+    - APT
+    - malware
+    - election interference
+    - information warfare
+    - psychological operation
+
+  maritime:
+    - maritime
+    - naval
+    - navy
+    - shipbuilding
+    - SLOC
+    - chokepoint
+    - strait
+    - sea lane
+    - submarine
+    - coast guard
+    - shipping
+    - port
+    - seapower
+    - sea power
+
+  energy:
+    - energy
+    - LNG
+    - oil
+    - gas
+    - pipeline
+    - petroleum
+    - OPEC
+    - refinery
+    - nuclear power
+    - renewable
+    - critical mineral
+    - rare earth
+    - lithium
+    - cobalt
+    - semiconductor supply
+
+  techno:
+    - semiconductor
+    - chip
+    - artificial intelligence
+    - AI
+    - technology competition
+    - digital
+    - 5G
+    - quantum
+    - supply chain
+    - export control
+    - tech war
+    - innovation
+
+  indo_pacific:
+    - Taiwan
+    - China
+    - Indo-Pacific
+    - Pacific
+    - Japan
+    - Korea
+    - ASEAN
+    - South China Sea
+    - East China Sea
+    - AUKUS
+    - Quad
+    - deterrence
+    - A2/AD
+    - first island chain
+
+  gray_zone:
+    - hybrid war
+    - gray zone
+    - proxy
+    - insurgency
+    - terrorism
+    - Africa
+    - Sahel
+    - Somalia
+    - Mali
+    - Nigeria
+    - drone warfare
+    - irregular
+    - non-state
+    - paramilitary
+    - Wagner
+    - PMC
+
+# ── 제외 키워드 ──────────────────────────────────────────────────────────
+# 제목에 포함되면 queue에 추가하지 않음 (무관 주제 필터)
+exclude_keywords:
+  - domestic policy
+  - budget reconciliation
+  - immigration
+  - health care
+  - healthcare
+  - housing
+  - education reform
+  - tax policy
+  - climate domestic
+  - election campaign
+  - workforce training
+  - tort liability
+  - medicaid
+  - medicare
+  - veterans health
+  - credit for learning
+  - state workforce
+  - pharma industry
+  - drug pricing
+  - opioid
+  - reconstruction youth

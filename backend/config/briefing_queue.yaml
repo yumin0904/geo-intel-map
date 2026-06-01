@@ -1,0 +1,502 @@
+pending:
+- id: rand-c8c7d86a
+  org: RAND
+  title: 'Clearing Mines in the Strait of Hormuz: Q&A with Scott Savitz'
+  url: https://www.rand.org/pubs/commentary/2026/05/demining-the-strait-of-hormuz-qa-with-scott-savitz.html
+  published: '2026-05-19T20:00:00Z'
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: rand-3bcb1025
+  org: RAND
+  title: Robots Just Captured a Russian Position in Ukraine&mdash;but Don’t Worry
+    About Real-Life Terminators Just Yet
+  url: https://www.rand.org/pubs/commentary/2026/04/robots-just-captured-a-russian-position-in-ukraine.html
+  published: '2026-04-20T13:00:00Z'
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: rand-82b9e1ff
+  org: RAND
+  title: Korea Must Redefine Energy Security as a Geopolitical Imperative
+  url: https://www.rand.org/pubs/commentary/2026/04/korea-must-redefine-energy-security-as-a-geopolitical.html
+  published: '2026-04-15T19:10:00Z'
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: rand-5df56986
+  org: RAND
+  title: Japan Should Help Sink China's Invasion Fleet
+  url: https://www.rand.org/pubs/commentary/2026/03/japan-should-help-sink-chinas-invasion-fleet.html
+  published: '2026-03-21T16:15:00Z'
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: rand-6320859b
+  org: RAND
+  title: Gamification of Narrative Language and Grassroot Cognitive Warfare
+  url: https://www.rand.org/pubs/commentary/2026/03/gamification-of-narrative-language-and-grassroot-cognitive.html
+  published: '2026-03-18T06:00:00Z'
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: rand-1a35b26a
+  org: RAND
+  title: Gaza's Reconstruction Must Begin with Its Youth
+  url: https://www.rand.org/pubs/commentary/2026/03/gazas-reconstruction-must-begin-with-its-youth.html
+  published: '2026-03-14T11:00:00Z'
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: rand-7e27fbe7
+  org: RAND
+  title: 'Investigating the potential use of frontier AI models for offensive cyberattacks:
+    A human uplift study'
+  url: https://www.rand.org/pubs/research_reports/RRA3892-1.html
+  published: '2026-05-28T04:00:00Z'
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: rand-a7ec9ead
+  org: RAND
+  title: Battle Damage Repair for Arleigh Burke–Class Destroyers
+  url: https://www.rand.org/pubs/research_reports/RRA470-9.html
+  published: '2026-05-27T08:00:00Z'
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: rand-ad6f5a0f
+  org: RAND
+  title: Challenges When Collaborating with China on Space Research and Technology
+  url: https://www.rand.org/pubs/research_reports/RRA4104-2.html
+  published: '2026-05-26T08:00:00Z'
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: rand-7a3d53d5
+  org: RAND
+  title: How to Forecast China’s Lithography Leap
+  url: https://www.rand.org/pubs/research_reports/RRA4482-1.html
+  published: '2026-05-07T08:15:00Z'
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: rand-9605cf30
+  org: RAND
+  title: China's Science and Technology Strategy in Perspective
+  url: https://www.rand.org/pubs/research_reports/RRA4104-3.html
+  published: '2026-05-05T08:00:00Z'
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-804f0b8b
+  org: War on the Rocks
+  title: How America Lost Its Most Important Defense Tech Habit
+  url: https://warontherocks.com/cogs-of-war/how-america-lost-its-most-important-defense-tech-habit/
+  published: Fri, 29 May 2026 08:00:59 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-c582e59d
+  org: War on the Rocks
+  title: Contriving Imaginary Gaps in Nuclear Deterrence
+  url: https://warontherocks.com/contriving-imaginary-gaps-in-nuclear-deterrence/
+  published: Fri, 29 May 2026 07:30:11 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-3ae7c842
+  org: War on the Rocks
+  title: Glass Jaw? The New Economic Fragility Recasting American Power
+  url: https://warontherocks.com/glass-jaw-the-new-economic-fragility-recasting-american-power/
+  published: Fri, 29 May 2026 07:15:07 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-22347776
+  org: War on the Rocks
+  title: Hollow Deals, Tricky Negotiations, and State Visits
+  url: https://warontherocks.com/hollow-deals-tricky-negotiations-and-state-visits/
+  published: Thu, 28 May 2026 18:30:51 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-a3e0ba54
+  org: War on the Rocks
+  title: 'Control Without Ownership: How China’s Party-Business Networks Dominate
+    Indonesia’s Mineral Supply Chains'
+  url: https://warontherocks.com/cogs-of-war/control-without-ownership-how-chinas-party-business-networks-dominate-indonesias-mineral-supply-chains/
+  published: Thu, 28 May 2026 08:00:38 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-58751b31
+  org: War on the Rocks
+  title: A Sea Control Revolution?
+  url: https://warontherocks.com/a-sea-control-revolution/
+  published: Thu, 28 May 2026 07:30:16 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-24620729
+  org: War on the Rocks
+  title: What Did the NPT Review Conference Achieve?
+  url: https://warontherocks.com/what-did-the-npt-review-conference-achieve/
+  published: Wed, 27 May 2026 19:15:56 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-7580084b
+  org: War on the Rocks
+  title: 'Synthetic Biology, Drones, and AI: The Risks of Dual-Use Technologies'
+  url: https://warontherocks.com/cogs-of-war/synthetic-biology-drones-and-ai-the-risks-of-dual-use-technologies/
+  published: Wed, 27 May 2026 08:00:09 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-cc3be0af
+  org: War on the Rocks
+  title: 'Leading in the Dark: How Submarine Commanders Think Under Uncertainty'
+  url: https://warontherocks.com/leading-in-the-dark-how-submarine-commanders-think-under-uncertainty/
+  published: Wed, 27 May 2026 07:15:57 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-3c172c0e
+  org: War on the Rocks
+  title: 'Rebuilding American Manufacturing: A Keystone for Economic Statecraft'
+  url: https://warontherocks.com/rebuilding-american-manufacturing-a-keystone-for-economic-statecraft/
+  published: Tue, 26 May 2026 07:00:37 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-3fa8eb03
+  org: War on the Rocks
+  title: Inside Ukraine’s Battlefield Innovation Loop
+  url: https://warontherocks.com/cogs-of-war/inside-ukraines-battlefield-innovation-loop/
+  published: Fri, 22 May 2026 08:00:24 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-efa3b669
+  org: War on the Rocks
+  title: The Pentagon Still Cannot Manage Cyber Talent at Scale. Here’s the Fix.
+  url: https://warontherocks.com/the-pentagon-still-cannot-manage-cyber-talent-at-scale-heres-the-fix/
+  published: Fri, 22 May 2026 07:30:14 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-ceeb7239
+  org: War on the Rocks
+  title: The Kid Rock Flyby Controversy and the Erosion of Military Professionalism
+  url: https://warontherocks.com/the-kid-rock-flyby-controversy-and-the-erosion-of-military-professionalism/
+  published: Fri, 22 May 2026 07:15:10 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-f56f9653
+  org: War on the Rocks
+  title: China’s AI Governance Offensive Threatens U.S. Tech Leadership
+  url: https://warontherocks.com/cogs-of-war/chinas-ai-governance-offensive-threatens-u-s-tech-leadership/
+  published: Thu, 21 May 2026 08:00:37 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-d5d5af6f
+  org: War on the Rocks
+  title: The Operational Case Against Israel’s Gaza Campaign
+  url: https://warontherocks.com/the-operational-case-against-israels-gaza-campaign/
+  published: Thu, 21 May 2026 07:30:53 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-f795f49c
+  org: War on the Rocks
+  title: The Navy Needs Precise Mass and Here Is How to Get There
+  url: https://warontherocks.com/the-navy-needs-precise-mass-and-here-is-how-to-get-there/
+  published: Wed, 20 May 2026 07:30:39 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-3852c756
+  org: War on the Rocks
+  title: 'Machine Overmatch: What Salt Typhoon Reveals About China’s Data-Centric
+    Intelligence Strategy'
+  url: https://warontherocks.com/machine-overmatch-what-salt-typhoon-reveals-about-chinas-data-centric-intelligence-strategy/
+  published: Wed, 20 May 2026 07:15:33 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-34b5140d
+  org: War on the Rocks
+  title: Asian Reactions to Trump’s Summit with Xi
+  url: https://warontherocks.com/asian-reactions-to-trumps-summit-with-xi/
+  published: Tue, 19 May 2026 17:30:37 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-74158a99
+  org: War on the Rocks
+  title: 'When Refusal Doesn’t Matter: Operation Epic Fury and the Erosion of Host
+    Nation Consent'
+  url: https://warontherocks.com/when-refusal-doesnt-matter-operation-epic-fury-and-the-erosion-of-host-nation-consent/
+  published: Tue, 19 May 2026 07:30:35 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-2355b61e
+  org: War on the Rocks
+  title: 'The Recognition Question: Somaliland, Israeli Security Geometry, and the
+    Red Sea Power Struggle'
+  url: https://warontherocks.com/the-recognition-question-somaliland-israeli-security-geometry-and-the-red-sea-power-struggle/
+  published: Tue, 19 May 2026 07:15:13 +0000
+  sector_hint: gray_zone
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-d92c8066
+  org: War on the Rocks
+  title: 'Missiles Aren’t Strategy: Lessons From Iran for a Pacific Air War'
+  url: https://warontherocks.com/missiles-arent-strategy-lessons-from-iran-for-a-pacific-air-war/
+  published: Mon, 18 May 2026 07:15:51 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-86f77c00
+  org: War on the Rocks
+  title: 'Restrain and Hedge: A New U.S. Nuclear Strategy for a Two-Peer World'
+  url: https://warontherocks.com/restrain-and-hedge-a-new-u-s-nuclear-strategy-for-a-two-peer-world/
+  published: Fri, 15 May 2026 07:30:45 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-58c56c8a
+  org: War on the Rocks
+  title: South Korea’s 500,000 Drone Warriors Will Be a Hollow Force
+  url: https://warontherocks.com/south-koreas-500000-drone-warriors-will-be-a-hollow-force/
+  published: Fri, 15 May 2026 07:15:26 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-190195aa
+  org: War on the Rocks
+  title: Maximalist Demands, Victory Day, and a Summit
+  url: https://warontherocks.com/the-adversarial-maximalist-demands-victory-day-and-a-summit/
+  published: Thu, 14 May 2026 19:00:58 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-6e5128f4
+  org: War on the Rocks
+  title: Cyber Operations Aren’t Slow — Our Thinking Is
+  url: https://warontherocks.com/cyber-operations-arent-slow-our-thinking-is/
+  published: Thu, 14 May 2026 07:30:51 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-d230e25b
+  org: War on the Rocks
+  title: While the War Continues in Ukraine, the Kremlin’s Real Battlefield is at
+    Home
+  url: https://warontherocks.com/what-is-russia-actually-fighting-for-now/
+  published: Thu, 14 May 2026 07:15:07 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-9644ec3a
+  org: War on the Rocks
+  title: 'The Missing Navies: The Hormuz Crisis and the Limits of America’s Indo-Pacific
+    Partnerships'
+  url: https://warontherocks.com/the-missing-navies-the-hormuz-crisis-and-the-limits-of-americas-indo-pacific-partnerships/
+  published: Wed, 13 May 2026 07:30:28 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-8fb4b5e3
+  org: War on the Rocks
+  title: Pakistan’s New Logic of Limited War May Not Keep War Limited
+  url: https://warontherocks.com/pakistans-new-logic-of-limited-war-may-not-keep-war-limited/
+  published: Wed, 13 May 2026 07:15:11 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-b142fb9d
+  org: War on the Rocks
+  title: Does OPEC Still Matter?
+  url: https://warontherocks.com/does-opec-still-matter/
+  published: Tue, 12 May 2026 19:45:38 +0000
+  sector_hint: energy
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-0740ff47
+  org: War on the Rocks
+  title: 'The Other Border Problem: How Russia and China’s Lawfare Threaten the Arctic'
+  url: https://warontherocks.com/the-other-border-problem-how-russia-and-chinas-lawfare-threaten-the-arctic/
+  published: Tue, 12 May 2026 07:30:20 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-de4f2c6d
+  org: War on the Rocks
+  title: Could Russia Follow the “Hormuz Playbook” in the Baltic and Black Seas?
+  url: https://warontherocks.com/could-russia-follow-the-hormuz-playbook-in-the-baltic-and-black-seas/
+  published: Fri, 08 May 2026 07:15:22 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-b7c9d37b
+  org: War on the Rocks
+  title: What 300 Emails Say About Americans and the Army’s Direct Commission Program
+  url: https://warontherocks.com/what-300-emails-say-about-americans-and-the-armys-direct-commission-program/
+  published: Thu, 07 May 2026 07:30:52 +0000
+  sector_hint: energy
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-1f7c866c
+  org: War on the Rocks
+  title: How the War with Iran Is Shaping U.S.-Chinese Competition
+  url: https://warontherocks.com/how-the-war-with-iran-is-shaping-u-s-chinese-competition/
+  published: Tue, 05 May 2026 18:45:52 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-152f83cd
+  org: War on the Rocks
+  title: Acquisition Reform Needs Its Own Wargame
+  url: https://warontherocks.com/cogs-of-war/acquisition-reform-needs-its-own-wargame/
+  published: Tue, 05 May 2026 08:00:52 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-975f642d
+  org: War on the Rocks
+  title: 'Practice Makes Deterrence: India’s Next Nuclear Challenge at Sea'
+  url: https://warontherocks.com/practice-makes-deterrence-indias-next-nuclear-challenge-at-sea/
+  published: Tue, 05 May 2026 07:30:16 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-fc4cdcb0
+  org: War on the Rocks
+  title: 'The Illusion of Sovereignty: How International Law and Big Tech are Eroding
+    the State'
+  url: https://warontherocks.com/the-illusion-of-sovereignty-how-international-law-and-big-tech-are-eroding-the-state/
+  published: Mon, 04 May 2026 07:30:38 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-2d744612
+  org: War on the Rocks
+  title: Why Kim Jong Un Won’t Pick Up the Phone and What to Do About It
+  url: https://warontherocks.com/why-kim-jong-un-wont-pick-up-the-phone-and-what-to-do-about-it/
+  published: Mon, 04 May 2026 07:15:30 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-9630f86d
+  org: War on the Rocks
+  title: Economic Fury and Claims of Victory
+  url: https://warontherocks.com/economic-fury-and-claims-of-victory/
+  published: Thu, 30 Apr 2026 19:30:45 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-bc57aaee
+  org: War on the Rocks
+  title: Correcting Course in the Indo‑Pacific
+  url: https://warontherocks.com/correcting-course-in-the-indo-pacific/
+  published: Thu, 30 Apr 2026 07:30:16 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-2912f6c5
+  org: War on the Rocks
+  title: The Trump Administration Hasn’t Forgotten America’s Backyard
+  url: https://warontherocks.com/the-trump-administration-hasnt-forgotten-americas-backyard/
+  published: Thu, 30 Apr 2026 05:30:10 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-bc119b87
+  org: War on the Rocks
+  title: Aligning the U.S. and Canadian Defense Industrial Bases
+  url: https://warontherocks.com/cogs-of-war/aligning-the-us-and-canadian-defense-industrial-bases/
+  published: Wed, 29 Apr 2026 08:00:54 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-9c6302a0
+  org: War on the Rocks
+  title: 'Western Withdrawal, Jihadist Expansion: How the Sahel Became Ground Zero
+    for Global Terrorism'
+  url: https://warontherocks.com/western-withdrawal-jihadist-expansion-how-the-sahel-became-ground-zero-for-global-terrorism/
+  published: Wed, 29 Apr 2026 07:30:34 +0000
+  sector_hint: gray_zone
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-460cad61
+  org: War on the Rocks
+  title: 'From Slogan to Standard: How the Pentagon Should Define Affordable Mass'
+  url: https://warontherocks.com/cogs-of-war/from-slogan-to-standard-how-the-pentagon-should-define-affordable-mass/
+  published: Mon, 27 Apr 2026 08:00:51 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-9bb761eb
+  org: War on the Rocks
+  title: Beijing’s United Front and the Quiet Transfer of Western Technology
+  url: https://warontherocks.com/beijings-united-front-and-the-quiet-transfer-of-western-technology/
+  published: Mon, 27 Apr 2026 07:30:58 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-36b8cb6c
+  org: War on the Rocks
+  title: The Importance of the Battle of Savo Island
+  url: https://warontherocks.com/the-importance-of-the-battle-of-savo-island/
+  published: Mon, 27 Apr 2026 07:15:26 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-0d2210ef
+  org: War on the Rocks
+  title: Presence or Capacity? The Coast Guard Can Have Both Through Small Boat Stations
+  url: https://warontherocks.com/presence-or-capacity-the-coast-guard-can-have-both-through-small-boat-stations/
+  published: Fri, 24 Apr 2026 07:30:17 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-357d5ae4
+  org: War on the Rocks
+  title: A Formal Defense Pact in the Indo-Pacific Is the Wrong Answer
+  url: https://warontherocks.com/a-formal-defense-pact-in-the-indo-pacific-is-the-wrong-answer/
+  published: Thu, 23 Apr 2026 07:30:25 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-f6cf1b58
+  org: War on the Rocks
+  title: Europe Might Sit Out In An Indo-Pacific War — But It Can’t Escape the Fallout
+  url: https://warontherocks.com/europe-might-sit-out-in-an-indo-pacific-war-but-it-cant-escape-the-fallout/
+  published: Wed, 22 Apr 2026 17:30:31 +0000
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-d9c33615
+  org: War on the Rocks
+  title: 'Resilience Without Capacity: The Fatal Flaw in America’s New Cyber Strategy'
+  url: https://warontherocks.com/resilience-without-capacity-the-fatal-flaw-in-americas-new-cyber-strategy/
+  published: Wed, 22 Apr 2026 07:30:15 +0000
+  sector_hint: cyber
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-3accb07a
+  org: War on the Rocks
+  title: The United States Is Repeating Its Silicon Mistake with Gallium Nitride
+  url: https://warontherocks.com/cogs-of-war/the-united-states-is-repeating-its-silicon-mistake-with-gallium-nitride/
+  published: Tue, 21 Apr 2026 08:00:13 +0000
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: war-on-the-rocks-f5477a84
+  org: War on the Rocks
+  title: What the War Against Iran Means for the U.S.-South Korean Alliance
+  url: https://warontherocks.com/what-the-war-against-iran-means-for-the-u-s-south-korean-alliance/
+  published: Tue, 21 Apr 2026 07:15:33 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: ecfr-5a288e4f
+  org: ECFR
+  title: 'Code, clouds, satellite: The defence layer Europe should not outsource'
+  url: https://ecfr.eu/article/code-clouds-satellite-the-defence-layer-europe-should-not-outsource/
+  published: Fri, 29 May 2026 09:53:01 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: ecfr-ea1344d0
+  org: ECFR
+  title: 'Bypassing the straits: The India-Middle East-Europe corridor needs a wartime
+    redesign'
+  url: https://ecfr.eu/article/bypassing-the-straits-the-india-middle-east-europe-corridor-needs-a-wartime-redesign/
+  published: Fri, 22 May 2026 10:08:41 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: ecfr-b76a33bf
+  org: ECFR
+  title: Taysir al-Bardini
+  url: https://ecfr.eu/special/mapping_palestinian_politics/taysir-al-bardini/
+  published: Mon, 18 May 2026 16:43:55 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: ecfr-16ee8a4b
+  org: ECFR
+  title: Yasser Abbas
+  url: https://ecfr.eu/special/mapping_palestinian_politics/yasser-abbas/
+  published: Mon, 18 May 2026 15:32:36 +0000
+  sector_hint: maritime
+  collected_at: '2026-06-01'
+- id: ecfr-34bdbd1a
+  org: ECFR
+  title: The postwar UAE and the remaking of Gulf politics
+  url: https://ecfr.eu/article/the-postwar-uae-and-the-remaking-of-gulf-politics/
+  published: Fri, 15 May 2026 07:53:17 +0000
+  sector_hint: energy
+  collected_at: '2026-06-01'
+- id: foreign-affairs-f4a1e224
+  org: Foreign Affairs
+  title: China’s AI Heist
+  url: https://www.foreignaffairs.com/china/chinas-ai-heist
+  published: Fri, 29 May 2026 00:00:00 -0400
+  sector_hint: techno
+  collected_at: '2026-06-01'
+- id: foreign-affairs-42f594e1
+  org: Foreign Affairs
+  title: Hormuz Is a Warning for the Indo-Pacific
+  url: https://www.foreignaffairs.com/china/hormuz-warning-indo-pacific
+  published: Fri, 22 May 2026 00:00:00 -0400
+  sector_hint: indo_pacific
+  collected_at: '2026-06-01'
+- id: foreign-affairs-6c247895
+  org: Foreign Affairs
+  title: Iran as Vietnam, Ukraine as Korea
+  url: https://www.foreignaffairs.com/ukraine/iran-vietnam-ukraine-korea
+  published: Wed, 20 May 2026 00:00:00 -0400
+  sector_hint: techno
+  collected_at: '2026-06-01'
