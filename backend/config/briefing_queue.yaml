@@ -408,14 +408,6 @@ pending:
   published: Fri, 29 May 2026 09:53:01 +0000
   sector_hint: maritime
   collected_at: '2026-06-01'
-- id: ecfr-ea1344d0
-  org: ECFR
-  title: 'Bypassing the straits: The India-Middle East-Europe corridor needs a wartime
-    redesign'
-  url: https://ecfr.eu/article/bypassing-the-straits-the-india-middle-east-europe-corridor-needs-a-wartime-redesign/
-  published: Fri, 22 May 2026 10:08:41 +0000
-  sector_hint: maritime
-  collected_at: '2026-06-01'
 - id: foreign-affairs-f4a1e224
   org: Foreign Affairs
   title: China’s AI Heist
