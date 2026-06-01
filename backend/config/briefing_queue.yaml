@@ -235,13 +235,6 @@ pending:
   published: Thu, 14 May 2026 19:00:58 +0000
   sector_hint: indo_pacific
   collected_at: '2026-06-01'
-- id: war-on-the-rocks-6e5128f4
-  org: War on the Rocks
-  title: Cyber Operations Aren’t Slow — Our Thinking Is
-  url: https://warontherocks.com/cyber-operations-arent-slow-our-thinking-is/
-  published: Thu, 14 May 2026 07:30:51 +0000
-  sector_hint: cyber
-  collected_at: '2026-06-01'
 - id: war-on-the-rocks-d230e25b
   org: War on the Rocks
   title: While the War Continues in Ukraine, the Kremlin’s Real Battlefield is at
