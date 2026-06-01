@@ -1,76 +1,62 @@
-# briefing_done.yaml — 등록 완료된 보고서 URL 목록 (중복 수집 방지)
-#
-# 수동 등록한 브리핑도 여기에 추가해두면 중복 수집 방지됨.
-
 done:
-  # INSS 기존 7건 (수동 등록 완료)
-  - id: inss-379
-    org: INSS
-    title: "중동 전쟁과 글로벌 복합 위기 (전략보고 379호)"
-    theory_id: briefing_20260400_inss_mideast_war_polycrisis
-
-  - id: inss-844
-    org: INSS
-    title: "이란전으로 본 사이버전의 진화 (이슈브리프 844호)"
-    theory_id: briefing_20260521_inss_cyberwar_iran_cognitive
-
-  - id: inss-845
-    org: INSS
-    title: "2026 시진핑-푸틴 정상회담 (이슈브리프 845호)"
-    theory_id: briefing_20260522_inss_xi_putin_summit
-
-  - id: inss-848
-    org: INSS
-    title: "시진핑 방북 가능성 및 북중 정상회담 (이슈브리프 848호)"
-    theory_id: briefing_20260527_inss_xi_dprk_summit
-
-  - id: inss-382
-    org: INSS
-    title: "북한의 다극세계론 (전략보고 382호)"
-    theory_id: briefing_20260500_inss_dprk_multipolar_world
-
-  - id: inss-849
-    org: INSS
-    title: "핵추진잠수함 개발 특별법 설계 방향 (이슈브리프 849호)"
-    theory_id: briefing_20260526_inss_rok_ssn_special_law
-
-  - id: inss-japan
-    org: INSS
-    title: "일본의 국가행동 분석 (국가행동분석)"
-    theory_id: briefing_20220000_inss_japan_state_behavior
-
-  # CSIS 7건 (수동 등록 완료)
-  - id: csis-missile-inventory
-    org: CSIS
-    title: "Rebuilding U.S. Missile Inventory: A Multiyear Project"
-    theory_id: briefing_20260601_csis_missile_inventory_rebuild
-
-  - id: csis-jado-africa
-    org: CSIS
-    title: "Testing the Future of Joint All-Domain Operations in Africa"
-    theory_id: briefing_20260526_csis_jado_africa_battlelab
-
-  - id: csis-economic-warfare
-    org: CSIS
-    title: "Economic Warfare and Military Power"
-    theory_id: briefing_20260500_csis_economic_warfare_military_power
-
-  - id: csis-terrorism-2026
-    org: CSIS
-    title: "Global Terrorism Threat Assessment 2026"
-    theory_id: briefing_20260600_csis_global_terrorism_assessment_2026
-
-  - id: csis-pacific-voice
-    org: CSIS
-    title: "Elevating Pacific Voices in U.S.-Pacific Security Cooperation"
-    theory_id: briefing_20260526_csis_pacific_islands_security_voice
-
-  - id: csis-gulf-iran-mou
-    org: CSIS
-    title: "How Arab Gulf States View a U.S.-Iran Deal"
-    theory_id: briefing_20260526_csis_gulf_states_iran_mou
-
-  - id: csis-maritime-economic
-    org: CSIS
-    title: "Reconnecting Economic and Maritime Power"
-    theory_id: briefing_20260522_csis_maritime_power_economic_link
+- id: inss-379
+  org: INSS
+  title: 중동 전쟁과 글로벌 복합 위기 (전략보고 379호)
+  theory_id: briefing_20260400_inss_mideast_war_polycrisis
+- id: inss-844
+  org: INSS
+  title: 이란전으로 본 사이버전의 진화 (이슈브리프 844호)
+  theory_id: briefing_20260521_inss_cyberwar_iran_cognitive
+- id: inss-845
+  org: INSS
+  title: 2026 시진핑-푸틴 정상회담 (이슈브리프 845호)
+  theory_id: briefing_20260522_inss_xi_putin_summit
+- id: inss-848
+  org: INSS
+  title: 시진핑 방북 가능성 및 북중 정상회담 (이슈브리프 848호)
+  theory_id: briefing_20260527_inss_xi_dprk_summit
+- id: inss-382
+  org: INSS
+  title: 북한의 다극세계론 (전략보고 382호)
+  theory_id: briefing_20260500_inss_dprk_multipolar_world
+- id: inss-849
+  org: INSS
+  title: 핵추진잠수함 개발 특별법 설계 방향 (이슈브리프 849호)
+  theory_id: briefing_20260526_inss_rok_ssn_special_law
+- id: inss-japan
+  org: INSS
+  title: 일본의 국가행동 분석 (국가행동분석)
+  theory_id: briefing_20220000_inss_japan_state_behavior
+- id: csis-missile-inventory
+  org: CSIS
+  title: 'Rebuilding U.S. Missile Inventory: A Multiyear Project'
+  theory_id: briefing_20260601_csis_missile_inventory_rebuild
+- id: csis-jado-africa
+  org: CSIS
+  title: Testing the Future of Joint All-Domain Operations in Africa
+  theory_id: briefing_20260526_csis_jado_africa_battlelab
+- id: csis-economic-warfare
+  org: CSIS
+  title: Economic Warfare and Military Power
+  theory_id: briefing_20260500_csis_economic_warfare_military_power
+- id: csis-terrorism-2026
+  org: CSIS
+  title: Global Terrorism Threat Assessment 2026
+  theory_id: briefing_20260600_csis_global_terrorism_assessment_2026
+- id: csis-pacific-voice
+  org: CSIS
+  title: Elevating Pacific Voices in U.S.-Pacific Security Cooperation
+  theory_id: briefing_20260526_csis_pacific_islands_security_voice
+- id: csis-gulf-iran-mou
+  org: CSIS
+  title: How Arab Gulf States View a U.S.-Iran Deal
+  theory_id: briefing_20260526_csis_gulf_states_iran_mou
+- id: csis-maritime-economic
+  org: CSIS
+  title: Reconnecting Economic and Maritime Power
+  theory_id: briefing_20260522_csis_maritime_power_economic_link
+- id: war-on-the-rocks-3852c756
+  org: War on the Rocks
+  title: 'Machine Overmatch: What Salt Typhoon Reveals About China’s Data-Centric
+    Intelligence Strategy'
+  url: https://warontherocks.com/machine-overmatch-what-salt-typhoon-reveals-about-chinas-data-centric-intelligence-strategy/

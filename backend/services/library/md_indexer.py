@@ -22,8 +22,8 @@ LIBRARY_DIR = _PROJECT_ROOT / "library"
 DB_PATH = Path(__file__).parent.parent.parent / "db" / "library.db"
 
 # ── 도메인 상수 ────────────────────────────────────────────────────────────────
-# CLAUDE.md 5대 섹터와 1:1 매핑 — 이 범위 밖 태그는 거부
-ALLOWED_SECTOR_TAGS    = frozenset({"maritime", "energy", "techno", "indo_pacific", "gray_zone"})
+# CLAUDE.md 6대 섹터와 1:1 매핑 — 이 범위 밖 태그는 거부 (cyber 2026-06-02 추가)
+ALLOWED_SECTOR_TAGS    = frozenset({"maritime", "energy", "techno", "indo_pacific", "gray_zone", "cyber"})
 ALLOWED_ASSET_TYPES    = frozenset({"theory", "case_study", "profile", "norm", "briefing"})
 ALLOWED_ERAS           = frozenset({"cold_war", "unipolar", "multipolar"})  # 레거시 era 필드
 ALLOWED_TEMPORAL_ERAS  = frozenset({"cold_war", "post_cold", "us_china_rivalry", "hot"})  # 7대 축 §15

@@ -184,14 +184,6 @@ pending:
   published: Wed, 20 May 2026 07:30:39 +0000
   sector_hint: indo_pacific
   collected_at: '2026-06-01'
-- id: war-on-the-rocks-3852c756
-  org: War on the Rocks
-  title: 'Machine Overmatch: What Salt Typhoon Reveals About China’s Data-Centric
-    Intelligence Strategy'
-  url: https://warontherocks.com/machine-overmatch-what-salt-typhoon-reveals-about-chinas-data-centric-intelligence-strategy/
-  published: Wed, 20 May 2026 07:15:33 +0000
-  sector_hint: techno
-  collected_at: '2026-06-01'
 - id: war-on-the-rocks-34b5140d
   org: War on the Rocks
   title: Asian Reactions to Trump’s Summit with Xi
