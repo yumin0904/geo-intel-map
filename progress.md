@@ -1069,7 +1069,7 @@ version.json: 4.8.0
 | 기술 패권 | `techno` | 5건 | 1건 | **4건** |
 | 인도-태평양 | `indo_pacific` | 8건 | 3건 | **5건** |
 | 회색지대 | `gray_zone` | 8건 | 3건 | **5건** |
-| 사이버 & 인지전 | `cyber` | 5건 | 1건 | **4건** |
+| 사이버 & 인지전 | `cyber` | 5건 | **3건** | 2건 |
 
 > ※ `cyber` 섹터 신설 (2026-06-01). INSS 844호(이란전 사이버전)가 현재 1건.
 
@@ -1098,7 +1098,35 @@ version.json: 4.8.0
 
 **현재 충족**: 2개 / 5개 조건
 
-현재 브리핑: **14개** (2026-06-01 기준)
+현재 브리핑: **17개** (2026-06-02 기준) / 목표 50개
+
+### ✅ 브리핑 추가 적재 (2026-06-02)
+
+**cyber 섹터 신설 + md_indexer 허용값 업데이트**
+- `CLAUDE.md §1`: 5대 → 6대 섹터 (`cyber` 추가)
+- `md_indexer.py`: `ALLOWED_SECTOR_TAGS`에 `cyber` 추가
+
+**수집러 구현 (1단계 자동화)**
+- `backend/scripts/briefing_collector.py` — RSS fetch + 60일 날짜 필터 + 섹터 키워드 필터
+- `backend/config/briefing_sources.yaml` — RAND·War on the Rocks·ECFR·Foreign Affairs RSS
+- `backend/config/briefing_queue.yaml` — 현재 63개 대기 중
+- `backend/config/briefing_done.yaml` — 완료 목록 (중복 수집 방지)
+
+**Phase 6 게이트 재정의** — 숫자(30) → 5개 다차원 조건 (총량 50개 + 섹터 균형 + 출처 다양성 + 시간 범위 + 지역 균형)
+
+**War on the Rocks Cyber 3부작 등록** (사이버 취약 구조 완전한 그림)
+
+| # | theory_id | 요약 |
+|---|-----------|------|
+| 15 | `briefing_20260520_wotr_salt_typhoon_machine_overmatch` | 기계 압도: 솔트 타이푼 — 중국 데이터 중심 정보전 |
+| 16 | `briefing_20260514_wotr_cyber_ops_speed_trilemma` | 사이버 속도 트릴레마 — 조직 설계 결함, AI 민주화 |
+| 17 | `briefing_20260422_wotr_cyber_resilience_capacity_flaw` | 역량 없는 회복탄력성 — CISA 공동화, 전략 자기모순 |
+
+**Cyber 3부작 교차 인사이트**:
+- 중국 공세(Salt Typhoon) ↔ 미국 공격 조직 결함(트릴레마) ↔ 미국 방어 역량 공동화(CISA)
+- 세 보고서가 미국 사이버 취약성의 공세·방어 양면을 동시에 드러내는 완전한 그림
+
+**라이브러리 현황**: 57개 (concept 17 + norm 15 + case_study 8 + briefing 17)
 
 설계 배경: 7개 브리핑 교차 분석에서 아래 3가지 가치 창출 경로 확인됨.
 브리핑 표본 부족으로 즉시 구현보다 데이터 선적재 후 착수 결정.
