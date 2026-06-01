@@ -1003,17 +1003,56 @@ version.json: 4.8.0
 - BLR vs UKR (우크라이나): diffusion_score=56, 🟢정상 (우크라이나 NATO 미가입 반영) ✅
 - ETH 시위: diffusion_score=0, 🟡Abandonment ✅
 
+### ✅ 브리핑 대량 적재 (2026-06-01) — v5.2.0 유지
+
+**CSIS 보고서 7건 추가 등록 (총 14개)**
+
+| # | theory_id | 요약 |
+|---|-----------|------|
+| 8 | `briefing_20260601_csis_missile_inventory_rebuild` | 이란전 소진 → 서태평양 취약 창 (~2030) |
+| 9 | `briefing_20260526_csis_jado_africa_battlelab` | 아프리카 JADO 배틀랩, 모로코 우선 (Jensen) |
+| 10 | `briefing_20260500_csis_economic_warfare_military_power` | 전환함수 표적화, 희토류 91%, CIPS 성장 (Jensen) |
+| 11 | `briefing_20260600_csis_global_terrorism_assessment_2026` | 이란전 프록시 재활성화, 사헬 지하디스트 수도권 위협 |
+| 12 | `briefing_20260526_csis_pacific_islands_security_voice` | 태평양 안보 정의 미스매치, 심해 광물·솔로몬 분기점 |
+| 13 | `briefing_20260526_csis_gulf_states_iran_mou` | 카타르 LNG 20% 파괴, 방위 다변화, 황금 다리 전략 |
+| 14 | `briefing_20260522_csis_maritime_power_economic_link` | 미국 조선 0.1% vs 중국 50%, Mahan 사슬 현대 실증 (Jensen) |
+
+**Benjamin Jensen 4부작 완성** (5.22·5.26·5.26·6.01):
+재고(단기) → 교리(중기) → 경제전(장기) → 조선/병참(구조)
+
+**핵심 교차 인사이트 (브리핑 간 연쇄)**:
+- CSIS 3부작: 이란전 소진 → 비대칭 보완(드론) → 전환함수 구조 차단
+- 걸프 MOU: 미사일 재고 공백 → GCC 방어 실패 → LNG 20% 파괴 실증
+- 태평양: `hormuz_tension_to_oil` 룰의 실전 역방향 검증 가능
+
+**라이브러리 현황**: 54개 (concept 17 + norm 15 + case_study 8 + briefing 14)
+
+---
+
+## 다음 세션 우선순위
+
+**Phase 5 잔여 항목**
+
+| # | 항목 | 파일 | 상태 |
+|---|------|------|------|
+| 5 | Stage 5 명분·의도 구현 | `stages.py` | ✅ v5.0.0 |
+| 6 | 추론 체인 자기검증 (BFS 반증 루프) | `chain_verifier.py` / `engine.py` | ✅ v5.1.0 |
+| 6b | cascade_links DB 저장 + 신뢰도 필터 | `schema.sql` / `engine.py` | ✅ v5.1.1 |
+| 6c | §17 Diffusion_Score + §16 FIRMS 센서 | `stages.py` / `firms_sensor_job.py` | ✅ v5.2.0 |
+| 7 | 멀티에이전트 섹터별 추론 병렬 | `services/reasoning/agents/` 신규 | ⬜ |
+| 8 | LLM 종합 브리핑 계층 | `api/briefing.py` importance≥0.7 게이트 | ⬜ |
+
 **다음 작업**: P5-7 멀티에이전트 섹터별 추론 병렬
 
 항목 8: §14 Token-Zero 위반 아님 — 사용자 명시 요청 기반 LLM 호출은 허용 범위.
-병행 과제: 브리핑 지속 적재 (INSS, CSIS, RAND 등)
+병행 과제: 브리핑 지속 적재 (INSS, CSIS, RAND 등) — 현재 14개, 목표 30개
 
 ---
 
 ## Phase 6 — 브리핑 지식 그래프 & 교차 분석 (대기 중)
 
 **착수 조건**: Phase 5 완료 + **브리핑 30개 이상 누적**
-현재 브리핑: **7개** (2026-06-01 기준)
+현재 브리핑: **14개** (2026-06-01 기준) / 목표 30개까지 16개 부족
 
 설계 배경: 7개 브리핑 교차 분석에서 아래 3가지 가치 창출 경로 확인됨.
 브리핑 표본 부족으로 즉시 구현보다 데이터 선적재 후 착수 결정.
@@ -1029,3 +1068,6 @@ version.json: 4.8.0
 - 한국 전략 공간 이중 압박: 382호(북한) × 일본 국가행동분석의 동시 작동 구조
 - 외교 도미노 타임라인: 중러(845) → 북중(848) → 다극(382) → 핵잠(849) 10일 연쇄
 - Cascade 엔진 맹점 3유형: 사이버·정책선언·경제강압 미포착 영역 지도화
+- CSIS 3부작 인과 체인: 이란전 소진 → 드론 비대칭 보완 → 전환함수 구조 차단 (Jensen 4부작)
+- 걸프 MOU 실증: 미사일 재고 공백 → GCC 방어 실패 → LNG 20% 파괴 (hormuz 룰 역검증)
+- 태평양-인도양 연결: 솔로몬 분기점(심해 광물) × 희토류 91%(경제전) × Mahan 사슬(조선)
