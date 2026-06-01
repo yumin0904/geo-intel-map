@@ -885,18 +885,53 @@ version.json: 4.8.0
 
 ---
 
+---
+
+## Phase 5 — 추론 지능화 (착수)
+
+### ✅ [P5-5] Stage 5 명분·의도 구현 (2026-06-01) — v5.0.0
+
+**구현 내용**
+- `backend/services/reasoning/stages.py` — `stage5_justification_intent()` 실구현
+  - `_THEME_INTENT_MAP`: GKG 테마 접두사 18종 → aggression/coercion/deterrence/negotiation/ambiguous 결정론적 매핑 (Token-Zero)
+  - `_resolve_actor_posture()`: `country_geopolitics.yaml` 조회 — 각 ISO3의 strategic_posture + instrument_of_power
+  - `_infer_intent_from_themes()`: 우선순위 기반 의도 추론 (aggression > coercion > deterrence > negotiation)
+  - `_tone_label()`: GKG 톤 → 5단계 한국어 레이블 (극단적 적대 / 강한 적대 / 경미 / 중립 / 우호)
+  - ACLED 이벤트 fallback: GKG 없을 때 event_type(battle/explosion/protest) → 의도 추정
+  - 에스컬레이션 위험 판정: revisionist 행위자 + tone≤-4.0 + aggression/coercion 복합 조건
+- `backend/services/reasoning/engine.py` — `stage5_intent_placeholder` → `stage5_justification_intent` 교체, `actors` 인자 전달, executor 병렬 실행
+- `frontend/src/panels/ReasoningPanelView.js` — Stage 5 요약(`의도·톤·⚠️`) + 상세(posture/이론/에스컬레이션) 렌더링, `isPhase4` 분기 제거 → 모든 단계 ✅
+
+**버그 수정 (검증 과정 발견)**
+1. `event_type` 누락: GeoJSON `**e.payload` 스프레드 구조를 처리 못함 → `props.get("event_type") or payload.get("event_type")` 으로 수정
+2. Actor ISO3 불일치: Stage 1이 `"Military Forces of Russia (2000-)"` 원문 반환 → `_resolve_actor_posture()`가 ISO3 못 찾는 버그. `_actor_to_iso3()` 모듈 레벨 함수 신설로 해결
+3. Stage 8 내부 `_NAME_TO_CODE` / `_extract_country` 중복 → 모듈 레벨 통합 (`_ACTOR_NAME_TO_CODE`, `_actor_to_iso3`)
+
+**실측 결과 (버그 수정 후)**
+- ACLED Russia Battle (우크라이나): `공세적 행동 · 강한 적대 · escalation_risk=True | RUS=revisionist, UKR=status_quo` ✅
+- ACLED Protest (이란/호르무즈): `외교·협상 · 중립 · escalation_risk=False` ✅ (revisionist이지만 tonality 조건 미충족 = 올바른 비위험 판정)
+- 8단계 전체 에러 없음, elapsed 0.047s ✅
+
+**주의사항**: 현재 DB GDELT 368개 이벤트 전부 `gkg_tone: None` → Stage 5가 항상 ACLED fallback 경로. GKG 파이프라인 조인 점검 필요.
+
+**이론 연결**: Snyder 동맹 딜레마(revisionist 포지션 측정) × Farrell & Newman Weaponized Interdependence(강압 의도 분류) × Mearsheimer 공격적 현실주의(수정주의 판정)
+
+### 현재 버전
+`version.json`: **5.0.0** | phase: 5
+
+---
+
 ## 다음 세션 우선순위
 
-**Phase 5 착수** (Phase 4 완료 게이트 통과)
+**Phase 5 잔여 항목**
 
 | # | 항목 | 파일 |
 |---|------|------|
-| 5 | Stage 5 명분 의도 구현 | services/reasoning/stages.py placeholder 실구현 |
-| 6 | 추론 체인 자기검증 | services/reasoning/engine.py BFS 가설 반증 루프 |
-| 7 | 멀티에이전트 섹터별 추론 | services/reasoning/agents/ 신규 |
-| 8 | LLM 종합 브리핑 계층 | api/briefing.py importance 0.7 이상 게이트 |
+| 6 | 추론 체인 자기검증 (BFS 가설·반증 루프) | `services/reasoning/engine.py` |
+| 7 | 멀티에이전트 섹터별 추론 병렬 | `services/reasoning/agents/` 신규 |
+| 8 | LLM 종합 브리핑 계층 | `api/briefing.py` importance≥0.7 게이트 |
 
-항목 8: 14 Token-Zero 위반 아님 - 사용자 명시 요청 기반 LLM 호출은 허용 범위.
+항목 8: §14 Token-Zero 위반 아님 — 사용자 명시 요청 기반 LLM 호출은 허용 범위.
 병행 과제: 브리핑 지속 적재 (INSS, CSIS, RAND 등)
 
 ---

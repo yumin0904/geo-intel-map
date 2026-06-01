@@ -22,6 +22,63 @@ from services.region import region_for_point
 logger = logging.getLogger(__name__)
 
 _CONFIG = Path(__file__).resolve().parents[2] / "config"
+
+# ── 공통: Actor 문자열 → ISO3 변환 ─────────────────────────────────────────
+# Stage 5·8 공통 사용. ACLED 패턴 예: "Military Forces of Russia (2000-)"
+_ACTOR_NAME_TO_CODE: dict[str, str] = {
+    "usa": "USA", "united states": "USA", "the united states": "USA",
+    "united states of america": "USA",
+    "russia": "RUS", "russian federation": "RUS",
+    "china": "CHN", "people's republic of china": "CHN", "prc": "CHN",
+    "japan": "JPN", "south korea": "KOR", "republic of korea": "KOR",
+    "north korea": "PRK", "dprk": "PRK", "democratic people's republic of korea": "PRK",
+    "taiwan": "TWN",
+    "iran": "IRN", "islamic republic of iran": "IRN",
+    "israel": "ISR", "state of israel": "ISR",
+    "saudi arabia": "SAU", "ksa": "SAU",
+    "yemen": "YEM", "houthi": "YEM",
+    "iraq": "IRQ", "syria": "SYR", "lebanon": "LBN",
+    "turkey": "TUR", "turkiye": "TUR",
+    "uae": "ARE", "united arab emirates": "ARE",
+    "qatar": "QAT", "kuwait": "KWT", "bahrain": "BHR", "oman": "OMN",
+    "ukraine": "UKR", "uk": "GBR", "united kingdom": "GBR", "britain": "GBR",
+    "france": "FRA", "germany": "DEU", "poland": "POL",
+    "nato": "USA",
+    "india": "IND", "australia": "AUS",
+    "philippines": "PHL", "the philippines": "PHL",
+    "indonesia": "IDN", "malaysia": "MYS", "vietnam": "VNM",
+    "singapore": "SGP", "thailand": "THA",
+    "ethiopia": "ETH", "somalia": "SOM", "sudan": "SDN",
+    "libya": "LBY", "mali": "MLI", "niger": "NER",
+    "nigeria": "NGA", "kenya": "KEN",
+    "armenia": "ARM", "azerbaijan": "AZE", "georgia": "GEO",
+}
+_OF_PAT    = re.compile(r'(?:Military|Police|Government|Naval|Air)\s+Forces?\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
+_GOV_PAT   = re.compile(r'Government\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
+_PAREN_PAT = re.compile(r'\(([A-Za-z ]+?)\)\s*$')
+
+
+def _actor_to_iso3(actor: str) -> str | None:
+    """ACLED actor 문자열 → ISO3 코드. Stage 5·8 공통 사용."""
+    s = actor.strip()
+    # 직접 ISO3
+    if len(s) == 3 and s.isupper():
+        return s if s in _ACTOR_NAME_TO_CODE.values() else None
+    # "Forces of [Country]" / "Government of [Country]"
+    for pat in (_OF_PAT, _GOV_PAT):
+        m = pat.search(s)
+        if m:
+            code = _ACTOR_NAME_TO_CODE.get(m.group(1).strip().lower())
+            if code:
+                return code
+    # 끝 괄호 "Protesters (Yemen)"
+    m = _PAREN_PAT.search(s)
+    if m:
+        code = _ACTOR_NAME_TO_CODE.get(m.group(1).strip().lower())
+        if code:
+            return code
+    # 전체 문자열 직접 매핑
+    return _ACTOR_NAME_TO_CODE.get(s.lower())
 _INTEL_DB = Path(__file__).resolve().parents[2] / "db" / "intel.db"
 _LIBRARY_DB = Path(__file__).resolve().parents[2] / "db" / "library.db"
 _CASE_STUDIES_PATH  = _CONFIG / "case_studies.yaml"
@@ -441,15 +498,183 @@ async def stage4_macro_variables(sectors: list[str], region: str) -> dict:
     }
 
 
-# ── Stage 5: 명분과 의도 (Phase 4) ──────────────────────────────────────
+# ── Stage 5: 명분과 의도 ─────────────────────────────────────────────────
 
-def stage5_intent_placeholder() -> dict:
-    """외교 성명 RSS + Gemini 분석 — Phase 4 구현 예정."""
+# GKG 테마 접두사 → 의도 신호 매핑 (Token-Zero, LLM 호출 없음)
+_THEME_INTENT_MAP: dict[str, str] = {
+    "WA_": "aggression",          # Weaponized Aggression
+    "CRISISLEX_CRISISLEXREC":  "aggression",
+    "MILITARY": "aggression",
+    "TERROR": "aggression",
+    "CONFLICT": "aggression",
+    "SANCTION": "coercion",       # 경제 강압
+    "ECON_COERCION": "coercion",
+    "BLOCKADE": "coercion",
+    "EMBARGO": "coercion",
+    "CYBER": "coercion",          # 사이버 강압 (비물리적)
+    "DIPLOMACY": "negotiation",   # 외교 협상
+    "PEACE": "negotiation",
+    "TREATY": "negotiation",
+    "CEASEFIRE": "negotiation",
+    "DETERRENCE": "deterrence",   # 억제 신호
+    "MILITARY_EXERCISE": "deterrence",
+    "NUCLEAR": "deterrence",
+    "ALLIANCE": "deterrence",
+}
+
+# Goldstein 급 → 행동 강도 레이블
+def _tone_label(tone: float) -> str:
+    """GKG 톤 값 → 한국어 레이블."""
+    if tone <= -7.0:
+        return "극단적 적대"
+    if tone <= -4.0:
+        return "강한 적대"
+    if tone <= -1.5:
+        return "경미한 적대"
+    if tone <= 1.5:
+        return "중립"
+    return "우호적"
+
+
+def _resolve_actor_posture(actors: list[str]) -> list[dict]:
+    """country_geopolitics.yaml에서 각 actor의 posture·권력수단을 조회한다.
+
+    raw actor 이름(ACLED 패턴 포함)을 ISO3로 변환 후 조회.
+    # Snyder 동맹 딜레마: revisionist 국가가 적대 행동 → 확전 의도 가능성 높음
+    """
+    data = _load_yaml(Path(__file__).resolve().parents[2] / "config" / "country_geopolitics.yaml")
+    profiles = data.get("profiles", {})
+    result = []
+    seen: set[str] = set()
+    for actor in actors:
+        # ISO3 직접 또는 ACLED 패턴 변환
+        iso3 = actor if (len(actor) == 3 and actor.isupper()) else (_actor_to_iso3(actor) or "")
+        if not iso3 or iso3 in seen:
+            continue
+        seen.add(iso3)
+        if iso3 in profiles:
+            p = profiles[iso3]
+            result.append({
+                "iso3": iso3,
+                "strategic_posture": p.get("strategic_posture", "unknown"),
+                "instrument_of_power": p.get("instrument_of_power", "unknown"),
+            })
+    return result
+
+
+def _infer_intent_from_themes(themes: list[str]) -> tuple[str, list[str]]:
+    """GKG 테마 목록 → 의도 레이블 + 근거 테마 반환.
+
+    우선순위: aggression > coercion > deterrence > negotiation > ambiguous
+    """
+    counts: dict[str, int] = {}
+    matched: list[str] = []
+    for theme in themes:
+        theme_upper = theme.upper()
+        for prefix, intent in _THEME_INTENT_MAP.items():
+            if theme_upper.startswith(prefix):
+                counts[intent] = counts.get(intent, 0) + 1
+                matched.append(theme)
+                break
+
+    if not counts:
+        return "ambiguous", []
+
+    # 우선순위 순으로 판정
+    for label in ("aggression", "coercion", "deterrence", "negotiation"):
+        if counts.get(label, 0) > 0:
+            return label, matched
+    return "ambiguous", matched
+
+
+_INTENT_LABEL_KO = {
+    "aggression": "공세적 행동",
+    "coercion": "강압·제재",
+    "deterrence": "억제·경고",
+    "negotiation": "외교·협상",
+    "ambiguous": "불명확",
+}
+
+_INTENT_THEORY_MAP = {
+    "aggression": ("공격적 현실주의", "Mearsheimer (2001) — 수정주의 강대국은 현상변경을 목표로 군사력 투사"),
+    "coercion":   ("무기화된 상호의존", "Farrell & Newman (2019) — 경제·기술 네트워크를 지렛대로 강압"),
+    "deterrence": ("확장억제 이론", "Schelling (1966) — 억제는 행동보다 신호 신뢰성에 달림"),
+    "negotiation":("자유주의 제도주의", "Keohane (1984) — 반복 게임 속 협력 유인"),
+    "ambiguous":  ("회색지대 전략", "Hoffman (2007) — 의도 모호성은 전략적 자산"),
+}
+
+
+def stage5_justification_intent(event: dict, actors: list[str]) -> dict:
+    """GKG 톤·테마 + actor posture 결합으로 명분·의도를 분석한다.
+
+    # 이론: Snyder 동맹 딜레마 × Farrell & Newman Weaponized Interdependence
+    # revisionist 행위자 + 적대 톤 + 공세 테마 → 에스컬레이션 위험 신호
+    """
+    props = event.get("properties", event)
+    payload = props.get("payload", {})
+    if isinstance(payload, str):
+        import json as _json
+        try:
+            payload = _json.loads(payload)
+        except Exception:
+            payload = {}
+
+    # ── GKG 필드 추출 ────────────────────────────────────────────────────
+    # GeoJSON properties는 **e.payload 스프레드로 평탄화됨 → props에서 직접 우선 읽기
+    gkg_tone: float = float(props.get("gkg_tone") or payload.get("gkg_tone") or 0.0)
+    gkg_themes: list[str] = props.get("gkg_themes") or payload.get("gkg_themes") or []
+    gkg_hostility: bool = bool(props.get("gkg_hostility") or payload.get("gkg_hostility") or False)
+
+    # ACLED 이벤트는 GKG 없음 → event_type 기반 fallback 추정
+    source_type = props.get("source_type", "")
+    # event_type도 props에 직접 있을 수 있음 (스프레드 구조)
+    event_type = str(props.get("event_type") or payload.get("event_type") or "")
+    if not gkg_themes and source_type == "conflict":
+        if any(k in event_type.lower() for k in ("explosion", "battle", "attack", "armed")):
+            gkg_themes = ["MILITARY", "CONFLICT"]
+            gkg_tone = gkg_tone or -5.0   # 기본 적대 톤
+        elif "protest" in event_type.lower():
+            gkg_themes = ["DIPLOMACY"]    # 시위 = 비군사적 의사 표현
+            gkg_tone = gkg_tone or -1.0
+
+    # ── 의도 추론 ────────────────────────────────────────────────────────
+    intent_label, matched_themes = _infer_intent_from_themes(gkg_themes)
+    tone_label = _tone_label(gkg_tone)
+
+    # GKG 적대성 확인 플래그가 있으면 negotiation을 aggression으로 상향
+    if gkg_hostility and intent_label == "negotiation":
+        intent_label = "aggression"
+
+    # ── Actor posture 조회 ───────────────────────────────────────────────
+    actor_postures = _resolve_actor_posture(actors)
+    revisionist_actors = [p["iso3"] for p in actor_postures if p["strategic_posture"] == "revisionist"]
+
+    # ── 에스컬레이션 위험 판정 ────────────────────────────────────────────
+    # Snyder: revisionist + 공세 의도 + 강한 적대 톤 = 연루 위험
+    escalation_risk = (
+        intent_label in ("aggression", "coercion")
+        and gkg_tone <= -4.0
+        and bool(revisionist_actors)
+    )
+
+    theory_name, theory_ref = _INTENT_THEORY_MAP.get(intent_label, ("", ""))
+
     return {
         "stage": 5,
         "name_ko": "명분과 의도",
-        "status": "phase4",
-        "note_ko": "외교 성명 RSS 수집 + Gemini 분석. Phase 4에서 구현 예정.",
+        "intent_label": intent_label,
+        "intent_label_ko": _INTENT_LABEL_KO[intent_label],
+        "tone": round(gkg_tone, 2),
+        "tone_label_ko": tone_label,
+        "gkg_hostility_confirmed": gkg_hostility,
+        "matched_themes": matched_themes[:5],  # 최대 5개 노출
+        "actor_postures": actor_postures,
+        "revisionist_actors": revisionist_actors,
+        "escalation_risk": escalation_risk,
+        "theory_name": theory_name,
+        "theory_ref": theory_ref,
+        "has_gkg": bool(gkg_themes),
+        "source_note": "GKG 직접 조인" if payload.get("gkg_tone") is not None else "ACLED fallback 추정",
     }
 
 
@@ -553,41 +778,8 @@ def stage8_alliance_spread(actors: list[str], region_code: str = "") -> dict:
     alliances = data.get("alliances", [])
     memberships = data.get("country_memberships", {})
 
-    # 포괄적 국가명 → ISO3 매핑 (5대 섹터 핵심 국가 전체 포함)
-    _NAME_TO_CODE: dict[str, str] = {
-        # 영어 단수 표현
-        "usa": "USA", "united states": "USA", "the united states": "USA",
-        "united states of america": "USA",
-        "russia": "RUS", "russian federation": "RUS",
-        "china": "CHN", "people's republic of china": "CHN", "prc": "CHN",
-        "japan": "JPN", "south korea": "KOR", "republic of korea": "KOR",
-        "north korea": "PRK", "dprk": "PRK", "democratic people's republic of korea": "PRK",
-        "taiwan": "TWN",
-        # 중동
-        "iran": "IRN", "islamic republic of iran": "IRN",
-        "israel": "ISR", "state of israel": "ISR",
-        "saudi arabia": "SAU", "ksa": "SAU",
-        "yemen": "YEM", "houthi": "YEM",
-        "iraq": "IRQ", "syria": "SYR", "lebanon": "LBN",
-        "turkey": "TUR", "turkiye": "TUR",
-        "uae": "ARE", "united arab emirates": "ARE",
-        "qatar": "QAT", "kuwait": "KWT", "bahrain": "BHR", "oman": "OMN",
-        # 유럽
-        "ukraine": "UKR", "uk": "GBR", "united kingdom": "GBR", "britain": "GBR",
-        "france": "FRA", "germany": "DEU", "poland": "POL",
-        "nato": "USA",  # NATO 이벤트는 미국 주도로 처리
-        # 인도-태평양
-        "india": "IND", "australia": "AUS",
-        "philippines": "PHL", "the philippines": "PHL",
-        "indonesia": "IDN", "malaysia": "MYS", "vietnam": "VNM",
-        "singapore": "SGP", "thailand": "THA",
-        # 아프리카 회색지대 (5대 섹터 포함)
-        "ethiopia": "ETH", "somalia": "SOM", "sudan": "SDN",
-        "libya": "LBY", "mali": "MLI", "niger": "NER",
-        "nigeria": "NGA", "kenya": "KEN",
-        # 코카서스
-        "armenia": "ARM", "azerbaijan": "AZE", "georgia": "GEO",
-    }
+    # 모듈 레벨 _ACTOR_NAME_TO_CODE / _actor_to_iso3 재사용
+    _NAME_TO_CODE = _ACTOR_NAME_TO_CODE
 
     # region_code → 핵심 관여 국가 fallback
     _REGION_ACTORS: dict[str, list[str]] = {
@@ -605,37 +797,12 @@ def stage8_alliance_spread(actors: list[str], region_code: str = "") -> dict:
         "persian_gulf":     ["IRN", "SAU", "USA"],
     }
 
-    # ACLED actor 문자열에서 국가명 추출
-    # 패턴 예: "Military Forces of Yemen (2022-)", "Protesters (Israel)", "Government of Iraq (2022-2026)"
-    _OF_PATTERN  = re.compile(r'(?:Military|Police|Government|Naval|Air)\s+Forces?\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
-    _GOV_PATTERN = re.compile(r'Government\s+of\s+([A-Za-z ]+?)(?:\s*\(|$)', re.I)
-    _PAREN_PATTERN = re.compile(r'\(([A-Za-z ]+?)\)\s*$')  # 문자열 끝 괄호: "Protesters (Yemen)"
-
+    # 모듈 레벨 _actor_to_iso3 재사용 (memberships 추가 체크)
     def _extract_country(actor: str) -> str | None:
-        """actor 문자열에서 국가명 추출 → ISO3 반환."""
         s = actor.strip()
-
-        # 1) 직접 ISO3 (3글자 대문자)
         if len(s) == 3 and s.isupper() and s in memberships:
             return s
-
-        # 2) "... Forces of [Country]" 패턴
-        for pat in (_OF_PATTERN, _GOV_PATTERN):
-            m = pat.search(s)
-            if m:
-                country_name = m.group(1).strip().lower()
-                if country_name in _NAME_TO_CODE:
-                    return _NAME_TO_CODE[country_name]
-
-        # 3) 끝 괄호에서 국가명 추출: "Protesters (Yemen)"
-        m = _PAREN_PATTERN.search(s)
-        if m:
-            country_name = m.group(1).strip().lower()
-            if country_name in _NAME_TO_CODE:
-                return _NAME_TO_CODE[country_name]
-
-        # 4) 전체 문자열 직접 매핑
-        return _NAME_TO_CODE.get(s.lower())
+        return _actor_to_iso3(actor)
 
     actor_codes: set[str] = set()
     for actor in actors:

@@ -59,8 +59,13 @@ function summarizeStage(key, data) {
         return `${name} ${arrow}${Math.abs(t.change_pct ?? 0).toFixed(1)}%`;
       }).join(' · ');
     }
-    case '5_intent':
-      return 'Phase 4 구현 예정';
+    case '5_intent': {
+      if (!data || data.error) return '데이터 없음';
+      const label = data.intent_label_ko ?? '불명확';
+      const tone  = data.tone_label_ko ?? '';
+      const esc   = data.escalation_risk ? ' ⚠️에스컬레이션위험' : '';
+      return `${label} · 톤: ${tone}${esc}`;
+    }
     case '6_sanctions': {
       const list = data.active_sanctions ?? [];
       if (!list.length) return '관련 제재 없음';
@@ -112,6 +117,33 @@ function buildDetailLines(key, data) {
         return `${name}:${valStr} ${arrow}${sign}${(t.change_pct ?? 0).toFixed(2)}%`;
       });
       if (src) lines.push(`출처: ${src}`);
+      return lines.join('\n') || null;
+    }
+
+    case '5_intent': {
+      if (!data) return null;
+      const lines = [];
+      lines.push(`의도: ${data.intent_label_ko ?? '불명확'} (${data.intent_label ?? ''})`);
+      lines.push(`GKG 톤: ${data.tone ?? 0} (${data.tone_label_ko ?? ''})`);
+      if (data.gkg_hostility_confirmed) lines.push('⚠️ GKG 적대성 확인됨');
+      if ((data.matched_themes ?? []).length) {
+        lines.push(`테마: ${data.matched_themes.join(', ')}`);
+      }
+      lines.push('');
+      for (const p of (data.actor_postures ?? [])) {
+        const posture = p.strategic_posture === 'revisionist' ? '🔴수정주의' : '🟢현상유지';
+        lines.push(`▸ ${p.iso3}: ${posture} · 권력수단: ${p.instrument_of_power}`);
+      }
+      if (data.escalation_risk) {
+        lines.push('');
+        lines.push('🚨 에스컬레이션 위험: 수정주의 행위자 + 적대 톤 + 공세 의도 복합 감지');
+      }
+      if (data.theory_ref) {
+        lines.push('');
+        lines.push(`이론: ${data.theory_name}`);
+        lines.push(data.theory_ref);
+      }
+      lines.push(`출처: ${data.source_note ?? ''}`);
       return lines.join('\n') || null;
     }
 
@@ -258,11 +290,10 @@ export class ReasoningPanelView {
       if (!row) continue;
 
       const stageData = report.stages[key];
-      const isPhase4  = key === '5_intent';
       const summary   = summarizeStage(key, stageData);
       const detail    = buildDetailLines(key, stageData);
 
-      row.querySelector('.rs-stage__check').textContent   = isPhase4 ? '⬜' : '✅';
+      row.querySelector('.rs-stage__check').textContent   = '✅';
       row.querySelector('.rs-stage__summary').textContent = summary;
       row.classList.add('is-done');
 

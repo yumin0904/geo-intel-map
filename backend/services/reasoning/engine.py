@@ -18,7 +18,7 @@ from .stages import (
     stage2_sector_classification,
     stage3_historical_comparison,
     stage4_macro_variables,
-    stage5_intent_placeholder,
+    stage5_justification_intent,
     stage6_institutional_constraints,
     stage7_temporal_cascade,
     stage8_alliance_spread,
@@ -64,7 +64,7 @@ async def _run_stages(event: dict, cascade_links: list[dict]) -> dict:
 
     # 동기 함수들은 executor에서 실행 (블로킹 YAML 파싱 방지)
     s3_fut = loop.run_in_executor(None, stage3_historical_comparison, event, sectors)
-    s5 = stage5_intent_placeholder()  # 즉시
+    s5_fut = loop.run_in_executor(None, stage5_justification_intent, event, actors)
     s6_fut = loop.run_in_executor(None, stage6_institutional_constraints, actors, sectors)
     s7_fut = loop.run_in_executor(None, stage7_temporal_cascade, event_id, cascade_links)
     s8_fut = loop.run_in_executor(None, stage8_alliance_spread, actors, region)
@@ -73,8 +73,8 @@ async def _run_stages(event: dict, cascade_links: list[dict]) -> dict:
     s4_fut = stage4_macro_variables(sectors, region)
 
     # 전체 병렬 실행
-    results = await asyncio.gather(s3_fut, s4_fut, s6_fut, s7_fut, s8_fut, return_exceptions=True)
-    s3, s4, s6, s7, s8 = [
+    results = await asyncio.gather(s3_fut, s4_fut, s5_fut, s6_fut, s7_fut, s8_fut, return_exceptions=True)
+    s3, s4, s5, s6, s7, s8 = [
         r if not isinstance(r, Exception) else {"error": str(r)}
         for r in results
     ]
