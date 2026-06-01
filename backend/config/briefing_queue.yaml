@@ -28,13 +28,6 @@ pending:
   published: '2026-03-21T16:15:00Z'
   sector_hint: indo_pacific
   collected_at: '2026-06-01'
-- id: rand-6320859b
-  org: RAND
-  title: Gamification of Narrative Language and Grassroot Cognitive Warfare
-  url: https://www.rand.org/pubs/commentary/2026/03/gamification-of-narrative-language-and-grassroot-cognitive.html
-  published: '2026-03-18T06:00:00Z'
-  sector_hint: cyber
-  collected_at: '2026-06-01'
 - id: rand-7e27fbe7
   org: RAND
   title: 'Investigating the potential use of frontier AI models for offensive cyberattacks:

@@ -66,5 +66,10 @@ done:
   url: https://warontherocks.com/cyber-operations-arent-slow-our-thinking-is/
 - id: war-on-the-rocks-d9c33615
   org: War on the Rocks
-  title: 'Resilience Without Capacity: The Fatal Flaw in America’s New Cyber Strategy'
+  title: ‘Resilience Without Capacity: The Fatal Flaw in America’s New Cyber Strategy’
   url: https://warontherocks.com/resilience-without-capacity-the-fatal-flaw-in-americas-new-cyber-strategy/
+- id: rand-6320859b
+  org: RAND
+  title: Gamification of Narrative Language and Grassroot Cognitive Warfare
+  theory_id: briefing_20260318_rand_gamification_narrative_cognitive_warfare
+  url: https://www.rand.org/pubs/commentary/2026/03/gamification-of-narrative-language-and-grassroot-cognitive.html
