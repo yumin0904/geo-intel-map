@@ -383,7 +383,7 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 ---
 
-## 라이브러리 개편 (2026-06-04 착수)
+## 라이브러리 개편 ✅ (2026-06-04 완료, v5.3.0)
 
 ### 목표
 
@@ -419,3 +419,14 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 | 4 | `04_sanctions_and_norms` → `07_sanctions_and_norms` 번호 정정 | ✅ 9020e56 |
 | 5 | `06_cyber/` 폴더 신규 생성, `08_case_studies/` 번호 정정 | ✅ 9020e56 |
 | 6 | `md_indexer.py` 재귀 스캔 + 재인덱싱 검증 (78개 오류 0) | ✅ 9020e56 |
+| 7 | `list_db_theories` SELECT 필드 누락 버그 수정 (source_org 등 7개) | ✅ 7bd9c8c |
+| 8 | source_org 부분 매칭 필터 (RAND Corporation·ECFR 변형 대응) | ✅ 7bd9c8c |
+
+### 다음 세션 시작점
+
+**Phase 5 잔여 항목 재개**
+
+| # | 항목 | 상태 |
+|---|------|------|
+| P5-7 | 멀티에이전트 섹터별 추론 병렬 | ⬜ |
+| P5-8 | LLM 종합 브리핑 계층 | ⬜ |
