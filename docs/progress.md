@@ -251,8 +251,7 @@ open http://localhost:5500
 
 ### 다음 세션 시작점
 
-**보류 항목 재방문 or 새 브리핑 큐 구성**
+**보류 항목 → `library/07_briefings/briefing_deferred_urls.md` 참조**
 
-보류 재방문 우선순위:
-1. WOTR Iran 5인 패널 (전문 접근 시 정보 밀도 높음)
-2. Foreign Affairs Hormuz (전문 접근 시 정보 밀도 높음)
+- **재방문 권장 (2개)**: WOTR 이란전 5인 패널 (멤버십), FA Hormuz Warning (페이월)
+- **영구 보류 (3개)**: Synthetic Biology 팟캐스트, Does OPEC Still Matter, RAND Lithography 방법론
