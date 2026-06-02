@@ -91,6 +91,7 @@ const SECTOR_COLORS = {
   techno:       '#c77dff',
   indo_pacific: '#4aff91',
   gray_zone:    '#ffd700',
+  cyber:        '#ff6b9d',
 };
 
 const SECTOR_LABELS = {
@@ -99,7 +100,24 @@ const SECTOR_LABELS = {
   techno:       '기술',
   indo_pacific: '인태',
   gray_zone:    '회색지대',
+  cyber:        '사이버',
 };
+
+// 브리핑 섹터 표시 순서
+const BRIEFING_SECTOR_ORDER = [
+  'indo_pacific', 'cyber', 'maritime', 'techno', 'gray_zone', 'energy',
+];
+
+// 출처 기관 필터
+const SOURCE_ORG_CHIPS = [
+  { key: 'all',              label: '전체' },
+  { key: 'War on the Rocks', label: 'WotR' },
+  { key: 'RAND',             label: 'RAND' },
+  { key: 'CSIS',             label: 'CSIS' },
+  { key: 'INSS',             label: 'INSS' },
+  { key: 'ECFR',             label: 'ECFR' },
+  { key: 'Foreign Affairs',  label: 'FA' },
+];
 
 // ── 필터 헬퍼 ────────────────────────────────────────────────────────────────
 
@@ -190,6 +208,10 @@ export class TheoryLibraryView {
       `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="instrument" data-value="${key}">${label}</button>`
     ).join('');
 
+    const sourceOrgChips = SOURCE_ORG_CHIPS.map(({ key, label }) =>
+      `<button class="lib-chip${key === 'all' ? ' is-active' : ''}" data-filter="sourceOrg" data-value="${key}">${label}</button>`
+    ).join('');
+
     return `
       <div class="lib__header">
         <span class="lib__header-title">📚 라이브러리</span>
@@ -201,7 +223,7 @@ export class TheoryLibraryView {
         <!-- 좌측 30%: 칩 필터 + 검색 + 목록 -->
         <aside class="lib__sidebar">
           <div class="lib-search">
-            <input type="search" class="lib-search__input" placeholder="이론 / 학자 검색…" />
+            <input type="search" class="lib-search__input" placeholder="이론 / 학자 / 기관 검색…" />
           </div>
 
           <div class="lib-chips-section">
@@ -209,19 +231,25 @@ export class TheoryLibraryView {
               <span class="lib-chip-label">용도</span>
               ${useCaseChips}
             </div>
-            <div class="lib-chip-row" data-row="region">
+            <!-- 브리핑 모드 전용 필터 (기본 hidden) -->
+            <div class="lib-chip-row lib-chip-row--briefing-only" data-row="sourceOrg" style="display:none">
+              <span class="lib-chip-label">출처</span>
+              ${sourceOrgChips}
+            </div>
+            <!-- 일반 모드 필터 -->
+            <div class="lib-chip-row lib-chip-row--normal-only" data-row="region">
               <span class="lib-chip-label">지역</span>
               ${regionChips}
             </div>
-            <div class="lib-chip-row" data-row="era">
+            <div class="lib-chip-row lib-chip-row--normal-only" data-row="era">
               <span class="lib-chip-label">시대</span>
               ${eraChips}
             </div>
-            <div class="lib-chip-row" data-row="level">
+            <div class="lib-chip-row lib-chip-row--normal-only" data-row="level">
               <span class="lib-chip-label">분석수준</span>
               ${levelChips}
             </div>
-            <div class="lib-chip-row" data-row="instrument">
+            <div class="lib-chip-row lib-chip-row--normal-only" data-row="instrument">
               <span class="lib-chip-label">권력수단</span>
               ${instrumentChips}
             </div>
@@ -270,6 +298,10 @@ export class TheoryLibraryView {
         row.querySelectorAll('.lib-chip').forEach(c => c.classList.remove('is-active'));
         chip.classList.add('is-active');
         setState('library', { [`${filter}Filter`]: value });
+
+        // 브리핑 모드 전환: 필터 행 표시/숨김
+        if (filter === 'useCase') this._toggleBriefingMode(value === 'briefing');
+
         this._renderList();
       });
     });
@@ -344,10 +376,17 @@ export class TheoryLibraryView {
     if (!list) return;
     const {
       theories, loading,
-      useCaseFilter, regionFilter, eraFilter, levelFilter, instrumentFilter, searchQuery,
+      useCaseFilter, regionFilter, eraFilter, levelFilter, instrumentFilter,
+      sourceOrgFilter, searchQuery,
     } = store.getState('library');
 
     if (loading) { list.innerHTML = '<div class="lib-loading">로딩 중…</div>'; return; }
+
+    // 브리핑 모드: 섹터별 아코디언 뷰
+    if ((useCaseFilter || 'all') === 'briefing') {
+      this._renderBriefingView(list, theories || [], sourceOrgFilter, searchQuery);
+      return;
+    }
 
     const filtered = this._filter(
       theories || [], useCaseFilter, regionFilter, eraFilter,
@@ -357,6 +396,95 @@ export class TheoryLibraryView {
 
     list.innerHTML = filtered.map(t => this._cardHTML(t)).join('');
 
+    list.querySelectorAll('.lib-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const theory = filtered.find(t => t.theory_id === card.dataset.id);
+        if (theory) this._selectTheory(theory);
+      });
+    });
+  }
+
+  // 브리핑 모드 전환 — 필터 행 표시/숨김
+  _toggleBriefingMode(isBriefing) {
+    this._el.querySelectorAll('.lib-chip-row--briefing-only').forEach(el => {
+      el.style.display = isBriefing ? '' : 'none';
+    });
+    this._el.querySelectorAll('.lib-chip-row--normal-only').forEach(el => {
+      el.style.display = isBriefing ? 'none' : '';
+    });
+    // 브리핑 모드 진입 시 sourceOrg 필터 초기화
+    if (isBriefing) setState('library', { sourceOrgFilter: 'all' });
+  }
+
+  // 브리핑 섹터별 아코디언 렌더링
+  _renderBriefingView(list, theories, sourceOrgFilter, searchQuery) {
+    const briefings = theories.filter(t =>
+      (t.use_case || t.asset_type) === 'briefing'
+    );
+
+    // 출처 필터
+    let filtered = briefings;
+    if (sourceOrgFilter && sourceOrgFilter !== 'all') {
+      filtered = filtered.filter(t => t.source_org === sourceOrgFilter);
+    }
+    // 검색
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(t =>
+        t.display_name.toLowerCase().includes(q) ||
+        (t.summary || '').toLowerCase().includes(q) ||
+        (t.source_org || '').toLowerCase().includes(q)
+      );
+    }
+
+    if (!filtered.length) {
+      list.innerHTML = '<div class="lib-empty">브리핑이 없습니다.</div>';
+      return;
+    }
+
+    // 섹터별 그룹핑
+    const groups = {};
+    filtered.forEach(t => {
+      const sector = t.sector_tag || 'unknown';
+      if (!groups[sector]) groups[sector] = [];
+      groups[sector].push(t);
+    });
+
+    // 순서대로 + 나머지 섹터
+    const orderedKeys = [
+      ...BRIEFING_SECTOR_ORDER.filter(k => groups[k]),
+      ...Object.keys(groups).filter(k => !BRIEFING_SECTOR_ORDER.includes(k)),
+    ];
+
+    list.innerHTML = orderedKeys.map(sector => {
+      const items = groups[sector];
+      const color = SECTOR_COLORS[sector] || '#888';
+      const label = SECTOR_LABELS[sector] || sector;
+      const cards = items.map(t => this._cardHTML(t)).join('');
+      return `
+        <div class="lib-briefing-group" data-sector="${sector}">
+          <button class="lib-briefing-group__header" aria-expanded="true">
+            <span class="lib-briefing-group__sector-dot" style="background:${color}"></span>
+            <span class="lib-briefing-group__label">${label}</span>
+            <span class="lib-briefing-group__count">${items.length}</span>
+            <span class="lib-briefing-group__arrow">▾</span>
+          </button>
+          <div class="lib-briefing-group__items">${cards}</div>
+        </div>
+      `;
+    }).join('');
+
+    // 아코디언 토글
+    list.querySelectorAll('.lib-briefing-group__header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        btn.nextElementSibling.style.display = expanded ? 'none' : '';
+        btn.querySelector('.lib-briefing-group__arrow').textContent = expanded ? '▸' : '▾';
+      });
+    });
+
+    // 카드 클릭
     list.querySelectorAll('.lib-card').forEach(card => {
       card.addEventListener('click', () => {
         const theory = filtered.find(t => t.theory_id === card.dataset.id);
