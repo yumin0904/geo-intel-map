@@ -216,6 +216,20 @@ open http://localhost:5500
 | 이번 세션 추가 | **+4개** (27~30번째) |
 | 큐 잔여 보류 포함 | **deferred 3개** (Energy 1/5, Gray Zone 2/4, 구 세션 1개) |
 
+### Techno 카테고리 (4/5 완료 ✅, 1개 보류)
+- [ ] Techno 1/5 — `status: deferred`
+- [x] `briefing_20260421_wotr_gan_silicon_mistake_gallium` — [Techno 2/5] 갈륨나이트라이드 공급망 취약성 (WotR, 31번째)
+- [x] `briefing_20260500_fa_china_ai_heist` — [Techno 3/5] 중국의 AI 절도 — 유통 패권 (FA, 32번째)
+- [x] `briefing_20260528_rand_uk_aisi_ai_cyber_uplift` — [Techno 4/5] 프런티어 AI 공세 사이버 업리프트 (RAND/UK AISI, 33번째)
+- [x] `briefing_20260528_wotr_china_mineral_indonesia_control` — [Techno 5/5] 소유 없는 통제: 인도네시아 광물 (WotR, 34번째)
+
+### 현재 브리핑 라이브러리 현황
+
+| 항목 | 수치 |
+|------|------|
+| 총 적재 브리핑 수 | **34개** |
+| deferred 총계 | **4개** (Energy 1/5, Techno 1/5, Gray Zone 2/4, 구 세션 1개) |
+
 ### 다음 세션 시작점
 
-**Techno 카테고리 (5개) 적재 시작**
+**Indo-Pacific 카테고리 (5개) 적재 시작**
