@@ -201,23 +201,21 @@ open http://localhost:5500
 - [x] `briefing_20260514_wotr_kremlin_battlefield_home` — [Gray Zone 3/4] 크렘린의 진짜 전장은 국내다 (WotR, 24번째)
 - [x] `briefing_20260529_wotr_glass_jaw_economic_fragility` — [Gray Zone 4/4] 유리 턱: 미국 경제 취약성 (WotR, 25번째)
 
-**Maritime 카테고리** (진행 중)
+**Maritime 카테고리** (완료 ✅)
 - [x] `briefing_20260528_wotr_sea_control_revolution` — [Maritime 1/5] 제해권 혁명 (WotR, 26번째)
+- [x] `briefing_20260527_wotr_leading_in_dark_submarine_command` — [Maritime 2/5] 어둠 속 지휘: 잠수함 지휘관이 불확실성 하에서 생각하는 법 (WotR, 27번째)
+- [x] `briefing_20260505_wotr_india_ssbn_nuclear_deterrence` — [Maritime 3/5] 억지는 연습이 필요하다: 인도의 해양 핵 도전 (WotR, 28번째)
+- [x] `briefing_20260515_wotr_skorea_drone_warriors_hollow` — [Maritime 4/5] 한국의 50만 드론 전사는 공허한 전력이 될 것이다 (WotR, 29번째)
+- [x] `briefing_20260529_ecfr_europe_defence_digital_layer` — [Maritime 5/5] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어 (ECFR, 30번째)
 
 ### 현재 브리핑 라이브러리 현황
 
 | 항목 | 수치 |
 |------|------|
-| 총 적재 브리핑 수 | **26개** |
-| 오늘 세션 추가 | **+9개** (18~26번째) |
+| 총 적재 브리핑 수 | **30개** |
+| 이번 세션 추가 | **+4개** (27~30번째) |
 | 큐 잔여 보류 포함 | **deferred 3개** (Energy 1/5, Gray Zone 2/4, 구 세션 1개) |
 
 ### 다음 세션 시작점
 
-**Maritime 2/5~5/5 계속 적재 후 Indo-Pacific 카테고리로 이동**
-
-Maritime 잔여 (4개):
-- Missing Navies: Hormuz Crisis (WotR)
-- Japan Should Help Sink China's Invasion Fleet (RAND)
-- South Korea's 500,000 Drone Warriors (WotR)
-- Leading in the Dark: Submarine Commanders (WotR)
+**Techno 카테고리 (5개) 적재 시작**
