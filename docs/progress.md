@@ -238,7 +238,7 @@ open http://localhost:5500
 
 ### 다음 세션 시작점
 
-**재방문 대기 항목 → `library/07_briefings/briefing_deferred_urls.md` 참조**
+**재방문 대기 항목 → `library/07_briefings/briefing_deferred_urls.txt` 참조**
 
 - 재방문 권장 (3개): WOTR 이란전 5인 패널, FA Hormuz Warning, Gray Zone 2/4 Sahel
 - 영구 보류 (4개): Synthetic Biology 팟캐스트, Does OPEC Still Matter, RAND Lithography, Techno 1/5
