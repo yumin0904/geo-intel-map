@@ -380,3 +380,42 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 - 재방문 권장 (3개): WOTR 이란전 5인 패널, FA Hormuz Warning, Gray Zone 2/4 Sahel
 - 영구 보류 (4개): Synthetic Biology 팟캐스트, Does OPEC Still Matter, RAND Lithography, Techno 1/5
+
+---
+
+## 라이브러리 개편 (2026-06-04 착수)
+
+### 목표
+
+브리핑 38개 단일 평탄 구조 → 섹터별 분류 + 프론트 브리핑 전용 뷰 추가.
+
+### 추진 방식: A + C 조합
+
+**Step 1 — Option C: 프론트엔드 브리핑 모드 탭 (파일 변경 없음)**
+
+| 항목 | 내용 |
+|------|------|
+| 대상 파일 | `frontend/src/views/TheoryLibraryView.js` |
+| 구현 내용 | 상단에 `[이론] [사례] [제재] [브리핑]` 탭 추가. 브리핑 탭 선택 시 `sector_tag` 기준 섹터별 아코디언 그룹 + `source_org` 뱃지 표시 |
+| 상태 | ⬜ |
+
+**Step 2 — Option A: 브리핑 섹터별 하위폴더 + 번호 정정**
+
+| 항목 | 내용 |
+|------|------|
+| 폴더 이동 | `07_briefings/*.md` → `07_briefings/{sector}/` |
+| 번호 정정 | `04_sanctions_and_norms` → `07_sanctions_and_norms` (04 중복 해소) |
+| 신규 폴더 | `06_cyber/` (CLAUDE.md §1 6대 섹터 반영) |
+| 백엔드 | `md_indexer.py` 스캔 경로 재귀 탐색 확인 |
+| 상태 | ⬜ |
+
+### 체크리스트
+
+| # | 항목 | 상태 |
+|---|------|------|
+| 1 | TheoryLibraryView 브리핑 탭 UI 구현 | ⬜ |
+| 2 | 섹터별 아코디언 그룹 + source_org 뱃지 | ⬜ |
+| 3 | `07_briefings/` 섹터 하위폴더 생성 및 파일 이동 | ⬜ |
+| 4 | `04_sanctions_and_norms` → `07_sanctions_and_norms` 번호 정정 | ⬜ |
+| 5 | `06_cyber/` 폴더 신규 생성 | ⬜ |
+| 6 | `md_indexer.py` 재귀 스캔 + 재인덱싱 검증 | ⬜ |
