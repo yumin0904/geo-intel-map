@@ -230,6 +230,29 @@ open http://localhost:5500
 | 총 적재 브리핑 수 | **34개** |
 | deferred 총계 | **4개** (Energy 1/5, Techno 1/5, Gray Zone 2/4, 구 세션 1개) |
 
+### Indo-Pacific 카테고리 (4/5 완료 ✅, 1개 보류)
+- [x] `briefing_20260518_wotr_missiles_not_strategy_pacific_air` — [Indo-Pacific 1/5] 미사일은 전략이 아니다 — 이란전→태평양 교훈 (WotR, 35번째)
+- [ ] Indo-Pacific 2/5 — `status: deferred`
+- [x] `briefing_20260513_wotr_missing_navies_hormuz_indo_pacific` — [Indo-Pacific 3/5] 사라진 해군: 호르무즈와 인도-태평양 파트너십 한계 (WotR, 36번째)
+- [x] `briefing_20260421_wotr_iran_war_us_korea_alliance` — [Indo-Pacific 4/5] 이란전이 한미동맹에 의미하는 것 (WotR, 37번째)
+- [x] `briefing_20260318_rand_fp_japan_sink_china_invasion_fleet` — [Indo-Pacific 5/5] 일본은 중국 침공 함대를 격침해야 한다 (RAND/FP, 38번째)
+
+### 전체 브리핑 라이브러리 현황 (세션 완료)
+
+| 카테고리 | 완료 | 보류 |
+|----------|------|------|
+| 🔵 Cyber | 4 | 1 (팟캐스트) |
+| 🟡 Energy | 3 | 2 (멤버십 페이월) |
+| 🟠 Gray Zone | 2 | 2 (멤버십·재방문) |
+| 🔷 Maritime | 5 | 0 |
+| 🟣 Techno | 4 | 1 (보류) |
+| 🔴 Indo-Pacific | 4 | 1 (페이월) |
+| **합계** | **38개** | **deferred 7개** |
+
 ### 다음 세션 시작점
 
-**Indo-Pacific 카테고리 (5개) 적재 시작**
+**보류 항목 재방문 or 새 브리핑 큐 구성**
+
+보류 재방문 우선순위:
+1. WOTR Iran 5인 패널 (전문 접근 시 정보 밀도 높음)
+2. Foreign Affairs Hormuz (전문 접근 시 정보 밀도 높음)
