@@ -373,7 +373,9 @@ def list_db_theories(sector_tag: Optional[str] = None) -> list[dict]:
     try:
         sql = (
             "SELECT theory_id, title, sector_tag, theorists, year, "
-            "summary, regions, file_path, asset_type, era, use_case FROM theories"
+            "summary, regions, file_path, asset_type, era, use_case, "
+            "geopol_region, temporal_era, level_of_analysis, instrument_of_power, "
+            "strategic_posture, source_org, published_date, source_url FROM theories"
         )
         conditions: list[str] = []
         params: list = []

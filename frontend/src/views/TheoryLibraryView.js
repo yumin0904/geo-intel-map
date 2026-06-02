@@ -422,10 +422,19 @@ export class TheoryLibraryView {
       (t.use_case || t.asset_type) === 'briefing'
     );
 
-    // 출처 필터
+    // 출처 필터 — 부분 매칭 (RAND Corporation / Foreign Policy 등 변형 대응)
+    const ORG_MATCH = {
+      'War on the Rocks': s => s?.startsWith('War on the Rocks'),
+      'RAND':             s => s?.startsWith('RAND'),
+      'CSIS':             s => s?.startsWith('CSIS'),
+      'INSS':             s => s?.startsWith('INSS'),
+      'ECFR':             s => s?.startsWith('ECFR') || s?.startsWith('European Council'),
+      'Foreign Affairs':  s => s?.startsWith('Foreign Affairs'),
+    };
     let filtered = briefings;
     if (sourceOrgFilter && sourceOrgFilter !== 'all') {
-      filtered = filtered.filter(t => t.source_org === sourceOrgFilter);
+      const matchFn = ORG_MATCH[sourceOrgFilter] || (s => s === sourceOrgFilter);
+      filtered = filtered.filter(t => matchFn(t.source_org));
     }
     // 검색
     if (searchQuery) {
