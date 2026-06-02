@@ -1145,3 +1145,67 @@ version.json: 4.8.0
 - CSIS 3부작 인과 체인: 이란전 소진 → 드론 비대칭 보완 → 전환함수 구조 차단 (Jensen 4부작)
 - 걸프 MOU 실증: 미사일 재고 공백 → GCC 방어 실패 → LNG 20% 파괴 (hormuz 룰 역검증)
 - 태평양-인도양 연결: 솔로몬 분기점(심해 광물) × 희토류 91%(경제전) × Mahan 사슬(조선)
+
+---
+
+## 2026-06-03 (브리핑 적재 세션 — 18~38번째)
+
+### 완료 항목
+
+**Cyber 카테고리** (4/5 완료, 1개 영구보류)
+- [x] `briefing_20260318_rand_gamification_narrative_cognitive_warfare` — [Cyber 4/5] 게임 언어의 무기화: 풀뿌리 인지전과 서사 수확 작전 (RAND, 18번째)
+- [ ] Cyber 5/5 — Synthetic Biology 팟캐스트 → `status: permanent_defer` (텍스트 추출 불가)
+
+**Energy 카테고리** (3/5 완료, 2개 보류)
+- [ ] Energy 1/5 — Does OPEC Still Matter? → `status: permanent_defer` (정보밀도 부족)
+- [x] `briefing_20260515_ecfr_postwar_uae_gulf_politics` — [Energy 2/5] 전후 UAE와 걸프 정치의 재편 (ECFR, 19번째)
+- [x] `briefing_20260522_ecfr_imec_wartime_redesign` — [Energy 3/5] IMEC 전시 재설계 (ECFR, 20번째)
+- [x] `briefing_20260508_wotr_russia_hormuz_playbook_baltic` — [Energy 4/5] 러시아의 호르무즈 플레이북 (WotR, 21번째)
+- [x] `briefing_20260519_rand_hormuz_mine_clearing` — [Energy 5/5] 호르무즈 소해 작전 (RAND, 22번째)
+
+**Gray Zone 카테고리** (2/4 완료, 2개 보류)
+- [x] `briefing_20260519_wotr_somaliland_recognition_red_sea` — [Gray Zone 1/4] 소말릴란드 승인의 문제 (WotR, 23번째)
+- [ ] Gray Zone 2/4 — Western Withdrawal, Jihadist Expansion: Sahel → `status: deferred`
+- [x] `briefing_20260514_wotr_kremlin_battlefield_home` — [Gray Zone 3/4] 크렘린의 진짜 전장은 국내다 (WotR, 24번째)
+- [x] `briefing_20260529_wotr_glass_jaw_economic_fragility` — [Gray Zone 4/4] 유리 턱: 미국 경제 취약성 (WotR, 25번째)
+
+**Maritime 카테고리** (5/5 완료 ✅)
+- [x] `briefing_20260528_wotr_sea_control_revolution` — [Maritime 1/5] 제해권 혁명 (WotR, 26번째)
+- [x] `briefing_20260527_wotr_leading_in_dark_submarine_command` — [Maritime 2/5] 어둠 속 지휘: 잠수함 지휘관이 불확실성 하에서 생각하는 법 (WotR, 27번째)
+- [x] `briefing_20260505_wotr_india_ssbn_nuclear_deterrence` — [Maritime 3/5] 억지는 연습이 필요하다: 인도의 해양 핵 도전 (WotR, 28번째)
+- [x] `briefing_20260515_wotr_skorea_drone_warriors_hollow` — [Maritime 4/5] 한국의 50만 드론 전사는 공허한 전력이 될 것이다 (WotR, 29번째)
+- [x] `briefing_20260529_ecfr_europe_defence_digital_layer` — [Maritime 5/5] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어 (ECFR, 30번째)
+
+**Techno 카테고리** (4/5 완료, 1개 영구보류)
+- [ ] Techno 1/5 — `status: permanent_defer`
+- [x] `briefing_20260421_wotr_gan_silicon_mistake_gallium` — [Techno 2/5] 갈륨나이트라이드 공급망 취약성 (WotR, 31번째)
+- [x] `briefing_20260500_fa_china_ai_heist` — [Techno 3/5] 중국의 AI 절도 — 유통 패권 (FA, 32번째)
+- [x] `briefing_20260528_rand_uk_aisi_ai_cyber_uplift` — [Techno 4/5] 프런티어 AI 공세 사이버 업리프트 (RAND/UK AISI, 33번째)
+- [x] `briefing_20260528_wotr_china_mineral_indonesia_control` — [Techno 5/5] 소유 없는 통제: 인도네시아 광물 (WotR, 34번째)
+- [ ] RAND Lithography 방법론 → `status: permanent_defer` (위협 정보 아님)
+
+**Indo-Pacific 카테고리** (4/5 완료, 1개 재방문)
+- [x] `briefing_20260518_wotr_missiles_not_strategy_pacific_air` — [Indo-Pacific 1/5] 미사일은 전략이 아니다 (WotR, 35번째)
+- [ ] Indo-Pacific 2/5 — How the War with Iran Is Shaping U.S.-Chinese Competition → `status: deferred` (멤버십)
+- [x] `briefing_20260513_wotr_missing_navies_hormuz_indo_pacific` — [Indo-Pacific 3/5] 사라진 해군: 호르무즈와 인도-태평양 파트너십 한계 (WotR, 36번째)
+- [x] `briefing_20260421_wotr_iran_war_us_korea_alliance` — [Indo-Pacific 4/5] 이란전이 한미동맹에 의미하는 것 (WotR, 37번째)
+- [x] `briefing_20260318_rand_fp_japan_sink_china_invasion_fleet` — [Indo-Pacific 5/5] 일본은 중국 침공 함대를 격침해야 한다 (RAND/FP, 38번째)
+
+### 전체 브리핑 라이브러리 현황
+
+| 카테고리 | 완료 | 재방문 대기 | 영구 보류 |
+|----------|------|------------|----------|
+| 🔵 Cyber | 4 | 0 | 1 (팟캐스트) |
+| 🟡 Energy | 3 | 0 | 1 (정보밀도 부족) |
+| 🟠 Gray Zone | 2 | 1 (멤버십) | 0 |
+| 🔷 Maritime | 5 | 0 | 0 |
+| 🟣 Techno | 4 | 0 | 2 (멤버십·방법론) |
+| 🔴 Indo-Pacific | 4 | 2 (멤버십·페이월) | 0 |
+| **합계** | **38개** | **3개** | **4개** |
+
+### 다음 세션 시작점
+
+**재방문 대기 항목 → `library/07_briefings/briefing_deferred_urls.txt` 참조**
+
+- 재방문 권장 (3개): WOTR 이란전 5인 패널, FA Hormuz Warning, Gray Zone 2/4 Sahel
+- 영구 보류 (4개): Synthetic Biology 팟캐스트, Does OPEC Still Matter, RAND Lithography, Techno 1/5
