@@ -413,9 +413,9 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 
 | # | 항목 | 상태 |
 |---|------|------|
-| 1 | TheoryLibraryView 브리핑 탭 UI 구현 | ⬜ |
-| 2 | 섹터별 아코디언 그룹 + source_org 뱃지 | ⬜ |
-| 3 | `07_briefings/` 섹터 하위폴더 생성 및 파일 이동 | ⬜ |
-| 4 | `04_sanctions_and_norms` → `07_sanctions_and_norms` 번호 정정 | ⬜ |
-| 5 | `06_cyber/` 폴더 신규 생성 | ⬜ |
-| 6 | `md_indexer.py` 재귀 스캔 + 재인덱싱 검증 | ⬜ |
+| 1 | TheoryLibraryView 브리핑 탭 UI 구현 | ✅ b51e270 |
+| 2 | 섹터별 아코디언 그룹 + source_org 필터 칩 | ✅ b51e270 |
+| 3 | `07_briefings/` 섹터 하위폴더 생성 및 파일 이동 (38개) | ✅ 9020e56 |
+| 4 | `04_sanctions_and_norms` → `07_sanctions_and_norms` 번호 정정 | ✅ 9020e56 |
+| 5 | `06_cyber/` 폴더 신규 생성, `08_case_studies/` 번호 정정 | ✅ 9020e56 |
+| 6 | `md_indexer.py` 재귀 스캔 + 재인덱싱 검증 (78개 오류 0) | ✅ 9020e56 |
