@@ -38,6 +38,19 @@ async def lifespan(app: FastAPI):
     # DB 스키마 초기화 (테이블 없으면 생성)
     _archive_mgr.init_schema()
 
+    # IA-Engine-C: confidence_score 컬럼 마이그레이션 (기존 DB 호환)
+    import sqlite3 as _sqlite3
+    from pathlib import Path as _Path
+    _intel_db = _Path(__file__).parent / "db" / "intel.db"
+    with _sqlite3.connect(_intel_db) as _con:
+        try:
+            _con.execute(
+                "ALTER TABLE intel_analyses ADD COLUMN confidence_score INTEGER DEFAULT NULL"
+            )
+            _con.commit()
+        except _sqlite3.OperationalError:
+            pass  # 컬럼이 이미 존재하면 무시
+
     # GDELT 3-Stage Funnel — 15분마다 실행 (실시간 첩보 수집)
     _scheduler.add_job(
         run_gdelt_batch,

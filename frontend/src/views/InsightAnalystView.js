@@ -30,6 +30,7 @@ export class InsightAnalystView {
     this._rendered    = false;
     this._lastResult  = null;   // { query, mode, regions, sectors, result_md, context_chars }
     this._lastMeta    = null;
+    this._lastScore   = null;   // §19-D confidence score result
   }
 
   mount(pane) {
@@ -163,6 +164,7 @@ export class InsightAnalystView {
     }, 200);
 
     let mdText = '', buffer = '', metaSet = false, streamDone = false;
+    this._lastScore = null;
 
     try {
       const resp = await fetch(`${BASE}/api/intel/query`, {
@@ -198,6 +200,12 @@ export class InsightAnalystView {
             continue;
           }
 
+          if (payload.type === 'score') {
+            this._lastScore = payload;
+            this._renderScore(metaBar, payload);
+            continue;
+          }
+
           if (payload.fallback) {
             preEl.insertAdjacentHTML('beforebegin',
               '<div class="ia__notice">⚡ Thinking 일시 과부하 → 일반 모드 전환</div>');
@@ -222,6 +230,7 @@ export class InsightAnalystView {
               result_md: mdText,
               context_chars: Object.values(this._lastMeta?.source_counts ?? {})
                                .reduce((a, b) => a + b, 0),
+              confidence_score: this._lastScore?.confidence ?? null,
             };
             saveBtn.style.display = '';
             streamDone = true;
@@ -434,7 +443,44 @@ export class InsightAnalystView {
         <span>브리핑 ${(sc.fts_items ?? 0) + (sc.sector_items ?? 0)}건
           · 이벤트 ${sc.event_stats_regions ?? 0}지역
           · Cascade ${sc.cascade_links ?? 0}건</span>
+        <span id="ia-score-badge"></span>
       </div>
     `;
+  }
+
+  // ── §19-D 신뢰도 점수 렌더링 ──────────────────────────────────────────────
+
+  _renderScore(metaBar, scoreData) {
+    const { confidence, provisional, breakdown } = scoreData;
+    const resultArea = this._pane.querySelector('#ia-result-area');
+
+    // 메타 바에 점수 배지 삽입
+    const badge = metaBar.querySelector('#ia-score-badge');
+    if (badge) {
+      const cls  = confidence >= 80 ? 'high' : confidence >= 60 ? 'mid' : 'low';
+      const fill = Math.round(confidence / 10);
+      const bar  = '█'.repeat(fill) + '░'.repeat(10 - fill);
+      badge.innerHTML = `
+        <span class="ia__meta-sep">|</span>
+        <span class="ia__score-badge ia__score-badge--${cls}"
+              title="§19-D: 수치인용${breakdown.numeric_citation} + 1차사료${breakdown.primary_source} + 가설${breakdown.hypothesis} + 경쟁이론${breakdown.competing_theory} + 고리강도${breakdown.chain_strength}">
+          신뢰도 ${bar} ${confidence}점
+        </span>
+      `;
+    }
+
+    // 60점 미만 → PROVISIONAL 배너를 결과 최상단에 삽입
+    if (provisional) {
+      const existing = resultArea.querySelector('.ia__provisional-banner');
+      if (!existing) {
+        const banner = document.createElement('div');
+        banner.className = 'ia__provisional-banner';
+        banner.innerHTML = `
+          ⚠️ <strong>[PROVISIONAL]</strong> 신뢰도 ${confidence}점 — 수치 근거·경쟁 이론이 부족합니다.
+          <small>§19-D 기준: 60점 미만은 잠정 분석으로 처리.</small>
+        `;
+        resultArea.prepend(banner);
+      }
+    }
   }
 }

@@ -3469,3 +3469,44 @@ body:not(.study-mode) .notebook { display: none; }
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
+
+/* ── IA-Engine-C: 신뢰도 점수 배지 & PROVISIONAL 배너 ────────────────── */
+.ia__score-badge {
+  font-family: monospace;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid;
+  cursor: default;
+}
+.ia__score-badge--high {
+  color: #3fb950;
+  border-color: rgba(63,185,80,0.4);
+  background: rgba(63,185,80,0.08);
+}
+.ia__score-badge--mid {
+  color: #d2993e;
+  border-color: rgba(210,153,34,0.4);
+  background: rgba(210,153,34,0.08);
+}
+.ia__score-badge--low {
+  color: #f85149;
+  border-color: rgba(248,81,73,0.4);
+  background: rgba(248,81,73,0.08);
+}
+
+.ia__provisional-banner {
+  background: rgba(248,81,73,0.08);
+  border: 1px solid rgba(248,81,73,0.35);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #f85149;
+  line-height: 1.5;
+}
+.ia__provisional-banner small {
+  display: block;
+  margin-top: 2px;
+  opacity: 0.75;
+}

@@ -41,6 +41,7 @@ def _db() -> Iterator[sqlite3.Connection]:
 
 from services.entity_parser import parse_query, ParsedQuery
 from services.intel_analyzer import build_intel_context
+from services.confidence_scorer import score_output
 
 logger = logging.getLogger(__name__)
 
@@ -85,23 +86,27 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
         "5. 결과를 즉시 의도로 귀속하지 말라('강경 정권 온존 = 미국 실패' 형태 금지).\n"
         "6. 기존 주류 문헌이 충분히 다루지 않은 공백(gap)을 탐지하라. 이미 알려진 사실 재서술은 인사이트가 아니다.\n"
         "7. 복수 도메인이 관여된 경우 '어떤 도메인이 어떤 경로로 어떤 도메인에 영향'을 명시적으로 서술하라.\n"
-        "8. 이론 레이블마다 '이 이론으로 설명되지 않는 반례' 필드를 반드시 추가하라.\n\n"
+        "8. 이론 레이블마다 '이 이론으로 설명되지 않는 반례' 필드를 반드시 추가하라.\n"
+        "9. [시간 역전 탐지] 각 인과 연결 고리에서 원인 이벤트와 결과 이벤트의 날짜를 확인하라. "
+        "결과 이벤트가 원인 이벤트보다 이전에 발생한 경우, [TEMPORAL_REVERSAL] 태그를 붙이고 "
+        "'A가 B를 유발'이 아닌 '공통 구조적 선행 조건' 또는 'B가 A의 선행 지표'로 재공식화하라.\n\n"
 
-        "## 신뢰도 점수 산출 기준 (§19-D) — 출력에 포함할 것\n"
-        "수치 데이터 직접 인용 +30 / 1차 사료 참조 +20 / 반증 가능 가설 +20 / "
-        "경쟁 이론 비교 +15 / 연쇄 고리 강도 명시 +15 = 합계 0~100.\n"
-        "60 미만 → [PROVISIONAL] 레이블 필수.\n\n"
+        "## 신뢰도 점수 (§19-D) — 절대 자체 산출 금지\n"
+        "신뢰도 숫자 점수(N점/100)는 외부 시스템이 자동 산출한다. "
+        "출력에 '신뢰도: N점/100' 형태를 절대 포함하지 말 것. "
+        "대신 연쇄강도(HIGH/MEDIUM/LOW)와 데이터기반·이론근거(고/중/저)만 카드 헤더에 표기하라.\n\n"
 
         "모든 답변은 한국어로 작성."
     )
 
     # §19-B 인사이트 카드 형식 (insight·presentation 공통)
+    # ※ 신뢰도 점수는 서버 역산(§19-D)으로만 산출 — 여기서 자체 점수 부여 금지
     _card_fmt = """\
 각 인사이트는 아래 카드 형식으로 작성하라:
 
 ```
 [헤드라인] 한 줄 요약 (비자명적 발견 — "A가 증가했다" 수준 금지)
-신뢰도: N점/100  |  데이터기반: 고/중/저  |  이론근거: 고/중/저  |  연쇄강도: HIGH/MEDIUM/LOW
+데이터기반: 고/중/저  |  이론근거: 고/중/저  |  연쇄강도: HIGH/MEDIUM/LOW
 
 [관찰]      측정 가능한 현상 (수치·날짜·사례 포함, 없으면 [UNVERIFIED])
 [주장]      인과 주장 — 방향·강도·조건 명시
@@ -274,6 +279,11 @@ async def _stream_gemini(
             logger.exception("[intel] 스트리밍 예외: %s", e)
             yield _sse({"text": f"\n\n⚠️ 오류: {e}", "done": False})
 
+        # §19-D 신뢰도 점수 역산 — 스트리밍 완료 후 score 이벤트 전송
+        if full_text:
+            score_result = score_output(full_text)
+            yield _sse({"type": "score", "done": False, **score_result})
+
         yield _sse({"done": True})
 
     async for chunk in _do_stream(body):
@@ -351,12 +361,13 @@ async def intel_query(req: IntelQueryRequest):
 # ── 저장 / 조회 / 삭제 ────────────────────────────────────────────────────────
 
 class SaveRequest(BaseModel):
-    query:        str
-    mode:         str = "insight"
-    regions:      list[str] = []
-    sectors:      list[str] = []
-    result_md:    str
-    context_chars: int = 0
+    query:            str
+    mode:             str = "insight"
+    regions:          list[str] = []
+    sectors:          list[str] = []
+    result_md:        str
+    context_chars:    int = 0
+    confidence_score: int | None = None
 
 
 @router.post("/save")
@@ -367,8 +378,9 @@ def intel_save(req: SaveRequest):
         cur = con.execute(
             """
             INSERT INTO intel_analyses
-                (title, query, mode, regions, sectors, result_md, context_chars)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+                (title, query, mode, regions, sectors, result_md,
+                 context_chars, confidence_score)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 title,
@@ -378,6 +390,7 @@ def intel_save(req: SaveRequest):
                 json.dumps(req.sectors, ensure_ascii=False),
                 req.result_md,
                 req.context_chars,
+                req.confidence_score,
             ),
         )
     return {"id": cur.lastrowid, "title": title}

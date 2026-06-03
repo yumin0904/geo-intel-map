@@ -135,7 +135,8 @@ CREATE TABLE IF NOT EXISTS intel_analyses (
     regions      TEXT,                   -- JSON 배열
     sectors      TEXT,                   -- JSON 배열
     result_md    TEXT NOT NULL,          -- Gemini 출력 마크다운
-    context_chars INTEGER DEFAULT 0,    -- 컨텍스트 총 글자 수 (품질 지표)
+    context_chars    INTEGER DEFAULT 0,  -- 컨텍스트 총 글자 수 (품질 지표)
+    confidence_score INTEGER DEFAULT NULL, -- §19-D 역산 점수 (0~100)
     created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
