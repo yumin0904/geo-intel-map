@@ -1,0 +1,28 @@
+# CSIS Significant Cyber Incidents Database
+# Source: CSIS Strategic Technologies Program (csis.org/significant-cyber-incidents)
+# Curated subset: state-sponsored / high-sophistication incidents 2015-2024
+# actor_iso3 = 귀속된 공격자 국가 (NULL = unknown/unattributed)
+# victim_iso3 = 피해 국가 (MULTI = 다국가)
+# incident_type: espionage / sabotage / ransomware / ddos / disinformation / supply_chain
+# sector: government / military / energy / finance / telecom / healthcare / defense_industry / election
+incident_id,date,actor_iso3,actor_group,victim_iso3,victim_sector,incident_type,title,description
+CSIS-2015-001,2015-12-23,RUS,Sandworm,UKR,energy,sabotage,Ukraine Power Grid Attack 1,"러시아 Sandworm APT가 우크라이나 전력망 BlackEnergy 악성코드 공격. 225,000명 정전"
+CSIS-2016-001,2016-11-01,RUS,Sandworm,UKR,energy,sabotage,Ukraine Power Grid Attack 2,"Industroyer/CrashOverride 멀웨어로 키이우 전력망 공격. ICS 시스템 직접 타격"
+CSIS-2017-001,2017-06-27,RUS,Sandworm,MULTI,government,sabotage,NotPetya Global Attack,"NotPetya 워퍼를 통한 우크라이나 발 글로벌 사이버 공격. $10bn+ 피해. 머스크·FedEx 등"
+CSIS-2017-002,2017-05-12,PRK,Lazarus,MULTI,healthcare,ransomware,WannaCry,"북한 Lazarus 그룹의 WannaCry 랜섬웨어. 150개국 200,000+ 시스템 감염. NHS 타격"
+CSIS-2018-001,2018-08-01,RUS,APT28,MULTI,government,espionage,US Election Infrastructure Probing,2016 미 대선 인프라 사전 정찰. APT28(Fancy Bear) 귀속
+CSIS-2019-001,2019-09-01,IRN,APT33,SAU,energy,sabotage,Saudi Aramco Shamoon 2.0 followup,이란 APT33의 사우디 아람코 변형 공격 시리즈
+CSIS-2020-001,2020-12-13,RUS,Cozy Bear,USA,government,espionage,SolarWinds Supply Chain,"러시아 SVR Cozy Bear의 SolarWinds Orion 공급망 공격. 18,000개 조직 침투"
+CSIS-2021-001,2021-07-02,RUS,REvil,MULTI,government,ransomware,Kaseya VSA Ransomware,REvil의 Kaseya VSA MSP 공급망 공격. 1,500+ 기업 영향
+CSIS-2021-002,2021-05-07,RUS,DarkSide,USA,energy,ransomware,Colonial Pipeline Attack,"미국 Colonial Pipeline 랜섬웨어 공격. 동부해안 연료 공급 중단. $4.4M 몸값 지불"
+CSIS-2021-003,2021-03-02,CHN,Hafnium,MULTI,government,espionage,Microsoft Exchange Zero-Days,중국 Hafnium APT의 MS Exchange Server 제로데이 취약점 공격. 전 세계 250,000+ 서버
+CSIS-2022-001,2022-02-24,RUS,Sandworm,UKR,government,sabotage,Viasat KA-SAT Attack,"러시아의 우크라이나 침공 1시간 전 위성통신 KA-SAT 공격. 유럽 전역 통신 장애"
+CSIS-2022-002,2022-04-12,RUS,Sandworm,UKR,energy,sabotage,Industroyer2 Attack,우크라이나 변전소 Industroyer2 공격. 200만 명 정전 시도 (우크라이나 CERT 차단)
+CSIS-2022-003,2022-01-15,RUS,Unknown,UKR,government,sabotage,WhisperGate / HermeticWiper,침공 전 우크라이나 정부 시스템 와이퍼 멀웨어 공격
+CSIS-2023-001,2023-05-24,CHN,Volt Typhoon,USA,military,espionage,Volt Typhoon Critical Infrastructure,"중국 Volt Typhoon APT의 미국 군사·에너지 인프라 사전 배치(pre-positioning) 작전"
+CSIS-2023-002,2023-09-01,CHN,APT41,MULTI,government,espionage,APT41 Global Campaign 2023,APT41의 동남아시아·유럽 정부 스파이 캠페인
+CSIS-2023-003,2023-12-01,IRN,Cyber Av3ngers,USA,energy,sabotage,Unitronics PLC Attack,이란 연계 해커의 미국 수도 처리 시설 OT 시스템 공격
+CSIS-2024-001,2024-01-01,RUS,Sandworm,UKR,energy,sabotage,Kyiv Energy Attack 2024,우크라이나 에너지 인프라 지속 공격 시리즈 (2024년 동계)
+CSIS-2024-002,2024-04-01,PRK,Lazarus,MULTI,finance,theft,Crypto Heists 2024,"북한 Lazarus의 암호화폐 탈취 지속. 2023~2024 $1bn+ 탈취 추정 (UN 패널)"
+CSIS-2024-003,2024-09-01,CHN,Salt Typhoon,USA,telecom,espionage,Salt Typhoon Telecom Breach,"중국 Salt Typhoon의 미국 통신사 9곳 침투. FBI·NSA 고위 관리 감청"
+CSIS-2024-004,2024-06-01,RUS,APT28,MULTI,election,disinformation,EU Election Interference 2024,APT28의 유럽의회 선거 개입 캠페인. 독일·체코·폴란드 피해

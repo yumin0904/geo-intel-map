@@ -509,9 +509,9 @@ frontend/src/views/
 | IA-개선 | 데이터 깊이 + 저장 기능 | ✅ v5.6.0 |
 | IA-엔진 | 인사이트 엔진 개선 로드맵 반영 | ✅ v5.6.0 (CLAUDE.md §19~21) |
 | P5-8 | LLM 종합 브리핑 계층 | ⬜ |
-| **IA-Engine-A** | **프롬프트 6단계 재설계** | **⬜ ← 즉시 ROI 최대** |
-| IA-Engine-B1 | SIPRI Expenditure + COW + Kiel Tracker 적재 | ⬜ 단기 |
-| IA-Engine-B2 | EIA Energy Stats + CSIS Cyber DB 적재 | ⬜ 단기 |
+| **IA-Engine-A** | **프롬프트 6단계 재설계** | **✅ v5.7.0** |
+| IA-Engine-B1 | SIPRI Expenditure + COW + Kiel Tracker 적재 | ✅ v5.8.0 |
+| IA-Engine-B2 | EIA Energy Stats + CSIS Cyber DB 적재 | ✅ v5.9.0 |
 | IA-Engine-C | 인사이트 신뢰도 점수 모듈 | ⬜ 중기 |
 | IA-Engine-D | Falsifiable Hypothesis 자동 생성 | ⬜ 중기 |
 
@@ -642,12 +642,143 @@ frontend/src/views/
 > **"무슨 일이 일어나고 있는가"(현황 기술) →
 > "왜 이 설명이 경쟁 이론보다 더 타당한가"(인과 검증)를 데이터로 보여주는 도구**
 
+---
+
+## ✅ [IA-Engine-A] 프롬프트 6단계 재설계 (2026-06-03) — v5.7.0
+
+**구현 내용** (`api/intel_query.py` `_build_prompt()` 전면 재설계)
+
+| 변경 항목 | 이전 | 이후 |
+|----------|------|------|
+| system_role | 석사 지도 / 이론 포함 2줄 | §19-A 8개 원칙 + §19-D 신뢰도 기준 명시 |
+| insight 카드 | 인사이트+근거+이론 3필드 | §19-B 8필드 카드 (헤드라인·신뢰도·관찰·주장·가설·근거·한계·경쟁설명·검증포인트·문헌공백) |
+| verify 모드 | 판정+지지/반증+이론 | §19-A 6단계 완전 구조화 (관찰→변수→가설→경쟁이론→근거→고리강도) |
+| presentation 모드 | 각도제목+주장+근거+이론+차별점 | 인사이트 카드 형식 통합 + 청중 훅 + 문헌 공백 |
+| 공통 추가 | 없음 | [UNVERIFIED] / [SPECULATIVE] / [PROVISIONAL] 자동 레이블 지침 |
+| 강점 보존 | - | §19-B-2 ①이론 반례 ②도메인 교차 경로 ③문헌 공백 탐지 3종 명시 요구 |
+
+**진단 문제 → 해결 매핑**
+
+| 병목 | 이전 점수 | 해결 방법 |
+|------|---------|---------|
+| 인과 논리 엄밀성 38~52% | 낮음 | 6단계 강제 구조 + 연쇄 고리 강도 |
+| 데이터 기반 정도 25~61% | 낮음 | [UNVERIFIED] 의무 태그 + 신뢰도 점수 산출 기준 |
+| 가설 명확성 35~55% | 낮음 | H1 반증 가능 형태 강제 |
+| 경쟁 이론 없음 | 없음 | 경쟁 이론 1~2개 + 기각 근거 필수화 |
+
 ### 다음 세션 시작점
 
-**IA-Engine-A — 프롬프트 6단계 재설계** (`api/intel_query.py` `_build_prompt()`)
-→ 코드 변경 최소, 즉각 ROI 최대. 이것부터 시작.
+---
 
-그 다음: P5-8 LLM 종합 브리핑 계층 → IA-Engine-B1 데이터 적재(SIPRI·COW·Kiel)
+## ✅ [IA-Engine-B1] 외부 정형 데이터 적재 (2026-06-03) — v5.8.0
+
+**P5-8 취소** — IA-Engine으로 대체됨 (§14 자동 LLM 충돌, 기능 중복)
+
+**구현 내용**
+
+| 파일 | 역할 |
+|------|------|
+| `backend/db/schema.sql` | `sipri_milex` · `cow_alliances` · `kiel_ukraine_support` 3개 테이블 추가 |
+| `data/external/sipri_milex_seed.csv` | SIPRI 2019~2023, 15개국 국방비 %GDP + USD bn |
+| `data/external/cow_alliances_seed.csv` | COW v4.1 기반 현재 활성 동맹 44쌍 (NATO·CSTO·미일·미한 등) |
+| `data/external/kiel_ukraine_support_seed.csv` | Kiel Release 19 (2024-06) 19개 공여국 군사·재정·인도적 지원 |
+| `backend/scripts/load_external_data.py` | 3개 소스 적재 + `--update` 플래그로 원본 다운로드 시도 |
+| `backend/services/intel_analyzer.py` | `_get_sipri_data()` · `_get_cow_alliances()` · `_get_kiel_data()` 추가, `build_intel_context()` 병렬 gather 통합 |
+
+**실측 결과**
+
+| 시나리오 | SIPRI | COW | Kiel | 컨텍스트 길이 |
+|---------|------|-----|------|-----------|
+| 대만해협 반도체 쿼리 | CHN·USA 2국 | 33동맹 | 0 | 13,022자 |
+| 우크라이나 서방지원 쿼리 | UKR·RUS 2국 | 37동맹 | 12개국 | 12,990자 |
+
+**인사이트 품질 향상 효과**
+- [관찰] 섹션: "러시아 2023년 국방비 GDP 5.9% / $109bn" 수치 직접 인용 가능 (+30점)
+- [근거] 섹션: 1차 사료(SIPRI·COW·Kiel) 참조 가능 (+20점)
+- §19-D 신뢰도 점수 +50점 잠재력 확보
+
+### 다음 세션 시작점
+
+| 항목 | 상태 |
+|------|------|
+| IA-Engine-B2 | EIA Energy Stats + CSIS Cyber DB 적재 | ✅ v5.9.0 |
+| IA-Engine-C | 인사이트 신뢰도 점수 모듈 | ⬜ 중기 |
+| IA-Engine-D | Falsifiable Hypothesis 자동 생성 | ⬜ 중기 |
+
+---
+
+## ✅ [IA-Engine-B2] EIA + CSIS 데이터 적재 (2026-06-03) — v5.9.0
+
+**구현 내용**
+
+| 파일 | 역할 |
+|------|------|
+| `data/external/eia_energy_seed.csv` | EIA 2023, 19개국 원유/천연가스 생산량 + 6개 초크포인트 통과량 |
+| `data/external/csis_cyber_seed.csv` | CSIS 2015~2024, 20개 주요 사이버 사건 (Sandworm·Lazarus·Volt Typhoon·Salt Typhoon 등) |
+| `backend/db/schema.sql` | `eia_energy` · `csis_cyber_incidents` 2개 테이블 추가 |
+| `backend/scripts/load_external_data.py` | eia·csis 소스 추가, `--source eia,csis` 지원 |
+| `backend/services/intel_analyzer.py` | `_get_eia_data()` · `_get_csis_incidents()` 추가, 10개 소스 병렬 gather |
+
+**실측 결과**
+
+| 시나리오 | EIA | CSIS | 컨텍스트 길이 |
+|---------|-----|------|-----------|
+| 호르무즈 유가 쿼리 | Hormuz 21Mbpd + SAU·IRN 생산량 | 이란 관련 6건 | 13,628자 |
+| 이란 사이버 공격 쿼리 | IRN 에너지 프로파일 | 최신 사이버 6건 | 13,684자 |
+| 대만해협 반도체 쿼리 | Malacca 16Mbpd | CHN·USA·PRK 관련 7건 | 14,147자 |
+
+**인사이트 품질 향상**
+- 에너지 섹터: "호르무즈 21Mbpd 통과 (EIA 2023)" 수치 직접 인용 가능
+- 사이버 섹터: "Volt Typhoon 미국 군사 인프라 사전 배치" 등 APT 선례 참조 가능
+- §19-D 신뢰도 기준 충족 항목 (수치 인용 +30, 1차 사료 +20) 모두 확보
+
+### 다음 세션 시작점
+
+| 항목 | 상태 |
+|------|------|
+| IA-Engine-C | 인사이트 신뢰도 점수 모듈 | ⬜ |
+| IA-Engine-D | Falsifiable Hypothesis 자동 생성 | ⬜ |
 
 ### 현재 버전
-`version.json`: **5.6.0** | phase: 5
+`version.json`: **5.9.0** | phase: 5
+
+---
+
+## 2026-06-03 세션 요약 (IA-Engine A·B1·B2)
+
+### 완료 항목
+
+| 버전 | 항목 | 핵심 변경 |
+|------|------|---------|
+| v5.7.0 | IA-Engine-A 프롬프트 6단계 재설계 | `_build_prompt()` §19 전면 적용 — [UNVERIFIED]/[SPECULATIVE]/[PROVISIONAL] 자동 레이블, §19-B 8필드 카드, §19-D 신뢰도 기준 |
+| v5.8.0 | IA-Engine-B1 SIPRI·COW·Kiel 적재 | 국방비 5년 추이 + 공식 동맹 + 우크라이나 지원액 수치 인용 |
+| v5.9.0 | IA-Engine-B2 EIA·CSIS 적재 | 초크포인트 통과량 + APT 사건 선례 인용 |
+
+**P5-8 취소** — IA-Engine으로 대체, §14 충돌 해소
+
+### 외교부 오픈데이터 검토 결과 (미착수, 별도 판단)
+- `opendata.mofa.go.kr/lod/` LOD 플랫폼: 브리핑(91건)·보도자료(983건) 국가 태그 데이터 → Phase 6 브리핑 라이브러리 확충 시 `connectors/mofa_press.py` 형태로 편입 예정
+- `insight.mofa.go.kr` 글로벌 공공데이터 1,275건 → 각국 오픈데이터 포털 링크 디렉토리, 직접 지정학 데이터 아님
+- 여행경보 REST API → CountryPanel "현재 위험도" 탭 보완용, Phase 4 연장선
+
+### 인사이트 엔진 데이터 소스 현황 (10개 병렬)
+
+| # | 소스 | 건수 | 활성화 조건 |
+|---|------|------|-----------|
+| 1 | 브리핑·이론 LIKE 검색 | 라이브러리 57개 | 항상 |
+| 2 | 섹터 필터 | 라이브러리 57개 | 항상 |
+| 3 | ACLED event_archive 통계 | 252,409건 | 지역 지정 시 |
+| 4 | Cascade links + rules | 76건 | 지역 지정 시 |
+| 5 | Country geopolitics | 15개국 | 행위자 지정 시 |
+| 6 | SIPRI 국방비 | 80행 (15국×5년) | 행위자·지역 시 |
+| 7 | COW 공식 동맹 | 44쌍 | 행위자·지역 시 |
+| 8 | Kiel 우크라이나 지원 | 19개국 | ukraine 지역 시 |
+| 9 | EIA 에너지·초크포인트 | 24행 | 에너지·해양 지역 시 |
+| 10 | CSIS 사이버 사건 | 20건 | cyber 섹터·관련국 시 |
+
+### 다음 세션 시작점
+
+**IA-Engine-C** — 인사이트 신뢰도 점수 모듈
+- `§19-D` 기준(수치 인용·1차 사료·가설·경쟁이론·고리강도) 자동 산출 → Gemini 출력에서 역산
+- 60점 미만 → [PROVISIONAL] 자동 레이블 (현재는 프롬프트 지시만, 실제 산출 없음)
+- 또는 **IA-Engine-D** (H1/H0 Falsifiable Hypothesis 자동 생성 모듈)

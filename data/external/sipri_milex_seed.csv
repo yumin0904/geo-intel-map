@@ -1,0 +1,84 @@
+# SIPRI Military Expenditure Database (sipri.org/databases/milex)
+# Source: SIPRI Yearbook 2024 / SIPRI Fact Sheet April 2024
+# gdp_pct = % of GDP, usd_mn_2022 = USD millions (2022 constant prices)
+iso3,country_name,year,gdp_pct,usd_mn_2022
+USA,United States,2019,3.4,781100
+USA,United States,2020,3.7,778200
+USA,United States,2021,3.5,754600
+USA,United States,2022,3.5,876900
+USA,United States,2023,3.4,916000
+CHN,China,2019,1.9,258000
+CHN,China,2020,1.7,252000
+CHN,China,2021,1.7,270000
+CHN,China,2022,1.6,292000
+CHN,China,2023,1.7,296000
+RUS,Russia,2019,3.9,65400
+RUS,Russia,2020,4.3,61700
+RUS,Russia,2021,4.1,65900
+RUS,Russia,2022,4.1,86400
+RUS,Russia,2023,5.9,109000
+IND,India,2019,2.4,71100
+IND,India,2020,2.9,72900
+IND,India,2021,2.7,76600
+IND,India,2022,2.4,81400
+IND,India,2023,2.4,83600
+SAU,Saudi Arabia,2019,5.7,65400
+SAU,Saudi Arabia,2020,6.4,57500
+SAU,Saudi Arabia,2021,5.6,55600
+SAU,Saudi Arabia,2022,6.0,75000
+SAU,Saudi Arabia,2023,7.1,75800
+GBR,United Kingdom,2019,1.7,59100
+GBR,United Kingdom,2020,2.2,59200
+GBR,United Kingdom,2021,2.2,68400
+GBR,United Kingdom,2022,2.3,68500
+GBR,United Kingdom,2023,2.3,73900
+KOR,South Korea,2019,2.8,43900
+KOR,South Korea,2020,2.8,45700
+KOR,South Korea,2021,2.8,46400
+KOR,South Korea,2022,2.8,46400
+KOR,South Korea,2023,2.8,47900
+JPN,Japan,2019,0.9,47600
+JPN,Japan,2020,1.0,49100
+JPN,Japan,2021,1.1,49800
+JPN,Japan,2022,1.1,50200
+JPN,Japan,2023,1.2,51700
+FRA,France,2019,1.9,60000
+FRA,France,2020,2.1,61100
+FRA,France,2021,2.1,62200
+FRA,France,2022,2.1,61300
+FRA,France,2023,2.1,61300
+DEU,Germany,2019,1.4,49300
+DEU,Germany,2020,1.6,52800
+DEU,Germany,2021,1.5,56600
+DEU,Germany,2022,1.5,58300
+DEU,Germany,2023,1.5,66800
+ISR,Israel,2019,5.2,20200
+ISR,Israel,2020,5.6,20700
+ISR,Israel,2021,5.0,21700
+ISR,Israel,2022,4.5,23400
+ISR,Israel,2023,5.3,27500
+TUR,Türkiye,2019,1.9,20300
+TUR,Türkiye,2020,2.8,15300
+TUR,Türkiye,2021,2.0,14400
+TUR,Türkiye,2022,1.6,10900
+TUR,Türkiye,2023,1.6,18800
+IRN,Iran,2019,2.6,13200
+IRN,Iran,2020,2.5,9400
+IRN,Iran,2021,2.3,7500
+IRN,Iran,2022,2.4,7900
+IRN,Iran,2023,2.5,10200
+UKR,Ukraine,2019,3.4,5800
+UKR,Ukraine,2020,3.9,5400
+UKR,Ukraine,2021,3.6,5900
+UKR,Ukraine,2022,34.0,44000
+UKR,Ukraine,2023,37.0,64800
+PRK,North Korea,2019,,,
+PRK,North Korea,2020,,,
+PRK,North Korea,2021,,,
+PRK,North Korea,2022,,,
+PRK,North Korea,2023,,,
+PAK,Pakistan,2019,4.0,10500
+PAK,Pakistan,2020,4.0,10400
+PAK,Pakistan,2021,3.9,10500
+PAK,Pakistan,2022,3.9,10200
+PAK,Pakistan,2023,4.0,10300

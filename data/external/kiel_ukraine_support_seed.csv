@@ -1,0 +1,25 @@
+# Kiel Institute Ukraine Support Tracker (ifw-kiel.de/ukraine-support-tracker)
+# Source: Ukraine Support Tracker Release 19 (July 2024)
+# Values in EUR billions (committed + delivered combined)
+# data_period: 2022-01 ~ 2024-06
+donor_iso3,donor_name,military_eur_bn,financial_eur_bn,humanitarian_eur_bn,total_eur_bn,data_period
+USA,United States,43.30,34.30,2.70,80.30,2022-01~2024-06
+DEU,Germany,17.10,14.00,2.80,33.90,2022-01~2024-06
+GBR,United Kingdom,12.70,5.00,1.30,19.00,2022-01~2024-06
+NOR,Norway,7.50,4.80,0.80,13.10,2022-01~2024-06
+DNK,Denmark,6.90,2.10,0.60,9.60,2022-01~2024-06
+NLD,Netherlands,5.70,3.80,0.90,10.40,2022-01~2024-06
+SWE,Sweden,5.20,1.20,0.60,7.00,2022-01~2024-06
+CAN,Canada,3.80,2.40,0.50,6.70,2022-01~2024-06
+FRA,France,2.80,2.10,0.40,5.30,2022-01~2024-06
+POL,Poland,4.20,1.80,0.80,6.80,2022-01~2024-06
+JPN,Japan,0.10,7.60,0.30,8.00,2022-01~2024-06
+KOR,South Korea,0.00,2.00,0.20,2.20,2022-01~2024-06
+AUS,Australia,0.50,0.60,0.10,1.20,2022-01~2024-06
+CZE,Czech Republic,1.90,0.40,0.30,2.60,2022-01~2024-06
+EST,Estonia,1.30,0.10,0.05,1.45,2022-01~2024-06
+LVA,Latvia,0.90,0.10,0.04,1.04,2022-01~2024-06
+LTU,Lithuania,0.80,0.20,0.05,1.05,2022-01~2024-06
+FIN,Finland,1.10,0.60,0.20,1.90,2022-01~2024-06
+# EU institutions (separate from member states)
+EUI,EU Institutions,5.60,57.20,1.80,64.60,2022-01~2024-06

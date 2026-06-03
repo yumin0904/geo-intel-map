@@ -253,7 +253,214 @@ def _get_cascade_context(regions: list[str]) -> dict:
     return result
 
 
-# ── 5. 국가 프로파일 ──────────────────────────────────────────────────────────
+# ── 5. SIPRI 국방비 ──────────────────────────────────────────────────────────
+
+def _get_sipri_data(actors: list[str], regions: list[str]) -> dict[str, list[dict]]:
+    """SIPRI 국방비 — 행위자 국가의 최근 5년 추이."""
+    # 지역 → 관련 국가 추가 매핑
+    _REGION_ACTORS: dict[str, list[str]] = {
+        "ukraine":          ["UKR", "RUS"],
+        "taiwan_strait":    ["CHN", "USA", "TWN"],
+        "hormuz":           ["IRN", "SAU", "USA", "ISR"],
+        "bab_el_mandeb":    ["SAU", "USA"],
+        "south_china_sea":  ["CHN", "USA", "VNM", "PHL"],
+        "korean_peninsula": ["PRK", "KOR", "USA", "CHN"],
+        "middle_east":      ["ISR", "IRN", "SAU", "USA"],
+        "east_china_sea":   ["CHN", "JPN", "USA"],
+    }
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_ACTORS.get(r, []))
+
+    if not iso3_set:
+        return {}
+
+    placeholders = ",".join("?" * len(iso3_set))
+    try:
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""
+                SELECT iso3, country_name, year, gdp_pct, usd_mn_2022
+                FROM sipri_milex
+                WHERE iso3 IN ({placeholders})
+                  AND year >= (SELECT MAX(year)-4 FROM sipri_milex)
+                  AND gdp_pct IS NOT NULL
+                ORDER BY iso3, year DESC
+                """,
+                tuple(iso3_set),
+            ).fetchall()
+        result: dict[str, list[dict]] = {}
+        for r in rows:
+            iso3 = r["iso3"]
+            if iso3 not in result:
+                result[iso3] = []
+            result[iso3].append({
+                "year":       r["year"],
+                "gdp_pct":    r["gdp_pct"],
+                "usd_mn":     r["usd_mn_2022"],
+                "country":    r["country_name"],
+            })
+        return result
+    except Exception as e:
+        logger.warning("[intel] sipri_data 실패: %s", e)
+        return {}
+
+
+def _get_cow_alliances(actors: list[str], regions: list[str] | None = None) -> list[dict]:
+    """COW 동맹 — 행위자 국가의 현재 활성 동맹 관계."""
+    # SIPRI와 동일한 region → ISO3 확장 매핑 활용
+    _REGION_ACTORS: dict[str, list[str]] = {
+        "ukraine":          ["UKR", "RUS", "USA", "GBR", "DEU", "FRA", "POL"],
+        "taiwan_strait":    ["CHN", "USA", "JPN", "KOR"],
+        "hormuz":           ["IRN", "SAU", "USA", "GBR"],
+        "bab_el_mandeb":    ["SAU", "USA"],
+        "south_china_sea":  ["CHN", "USA", "PHL"],
+        "korean_peninsula": ["PRK", "KOR", "USA", "CHN"],
+        "middle_east":      ["ISR", "IRN", "SAU", "USA"],
+        "east_china_sea":   ["CHN", "JPN", "USA"],
+    }
+    iso3_set = set(actors)
+    for r in (regions or []):
+        iso3_set.update(_REGION_ACTORS.get(r, []))
+
+    if not iso3_set:
+        return []
+    placeholders = ",".join("?" * len(iso3_set))
+    try:
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""
+                SELECT iso3_a, iso3_b, name_a, name_b,
+                       start_year, end_year, alliance_type
+                FROM cow_alliances
+                WHERE (iso3_a IN ({placeholders}) OR iso3_b IN ({placeholders}))
+                  AND (end_year IS NULL OR end_year >= 2020)
+                ORDER BY alliance_type, start_year
+                """,
+                (*iso3_set, *iso3_set),
+            ).fetchall()
+        return [dict(r) for r in rows]
+    except Exception as e:
+        logger.warning("[intel] cow_alliances 실패: %s", e)
+        return []
+
+
+def _get_kiel_data(regions: list[str]) -> list[dict]:
+    """Kiel Ukraine Support Tracker — 우크라이나 지역 쿼리 시만 반환."""
+    ukraine_regions = {"ukraine", "eastern_europe", "bab_el_mandeb"}
+    if not any(r in ukraine_regions for r in regions):
+        return []
+    try:
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                """
+                SELECT donor_name, donor_iso3,
+                       military_eur_bn, financial_eur_bn,
+                       humanitarian_eur_bn, total_eur_bn, data_period
+                FROM kiel_ukraine_support
+                ORDER BY total_eur_bn DESC
+                LIMIT 12
+                """,
+            ).fetchall()
+        return [dict(r) for r in rows]
+    except Exception as e:
+        logger.warning("[intel] kiel_data 실패: %s", e)
+        return []
+
+
+# ── 6. EIA 에너지 통계 ───────────────────────────────────────────────────────
+
+def _get_eia_data(actors: list[str], regions: list[str]) -> dict:
+    """EIA 에너지 통계 — 행위자 국가 생산량 + 관련 초크포인트 통과량."""
+    _REGION_CHOKEPOINTS: dict[str, list[str]] = {
+        "hormuz":        ["HORMUZ", "IRN", "SAU", "IRQ", "ARE", "KWT", "QAT"],
+        "malacca":       ["MALACCA", "SAU", "IRQ"],
+        "bab_el_mandeb": ["BABELM", "SAU"],
+        "suez":          ["SUEZ"],
+        "taiwan_strait": ["MALACCA"],
+        "south_china_sea": ["MALACCA"],
+        "ukraine":       ["RUS", "NOR"],
+        "korean_peninsula": ["RUS", "CHN"],
+    }
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_CHOKEPOINTS.get(r, []))
+
+    if not iso3_set:
+        return {}
+
+    placeholders = ",".join("?" * len(iso3_set))
+    try:
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""
+                SELECT iso3, country_name, crude_prod_mbpd,
+                       natgas_prod_bcfd, oil_export_mbpd, data_year
+                FROM eia_energy
+                WHERE iso3 IN ({placeholders})
+                ORDER BY crude_prod_mbpd DESC NULLS LAST
+                """,
+                tuple(iso3_set),
+            ).fetchall()
+        return {r["iso3"]: dict(r) for r in rows}
+    except Exception as e:
+        logger.warning("[intel] eia_data 실패: %s", e)
+        return {}
+
+
+def _get_csis_incidents(actors: list[str], regions: list[str],
+                        sectors: list[str]) -> list[dict]:
+    """CSIS 사이버 사건 — 행위자·지역·섹터 기반 필터링."""
+    _REGION_COUNTRIES: dict[str, list[str]] = {
+        "ukraine":          ["UKR", "RUS"],
+        "taiwan_strait":    ["CHN", "USA", "TWN"],
+        "hormuz":           ["IRN", "SAU", "USA"],
+        "korean_peninsula": ["PRK", "KOR", "USA"],
+        "middle_east":      ["IRN", "ISR", "USA"],
+        "east_china_sea":   ["CHN", "JPN", "USA"],
+    }
+    # cyber 섹터 포함 시 더 넓은 범위 조회
+    is_cyber = "cyber" in sectors
+
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_COUNTRIES.get(r, []))
+
+    try:
+        with _db(_INTEL_DB) as con:
+            if iso3_set:
+                placeholders = ",".join("?" * len(iso3_set))
+                rows = con.execute(
+                    f"""
+                    SELECT incident_id, incident_date, actor_iso3, actor_group,
+                           victim_iso3, victim_sector, incident_type, title, description
+                    FROM csis_cyber_incidents
+                    WHERE actor_iso3 IN ({placeholders})
+                       OR victim_iso3 IN ({placeholders})
+                    ORDER BY incident_date DESC
+                    LIMIT 10
+                    """,
+                    (*iso3_set, *iso3_set),
+                ).fetchall()
+            elif is_cyber:
+                # cyber 섹터 쿼리지만 특정 행위자 없으면 최신 10건
+                rows = con.execute(
+                    """
+                    SELECT incident_id, incident_date, actor_iso3, actor_group,
+                           victim_iso3, victim_sector, incident_type, title, description
+                    FROM csis_cyber_incidents
+                    ORDER BY incident_date DESC LIMIT 10
+                    """,
+                ).fetchall()
+            else:
+                rows = []
+        return [dict(r) for r in rows]
+    except Exception as e:
+        logger.warning("[intel] csis_incidents 실패: %s", e)
+        return []
+
+
+# ── 7. 국가 프로파일 ──────────────────────────────────────────────────────────
 
 def _get_country_profiles(actors: list[str]) -> dict:
     if not actors:
@@ -277,6 +484,11 @@ def _build_context(
     event_stats:      dict,
     cascade_ctx:      dict,
     country_profiles: dict,
+    sipri_data:       dict | None = None,
+    cow_alliances:    list[dict] | None = None,
+    kiel_data:        list[dict] | None = None,
+    eia_data:         dict | None = None,
+    csis_incidents:   list[dict] | None = None,
 ) -> str:
     lines: list[str] = []
     total_chars = 0
@@ -385,6 +597,116 @@ def _build_context(
                 lines.append(f"  주요위험: {', '.join(str(r) for r in risks[:3])}")
         lines.append("")
 
+    # ── SIPRI 국방비 (IA-Engine-B1) ───────────────────────────────────────────
+    if sipri_data:
+        lines.append("## 국방비 추이 (SIPRI 2023, % of GDP / USD billion)")
+        for iso3, records in sipri_data.items():
+            if not records:
+                continue
+            latest = records[0]
+            name   = latest.get("country", iso3)
+            gdp    = latest.get("gdp_pct")
+            usd    = latest.get("usd_mn")
+            year   = latest.get("year")
+            trend  = " → ".join(
+                f"{r['year']}:{r['gdp_pct']}%"
+                for r in reversed(records) if r.get("gdp_pct")
+            )
+            usd_bn = f"${usd/1000:.1f}bn" if usd else ""
+            lines.append(f"- **{name}** ({iso3}): {year}년 GDP {gdp}% {usd_bn}")
+            if len(records) > 1:
+                lines.append(f"  5년 추이: {trend}")
+        lines.append("  출처: SIPRI Military Expenditure Database 2024")
+        lines.append("")
+
+    # ── COW 동맹 관계 (IA-Engine-B1) ─────────────────────────────────────────
+    if cow_alliances:
+        defense = [a for a in cow_alliances if a.get("alliance_type") == "defense"]
+        others  = [a for a in cow_alliances if a.get("alliance_type") != "defense"]
+        lines.append("## 공식 동맹 관계 (COW Formal Alliances v4.1)")
+        if defense:
+            lines.append("**방위조약 (Defense Pact)**")
+            for a in defense[:10]:
+                end_str = f"~{a['end_year']}" if a.get("end_year") else "~현재"
+                lines.append(
+                    f"- {a.get('name_a') or a['iso3_a']} ↔ "
+                    f"{a.get('name_b') or a['iso3_b']} "
+                    f"({a.get('start_year', '?')}{end_str})"
+                )
+        if others:
+            types: dict[str, list[str]] = {}
+            for a in others:
+                t = a.get("alliance_type", "기타")
+                types.setdefault(t, []).append(
+                    f"{a.get('name_a') or a['iso3_a']}-{a.get('name_b') or a['iso3_b']}"
+                )
+            for t, pairs in types.items():
+                lines.append(f"**{t}**: {', '.join(pairs[:5])}")
+        lines.append("  출처: Correlates of War Formal Alliances v4.1")
+        lines.append("")
+
+    # ── Kiel Ukraine Support Tracker (IA-Engine-B1) ───────────────────────────
+    if kiel_data:
+        lines.append("## 우크라이나 지원 현황 (Kiel Ukraine Support Tracker 2024)")
+        lines.append("단위: EUR 십억 (군사/재정/인도적/합계)")
+        for d in kiel_data[:8]:
+            mil  = d.get("military_eur_bn", 0) or 0
+            fin  = d.get("financial_eur_bn", 0) or 0
+            hum  = d.get("humanitarian_eur_bn", 0) or 0
+            tot  = d.get("total_eur_bn", 0) or 0
+            lines.append(
+                f"- **{d['donor_name']}**: 군사 {mil:.1f} / 재정 {fin:.1f} / "
+                f"인도적 {hum:.1f} / **합계 {tot:.1f}bn€**"
+            )
+        period = kiel_data[0].get("data_period", "") if kiel_data else ""
+        lines.append(f"  기간: {period} | 출처: Kiel Institute Ukraine Support Tracker")
+        lines.append("")
+
+
+    # ── EIA 에너지 통계 (IA-Engine-B2) ──────────────────────────────────────
+    if eia_data:
+        lines.append("## 에너지 생산·수출 현황 (EIA International Energy Statistics 2023)")
+        # 초크포인트 먼저 표시
+        chokepoints = {k: v for k, v in eia_data.items() if len(k) > 3}
+        producers   = {k: v for k, v in eia_data.items() if len(k) == 3}
+        if chokepoints:
+            lines.append("**전략 초크포인트 통과량 (백만 배럴/일)**")
+            for key, d in chokepoints.items():
+                lines.append(f"- {d['country_name']}: {d.get('crude_prod_mbpd', '?')} Mbpd")
+        if producers:
+            lines.append("**주요 산유국 생산량 / 수출량 (Mbpd)**")
+            for iso3, d in producers.items():
+                prod = d.get("crude_prod_mbpd", "?")
+                exp  = d.get("oil_export_mbpd")
+                gas  = d.get("natgas_prod_bcfd")
+                row  = f"- **{d.get('country_name', iso3)}** ({iso3}): 원유 {prod}"
+                if exp:
+                    row += f" / 수출 {exp}"
+                if gas:
+                    row += f" / 천연가스 {gas} Bcfd"
+                lines.append(row)
+        lines.append("  출처: EIA International Energy Statistics 2024")
+        lines.append("")
+
+    # ── CSIS 사이버 사건 (IA-Engine-B2) ──────────────────────────────────────
+    if csis_incidents:
+        lines.append("## 주요 사이버 사건 (CSIS Significant Cyber Incidents DB)")
+        for inc in csis_incidents[:6]:
+            actor = inc.get("actor_group") or inc.get("actor_iso3") or "미귀속"
+            victim = inc.get("victim_iso3", "?")
+            sector = inc.get("victim_sector", "")
+            itype  = inc.get("incident_type", "")
+            date   = (inc.get("incident_date") or "")[:7]
+            lines.append(
+                f"- [{date}] **{inc.get('title', '')}**"
+                f" | 행위자: {actor} → 피해: {victim}({sector}) | 유형: {itype}"
+            )
+            desc = (inc.get("description") or "")[:120]
+            if desc:
+                lines.append(f"  {desc}")
+        lines.append("  출처: CSIS Strategic Technologies Program 2024")
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -400,6 +722,11 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_event_stats, pq.regions),
         loop.run_in_executor(None, _get_cascade_context, pq.regions),
         loop.run_in_executor(None, _get_country_profiles, pq.actors),
+        loop.run_in_executor(None, _get_sipri_data, pq.actors, pq.regions),
+        loop.run_in_executor(None, _get_cow_alliances, pq.actors, pq.regions),
+        loop.run_in_executor(None, _get_kiel_data, pq.regions),
+        loop.run_in_executor(None, _get_eia_data, pq.actors, pq.regions),
+        loop.run_in_executor(None, _get_csis_incidents, pq.actors, pq.regions, pq.sectors),
         return_exceptions=True,
     )
 
@@ -411,14 +738,22 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
     event_stats      = _safe(results[2], {})
     cascade_ctx      = _safe(results[3], {"links": [], "rules": []})
     country_profiles = _safe(results[4], {})
+    sipri_data       = _safe(results[5], {})
+    cow_alliances    = _safe(results[6], [])
+    kiel_data        = _safe(results[7], [])
+    eia_data         = _safe(results[8], {})
+    csis_incidents   = _safe(results[9], [])
 
     context_text = _build_context(
-        pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles
+        pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
+        sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
     )
 
     logger.debug(
-        "[intel] 컨텍스트 조립 — LIKE=%d, sector=%d, 총길이=%d자",
-        len(like_items), len(sector_items), len(context_text),
+        "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d EIA=%d CSIS=%d 총%d자",
+        len(like_items), len(sector_items),
+        len(sipri_data), len(cow_alliances), len(kiel_data),
+        len(eia_data), len(csis_incidents), len(context_text),
     )
 
     return {
@@ -429,10 +764,20 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
             "event_stats_regions": len(event_stats),
             "cascade_links":       len(cascade_ctx.get("links", [])),
             "country_profiles":    len(country_profiles),
+            "sipri_countries":     len(sipri_data),
+            "cow_alliances":       len(cow_alliances),
+            "kiel_donors":         len(kiel_data),
+            "eia_entries":         len(eia_data),
+            "csis_incidents":      len(csis_incidents),
         },
         "like_items":        like_items,
         "sector_items":      sector_items,
         "event_stats":       event_stats,
         "cascade_ctx":       cascade_ctx,
         "country_profiles":  country_profiles,
+        "sipri_data":        sipri_data,
+        "cow_alliances":     cow_alliances,
+        "kiel_data":         kiel_data,
+        "eia_data":          eia_data,
+        "csis_incidents":    csis_incidents,
     }

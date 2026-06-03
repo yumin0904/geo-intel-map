@@ -140,3 +140,76 @@ CREATE TABLE IF NOT EXISTS intel_analyses (
 );
 
 CREATE INDEX IF NOT EXISTS idx_intel_created ON intel_analyses(created_at DESC);
+
+-- IA-Engine-B1: 외부 정형 데이터 (SIPRI · COW · Kiel)
+
+CREATE TABLE IF NOT EXISTS sipri_milex (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    iso3         TEXT NOT NULL,
+    country_name TEXT,
+    year         INTEGER NOT NULL,
+    gdp_pct      REAL,         -- 국방비 % of GDP
+    usd_mn_2022  REAL,         -- USD millions (2022 constant prices)
+    UNIQUE(iso3, year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sipri_iso3_year ON sipri_milex(iso3, year DESC);
+
+CREATE TABLE IF NOT EXISTS cow_alliances (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    iso3_a       TEXT NOT NULL,
+    iso3_b       TEXT NOT NULL,
+    name_a       TEXT,
+    name_b       TEXT,
+    start_year   INTEGER,
+    end_year     INTEGER,       -- NULL = 현재 활성
+    alliance_type TEXT,         -- defense / neutrality / nonaggression / consultation
+    UNIQUE(iso3_a, iso3_b, start_year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cow_iso3_a ON cow_alliances(iso3_a);
+CREATE INDEX IF NOT EXISTS idx_cow_iso3_b ON cow_alliances(iso3_b);
+
+-- IA-Engine-B2: EIA Energy + CSIS Cyber
+
+CREATE TABLE IF NOT EXISTS eia_energy (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    iso3            TEXT NOT NULL,
+    country_name    TEXT,
+    crude_prod_mbpd REAL,        -- 원유 생산량 (백만 배럴/일)
+    natgas_prod_bcfd REAL,       -- 천연가스 생산량 (십억 입방피트/일)
+    oil_export_mbpd REAL,        -- 원유 수출량
+    data_year       INTEGER,
+    UNIQUE(iso3, data_year)
+);
+
+CREATE TABLE IF NOT EXISTS csis_cyber_incidents (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    incident_id    TEXT UNIQUE,
+    incident_date  TEXT,
+    actor_iso3     TEXT,
+    actor_group    TEXT,
+    victim_iso3    TEXT,
+    victim_sector  TEXT,         -- government/military/energy/finance/telecom/...
+    incident_type  TEXT,         -- espionage/sabotage/ransomware/ddos/...
+    title          TEXT,
+    description    TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_csis_actor  ON csis_cyber_incidents(actor_iso3);
+CREATE INDEX IF NOT EXISTS idx_csis_victim ON csis_cyber_incidents(victim_iso3);
+CREATE INDEX IF NOT EXISTS idx_csis_date   ON csis_cyber_incidents(incident_date DESC);
+CREATE INDEX IF NOT EXISTS idx_csis_type   ON csis_cyber_incidents(incident_type);
+
+CREATE TABLE IF NOT EXISTS kiel_ukraine_support (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    donor_iso3       TEXT,
+    donor_name       TEXT NOT NULL,
+    military_eur_bn  REAL DEFAULT 0,
+    financial_eur_bn REAL DEFAULT 0,
+    humanitarian_eur_bn REAL DEFAULT 0,
+    total_eur_bn     REAL DEFAULT 0,
+    data_period      TEXT,       -- 예: "2022-01~2024-06"
+    updated_at       TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+    UNIQUE(donor_iso3, data_period)
+);

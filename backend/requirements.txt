@@ -29,3 +29,6 @@ apscheduler>=3.10,<4.0
 
 # Granger 인과분석 — Cascade 룰 통계 검증 (Phase 3, cascade/correlation.py)
 statsmodels>=0.14,<1.0
+
+# IA-Engine-B1: SIPRI·Kiel Excel 파싱 (load_external_data.py)
+openpyxl>=3.1,<4.0

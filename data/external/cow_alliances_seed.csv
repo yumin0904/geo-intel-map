@@ -1,0 +1,54 @@
+# COW Formal Alliances v4.1 + updates (correlatesofwar.org)
+# alliance_type: defense / neutrality / nonaggression / consultation
+# end_year: blank = currently active (2024)
+iso3_a,iso3_b,name_a,name_b,start_year,end_year,alliance_type
+# NATO bilateral pairs (defense pacts via NATO Treaty 1949)
+USA,GBR,United States,United Kingdom,1949,,defense
+USA,FRA,United States,France,1949,,defense
+USA,DEU,United States,Germany,1955,,defense
+USA,ITA,United States,Italy,1949,,defense
+USA,CAN,United States,Canada,1949,,defense
+USA,TUR,United States,Türkiye,1952,,defense
+USA,NLD,United States,Netherlands,1949,,defense
+USA,BEL,United States,Belgium,1949,,defense
+USA,NOR,United States,Norway,1949,,defense
+USA,DNK,United States,Denmark,1949,,defense
+USA,POL,United States,Poland,1999,,defense
+USA,CZE,United States,Czech Republic,1999,,defense
+USA,HUN,United States,Hungary,1999,,defense
+USA,ROU,United States,Romania,2004,,defense
+USA,BGR,United States,Bulgaria,2004,,defense
+USA,SVK,United States,Slovakia,2004,,defense
+USA,SVN,United States,Slovenia,2004,,defense
+USA,EST,United States,Estonia,2004,,defense
+USA,LVA,United States,Latvia,2004,,defense
+USA,LTU,United States,Lithuania,2004,,defense
+USA,ALB,United States,Albania,2009,,defense
+USA,HRV,United States,Croatia,2009,,defense
+USA,MNE,United States,Montenegro,2017,,defense
+USA,MKD,United States,North Macedonia,2020,,defense
+USA,FIN,United States,Finland,2023,,defense
+USA,SWE,United States,Sweden,2024,,defense
+# US bilateral defense treaties (non-NATO)
+USA,JPN,United States,Japan,1960,,defense
+USA,KOR,United States,South Korea,1953,,defense
+USA,AUS,United States,Australia,1951,,defense
+USA,NZL,United States,New Zealand,1951,,defense
+USA,PHL,United States,Philippines,1951,,defense
+USA,THA,United States,Thailand,1954,,defense
+# CSTO (Collective Security Treaty Organization)
+RUS,BLR,Russia,Belarus,1992,,defense
+RUS,KAZ,Russia,Kazakhstan,1992,,defense
+RUS,KGZ,Russia,Kyrgyzstan,1992,,defense
+RUS,TJK,Russia,Tajikistan,1992,,defense
+RUS,ARM,Russia,Armenia,1992,,defense
+# China-related
+CHN,PRK,China,North Korea,1961,,defense
+# GCC consultation/defense
+SAU,ARE,Saudi Arabia,UAE,1981,,consultation
+SAU,QAT,Saudi Arabia,Qatar,1981,,consultation
+SAU,KWT,Saudi Arabia,Kuwait,1981,,consultation
+SAU,BHR,Saudi Arabia,Bahrain,1981,,consultation
+SAU,OMN,Saudi Arabia,Oman,1981,,consultation
+# Historical (ended)
+USA,FRA,United States,France,1949,1966,defense

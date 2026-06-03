@@ -1,0 +1,33 @@
+# EIA International Energy Statistics (eia.gov/international)
+# Source: EIA Short-Term Energy Outlook May 2024 + IEA World Energy Outlook 2023
+# crude_prod_mbpd = 원유 생산량 (백만 배럴/일, million barrels per day)
+# natgas_prod_bcfd = 천연가스 생산량 (십억 입방피트/일, billion cubic feet per day)
+# oil_export_mbpd = 원유 수출량 추정 (million barrels per day)
+# data_year = 기준 연도
+iso3,country_name,crude_prod_mbpd,natgas_prod_bcfd,oil_export_mbpd,data_year
+USA,United States,13.30,103.50,4.10,2023
+SAU,Saudi Arabia,9.90,11.40,7.20,2023
+RUS,Russia,9.50,58.00,4.80,2023
+IRQ,Iraq,4.40,1.70,3.60,2023
+CHN,China,4.20,22.40,0.00,2023
+ARE,United Arab Emirates,3.70,6.60,2.70,2023
+IRN,Iran,3.10,24.40,1.40,2023
+BRA,Brazil,3.40,2.90,1.20,2023
+KWT,Kuwait,2.70,1.80,2.10,2023
+KAZ,Kazakhstan,1.90,1.50,1.60,2023
+NOR,Norway,1.80,11.60,1.50,2023
+CAN,Canada,4.90,15.00,3.10,2023
+MEX,Mexico,1.90,5.20,1.00,2023
+VEN,Venezuela,0.80,2.80,0.50,2023
+NGA,Nigeria,1.50,4.80,1.30,2023
+LBY,Libya,1.20,1.00,1.10,2023
+GBR,United Kingdom,0.60,4.00,0.30,2023
+QAT,Qatar,1.90,21.00,0.60,2023
+# ── 에너지 초크포인트 통과량 (단위: million barrels per day equivalent) ──
+# source_type=chokepoint 으로 구분
+HORMUZ,Strait of Hormuz,21.00,,21.00,2023
+MALACCA,Strait of Malacca,16.00,,16.00,2023
+SUEZ,Suez Canal,5.80,,5.80,2023
+BABELM,Bab el-Mandeb,6.20,,6.20,2023
+BOSPOR,Turkish Straits,2.90,,2.90,2023
+DANISH,Danish Straits,3.20,,3.20,2023
