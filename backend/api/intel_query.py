@@ -41,7 +41,9 @@ def _db() -> Iterator[sqlite3.Connection]:
 
 from services.entity_parser import parse_query, ParsedQuery
 from services.intel_analyzer import build_intel_context
-from services.confidence_scorer import score_output
+from services.confidence_scorer import score_output, apply_verification_cap
+from services.hypothesis_extractor import extract_hypotheses
+from services.hypothesis_verifier import verify_hypotheses
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +170,6 @@ MEDIUM 이하가 포함되면 전체 결론에 [SPECULATIVE] 레이블을 붙일
 
 ### 최종 판정
 - **결론**: 지지 / 반증 / 불확실
-- **신뢰도**: N점/100 (§19-D 기준 산출)
 - **레이블**: [SPECULATIVE] / [PROVISIONAL] / 없음"""
 
     else:  # insight
@@ -282,6 +283,41 @@ async def _stream_gemini(
         # §19-D 신뢰도 점수 역산 — 스트리밍 완료 후 score 이벤트 전송
         if full_text:
             score_result = score_output(full_text)
+
+            # IA-Engine-D: H1 가설 추출 → Granger 검증 → 신뢰도 캡 적용
+            specs = extract_hypotheses(full_text)
+            if specs:
+                specs = await verify_hypotheses(specs)
+                # 가장 낮은 검증 상태로 신뢰도 캡 결정
+                status_order = {"PENDING": 0, "PARTIAL": 1, "VERIFIED": 2}
+                worst = min(specs, key=lambda s: status_order.get(s.verification_status, 0))
+                score_result["confidence"] = apply_verification_cap(
+                    score_result["confidence"], worst.verification_status
+                )
+                score_result["provisional"] = score_result["confidence"] < 60
+                # hypothesis 이벤트 전송
+                yield _sse({
+                    "type": "hypothesis",
+                    "done": False,
+                    "hypotheses": [
+                        {
+                            "h1": s.h1,
+                            "h0": s.h0,
+                            "independent_var": s.independent_var,
+                            "dependent_var": s.dependent_var,
+                            "control_vars": s.control_vars,
+                            "region_code": s.region_code,
+                            "ticker": s.ticker,
+                            "verification_status": s.verification_status,
+                            "granger_p": s.granger_p,
+                            "best_lag": s.best_lag,
+                            "n_obs": s.n_obs,
+                            "error": s.error,
+                        }
+                        for s in specs
+                    ],
+                })
+
             yield _sse({"type": "score", "done": False, **score_result})
 
         yield _sse({"done": True})

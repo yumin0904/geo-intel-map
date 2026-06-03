@@ -3510,3 +3510,78 @@ body:not(.study-mode) .notebook { display: none; }
   margin-top: 2px;
   opacity: 0.75;
 }
+
+/* ── IA-Engine-D: H1 가설 검증 섹션 ─────────────────────────────────────── */
+
+.ia__hyp-section {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.ia__hyp-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.ia__hyp-card {
+  background: var(--bg-secondary);
+  border-left: 3px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+}
+
+.ia__hyp-card--verified { border-left-color: #22c55e; }
+.ia__hyp-card--partial  { border-left-color: #f59e0b; }
+.ia__hyp-card--pending  { border-left-color: #6b7280; }
+
+.ia__hyp-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.ia__hyp-status {
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.ia__hyp-card--verified .ia__hyp-status { color: #22c55e; }
+.ia__hyp-card--partial  .ia__hyp-status { color: #f59e0b; }
+.ia__hyp-card--pending  .ia__hyp-status { color: #6b7280; }
+
+.ia__hyp-tag {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.ia__hyp-stats {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.ia__hyp-h1 { margin-bottom: 3px; line-height: 1.4; }
+.ia__hyp-h0 { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 3px; }
+.ia__hyp-ctrl { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }
+.ia__hyp-desc { font-size: 0.73rem; color: var(--text-muted); margin-top: 4px; }
+
+.ia__hyp-error {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 4px;
+}

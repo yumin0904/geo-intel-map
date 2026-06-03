@@ -206,6 +206,11 @@ export class InsightAnalystView {
             continue;
           }
 
+          if (payload.type === 'hypothesis') {
+            this._renderHypotheses(resultArea, payload.hypotheses ?? []);
+            continue;
+          }
+
           if (payload.fallback) {
             preEl.insertAdjacentHTML('beforebegin',
               '<div class="ia__notice">⚡ Thinking 일시 과부하 → 일반 모드 전환</div>');
@@ -482,5 +487,50 @@ export class InsightAnalystView {
         resultArea.prepend(banner);
       }
     }
+  }
+
+  // ── IA-Engine-D: H1 가설 검증 결과 렌더링 ────────────────────────────────
+
+  _renderHypotheses(resultArea, hypotheses) {
+    if (!hypotheses.length) return;
+
+    const _statusLabel = {
+      VERIFIED: { cls: 'verified', icon: '✅', text: 'VERIFIED', desc: 'Granger p<0.05 — 통계적 유의' },
+      PARTIAL:  { cls: 'partial',  icon: '🔶', text: 'PARTIAL',  desc: 'Granger p<0.15 — 경향성 확인' },
+      PENDING:  { cls: 'pending',  icon: '⏳', text: 'PENDING',  desc: '미검증 (데이터 부족 또는 매핑 실패)' },
+    };
+
+    const cards = hypotheses.map(h => {
+      const st = _statusLabel[h.verification_status] ?? _statusLabel.PENDING;
+      const pStr  = h.granger_p  != null ? `p = ${h.granger_p}` : '—';
+      const lagStr = h.best_lag  != null ? `lag ${h.best_lag}일` : '—';
+      const nStr   = h.n_obs > 0         ? `n = ${h.n_obs}`      : '—';
+      const regionBadge = h.region_code ? `<span class="ia__hyp-tag">${h.region_code}</span>` : '';
+      const tickerBadge = h.ticker      ? `<span class="ia__hyp-tag">${h.ticker}</span>`      : '';
+      const errorNote   = h.error       ? `<div class="ia__hyp-error">⚠️ ${h.error}</div>`    : '';
+
+      return `
+        <div class="ia__hyp-card ia__hyp-card--${st.cls}">
+          <div class="ia__hyp-header">
+            <span class="ia__hyp-status">${st.icon} ${st.text}</span>
+            ${regionBadge}${tickerBadge}
+            <span class="ia__hyp-stats">${pStr} · ${lagStr} · ${nStr}</span>
+          </div>
+          <div class="ia__hyp-h1"><strong>H1</strong> ${h.h1}</div>
+          <div class="ia__hyp-h0"><strong>H0</strong> ${h.h0}</div>
+          ${h.control_vars?.length ? `<div class="ia__hyp-ctrl">통제변수: ${h.control_vars.join(', ')}</div>` : ''}
+          <div class="ia__hyp-desc">${st.desc}</div>
+          ${errorNote}
+        </div>
+      `;
+    }).join('');
+
+    const section = document.createElement('div');
+    section.className = 'ia__hyp-section';
+    section.innerHTML = `
+      <div class="ia__hyp-title">🔬 IA-Engine-D — H1 가설 검증 (Granger)</div>
+      ${cards}
+    `;
+    resultArea.appendChild(section);
   }
 }

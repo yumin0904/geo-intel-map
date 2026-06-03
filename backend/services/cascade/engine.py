@@ -67,7 +67,9 @@ _TRIGGER_COUNTRIES: dict[str, list[str]] = {
     "north_korea":    ["North Korea"],                     # → KRW=X ↑ (북한 도발)
     "east_china_sea": ["China", "Japan"],                  # → ITA ↑ (센카쿠 분쟁)
     "malacca":        ["Malaysia", "Singapore", "Indonesia"],  # → NG=F ↑ (LNG 초크포인트)
-    # "taiwan_strait": 전술적 군사 도발 → ACLED 전투 이벤트 없음, ADS-B 필요
+    # 대만해협: ACLED는 대만·중국 민간 충돌 위주 (avg sev≈15). 고강도 이벤트(sev≥50)는 희박하지만
+    # event_archive 12개월치 데이터를 활용해 cascade 발화 가능. ADS-B(military_flight) 룰과 병행.
+    "taiwan_strait":  ["Taiwan", "China"],                    # → SOXX ↓, TSM ↓
 }
 
 _INTEL_DB = Path(__file__).resolve().parents[2] / "db" / "intel.db"
@@ -78,6 +80,7 @@ def _load_region_events_from_db(region: str) -> list[Event]:
 
     live ACLED API가 희박한 지역(한반도·동중국해·말라카 등)에서
     DB baseline 데이터를 cascade 트리거로 활용한다.
+    events 테이블에 고강도(sev≥50) 이벤트가 부족하면 event_archive를 추가 조회한다.
     """
     if not _INTEL_DB.exists():
         return []
@@ -97,6 +100,35 @@ def _load_region_events_from_db(region: str) -> list[Event]:
                 """,
                 (region,),
             ).fetchall()
+
+            # 고강도 이벤트(sev≥50)가 5건 미만이면 event_archive에서 추가 보충
+            # 대만해협처럼 ACLED 민간 이벤트 위주인 지역은 archive 12개월치 활용
+            high_sev = [r for r in rows if (r["severity"] or 0) >= 50]
+            if len(high_sev) < 5:
+                archive_rows = con.execute(
+                    """
+                    SELECT id, timestamp, source_type, region_code, severity,
+                           confidence_score,
+                           CAST(json_extract(payload, '$.lat') AS REAL) AS lat,
+                           CAST(json_extract(payload, '$.lon') AS REAL) AS lon,
+                           title, description, payload, theory_tags
+                    FROM event_archive
+                    WHERE source_type = 'conflict'
+                      AND region_code = ?
+                      AND confidence_score >= 1.0
+                    ORDER BY severity DESC
+                    LIMIT 200
+                    """,
+                    (region,),
+                ).fetchall()
+                # 중복 id 제거 후 병합
+                existing_ids = {r["id"] for r in rows}
+                extra = [r for r in archive_rows if r["id"] not in existing_ids]
+                rows = list(rows) + extra
+                logger.info(
+                    "[cascade] region=%s: events 고강도 이벤트 부족(%d건) → archive %d건 보충",
+                    region, len(high_sev), len(extra),
+                )
         events: list[Event] = []
         for r in rows:
             try:

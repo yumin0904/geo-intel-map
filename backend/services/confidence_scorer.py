@@ -130,3 +130,23 @@ def score_output(text: str) -> dict:
         "breakdown":   bd,
         "evidence":    ev,
     }
+
+
+# §22-B 신뢰도 상한 캡 (IA-Engine-D)
+_VERIFICATION_CAPS: dict[str, int] = {
+    "PENDING":  75,
+    "PARTIAL":  88,
+    "VERIFIED": 100,  # 상한 없음
+}
+
+
+def apply_verification_cap(confidence: int, verification_status: str) -> int:
+    """
+    Granger 검증 상태에 따라 신뢰도 점수에 상한 캡을 적용한다 (§22-B).
+
+    PENDING  → 최대 75점 (가설 미검증)
+    PARTIAL  → 최대 88점 (경향성 확인, p<0.15)
+    VERIFIED → 상한 없음 (Granger p<0.05 충족)
+    """
+    cap = _VERIFICATION_CAPS.get(verification_status, 75)
+    return min(confidence, cap)

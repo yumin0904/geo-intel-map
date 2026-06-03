@@ -868,20 +868,80 @@ frontend/src/views/
 
 ---
 
+## ✅ [IA-Engine-D] H1 자동 생성 + Granger 검증 파이프라인 (2026-06-03) — v6.1.0
+
+**구현 내용**
+
+| 파일 | 역할 |
+|------|------|
+| `backend/services/hypothesis_extractor.py` (신규) | `[가설]` 섹션 정규식 파싱 → HypothesisSpec. region/ticker 결정론적 매핑 (Token-Zero) |
+| `backend/services/hypothesis_verifier.py` (신규) | `correlation.py` `_run_granger()` 재활용 → p_value → PENDING/PARTIAL/VERIFIED 판정 |
+| `backend/services/confidence_scorer.py` | `apply_verification_cap()` 추가 (PENDING≤75 / PARTIAL≤88 / VERIFIED=무제한) |
+| `backend/api/intel_query.py` | 스트리밍 완료 후 H1 추출 → Granger 실행 → `hypothesis` SSE 이벤트 전송 + 캡 적용 |
+| `frontend/src/views/InsightAnalystView.js` | `hypothesis` 이벤트 처리 + `_renderHypotheses()` — H1/H0/p값/lag/status 카드 |
+| `frontend/styles/main.css` | `.ia__hyp-*` 스타일 추가 (VERIFIED=초록 / PARTIAL=주황 / PENDING=회색) |
+
+**파이프라인 흐름**
+```
+Gemini 스트리밍 완료
+  → hypothesis_extractor: [가설] H1 정규식 추출 + 변수→region/ticker 매핑
+  → hypothesis_verifier:  _load_event_series + _get_market_series → _run_granger
+  → verification_status: p<0.05=VERIFIED / p<0.15=PARTIAL / else=PENDING
+  → apply_verification_cap: 신뢰도 점수에 상한 캡 적용
+  → hypothesis SSE 이벤트 → 프론트 H1 카드 렌더링
+```
+
+**region/ticker 결정론적 매핑 (Token-Zero)**
+- region 9종: eastern_europe / taiwan_strait / hormuz / korean_peninsula / bab_el_mandeb / suez / middle_east / malacca / sahel
+- ticker 8종: CL=F / NG=F / TSM / KRW=X / ZW=F / GLD / ITA / SOXX
+
+**실측 (단위 테스트)**
+- "우크라이나 분쟁 강도 → WTI 유가": region=eastern_europe, ticker=CL=F ✅
+- "대만해협 긴장 → TSMC 주가": region=taiwan_strait, ticker=TSM ✅
+- "외교 성명 빈도 → 알 수 없는 지표": region=None, ticker=None → PENDING + error 기록 ✅
+- PENDING cap 90→75, PARTIAL cap 90→88, VERIFIED cap 90→90 ✅
+
+**verify 모드 신뢰도 버그 수정** (같은 세션): `_build_prompt()` verify 최종 판정 섹션에서 `신뢰도: N점/100` 줄 제거 → Gemini 자체 점수 출력 방지
+
+**이론 연결**: Clive Granger(1969) F-test × 지정학 연쇄 인과 — Farrell & Newman Weaponized Interdependence의 "초크포인트 충격만 시장 전이" 명제를 통계 검정
+
+### 현재 버전
+`version.json`: **6.1.0** | phase: 6
+
+---
+
+## 다음 세션 시작점
+
+## ✅ ACLED 대만해협 Cascade 0건 수정 (2026-06-03) — v6.1.1
+
+**근본 원인**
+- `_TRIGGER_COUNTRIES`에 `taiwan_strait` 누락 → `_fetch_region_events("taiwan_strait")`가 즉시 `[]` 반환, DB fallback에 도달 불가
+
+**2차 원인**
+- `events` + `event_archive` 모두 taipei_strait ACLED 이벤트의 severity 평균 ≈ 15 (시위·경찰 이벤트 위주)
+- severity ≥ 50 이벤트: `events` 테이블 2건, `event_archive` 5건
+
+**수정 내용** (`backend/services/cascade/engine.py`)
+1. `_TRIGGER_COUNTRIES`에 `taiwan_strait: ["Taiwan", "China"]` 추가
+2. `_load_region_events_from_db`: events 테이블 고강도 이벤트 < 5건이면 `event_archive` 추가 조회 (lat/lon은 payload JSON에서 추출)
+
+**실측 결과**
+- 수정 전: 발화 0건
+- 수정 후: `taiwan_strait_conflict_to_soxx` → score=0.67, 발화 1건 ✅
+- DB fallback: 698건 로드 (events 500 + archive 198 비중복)
+
+**구조적 한계 (기록)**: 대만해협 ACLED는 민간 충돌 위주 → PLA 군사 도발은 OpenSky ADS-B(`military_flight` 룰)가 담당. Cascade 발화 빈도는 낮을 수밖에 없으나, 실제 발화 이벤트 발생 시 정상 동작함.
+
+---
+
 ## 다음 세션 시작점
 
 | 항목 | 상태 | 우선순위 |
 |------|------|---------|
 | 신뢰도 버그 픽스 (P0) | ✅ v6.0.0~6.0.1 | — |
 | 시간 역전 탐지 (A-2) | ✅ v6.0.1 | — |
-| IA-Engine-D H1 자동 생성 모듈 | ⬜ | 🔴 최우선 |
-| IA-Engine-D Granger 예비 검증 파이프라인 | ⬜ | 🔴 최우선 |
-| ACLED 대만해협 Cascade 0건 조사·수정 | ⬜ | 🟠 다음 |
-| 브리핑 추가 적재 (현재 38개 → 목표 50개) | ⬜ | 🟠 병행 |
+| IA-Engine-D H1 자동 생성 + Granger | ✅ v6.1.0 | — |
+| ACLED 대만해협 Cascade 0건 조사·수정 | ✅ v6.1.1 | — |
+| 브리핑 추가 적재 (현재 38개 → 목표 50개) | ⬜ | 🟠 다음 |
 | Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟡 브리핑 50개 게이트 |
 | 이론 라이브러리 12개 프로파일 구축 | ⬜ | 🟢 중기 |
-
-**IA-Engine-D 핵심 원칙 (CLAUDE.md §22 참조)**:
-- 이미 있는 부품(Granger 코드 + Kiel 데이터)을 연결하는 것이 본질
-- 파이프라인: H1 자동 생성 → `correlation.py` Granger 실행 → r·p값 인사이트에 주입
-- 신뢰도 상한 캡: PENDING≤75 / PARTIAL≤88 / VERIFIED=무제한
