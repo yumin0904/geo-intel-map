@@ -13,6 +13,7 @@
  */
 
 import { api } from '../services/api.js';
+import { InsightAnalystView } from './InsightAnalystView.js';
 
 const BASE = api.BASE_URL; // http://localhost:8000
 
@@ -65,6 +66,7 @@ export class SandboxLabView {
     this._cascadeLinks = [];    // cascade:loaded 캐시
     this._cascadeEvents = {};   // event_id → event
     this._grangerLoaded = false; // Granger 탭 첫 로드 여부
+    this._intelView     = new InsightAnalystView(); // 인사이트 분석 탭
 
     this._mount();
     this._bindEvents();
@@ -96,6 +98,7 @@ export class SandboxLabView {
       <div class="sandbox__tabs">
         <button class="sandbox__tab-btn is-active" data-tab="builder">🔬 가설 빌더</button>
         <button class="sandbox__tab-btn" data-tab="granger">📊 Granger 검증</button>
+        <button class="sandbox__tab-btn" data-tab="intel">🧠 인사이트 분석</button>
       </div>
 
       <!-- 가설 빌더 패널 -->
@@ -147,6 +150,9 @@ export class SandboxLabView {
           <div class="granger__rules" id="granger-rules"></div>
         </div>
       </div>
+
+      <!-- 인사이트 분석 패널 -->
+      <div class="sandbox__pane" id="sandbox-pane-intel" style="display:none"></div>
     `;
   }
 
@@ -183,9 +189,14 @@ export class SandboxLabView {
       tab === 'builder' ? '' : 'none';
     document.getElementById('sandbox-pane-granger').style.display =
       tab === 'granger' ? '' : 'none';
+    document.getElementById('sandbox-pane-intel').style.display =
+      tab === 'intel' ? '' : 'none';
 
     if (tab === 'granger' && !this._grangerLoaded) {
       this._loadGrangerView();
+    }
+    if (tab === 'intel') {
+      this._intelView.mount(document.getElementById('sandbox-pane-intel'));
     }
   }
 

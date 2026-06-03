@@ -125,3 +125,18 @@ CREATE TABLE IF NOT EXISTS cascade_links (
 CREATE INDEX IF NOT EXISTS idx_cascade_source ON cascade_links(source_event_id);
 CREATE INDEX IF NOT EXISTS idx_cascade_target ON cascade_links(target_event_id);
 CREATE INDEX IF NOT EXISTS idx_cascade_score  ON cascade_links(correlation_score DESC);
+
+-- 인사이트 분석실 저장 이력
+CREATE TABLE IF NOT EXISTS intel_analyses (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    title        TEXT NOT NULL,          -- 쿼리 앞 30자 자동 생성
+    query        TEXT NOT NULL,
+    mode         TEXT NOT NULL DEFAULT 'insight',
+    regions      TEXT,                   -- JSON 배열
+    sectors      TEXT,                   -- JSON 배열
+    result_md    TEXT NOT NULL,          -- Gemini 출력 마크다운
+    context_chars INTEGER DEFAULT 0,    -- 컨텍스트 총 글자 수 (품질 지표)
+    created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_intel_created ON intel_analyses(created_at DESC);

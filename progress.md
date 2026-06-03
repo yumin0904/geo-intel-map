@@ -422,11 +422,232 @@ LayerManager + LayerPanel 토글 UI, 1,000+ 마커 MarkerCluster+Canvas 처리.
 | 7 | `list_db_theories` SELECT 필드 누락 버그 수정 (source_org 등 7개) | ✅ 7bd9c8c |
 | 8 | source_org 부분 매칭 필터 (RAND Corporation·ECFR 변형 대응) | ✅ 7bd9c8c |
 
-### 다음 세션 시작점
+---
 
-**Phase 5 잔여 항목 재개**
+## 인사이트 분석실 탭 — 설계 확정 (2026-06-03)
+
+### 결정 사항
+
+**백엔드 LLM**: **Gemini 2.5 Flash** (단일 모델, 모드로 분기)
+
+| 모드 | Thinking | 용도 | 비용/쿼리 |
+|------|---------|------|---------|
+| `fast` | OFF | 즉각 인사이트 조회, 요약 | ~$0.001 |
+| `deep` | ON | 교차 분석, 발표 주제 추천, 가설 검증 | ~$0.006 |
+
+- 기존 Gemini SSE 파이프라인 재사용 (모델명 + thinking 파라미터 변경)
+- 무료 티어(1,500회/일) 범위 내 운용
+- 월 예상 비용: $1~3 이하
+
+### 구현 목표
+
+분석실(`SandboxLabView.js`) 내 **세 번째 탭** 추가:
+`[가설 빌더] [Granger 검증] [🧠 인사이트 분석]`
+
+사용자가 자연어로 질문 → 백엔드가 다중 소스 교차 검색(결정론적) → Gemini 2.5 Flash SSE로 합성 → 인사이트 카드 + 발표 각도 반환.
+
+### 구현 파일
+
+```
+backend/
+  api/intel_query.py          POST /api/intel/query (SSE)
+  services/intel_analyzer.py  멀티소스 검색 + 컨텍스트 조립
+  services/entity_parser.py   결정론적 엔티티 추출 (Token-Zero)
+
+frontend/src/views/
+  InsightAnalystView.js        새 탭 UI (SandboxLabView 내 탭으로 삽입)
+```
+
+### 데이터 파이프라인
+
+```
+자연어 쿼리
+  → [1] entity_parser: 지역·행위자·모드 결정론적 추출
+  → [2] 병렬 멀티소스 검색 (LLM 없음)
+        ├ FTS5 라이브러리 (78개 문서)
+        ├ event_archive 통계 (지역·기간 필터)
+        ├ cascade_links (지역 발화 실적)
+        ├ country_geopolitics.yaml
+        └ alliance_graph.yaml
+  → [3] 컨텍스트 조립 (~3,000~5,000 tokens)
+  → [4] Gemini 2.5 Flash SSE (thinking: fast=OFF / deep=ON)
+  → [5] 구조화 응답: 인사이트 카드 3~5개 + 발표 각도 제안
+```
+
+### 쿼리 모드 3종
+
+| 모드 | 트리거 키워드 | Thinking | 출력 |
+|------|------------|---------|------|
+| `insight` | 기본값, "분석", "교차" | OFF | 인사이트 카드 + 증거 소스 |
+| `presentation` | "발표", "주제 추천", "프레젠테이션" | ON | 발표 각도 3~5개 + 슬라이드 개요 |
+| `verify` | "검증", "근거", "맞아?" | ON | 지지/반증 증거 비율 + verdict |
+
+### Phase 5 잔여 항목과의 관계
+
+- **P5-7 멀티에이전트**: 인사이트 분석탭이 나중에 섹터별 에이전트의 프론트 진입점이 됨. 지금은 단일 파이프라인으로 구현 → P5-7에서 에이전트로 교체.
+- **P5-8 LLM 브리핑 계층**: `importance≥0.7` 게이트 로직을 `intel_query.py`가 함께 활용.
+
+### 구현 순서
+
+| # | 항목 | 파일 | 상태 |
+|---|------|------|------|
+| IA-1 | 결정론적 엔티티 파서 | `services/entity_parser.py` | ✅ |
+| IA-2 | 멀티소스 검색 파이프라인 | `services/intel_analyzer.py` | ✅ |
+| IA-3 | SSE 엔드포인트 + Gemini 2.5 Flash 통합 | `api/intel_query.py` | ✅ |
+| IA-4 | 프론트 탭 UI | `InsightAnalystView.js` | ✅ |
+
+---
+
+## 다음 세션 시작점
+
+**우선순위**
 
 | # | 항목 | 상태 |
 |---|------|------|
-| P5-7 | 멀티에이전트 섹터별 추론 병렬 | ⬜ |
+| P5-7 | 멀티에이전트 섹터별 추론 병렬 | ✅ v5.4.0 |
+| IA-1~4 | 인사이트 분석실 탭 (4단계) | ✅ v5.5.0 |
+| IA-개선 | 데이터 깊이 + 저장 기능 | ✅ v5.6.0 |
+| IA-엔진 | 인사이트 엔진 개선 로드맵 반영 | ✅ v5.6.0 (CLAUDE.md §19~21) |
 | P5-8 | LLM 종합 브리핑 계층 | ⬜ |
+| **IA-Engine-A** | **프롬프트 6단계 재설계** | **⬜ ← 즉시 ROI 최대** |
+| IA-Engine-B1 | SIPRI Expenditure + COW + Kiel Tracker 적재 | ⬜ 단기 |
+| IA-Engine-B2 | EIA Energy Stats + CSIS Cyber DB 적재 | ⬜ 단기 |
+| IA-Engine-C | 인사이트 신뢰도 점수 모듈 | ⬜ 중기 |
+| IA-Engine-D | Falsifiable Hypothesis 자동 생성 | ⬜ 중기 |
+
+### IA 개선 내역 (v5.6.0)
+
+**데이터 깊이**
+- FTS5(한국어 0건) → LIKE 검색으로 교체 → 10건 히트
+- 브리핑 body 원문 상위 3개 포함 (각 최대 3,000자)
+- cascade_rules.yaml 이론 텍스트 추가
+- 컨텍스트 총량: ~2,300자 → ~12,000자 (5배)
+
+**저장 기능**
+- `intel_analyses` 테이블 (id·query·mode·regions·sectors·result_md·created_at)
+- `POST /api/intel/save` · `GET /api/intel/history` · `GET /api/intel/history/{id}` · `DELETE /api/intel/history/{id}`
+- 분석 완료 후 💾 저장 버튼 표시
+- 좌측 히스토리 패널: 클릭 시 쿼리+결과 복원, ✕로 삭제
+
+---
+
+## ✅ [IA-1~4] 인사이트 분석실 탭 (2026-06-03) — v5.5.0
+
+**구현 내용**
+
+| 파일 | 역할 |
+|------|------|
+| `services/entity_parser.py` | 자연어 → ParsedQuery 결정론적 추출. 지역 9개·행위자 15개·섹터 6개 별칭 매핑. Thinking ON/OFF 자동 결정 |
+| `services/intel_analyzer.py` | 5개 소스 병렬 조회 (FTS5·sector filter·event_archive·cascade_links·country_geopolitics) → Gemini 컨텍스트 조립 |
+| `api/intel_query.py` | POST /api/intel/query SSE. 모드별 프롬프트(insight/presentation/verify). Gemini 2.5 Flash + thinking 503 fallback |
+| `InsightAnalystView.js` | SandboxLabView 세 번째 탭 `🧠 인사이트 분석`. 쿼리 입력·모드 선택·메타바·마크다운 스트리밍 렌더링 |
+
+**Gemini API 상태**
+- `gemini-2.5-flash` 모델 정상 (SSE 스트리밍 확인)
+- thinking 모드: `thinkingBudget=8192` 명시 시 503 간헐 발생 → 503 감지 즉시 fast 모드로 자동 fallback 처리
+- `thoughtsTokenCount` 자동 발생 확인 (모델 자체 사고 과정 내부 처리)
+
+**실측 결과 (러시아-우크라이나 발표 주제 추천 쿼리)**
+- META: mode=presentation, regions=[ukraine], sectors=[gray_zone, energy], thinking=True
+- 소스: sector 6건 + event 1개지역(105,723건) + cascade 8건 + 국가프로파일 2개
+- 출력: 발표 각도 3개 + 슬라이드 구성 7단계 완전 생성
+
+---
+
+## ✅ [P5-7] 멀티에이전트 섹터별 추론 병렬 (2026-06-03) — v5.4.0
+
+**구현 내용**
+
+`backend/services/reasoning/agents/` 신규 디렉토리:
+
+| 파일 | 역할 |
+|------|------|
+| `base_agent.py` | `SectorAgent` 기반 클래스 — `is_relevant()` / `analyze()` 인터페이스 |
+| `maritime_agent.py` | 초크포인트 근접성·SLOC 취약성·Mahan 이론 |
+| `energy_agent.py` | 자원무기화·파이프라인 취약성·Stage4 매크로 재활용 |
+| `techno_agent.py` | 반도체 공급망·희토류·Digital Iron Curtain |
+| `indo_pacific_agent.py` | 제1열도선·A2/AD·동맹 페어·Stage8 Diffusion 재활용 |
+| `gray_zone_agent.py` | 하이브리드전 단계·프록시 탐지·에스컬레이션 |
+| `cyber_agent.py` | APT 귀속·공격 유형·사이버 역량 매핑 |
+| `synthesizer.py` | 교차 섹터 인사이트 10종 패턴 + 위험 등급 3단계 |
+| `__init__.py` | `ALL_AGENTS`, `synthesize` 등록 |
+
+`engine.py`에 `run_reasoning_with_agents()` 신규 진입점 추가:
+- 기존 8단계 실행 후, `is_relevant()` 필터로 관련 에이전트만 병렬 실행
+- `synthesize()`로 교차 인사이트 + `summary_context` (Gemini 주입용) 생성
+
+**실측 결과**
+
+| 시나리오 | 활성 섹터 | 교차 인사이트 | 위험 등급 | elapsed |
+|---------|---------|------------|---------|--------|
+| 우크라이나 에너지 공격 | energy·techno·gray_zone | 2개 | 1/3 주의 | 0.062s |
+| 대만해협 PLA 침범 | maritime·techno·indo_pacific·gray_zone | 4개 | 2/3 경계 | 0.041s |
+
+**이론 연결**: Mahan 해양력 × Farrell & Newman Weaponized Interdependence × Snyder 동맹 딜레마 × Hoffman 하이브리드전 × Libicki 사이버 억지 — 6대 섹터 이론 매핑 완성
+
+**IA 탭 연계**: `synthesis["summary_context"]`가 인사이트 분석실 Gemini 프롬프트에 직접 주입되는 구조화 컨텍스트로 사용됨
+
+---
+
+## 인사이트 엔진 개선 로드맵 (2026-06-03 진단)
+
+### 현황 진단 요약
+
+3개 인사이트 세트 평가 결과:
+
+| 평가 차원 | 미국 전략 세트 | 이란전 세트 | 이란-러시아 연쇄 |
+|---|---|---|---|
+| 이론적 정확성 | 72% | 78% | 70% |
+| 인과 논리 엄밀성 | **38%** | **52%** | **31%** |
+| 데이터 기반 정도 | **25%** | **61%** | **44%** |
+| 가설 명확성 | 55% | 45% | 35% |
+| 학술 기여 가능성 | 48% | 67% | 72% |
+
+**공통 병목**: 인과 논리 엄밀성 + 데이터 기반 정도가 최저.
+현재 엔진은 **현상 기술 + 이론 레이블링**에서 멈추며 **인과 검증**으로 미진입.
+
+### 즉시 실행 항목 (Layer A — 프롬프트 레벨, 코드 변경 없음)
+
+- [ ] 인사이트 생성 프롬프트 6단계 구조 적용 (`api/intel_query.py` `_build_prompt`)
+- [ ] 연쇄 고리별 강도 자기평가 출력 (HIGH/MEDIUM/LOW)
+- [ ] MEDIUM 이하 고리 포함 연쇄에 [SPECULATIVE] 자동 태그
+- [ ] 수치 근거 없는 주장에 [UNVERIFIED] 플래그
+
+### 단기 데이터 적재 (Layer B-1 — 1~2개월)
+
+**즉시 ROI 최대 조합**: SIPRI + COW + Kiel Tracker 3종 적재
+→ 인사이트 수준 석사 중반 → 석사 후반 기대
+
+- [ ] SIPRI Military Expenditure DB (173개국 %GDP, 무기 이전)
+- [ ] COW Alliance Data (동맹 형성·해체 1816~)
+- [ ] Kiel Institute Ukraine Support Tracker (서방 지원 실데이터)
+- [ ] EIA International Energy Statistics (에너지 생산·소비)
+- [ ] CSIS Significant Cyber Incidents DB (2006~, 사이버전 기준점)
+
+### 중기 아키텍처 (Layer C — 3~6개월)
+
+- [ ] 인사이트 신뢰도 점수(0~100%) 자동 산출 모듈
+- [ ] Falsifiable Hypothesis (H1/H0) 자동 생성 모듈
+- [ ] 이론 라이브러리 12개 이론 프로파일 구축
+- [ ] 인사이트 카드 7개 필드 출력 형식 표준화 (CLAUDE.md §19-B)
+
+### 장기 목표 (Layer C v6.0 — 6~12개월)
+
+- [ ] 경쟁 이론 동시 적용 및 설명력 비교 엔진
+- [ ] 데이터 자동 조회 → 상관 분석 파이프라인
+- [ ] 박사 수준 분석 기준 충족 검증 체크리스트
+
+### 핵심 전환 원칙
+
+> **"무슨 일이 일어나고 있는가"(현황 기술) →
+> "왜 이 설명이 경쟁 이론보다 더 타당한가"(인과 검증)를 데이터로 보여주는 도구**
+
+### 다음 세션 시작점
+
+**IA-Engine-A — 프롬프트 6단계 재설계** (`api/intel_query.py` `_build_prompt()`)
+→ 코드 변경 최소, 즉각 ROI 최대. 이것부터 시작.
+
+그 다음: P5-8 LLM 종합 브리핑 계층 → IA-Engine-B1 데이터 적재(SIPRI·COW·Kiel)
+
+### 현재 버전
+`version.json`: **5.6.0** | phase: 5

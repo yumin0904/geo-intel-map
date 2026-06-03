@@ -24,6 +24,7 @@ from .stages import (
     stage8_alliance_spread,
 )
 from .chain_verifier import verify_chain
+from .agents import ALL_AGENTS, synthesize
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,57 @@ async def run_reasoning(
 ) -> dict:
     """8단계 추론 실행 진입점."""
     return await _run_stages(event, cascade_links or [])
+
+
+async def run_reasoning_with_agents(
+    event: dict,
+    cascade_links: list[dict] | None = None,
+) -> dict:
+    """
+    8단계 추론 + 6대 섹터 에이전트 병렬 심화 분석.
+
+    기존 run_reasoning()을 기반으로 관련 섹터 에이전트를 추가 실행한다.
+    결과는 IA 탭의 Gemini SSE 컨텍스트 조립에 사용된다.
+    """
+    # 1) 기존 8단계 실행
+    base = await _run_stages(event, cascade_links or [])
+
+    # 2) 관련 섹터 에이전트만 필터링 후 병렬 실행
+    loop = asyncio.get_event_loop()
+    relevant = [a for a in ALL_AGENTS if a.is_relevant(base)]
+
+    if not relevant:
+        logger.debug("[agents] 관련 섹터 에이전트 없음 — base 결과만 반환")
+        return {**base, "agent_insights": [], "synthesis": synthesize(base, [])}
+
+    agent_futs = [
+        loop.run_in_executor(None, agent.analyze, event, base)
+        for agent in relevant
+    ]
+    raw_results = await asyncio.gather(*agent_futs, return_exceptions=True)
+
+    agent_results = []
+    for agent, result in zip(relevant, raw_results):
+        if isinstance(result, Exception):
+            logger.warning("[agents] %s 실패: %s", agent.sector, result)
+        else:
+            agent_results.append(result)
+
+    # 3) 종합 에이전트
+    synthesis = synthesize(base, agent_results)
+
+    logger.debug(
+        "[agents] 완료 — 활성 섹터: %s, 교차 인사이트: %d개, 위험등급: %d/3",
+        synthesis["active_sectors"],
+        len(synthesis["cross_insights"]),
+        synthesis["risk_grade"],
+    )
+
+    return {
+        **base,
+        "agent_insights": agent_results,
+        "synthesis": synthesis,
+    }
 
 
 async def _run_stages(event: dict, cascade_links: list[dict]) -> dict:

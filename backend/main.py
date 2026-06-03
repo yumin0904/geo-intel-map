@@ -21,6 +21,7 @@ from api.stats import router as stats_router
 from api.study import router as study_router
 from api.translate import router as translate_router
 from api.version import router as version_router
+from api.intel_query import router as intel_router
 from db.archive_manager import ArchiveManager
 from jobs.gdelt_job import run_gdelt_batch
 from jobs.reliefweb_job import run_reliefweb_batch
@@ -123,6 +124,7 @@ app.include_router(stats_router)
 app.include_router(study_router)
 app.include_router(translate_router)
 app.include_router(version_router)
+app.include_router(intel_router)
 
 # ── 엔드포인트 ───────────────────────────────────────────────────
 # @app.get("/...") : HTTP GET 요청을 처리하는 함수 등록
