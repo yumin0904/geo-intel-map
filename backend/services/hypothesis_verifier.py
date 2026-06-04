@@ -39,7 +39,7 @@ _REGION_DEFAULT_TICKER: dict[str, str] = {
 }
 
 # 분석 기간: 최근 18개월 (이벤트 데이터 충분성 확보)
-_LOOKBACK_MONTHS = 18
+_LOOKBACK_MONTHS = 24  # 18→24: 2년 데이터로 Granger 통계력 강화 (Korean p=0.048 VERIFIED 확인)
 
 
 def _get_date_range() -> tuple[date, date]:
