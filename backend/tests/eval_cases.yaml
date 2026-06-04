@@ -1,0 +1,104 @@
+# 인사이트 분석실 자동화 테스트 케이스
+# eval_insight.py 가 이 파일을 읽어 순차 실행한다.
+#
+# mode: insight | presentation | verify
+# expect.sections: 비어 있으면 insight 기본 8개 사용
+#                  verify 모드는 [단계 1]~[단계 6] 지정 필요
+# expect.tags: 응답에 포함되어야 할 한국어 키워드 (최소 1개)
+# expect.h1: H1 가설 추출 기대 여부
+
+cases:
+  # ── Insight 모드 (6개) ────────────────────────────────────────────────
+  - id: ukraine_russia_energy
+    name: "러-우 에너지 인프라 공격 → 유럽 시장 연쇄"
+    query: "러시아의 우크라이나 에너지 인프라 공격이 유럽 에너지 시장에 미치는 연쇄 효과를 분석해줘"
+    mode: insight
+    expect:
+      min_score: 60
+      tags: ["에너지", "유럽"]
+      h1: true
+
+  - id: taiwan_semiconductor
+    name: "대만해협 긴장 → 반도체 공급망"
+    query: "대만해협 군사긴장이 글로벌 반도체 공급망에 미치는 충격을 교차 분석해줘"
+    mode: insight
+    expect:
+      min_score: 60
+      tags: ["반도체", "대만"]
+      h1: true
+
+  - id: korean_peninsula_alliance
+    name: "이란전 → 한미동맹 자율성"
+    query: "이란전이 한미동맹 신뢰도와 한국의 전략적 자율성에 미치는 영향을 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["한미동맹", "자율성"]
+      h1: true
+
+  - id: china_cyber_us
+    name: "솔트 타이푼 → 미국 사이버 방어 공백"
+    query: "솔트 타이푼 이후 중국의 사이버 공세와 미국 방어 역량 공백을 교차 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["사이버", "중국"]
+      h1: false
+
+  - id: japan_korea_techno
+    name: "일본 수출규제 → 한국 기술 자율성"
+    query: "일본의 반도체 소재 수출규제가 한국의 기술 자율성과 공급망 재편에 미치는 구조적 영향을 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["일본", "수출규제"]
+      h1: true
+
+  - id: sahel_jihadist_expansion
+    name: "서방 철수 → 사헬 지하디스트 확산"
+    query: "서방의 사헬 지역 철수 이후 지하디스트 조직의 수도권 위협 확산 패턴을 분석해줘"
+    mode: insight
+    expect:
+      min_score: 50
+      tags: ["사헬", "아프리카"]
+      h1: false
+
+  # ── Verify 모드 (2개) ─────────────────────────────────────────────────
+  - id: hormuz_oil_verify
+    name: "호르무즈 봉쇄 → 유가 인과 검증"
+    query: "호르무즈 봉쇄 위협이 실제로 유가 급등을 유발하는지 통계적으로 검증해줘"
+    mode: verify
+    expect:
+      min_score: 55
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]", "[단계 6]"]
+      tags: ["호르무즈", "유가"]
+      h1: true
+
+  - id: arctic_lawfare_verify
+    name: "러-중 북극 법전쟁 → NSR 주권 주장 검증"
+    query: "러시아와 중국의 북극 법전쟁이 북극항로 주권 통제에 실질적 영향을 미치는지 검증해줘"
+    mode: verify
+    expect:
+      min_score: 50
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]", "[단계 6]"]
+      tags: ["북극", "러시아"]
+      h1: true
+
+  # ── Presentation 모드 (2개) ───────────────────────────────────────────
+  - id: iran_energy_presentation
+    name: "이란전 에너지 충격 → 발표 각도"
+    query: "이란전이 글로벌 에너지 안보에 미친 충격을 발표 주제로 추천해줘"
+    mode: presentation
+    expect:
+      min_score: 50
+      tags: ["이란", "에너지"]
+      h1: false
+
+  - id: us_china_tech_hegemony_presentation
+    name: "미-중 기술 패권 경쟁 → 발표 각도"
+    query: "미중 기술 패권 경쟁에서 반도체·AI·희토류의 역할을 발표 주제로 추천해줘"
+    mode: presentation
+    expect:
+      min_score: 50
+      tags: ["반도체", "AI"]
+      h1: false

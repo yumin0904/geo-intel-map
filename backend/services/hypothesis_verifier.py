@@ -75,6 +75,11 @@ async def _run_granger_for_spec(
             spec.error = f"시장 데이터 부족 (ticker={spec.ticker})"
             return spec
 
+        # sparse 이벤트 시계열(주간 집계)과 일별 시장 시계열 길이 불일치 보정
+        if event_series.name and "weekly" in str(event_series.name):
+            import pandas as pd
+            market_series = market_series.resample("W").last()
+
         p_value, best_lag, n_obs = run_granger(event_series, market_series)
         spec.n_obs = n_obs
 

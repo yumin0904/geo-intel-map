@@ -183,8 +183,15 @@ class GrangerResult:
 
 # ── 이벤트 시계열 구축 ────────────────────────────────────────────────────────
 
+# event_archive region_code 별칭 매핑 — hypothesis_extractor와 DB 코드 불일치 보정
+_REGION_ALIAS: dict[str, str] = {
+    "eastern_europe": "ukraine",  # DB에 ukraine으로 저장됨
+}
+
+
 def _load_event_series(region: str, start: date, end: date) -> pd.Series:
     """event_archive에서 region별 일별 severity 합산 시계열을 반환한다."""
+    region = _REGION_ALIAS.get(region, region)  # 별칭 보정
     con = sqlite3.connect(_DB_PATH)
     df = pd.read_sql_query(
         """
@@ -209,6 +216,13 @@ def _load_event_series(region: str, start: date, end: date) -> pd.Series:
     idx = pd.date_range(start, end, freq="D")
     series = df.set_index("day")["sev_sum"].reindex(idx, fill_value=0.0)
     series.name = "event_severity"
+
+    # sparse 지역 (비제로 일수 < 10): 주간 집계로 자동 전환해 Granger 분산 확보
+    nonzero = int((series > 0).sum())
+    if nonzero < 10:
+        series = series.resample("W").sum()
+        series.name = "event_severity_weekly"
+
     return series
 
 

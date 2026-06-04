@@ -1,0 +1,247 @@
+{
+  "timestamp": "20260604_1604",
+  "server": "http://localhost:8000",
+  "total": 10,
+  "passed": 4,
+  "results": [
+    {
+      "id": "ukraine_russia_energy",
+      "name": "러-우 에너지 인프라 공격 → 유럽 시장 연쇄",
+      "error": "⚠️ Gemini API 오류 (503)",
+      "elapsed": 3.2
+    },
+    {
+      "id": "taiwan_semiconductor",
+      "name": "대만해협 긴장 → 반도체 공급망",
+      "mode": "insight",
+      "passed": false,
+      "elapsed": 34.7,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 38,
+      "missing_sections": [
+        "[근거]",
+        "[한계]",
+        "[경쟁설명]",
+        "[검증포인트]",
+        "[문헌공백]"
+      ],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: \"대만해협 분쟁(AC",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "expected_min_score": 60
+    },
+    {
+      "id": "korean_peninsula_alliance",
+      "name": "이란전 → 한미동맹 자율성",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 52.9,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: \"미국의 주요 전역 분쟁(이란전)으로 인한 정밀유도무기 재고 소진이 발생할 때, 동맹국(한국)의 확장억제 신뢰도 인식이 통계적으로 유의미하게 감소하며 (), 이는 한국의 독자 방위 역량 강화 노력으로 이어진다.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.2463
+        },
+        {
+          "h1": "H1: \"미국의 복합 경제 위기(인플레이션, 에너지 쇼크)가 심화될 때, 미국 행정부의 대외 군사 개입 및 동맹 지원 의지는 통계적으로 유의미하게 감소한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_C",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "china_cyber_us",
+      "name": "솔트 타이푼 → 미국 사이버 방어 공백",
+      "error": "⚠️ Gemini API 오류 (503)",
+      "elapsed": 3.5
+    },
+    {
+      "id": "japan_korea_techno",
+      "name": "일본 수출규제 → 한국 기술 자율성",
+      "error": "⚠️ Gemini API 오류 (503)",
+      "elapsed": 3.5
+    },
+    {
+      "id": "sahel_jihadist_expansion",
+      "name": "서방 철수 → 사헬 지하디스트 확산",
+      "error": "⚠️ Gemini API 오류 (503)",
+      "elapsed": 11.8
+    },
+    {
+      "id": "hormuz_oil_verify",
+      "name": "호르무즈 봉쇄 → 유가 인과 검증",
+      "mode": "verify",
+      "passed": false,
+      "elapsed": 9.9,
+      "confidence": 40,
+      "provisional": true,
+      "completeness_pct": 33,
+      "missing_sections": [
+        "[단계 3]",
+        "[단계 4]",
+        "[단계 5]",
+        "[단계 6]"
+      ],
+      "missing_tags": [],
+      "has_h1": false,
+      "h1_expected": true,
+      "hypothesis": [],
+      "labels": {
+        "UNVERIFIED": 2,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 0,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "arctic_lawfare_verify",
+      "name": "러-중 북극 법전쟁 → NSR 주권 주장 검증",
+      "mode": "verify",
+      "passed": true,
+      "elapsed": 55.0,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "러시아와 중국이 북극 법전쟁을 통해 북극항로에 대한 주권적 통제(예: 일방적 항행 규제 법제화, 군사적 접근 제한 주장)를 강화하려는 시도가 증가할 때, 해당 항로의 국제적 항행 자유도가 유의미하게 감소하고 러시아와 중국의 영향력 하에 놓이는 선박의 비율이 증가할 것이다.",
+          "status": "PENDING",
+          "var_type": "Type_C",
+          "p_value": 0.2364
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 18,
+        "SPECULATIVE": 3,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 1,
+        "HIGH_chain": 0,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 3
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "iran_energy_presentation",
+      "name": "이란전 에너지 충격 → 발표 각도",
+      "mode": "presentation",
+      "passed": true,
+      "elapsed": 13.8,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: \"중동 지역의 군사적 분쟁(X)이 발생할 때, 에너지 생산 인프라에 대한 사이버-물리 복합 공격(Y)의 빈도와 심각도가 통계적으로 유의미하게 증가한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 1,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "us_china_tech_hegemony_presentation",
+      "name": "미-중 기술 패권 경쟁 → 발표 각도",
+      "mode": "presentation",
+      "passed": true,
+      "elapsed": 34.3,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: \"AI 기술 접근성 증가(X)는 저숙련 공격자의 사이버 공격 성공률 및 빈도(Y)를 통계적으로 유의하게 증가시킨다 ",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        },
+        {
+          "h1": "H1: \"중국의 당-기업 네트워크 기반 해외 광물 공급망 통제(X)는 해당 광물을 사용하는 미국의 방산 및 첨단 산업 생산 비용(Y)을 통계적으로 유의하게 증가시킨다 ",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        },
+        {
+          "h1": "H1: \"미국의 핵심 군사 기술(예: GaN) 제조 역량의 전략적 경쟁국 외주화(X)는 해당 기술을 사용하는 미국 방위 시스템의 공급망 취약성 및 운영 리스크(Y)를 통계적으로 유의하게 증가시킨다 ",
+          "status": "PENDING",
+          "var_type": "Type_C",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 6,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "expected_min_score": 50
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n\n### 반복 누락 섹션 (빈도순)\n- `[근거]`: 1/10 케이스에서 누락\n- `[한계]`: 1/10 케이스에서 누락\n- `[경쟁설명]`: 1/10 케이스에서 누락\n- `[검증포인트]`: 1/10 케이스에서 누락\n- `[문헌공백]`: 1/10 케이스에서 누락\n- `[단계 3]`: 1/10 케이스에서 누락\n- `[단계 4]`: 1/10 케이스에서 누락\n- `[단계 5]`: 1/10 케이스에서 누락\n- `[단계 6]`: 1/10 케이스에서 누락\n\n### 신뢰도 분포\n- 최고: 75, 최저: 40, 평균: 64\n- 60 미만(PROVISIONAL): 1/6\n\n### H1 가설 추출률\n- 3/4 케이스에서 H1 추출 성공\n  ✅ [taiwan_semiconductor]\n  ✅ [korean_peninsula_alliance]\n  ❌ [hormuz_oil_verify]\n  ✅ [arctic_lawfare_verify]\n\n### Granger 검증 현황 (8개 가설)\n- PENDING: 8개"
+}
