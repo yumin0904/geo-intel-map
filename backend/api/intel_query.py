@@ -41,7 +41,10 @@ def _db() -> Iterator[sqlite3.Connection]:
 
 from services.entity_parser import parse_query, ParsedQuery
 from services.intel_analyzer import build_intel_context
-from services.confidence_scorer import score_output, apply_verification_cap
+from services.confidence_scorer import (
+    score_output, apply_verification_cap,
+    apply_data_void_penalty, validate_insight_completeness,
+)
 from services.hypothesis_extractor import extract_hypotheses
 from services.hypothesis_verifier import verify_hypotheses
 
@@ -209,6 +212,7 @@ def _sse(payload: dict) -> str:
 async def _stream_gemini(
     prompt: str,
     thinking: bool,
+    source_counts: dict | None = None,
 ) -> AsyncGenerator[str, None]:
     """Gemini 2.5 Flash SSE 스트리밍. thinking=True 시 thinkingBudget 8192."""
 
@@ -284,6 +288,23 @@ async def _stream_gemini(
         if full_text:
             score_result = score_output(full_text)
 
+            # [P0-B] 데이터 공백 패널티: ACLED·Cascade 없는 지역은 상한 제한
+            if source_counts:
+                penalized = apply_data_void_penalty(
+                    score_result["confidence"],
+                    source_counts.get("event_stats_regions", 0),
+                    source_counts.get("cascade_links", 0),
+                )
+                if penalized != score_result["confidence"]:
+                    logger.info(
+                        "[intel] 데이터 공백 패널티 적용: %d → %d (events=%d cascade=%d)",
+                        score_result["confidence"], penalized,
+                        source_counts.get("event_stats_regions", 0),
+                        source_counts.get("cascade_links", 0),
+                    )
+                    score_result["confidence"] = penalized
+                    score_result["provisional"] = penalized < 60
+
             # IA-Engine-D: H1 가설 추출 → Granger 검증 → 신뢰도 캡 적용
             specs = extract_hypotheses(full_text)
             if specs:
@@ -308,6 +329,8 @@ async def _stream_gemini(
                             "control_vars": s.control_vars,
                             "region_code": s.region_code,
                             "ticker": s.ticker,
+                            "var_type": s.var_type,
+                            "proxy_suggestions": s.proxy_suggestions,
                             "verification_status": s.verification_status,
                             "granger_p": s.granger_p,
                             "best_lag": s.best_lag,
@@ -381,7 +404,7 @@ async def intel_query(req: IntelQueryRequest):
             "done":  False,
         })
 
-        async for chunk in _stream_gemini(prompt, pq.thinking):
+        async for chunk in _stream_gemini(prompt, pq.thinking, source_counts):
             yield chunk
 
     return StreamingResponse(
@@ -408,7 +431,12 @@ class SaveRequest(BaseModel):
 
 @router.post("/save")
 def intel_save(req: SaveRequest):
-    """분석 결과 저장."""
+    """분석 결과 저장. [P0-A] 저장 전 완결성 검사 통과 시만 허용."""
+    # [P0-A] 인사이트 완결성 검사 — 섹션 누락·문장 미완성 시 거부
+    ok, reason = validate_insight_completeness(req.result_md)
+    if not ok:
+        raise HTTPException(status_code=422, detail=f"인사이트 미완성: {reason}")
+
     title = req.query[:40].strip() + ("..." if len(req.query) > 40 else "")
     with _db() as con:
         cur = con.execute(

@@ -934,6 +934,85 @@ Gemini 스트리밍 완료
 
 ---
 
+## ✅ [IA-Engine v6.2.0] 인사이트 엔진 3-Bug Fix (2026-06-03)
+
+**배경**: v6.1.1 세 세트(한반도·중-일·이스라엘-이란) 평가에서 발견된 즉시 수정 항목.
+
+| 버그 | 원인 | 수정 |
+|------|------|------|
+| [P0-A] 인사이트 미완성 저장 | 저장 전 완결성 검사 없음 | `validate_insight_completeness()` + `/save` 422 거부 |
+| [P0-B] 신뢰도 100/100 재발 (데이터 공백) | Engine-C가 이벤트·Cascade 0 조건 미처리 | `apply_data_void_penalty()` — 0+0→상한60, 하나→상한72 |
+| [P1] Engine-D ticker 오류 (Type B/C 변수) | ticker 없으면 무조건 매핑 실패로 PENDING | 변수 3분류 (Type_A/B/C) + 유형별 라우팅 |
+
+**구현 파일**
+
+| 파일 | 변경 |
+|------|------|
+| `services/confidence_scorer.py` | `apply_data_void_penalty()` + `validate_insight_completeness()` 신규 |
+| `api/intel_query.py` | 패널티 적용 (source_counts 주입), `/save` 완결성 검사 |
+| `services/hypothesis_extractor.py` | `VariableType`, `proxy_suggestions` 필드, `_classify_variable_type()` |
+| `services/hypothesis_verifier.py` | Type_A/B/C 분기 라우팅 (B→ACLED 안내, C→proxy 제안) |
+| `frontend/src/views/InsightAnalystView.js` | Type 뱃지 + proxy 제안 표시 |
+| `frontend/styles/main.css` | `.ia__hyp-tag--type`, `.ia__hyp-proxy` 추가 |
+
+**단위 테스트 결과**
+- P0-B: 100→60(0+0), 80→72(하나 0), 85→85(정상) ✅
+- P0-A: 미완성([가설] 없음) → 거부, 완결 → 허용 ✅
+- P1: 유가→Type_A, 프록시활동→Type_B, 대응의지→Type_C(proxy 자동 제안) ✅ (6/6)
+
+**v6.1.1 → v6.2.0 목표 상태 달성**
+- 신뢰도: 데이터 공백 패널티 적용, 항상 60~88 범위 안정 ✅
+- 저장: 미완성 인사이트 저장 불가 ✅
+- Engine-D: Type B/C 변수에서 "ticker 미식별" 오류 → 유형별 안내 메시지로 전환 ✅
+
+### 현재 버전
+`version.json`: **6.2.0** | phase: 6
+
+---
+
+## ✅ 브리핑 추가 적재 (2026-06-04) — v6.2.0 유지
+
+### 이번 세션 등록 브리핑 (7건)
+
+| # | theory_id | 섹터 | 출처 | 요약 |
+|---|-----------|------|------|------|
+| 39 | `briefing_20260224_cfr_russia_gray_zone_europe` | gray_zone | CFR | 러시아 회색지대→저강도 전쟁 전환 창, NATO 억지력 정치적 신뢰 훼손 전략 |
+| 40 | `briefing_20260512_wotr_russia_china_arctic_lawfare` | gray_zone | WotR | 러중 북극 법전쟁 — NSR 주권 통제·그림자 선단·대륙붕 규범 재작성 |
+| 41 | `briefing_20190900_brookings_china_gray_zone_dod` | gray_zone | Brookings | 비대칭 방어 독트린(2019 원형) + 2026년 현실 예측 정확도 평가 |
+| 42 | `briefing_20260318_cfr_iran_war_energy_chaos_asia` | energy | CFR | 이란전 개전 20일: 아시아 소비국 에너지 패닉, 보조금 한계, 사회 불안 |
+| 43 | `briefing_20260317_chatham_iran_war_gulf_energy_toll` | energy | Chatham House | 이란전 개전 3주: 걸프 공급측 우회 역량 한계(25%), 선택적 봉쇄 구조 |
+| 44 | `briefing_20260401_brookings_iran_energy_shocks_unrealized` | energy | Brookings | 이란전 1개월: 미실현 2차 충격, 1973+1979 합산 초과, CERAWeek 논의 |
+| 45 | `briefing_20260429_chatham_defence_ai_investment_reconfigure` | techno | Chatham House | 방산 AI 붐·애국 기술·주권 AI 다극화, 이란전 AWS 데이터센터 타격 최초 실증 |
+
+### 이란전 에너지 충격 3종 세트 완성
+- **EN-1 (CFR, 개전 20일)** — 아시아 소비국 시각
+- **EN-2 (Chatham House, 개전 3주)** — 걸프 공급측 시각
+- **EN-3 (Brookings, 개전 1개월)** — 글로벌 중장기·미실현 2차 충격
+
+세 보고서가 호르무즈 충격의 공급-수요-중장기 3각 실증 데이터를 완성함. `hormuz_tension_to_oil` Cascade 룰의 사회 불안·우회 한계·식량 연쇄 경로까지 근거 확보.
+
+### Phase 6 게이트 현황 (2026-06-04 기준)
+
+| 조건 | 이전 | 현재 | 목표 |
+|------|------|------|------|
+| 총량 | 38개 | **45개** | 50개 |
+| gray_zone | ~6건 | **~9건** ✅ | 8건 |
+| energy | ~5건 | **~8건** ✅ | 5건 |
+| techno | ~5건 | **~6건** ✅ | 5건 |
+| indo_pacific | ~9건 | ~9건 ✅ | 8건 |
+| maritime | ~6건 | ~6건 ✅ | 5건 |
+| cyber | ~7건 | ~7건 ✅ | 5건 |
+| 출처 다양성 | INSS·CSIS·WotR | + **CFR·Brookings·Chatham** ✅ | 4기관+ |
+| 2025년 이전 사례 | 1건 | **2건** (GZ-3 2019) | 3건 |
+| 지역 균형 5대 | 3개 충족 | 3개 충족 | 5개 |
+
+**현재 충족: 4개 / 5개 조건** (잔여: 총량 5개 + 2025년 이전 1건 + 지역 균형)
+
+### TC-2 미등록 (다음 세션)
+- TC-2: Chatham House — AI 버블 붕괴 → 중국 기술 부상 (`briefing_20251200_chatham_ai_bubble_china_rise`)
+
+---
+
 ## 다음 세션 시작점
 
 | 항목 | 상태 | 우선순위 |
@@ -942,6 +1021,10 @@ Gemini 스트리밍 완료
 | 시간 역전 탐지 (A-2) | ✅ v6.0.1 | — |
 | IA-Engine-D H1 자동 생성 + Granger | ✅ v6.1.0 | — |
 | ACLED 대만해협 Cascade 0건 조사·수정 | ✅ v6.1.1 | — |
-| 브리핑 추가 적재 (현재 38개 → 목표 50개) | ⬜ | 🟠 다음 |
-| Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟡 브리핑 50개 게이트 |
+| IA-Engine 3-Bug Fix (P0-A/B, P1) | ✅ v6.2.0 | — |
+| 브리핑 적재 GZ 3종·EN 3종·TC-1 | ✅ v6.2.0 (45개) | — |
+| **TC-2** Chatham AI 버블 붕괴 | ⬜ | 🟠 다음 시작점 |
+| **IP-1~4** Indo-Pacific 4건 (CFR·WotR·Chatham) | ⬜ | 🟠 총량 게이트 |
+| Phase 6 게이트 총량 50개 달성 | ⬜ 45/50 | 🟡 5개 더 |
+| Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟡 50개 게이트 후 |
 | 이론 라이브러리 12개 프로파일 구축 | ⬜ | 🟢 중기 |

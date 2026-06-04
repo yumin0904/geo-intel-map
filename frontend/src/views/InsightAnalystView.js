@@ -497,29 +497,42 @@ export class InsightAnalystView {
     const _statusLabel = {
       VERIFIED: { cls: 'verified', icon: '✅', text: 'VERIFIED', desc: 'Granger p<0.05 — 통계적 유의' },
       PARTIAL:  { cls: 'partial',  icon: '🔶', text: 'PARTIAL',  desc: 'Granger p<0.15 — 경향성 확인' },
-      PENDING:  { cls: 'pending',  icon: '⏳', text: 'PENDING',  desc: '미검증 (데이터 부족 또는 매핑 실패)' },
+      PENDING:  { cls: 'pending',  icon: '⏳', text: 'PENDING',  desc: '미검증' },
+    };
+
+    // [P1] 변수 유형 뱃지
+    const _typeLabel = {
+      Type_A: { icon: '📈', text: 'Type A', desc: '금융 ticker Granger' },
+      Type_B: { icon: '📊', text: 'Type B', desc: 'ACLED 이벤트 비교' },
+      Type_C: { icon: '🔍', text: 'Type C', desc: '추상 변수 → 대리변수 필요' },
     };
 
     const cards = hypotheses.map(h => {
       const st = _statusLabel[h.verification_status] ?? _statusLabel.PENDING;
+      const vt = _typeLabel[h.var_type] ?? _typeLabel.Type_A;
       const pStr  = h.granger_p  != null ? `p = ${h.granger_p}` : '—';
       const lagStr = h.best_lag  != null ? `lag ${h.best_lag}일` : '—';
       const nStr   = h.n_obs > 0         ? `n = ${h.n_obs}`      : '—';
       const regionBadge = h.region_code ? `<span class="ia__hyp-tag">${h.region_code}</span>` : '';
       const tickerBadge = h.ticker      ? `<span class="ia__hyp-tag">${h.ticker}</span>`      : '';
+      const typeBadge   = `<span class="ia__hyp-tag ia__hyp-tag--type">${vt.icon} ${vt.text}</span>`;
       const errorNote   = h.error       ? `<div class="ia__hyp-error">⚠️ ${h.error}</div>`    : '';
+      const proxyNote   = (h.var_type === 'Type_C' && h.proxy_suggestions?.length)
+        ? `<div class="ia__hyp-proxy">권장 대리변수: ${h.proxy_suggestions.join(' · ')}</div>`
+        : '';
 
       return `
         <div class="ia__hyp-card ia__hyp-card--${st.cls}">
           <div class="ia__hyp-header">
             <span class="ia__hyp-status">${st.icon} ${st.text}</span>
-            ${regionBadge}${tickerBadge}
+            ${typeBadge}${regionBadge}${tickerBadge}
             <span class="ia__hyp-stats">${pStr} · ${lagStr} · ${nStr}</span>
           </div>
           <div class="ia__hyp-h1"><strong>H1</strong> ${h.h1}</div>
           <div class="ia__hyp-h0"><strong>H0</strong> ${h.h0}</div>
           ${h.control_vars?.length ? `<div class="ia__hyp-ctrl">통제변수: ${h.control_vars.join(', ')}</div>` : ''}
-          <div class="ia__hyp-desc">${st.desc}</div>
+          <div class="ia__hyp-desc">${vt.desc}</div>
+          ${proxyNote}
           ${errorNote}
         </div>
       `;

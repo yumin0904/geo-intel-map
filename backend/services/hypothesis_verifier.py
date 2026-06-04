@@ -45,15 +45,38 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     results: list[HypothesisSpec] = []
 
     for spec in specs:
-        # 매핑 실패 시 검증 불가 — PENDING 유지
+        # [P1] 변수 유형별 분기 처리
+        if spec.var_type == "Type_C":
+            # 직접 측정 불가 변수 → proxy 제안 후 PENDING
+            proxy_str = ", ".join(spec.proxy_suggestions[:3]) if spec.proxy_suggestions else "대체 지표 필요"
+            spec.error = f"Type C (추상 변수): 직접 측정 불가 → 권장 대리변수: {proxy_str}"
+            logger.info("[hypothesis] Type_C PENDING (추상 변수): %s", spec.h1[:60])
+            results.append(spec)
+            continue
+
+        if spec.var_type == "Type_B":
+            # ACLED 이벤트 기반 변수 → region만 있으면 사전 안내, ticker 불필요
+            if not spec.region_code:
+                spec.error = "Type B (행동 변수): region_code 미식별 → ACLED 검증 불가"
+            else:
+                spec.error = (
+                    f"Type B (행동 변수): ACLED 이벤트 비교 필요 "
+                    f"(region={spec.region_code}) "
+                    f"→ 이란전 전후 actor_filter 기반 event study로 검증 가능 (다음 버전 구현 예정)"
+                )
+            logger.info("[hypothesis] Type_B PENDING: %s", spec.h1[:60])
+            results.append(spec)
+            continue
+
+        # Type_A: 기존 금융 ticker Granger 경로
         if not spec.region_code or not spec.ticker:
             missing = []
             if not spec.region_code:
                 missing.append("region")
             if not spec.ticker:
                 missing.append("ticker")
-            spec.error = f"매핑 실패: {', '.join(missing)} 미식별"
-            logger.info("[hypothesis] PENDING (매핑 실패): %s", spec.h1[:60])
+            spec.error = f"Type A (금융 ticker): 매핑 실패 — {', '.join(missing)} 미식별"
+            logger.info("[hypothesis] Type_A PENDING (매핑 실패): %s", spec.h1[:60])
             results.append(spec)
             continue
 

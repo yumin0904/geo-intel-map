@@ -59,6 +59,49 @@ _RE_CHAIN_STRENGTH = re.compile(
 )
 
 
+# §P0-B 데이터 공백 패널티 ────────────────────────────────────────────────────
+
+def apply_data_void_penalty(confidence: int, event_stats_regions: int, cascade_links: int) -> int:
+    """
+    ACLED 이벤트와 Cascade가 없을 때 신뢰도 상한을 제한한다 (P0-B).
+
+    둘 다 0 → 상한 60 (데이터 공백, 순수 서술 수준)
+    하나만 0 → 상한 72 (부분 공백)
+    """
+    if event_stats_regions == 0 and cascade_links == 0:
+        return min(confidence, 60)
+    if event_stats_regions == 0 or cascade_links == 0:
+        return min(confidence, 72)
+    return confidence
+
+
+# §P0-A 인사이트 완결성 검사 ──────────────────────────────────────────────────
+
+_REQUIRED_SECTIONS = [
+    "[관찰]", "[주장]", "[가설]", "[근거]", "[한계]", "[경쟁설명]", "[검증포인트]",
+]
+_VALID_ENDINGS = {".", "다", "임", "됨", ")", "음", "?"}
+
+
+def validate_insight_completeness(text: str) -> tuple[bool, str]:
+    """
+    Gemini 출력이 완결된 인사이트 카드를 포함하는지 검사한다.
+
+    Returns:
+        (True, "완결") — 저장 허용
+        (False, "오류 설명") — 저장 거부
+    """
+    for section in _REQUIRED_SECTIONS:
+        if section not in text:
+            return False, f"미완성: {section} 섹션 없음"
+
+    last_char = text.rstrip()[-1] if text.rstrip() else ""
+    if last_char not in _VALID_ENDINGS:
+        return False, f"마지막 문장 미완성 (마지막 글자: '{last_char}')"
+
+    return True, "완결"
+
+
 def score_output(text: str) -> dict:
     """
     Gemini 출력 마크다운에서 §19-D 5개 항목을 탐지해 신뢰도 점수를 산출한다.

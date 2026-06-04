@@ -3580,6 +3580,22 @@ body:not(.study-mode) .notebook { display: none; }
 .ia__hyp-ctrl { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }
 .ia__hyp-desc { font-size: 0.73rem; color: var(--text-muted); margin-top: 4px; }
 
+.ia__hyp-tag--type {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+}
+
+.ia__hyp-proxy {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-left: 2px solid var(--accent);
+  padding: 2px 6px;
+  margin-top: 4px;
+  border-radius: 0 3px 3px 0;
+}
+
 .ia__hyp-error {
   color: #ef4444;
   font-size: 0.75rem;

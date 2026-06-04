@@ -17,6 +17,7 @@ from typing import Literal
 # ── 데이터 모델 ───────────────────────────────────────────────────────────────
 
 VerificationStatus = Literal["PENDING", "PARTIAL", "VERIFIED"]
+VariableType = Literal["Type_A", "Type_B", "Type_C"]
 
 
 @dataclass
@@ -28,11 +29,68 @@ class HypothesisSpec:
     control_vars: list[str] = field(default_factory=list)
     region_code: str | None = None       # event_archive 조회용
     ticker: str | None = None            # 시장/지표 시계열 조회용
+    var_type: VariableType = "Type_A"    # 변수 유형 3분류 (P1)
+    proxy_suggestions: list[str] = field(default_factory=list)  # Type_C 대리변수 제안
     verification_status: VerificationStatus = "PENDING"
     granger_p: float | None = None
     best_lag: int | None = None
     n_obs: int = 0
     error: str | None = None
+
+
+# ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────
+# Type_A: 금융 ticker 직접 매핑 가능 (유가, 주가, 환율, 반도체 등)
+# Type_B: ACLED 이벤트 집계로 측정 가능 (도발, 공격, 프록시 활동 빈도 등)
+# Type_C: 직접 측정 불가 → proxy 변수 제안 (의지, 역량, 신뢰성 등)
+
+_TYPE_C_KEYWORDS: list[str] = [
+    "의지", "역량", "신뢰성", "결속", "비중", "가능성", "위험도",
+    "영향력", "취약성", "안정성", "응집력", "피로도", "의존도",
+]
+
+_TYPE_B_KEYWORDS: list[str] = [
+    "도발", "공격", "분쟁", "충돌", "프록시", "proxy", "사이버 공격 빈도",
+    "이벤트 빈도", "군사 행동", "테러", "민병대", "교전", "활동 빈도",
+    "incident", "빈도", "건수",
+]
+
+# Type C 대리변수 제안 맵
+_TYPE_C_PROXY_MAP: list[tuple[str, list[str]]] = [
+    ("대응 의지",   ["성명 강경도 (ACLED 이벤트 유형)", "군사훈련 빈도", "Kiel 지원 규모"]),
+    ("프록시 비중", ["ACLED 해당 행위자 이벤트 건수", "CSIS 사이버 귀속 건수"]),
+    ("억지 신뢰성", ["주한미군 배치 규모", "연합훈련 빈도", "무기 지원 금액"]),
+    ("역량",        ["SIPRI 국방비 %GDP", "ACLED 이벤트 심각도 평균"]),
+    ("취약성",      ["EIA 에너지 의존도", "ACLED 민간 피해 건수"]),
+    ("신뢰성",      ["COW 동맹 준수 이력", "SIPRI 무기 이전 데이터"]),
+]
+_TYPE_C_DEFAULT_PROXY = ["ACLED 이벤트 건수", "SIPRI 국방비", "COW 동맹 데이터"]
+
+
+def _classify_variable_type(dependent_var: str) -> tuple[VariableType, list[str]]:
+    """
+    종속변수 텍스트를 결정론적으로 Type_A / Type_B / Type_C로 분류한다.
+
+    Returns:
+        (var_type, proxy_suggestions)
+        proxy_suggestions는 Type_C일 때만 비어있지 않음.
+    """
+    text = dependent_var.lower()
+
+    # Type_C 우선 판별 (추상 변수는 ticker도 ACLED도 직접 매핑 불가)
+    for kw in _TYPE_C_KEYWORDS:
+        if kw in text:
+            for trigger, suggestions in _TYPE_C_PROXY_MAP:
+                if trigger in text:
+                    return "Type_C", suggestions
+            return "Type_C", _TYPE_C_DEFAULT_PROXY
+
+    # Type_B: ACLED 이벤트 기반 측정 가능한 행동 변수
+    for kw in _TYPE_B_KEYWORDS:
+        if kw in text:
+            return "Type_B", []
+
+    # Type_A: 금융 ticker (기본값)
+    return "Type_A", []
 
 
 # ── region 키워드 매핑 ────────────────────────────────────────────────────────
@@ -155,6 +213,9 @@ def extract_hypotheses(text: str) -> list[HypothesisSpec]:
         ticker_match = _match_ticker(combined_text)
         ticker = ticker_match[0] if ticker_match else None
 
+        # [P1] 변수 유형 3분류 — 종속변수 기준으로 판별
+        var_type, proxy_suggestions = _classify_variable_type(dependent_var or h1_clean)
+
         spec = HypothesisSpec(
             h1=h1_clean,
             h0=_make_h0(h1_clean),
@@ -163,6 +224,8 @@ def extract_hypotheses(text: str) -> list[HypothesisSpec]:
             control_vars=control_vars,
             region_code=region_code,
             ticker=ticker,
+            var_type=var_type,
+            proxy_suggestions=proxy_suggestions,
         )
         specs.append(spec)
 
