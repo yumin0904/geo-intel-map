@@ -1087,15 +1087,68 @@ Type_A ticker 미식별 + region 있음
 
 ---
 
+## ✅ 인사이트 분석 자동화 테스트 + 버그 픽스 (2026-06-04) — v6.3.1 → v6.3.2
+
+### 자동화 테스트 인프라 구축
+
+- `backend/tests/eval_insight.py` 신규 — 10케이스 자동 평가 스크립트
+  - 백엔드 API SSE 직접 호출 → Gemini 실제 호출
+  - 섹션 충족률, 신뢰도, H1 추출, Granger 상태 자동 채점
+  - 503 에러 분류·재시도, 케이스 간 5초 딜레이
+  - `eval_results/latest.json` 저장
+- `backend/tests/eval_cases.yaml` 신규 — 10개 다양한 테스트 케이스
+  - insight 6개, verify 2개, presentation 2개
+  - 러-우·대만·한반도·사이버·일-한·사헬·호르무즈·북극·이란에너지·미중기술
+
+### v6.3.1 — 테스트 과정 발견 버그 5종 수정
+
+| # | 버그 | 수정 |
+|---|------|------|
+| B1 | `[문헌공백]` 3/5 케이스 누락 | 프롬프트 `### 문헌 공백 탐지` 별도 섹션 제거 + 카드 내 생략 금지 명시 |
+| B2 | H1 다음줄 형식 미추출 | `_RE_H1` 정규식: `\[가설\]\n H1:` 패턴 추가 |
+| B3 | verify 모드 `**H1 (주장 지지)**:` 미추출 | 정규식에 볼드+괄호 형식 추가 |
+| B4 | eval `_check_h1()` 콜론 미탐지 | `H1[:：]` 문자 추가 + SSE 이벤트 존재 우선 사용 |
+| B5 | `eastern_europe` region alias 미등록 | `correlation.py` `_REGION_ALIAS` 추가 |
+
+### v6.3.2 — Granger 통계력 강화
+
+- `hypothesis_verifier.py`: `_LOOKBACK_MONTHS` 18 → 24 (2년 데이터)
+- `correlation.py`: sparse 지역(비제로<10일) 자동 주간집계 + market_series 동기화
+
+**결과 (자동화 테스트 최종)**
+
+| 지표 | v6.3.0 이전 | v6.3.2 이후 |
+|------|------------|------------|
+| 테스트 통과 | 수동 1~2개 | **10/10 PASS** |
+| 섹션 100% | 불안정 | **10/10** |
+| H1 추출률 | 불안정 | **6/6 케이스** |
+| Granger | PENDING 전원 | **PARTIAL 5건** (Taiwan p=0.085, Ukraine p=0.145, Korean p=0.052) |
+| 신뢰도 평균 | — | **70/100** |
+
+### 자동화 테스트 실행 방법
+
+```bash
+# 전체 10케이스
+backend/.venv/bin/python3 backend/tests/eval_insight.py --no-save-text
+
+# 특정 케이스
+backend/.venv/bin/python3 backend/tests/eval_insight.py --case taiwan
+
+# 마지막 결과 재출력
+backend/.venv/bin/python3 backend/tests/eval_insight.py --summary
+```
+
+### 현재 버전
+`version.json`: **6.3.2** | phase: 6
+
+---
+
 ## 다음 세션 시작점
 
 | 항목 | 상태 | 우선순위 |
 |------|------|---------|
-| P0 완결성 검사 ([문헌공백] + H1 잘림) | ✅ v6.3.0 | — |
-| P1 저장 실패 이유 배너 + 재분석 버튼 | ✅ v6.3.0 | — |
-| P2 Type C PROXY Granger 실행 | ✅ v6.3.0 | — |
-| P3 Type A → C 자동 강등 | ✅ v6.3.0 | — |
-| P4 maxOutputTokens 16384 | ✅ v6.3.0 | — |
-| **실제 세트 재검증** — 러-우 H1 첫 p값 확인 | ⬜ | 🟠 다음 작업 |
-| Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟠 **중기** |
+| 자동화 테스트 인프라 | ✅ v6.3.1 | — |
+| Granger 통계력 강화 (2년 데이터) | ✅ v6.3.2 | — |
+| **Phase 6 브리핑 지식 그래프 P6-1~5** | ⬜ | 🟠 **다음 작업** |
 | 이론 라이브러리 12개 프로파일 구축 | ⬜ | 🟢 중기 |
+| Granger VERIFIED 1건 달성 (p<0.05) | ⬜ | 🟢 중기 (데이터 축적 후) |
