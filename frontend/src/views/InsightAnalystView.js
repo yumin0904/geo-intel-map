@@ -321,15 +321,54 @@ export class InsightAnalystView {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(this._lastResult),
       });
-      if (!resp.ok) throw new Error(`${resp.status}`);
+      if (!resp.ok) {
+        // 422 완결성 검사 실패: 이유 파싱 후 재시도 버튼 표시
+        if (resp.status === 422) {
+          const err = await resp.json().catch(() => ({}));
+          const reason = err.detail ?? '인사이트 미완성';
+          saveBtn.textContent = '⚠️ 저장 실패';
+          saveBtn.disabled = false;
+          this._showSaveFailReason(reason);
+        } else {
+          throw new Error(`${resp.status}`);
+        }
+        return;
+      }
       const data = await resp.json();
       saveBtn.textContent = '✅ 저장됨';
       saveBtn.disabled = true;
-      this._loadHistory();  // 히스토리 목록 갱신
+      this._hideSaveFailBanner();
+      this._loadHistory();
     } catch (e) {
       saveBtn.textContent = '⚠️ 저장 실패';
       saveBtn.disabled = false;
     }
+  }
+
+  _showSaveFailReason(reason) {
+    const resultArea = this._pane.querySelector('#ia-result-area');
+    let banner = this._pane.querySelector('#ia-save-fail-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'ia-save-fail-banner';
+      banner.className = 'ia__save-fail-banner';
+      resultArea.prepend(banner);
+    }
+    banner.innerHTML = `
+      <span class="ia__save-fail-icon">⚠️</span>
+      <span class="ia__save-fail-reason">${reason}</span>
+      <button class="ia__save-fail-retry" id="ia-save-fail-retry">🔄 재분석</button>
+    `;
+    // 재분석 버튼: 동일 쿼리 재실행 (인사이트 미완성 시 Gemini 재생성)
+    banner.querySelector('#ia-save-fail-retry').addEventListener('click', () => {
+      this._hideSaveFailBanner();
+      const submitBtn = this._pane.querySelector('#ia-submit-btn');
+      submitBtn.click();
+    });
+  }
+
+  _hideSaveFailBanner() {
+    this._pane.querySelector('#ia-save-fail-banner')?.remove();
   }
 
   // ── 히스토리 로드 ─────────────────────────────────────────────────────────

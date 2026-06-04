@@ -1046,3 +1046,56 @@ Gemini 스트리밍 완료
 | 지역 균형 5대 | taiwan_strait·hormuz·bab_el_mandeb·korean_peninsula·eastern_europe | ✅ |
 
 **모든 조건 충족 — Phase 6 착수 가능**
+
+---
+
+## ✅ [IA-Engine v6.3.0] 완결성·재시도·Type C Granger + Type A 강등 (2026-06-04)
+
+**배경**: v6.2.0 네 세트(대만·한-미·미-중·러-우) 평가에서 발견된 4개 개선 항목.
+
+### 구현 항목
+
+| # | 문제 | 수정 |
+|---|------|------|
+| P0 | 완결성 검사 미흡 — H1 잘림·[문헌공백] 미체크 | `_REQUIRED_SECTIONS` + 8번째로 `[문헌공백]` 추가 + `_RE_H1_LINE` 전체 H1 완결 검사 |
+| P1 | 저장 실패 시 이유 불명 + 수동 재시도 | 프론트 422 응답 파싱 → 실패 이유 배너 + `🔄 재분석` 버튼 |
+| P2 | Type C 대리변수 제안만 하고 Granger 미실행 | `_REGION_DEFAULT_TICKER` 9개 지역 매핑 + `_run_granger_for_spec()` 내부 함수 → Type C에서 ACLED 시계열 + 지역 기본 ticker로 Granger 자동 실행 |
+| P3 | Type A ticker 실패 시 PENDING 종료 | region 있으면 Type C로 자동 강등 → 대리변수 Granger 실행 |
+| P4 | 두 번째 인사이트 카드 잘림 | `maxOutputTokens`: 8192 → 16384 |
+
+### 검증 결과 (단위 테스트)
+
+| 케이스 | 기대 | 결과 |
+|--------|------|------|
+| `[관찰]`만 있음 (한-미) | 거부 | `미완성: [주장] 섹션 없음` ✅ |
+| H1 문장 잘림 (러-우) | 거부 | `H1 문장 미완성: '...유의하게...'` ✅ |
+| 완결 카드 | 허용 | `완결` ✅ |
+| `[문헌공백]` 누락 | 거부 | `미완성: [문헌공백] 섹션 없음` ✅ |
+
+**Engine-D 변수 경로 완성:**
+```
+Type_C (추상 변수) + region_code 있음
+  → ACLED 이벤트 시계열 + REGION_DEFAULT_TICKER → Granger 실행
+  → 첫 p값 출력 가능 (러-우 세트 CL=F, 대만 세트 TSM)
+
+Type_A ticker 미식별 + region 있음
+  → var_type = Type_C 강등 → 동일 경로 진입
+```
+
+### 현재 버전
+`version.json`: **6.3.0** | phase: 6
+
+---
+
+## 다음 세션 시작점
+
+| 항목 | 상태 | 우선순위 |
+|------|------|---------|
+| P0 완결성 검사 ([문헌공백] + H1 잘림) | ✅ v6.3.0 | — |
+| P1 저장 실패 이유 배너 + 재분석 버튼 | ✅ v6.3.0 | — |
+| P2 Type C PROXY Granger 실행 | ✅ v6.3.0 | — |
+| P3 Type A → C 자동 강등 | ✅ v6.3.0 | — |
+| P4 maxOutputTokens 16384 | ✅ v6.3.0 | — |
+| **실제 세트 재검증** — 러-우 H1 첫 p값 확인 | ⬜ | 🟠 다음 작업 |
+| Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟠 **중기** |
+| 이론 라이브러리 12개 프로파일 구축 | ⬜ | 🟢 중기 |

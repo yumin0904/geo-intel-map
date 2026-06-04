@@ -78,14 +78,22 @@ def apply_data_void_penalty(confidence: int, event_stats_regions: int, cascade_l
 # §P0-A 인사이트 완결성 검사 ──────────────────────────────────────────────────
 
 _REQUIRED_SECTIONS = [
-    "[관찰]", "[주장]", "[가설]", "[근거]", "[한계]", "[경쟁설명]", "[검증포인트]",
+    "[관찰]", "[주장]", "[가설]", "[근거]", "[한계]", "[경쟁설명]", "[검증포인트]", "[문헌공백]",
 ]
 _VALID_ENDINGS = {".", "다", "임", "됨", ")", "음", "?"}
+
+# H1 줄 탐지 — 잘린 H1은 저장 거부 (P0 fix: 다중 카드의 두 번째 H1 잘림 포착)
+_RE_H1_LINE = re.compile(r'H1\s*[:：]\s*.+', re.MULTILINE)
 
 
 def validate_insight_completeness(text: str) -> tuple[bool, str]:
     """
     Gemini 출력이 완결된 인사이트 카드를 포함하는지 검사한다.
+
+    검사 항목:
+      1. 필수 8개 섹션 존재 여부 ([문헌공백] 포함)
+      2. 모든 H1 문장 완결 여부 (두 번째 카드 H1 잘림 포착)
+      3. 전체 텍스트 마지막 문장 완결 여부
 
     Returns:
         (True, "완결") — 저장 허용
@@ -94,6 +102,12 @@ def validate_insight_completeness(text: str) -> tuple[bool, str]:
     for section in _REQUIRED_SECTIONS:
         if section not in text:
             return False, f"미완성: {section} 섹션 없음"
+
+    # H1 문장 완결 — 모든 H1 줄 검사 (다중 카드 잘림 포착)
+    for h1_match in _RE_H1_LINE.finditer(text):
+        h1_line = h1_match.group().rstrip()
+        if h1_line and h1_line[-1] not in _VALID_ENDINGS:
+            return False, f"H1 문장 미완성: '{h1_line[-20:]}...'"
 
     last_char = text.rstrip()[-1] if text.rstrip() else ""
     if last_char not in _VALID_ENDINGS:

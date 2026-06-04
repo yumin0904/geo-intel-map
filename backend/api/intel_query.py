@@ -224,7 +224,7 @@ async def _stream_gemini(
     url  = _GEMINI_URL.format(key=_GEMINI_KEY)
     body = {
         "contents": [{"parts": [{"text": prompt}], "role": "user"}],
-        "generationConfig": {"maxOutputTokens": 8192, "temperature": 0.7},
+        "generationConfig": {"maxOutputTokens": 16384, "temperature": 0.7},
     }
     if thinking:
         # 1024로 제한: 8192는 출력 시작까지 15~20초 지연 발생
