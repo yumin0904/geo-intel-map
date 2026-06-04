@@ -1008,8 +1008,8 @@ Gemini 스트리밍 완료
 
 **현재 충족: 4개 / 5개 조건** (잔여: 총량 5개 + 2025년 이전 1건 + 지역 균형)
 
-### TC-2 미등록 (다음 세션)
-- TC-2: Chatham House — AI 버블 붕괴 → 중국 기술 부상 (`briefing_20251200_chatham_ai_bubble_china_rise`)
+### TC-2 등록 완료 (2026-06-04)
+- TC-2: `briefing_20251216_chatham_ai_bubble_china_rise` — LLM 수익화 딜레마 + 글로벌 사우스 침투 + 거버넌스 분기. TC-1의 선행 분석(2025.12). series_ref로 TC-1과 연결.
 
 ---
 
@@ -1023,8 +1023,26 @@ Gemini 스트리밍 완료
 | ACLED 대만해협 Cascade 0건 조사·수정 | ✅ v6.1.1 | — |
 | IA-Engine 3-Bug Fix (P0-A/B, P1) | ✅ v6.2.0 | — |
 | 브리핑 적재 GZ 3종·EN 3종·TC-1 | ✅ v6.2.0 (45개) | — |
-| **TC-2** Chatham AI 버블 붕괴 | ⬜ | 🟠 다음 시작점 |
-| **IP-1~4** Indo-Pacific 4건 (CFR·WotR·Chatham) | ⬜ | 🟠 총량 게이트 |
-| Phase 6 게이트 총량 50개 달성 | ⬜ 45/50 | 🟡 5개 더 |
-| Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟡 50개 게이트 후 |
+| **TC-2** Chatham AI 버블 붕괴 | ✅ (46개) | — |
+| **IP-1** WotR 북한 드론 한반도 이식 | ✅ (47개) | — |
+| **IP-2** 보류 처리 | — | — |
+| **IP-3** Chatham 트럼프 대만·동맹 신뢰 침식 | ✅ (48개) | — |
+| **IP-4** CFR 트럼프 인도-태평양 방기 | ✅ (49개) | — |
+| **GZ 추가** WotR 우크라이나 전장 혁신 루프 (eastern_europe) | ✅ (50개) | — |
+| **Phase 6 게이트 총량 50개 달성** | ✅ **50/50** | 🎉 |
+| Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟠 **다음 작업** |
 | 이론 라이브러리 12개 프로파일 구축 | ⬜ | 🟢 중기 |
+
+---
+
+## Phase 6 게이트 최종 확인 (2026-06-04)
+
+| 조건 | 현황 | 충족 |
+|------|------|------|
+| 총량 50개 | **50/50** | ✅ |
+| 섹터 균형 6개 (각 ≥5건) | maritime 6·energy 8·techno 6·indo_pacific 9·gray_zone 9·cyber 7 | ✅ |
+| 출처 다양성 4기관+ | INSS·CSIS·WotR·CFR·Brookings·Chatham·RAND·ECFR·FA | ✅ |
+| 2025년 이전 사례 3건 | GZ-3(2019)·IP-1(2025.07)·TC-2(2025.12) | ✅ |
+| 지역 균형 5대 | taiwan_strait·hormuz·bab_el_mandeb·korean_peninsula·eastern_europe | ✅ |
+
+**모든 조건 충족 — Phase 6 착수 가능**
