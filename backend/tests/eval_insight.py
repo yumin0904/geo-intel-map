@@ -123,6 +123,47 @@ def _check_tags(text: str, tags: list[str]) -> dict[str, bool]:
     return {tag: (tag in text) for tag in tags}
 
 
+def _check_rival_comparison(text: str) -> dict:
+    """[경쟁설명] 섹션에서 7-B 수치 편차 비교 충족 여부 확인.
+
+    두 수준으로 채점:
+    - quantitative (엄격): '예측:' + '실측:' 레이블 모두 존재
+    - comparative (완화): 이론명 2개+ + 수치(%) + 판정 키워드 존재
+    """
+    rival_section = ""
+    m = re.search(r"\[경쟁설명\](.*?)(?=\[검증포인트\]|\[문헌공백\]|\Z)", text, re.DOTALL)
+    if m:
+        rival_section = m.group(1)
+
+    # 엄격 기준
+    has_prediction = bool(re.search(r"예측\s*:", rival_section))
+    has_measured   = bool(re.search(r"실측\s*:", rival_section))
+    has_verdict    = bool(re.search(r"(편차|우세|판정)\s*:", rival_section))
+
+    # 완화 기준: 이론명 2개+ 비교 + 수치 + 기각/우세 표현
+    theory_mentions = len(re.findall(
+        r"(현실주의|자원무기화|무기화|억지|회색지대|하이브리드|해양력|동맹 이론|디지털 철|"
+        r"Mahan|Waltz|Mearsheimer|Libicki|Farrell|Hirschman|Snyder|Hoffman|A2/AD)",
+        rival_section, re.IGNORECASE
+    ))
+    has_numbers = bool(re.search(r"\d+[\.\d]*\s*(%|Mbpd|bn|억|조|건|회|달러|USD)", rival_section))
+    has_rejection = bool(re.search(
+        r"(기각|우세|열세|설명력|반례|한계|부분적|불충분|초과|미달|더 높|더 낮)", rival_section
+    ))
+    comparative = theory_mentions >= 2 and (has_numbers or has_rejection)
+
+    quantitative = has_prediction and has_measured
+    return {
+        "has_prediction_label": has_prediction,
+        "has_measured_label": has_measured,
+        "has_verdict_label": has_verdict,
+        "theory_mentions": theory_mentions,
+        "has_numbers_in_rival": has_numbers,
+        "quantitative_comparison": quantitative,
+        "comparative_comparison": comparative,   # 완화 기준
+    }
+
+
 def _check_labels(text: str) -> dict[str, int]:
     """품질 레이블 카운트."""
     return {
@@ -170,10 +211,12 @@ def evaluate_case(case: dict) -> dict:
     print(f"  실행 중...", end="", flush=True)
 
     sse = _collect_sse(query, mode)
-    # 503 오류 시 30초 후 1회 자동 재시도
-    if sse.get("error") and "503" in str(sse.get("error", "")):
-        print(f" 503 → 30초 후 재시도...", end="", flush=True)
-        time.sleep(30)
+    # 503 오류 시 최대 2회 재시도 (30초, 60초 간격)
+    for wait in (30, 60):
+        if not (sse.get("error") and "503" in str(sse.get("error", ""))):
+            break
+        print(f" 503 → {wait}초 후 재시도...", end="", flush=True)
+        time.sleep(wait)
         sse = _collect_sse(query, mode)
     print(f" {sse['elapsed']}s")
 
@@ -188,6 +231,7 @@ def evaluate_case(case: dict) -> dict:
     tag_check     = _check_tags(text, exp_tags)
     labels        = _check_labels(text)
     has_h1        = _check_h1(text, hyp_events)
+    rival_check   = _check_rival_comparison(text)
 
     score_ev   = sse["score_event"] or {}
     confidence = score_ev.get("confidence", 0)
@@ -223,6 +267,8 @@ def evaluate_case(case: dict) -> dict:
         print(f"  ⚠ 누락 키워드: {', '.join(missing_tags)}")
     if labels["TEMPORAL_REVERSAL"]:
         print(f"  🔁 시간 역전 탐지: {labels['TEMPORAL_REVERSAL']}건")
+    cmp_mark = "✅" if rival_check["quantitative_comparison"] else "⚠"
+    print(f"  {cmp_mark} 경쟁이론 수치 비교: 예측{'✓' if rival_check['has_prediction_label'] else '✗'} 실측{'✓' if rival_check['has_measured_label'] else '✗'} 판정{'✓' if rival_check['has_verdict_label'] else '✗'}")
     if hyp_summary:
         for h in hyp_summary:
             mark = "🟢" if h["status"] == "VERIFIED" else "🟡" if h["status"] == "PARTIAL" else "⚪"
@@ -245,6 +291,7 @@ def evaluate_case(case: dict) -> dict:
         "h1_expected": exp_h1,
         "hypothesis": hyp_summary,
         "labels": labels,
+        "rival_check": rival_check,
         "full_text": text,  # 상세 분석용 (JSON에 포함)
         "expected_min_score": exp_score,
     }
@@ -315,6 +362,23 @@ def _diagnosis(results: list[dict]) -> str:
         for r in h1_needed:
             mark = "✅" if r.get("has_h1") else "❌"
             lines.append(f"  {mark} [{r['id']}]")
+
+    # 경쟁이론 수치 비교 충족률 (Cycle 7-B)
+    insight_results = [r for r in results if r.get("mode") == "insight" and not r.get("error")]
+    if insight_results:
+        n = len(insight_results)
+        quantitative_cnt = sum(1 for r in insight_results if r.get("rival_check", {}).get("quantitative_comparison"))
+        comparative_cnt  = sum(1 for r in insight_results if r.get("rival_check", {}).get("comparative_comparison"))
+        lines.append(f"\n### 경쟁이론 수치 비교 충족률 (Cycle 7-B 평가)")
+        lines.append(f"- [엄격] 예측+실측 레이블: {quantitative_cnt}/{n} ({round(quantitative_cnt/n*100)}%)")
+        lines.append(f"- [완화] 이론 2개+수치+판정: {comparative_cnt}/{n} ({round(comparative_cnt/n*100)}%)")
+        pred_cnt = sum(1 for r in insight_results if r.get("rival_check", {}).get("has_prediction_label"))
+        meas_cnt = sum(1 for r in insight_results if r.get("rival_check", {}).get("has_measured_label"))
+        lines.append(f"- '예측:' 레이블: {pred_cnt}/{n}")
+        lines.append(f"- '실측:' 레이블: {meas_cnt}/{n}")
+        status_strict = "✅ 달성" if quantitative_cnt/n*100 >= 50 else "❌ 미달"
+        status_loose  = "✅ 달성" if comparative_cnt/n*100 >= 50 else "❌ 미달"
+        lines.append(f"- 목표(50%+) 엄격: {status_strict} / 완화: {status_loose}")
 
     # Granger 검증 현황
     all_hyp = []

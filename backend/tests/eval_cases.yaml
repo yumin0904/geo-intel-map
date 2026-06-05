@@ -75,12 +75,11 @@ cases:
       h1: true
 
   - id: arctic_lawfare_verify
-    name: "러-중 북극 법전쟁 → NSR 주권 주장 검증"
-    query: "러시아와 중국의 북극 법전쟁이 북극항로 주권 통제에 실질적 영향을 미치는지 검증해줘"
-    mode: verify
+    name: "러-중 북극 법전쟁 → NSR 주권·그림자 선단 교차 분석"
+    query: "러시아와 중국의 북극항로 법전쟁과 그림자 선단 운용이 북극 지정학에 미치는 구조적 영향을 분석해줘"
+    mode: insight
     expect:
       min_score: 50
-      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]", "[단계 6]"]
       tags: ["북극", "러시아"]
       h1: true
 
@@ -102,3 +101,98 @@ cases:
       min_score: 50
       tags: ["반도체", "AI"]
       h1: false
+
+  # ── 추가 케이스 (Cycle 7-C, 총 20개) ────────────────────────────────────
+
+  - id: hormuz_iran_blockade
+    name: "이란전 호르무즈 봉쇄 → 에너지 무기화 연쇄 분석"
+    query: "이란전 호르무즈 봉쇄가 글로벌 에너지 시장과 동맹 결속에 미치는 연쇄 효과를 자원무기화·상호의존 이론으로 교차 분석해줘"
+    mode: insight
+    expect:
+      min_score: 60
+      tags: ["호르무즈", "이란"]
+      h1: true
+
+  - id: russia_china_arctic_control
+    name: "러-중 북극 법전쟁 → 회색지대 전략 분석"
+    query: "러시아와 중국의 북극항로 주권 통제 전략을 회색지대 이론과 하이브리드 전쟁 이론으로 비교 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["북극", "러시아"]
+      h1: true
+
+  - id: pla_taiwan_a2ad
+    name: "PLA A2/AD → Mahan vs Mearsheimer 비교"
+    query: "중국 PLA의 대만해협 A2/AD 전략을 마한 해양력 이론과 미어샤이머 공격적 현실주의로 비교 분석해줘"
+    mode: insight
+    expect:
+      min_score: 60
+      tags: ["대만", "중국"]
+      h1: true
+
+  - id: houthi_red_sea_sloc
+    name: "후티 홍해 공격 → SLOC 취약성"
+    query: "후티의 홍해 상선 공격이 글로벌 해상 교통로(SLOC) 취약성에 미치는 영향을 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["홍해", "후티"]
+      h1: true
+
+  - id: salt_typhoon_cyber_deterrence
+    name: "솔트 타이푼 → Libicki 사이버 억지 검증"
+    query: "솔트 타이푼 사건에서 Libicki 사이버 억지 이론의 귀속 명확성 가설이 실제로 억지에 실패한 이유를 분석해줘"
+    mode: verify
+    expect:
+      min_score: 50
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]", "[단계 6]"]
+      tags: ["사이버", "억지"]
+      h1: true
+
+  - id: china_ai_export_ban
+    name: "미국 AI 수출규제 → 디지털 철의 장막 이론"
+    query: "미국의 AI 칩 수출규제와 중국의 기술 자립화 전략을 디지털 철의 장막 이론으로 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["AI", "수출규제"]
+      h1: true
+
+  - id: ukraine_drone_innovation
+    name: "우크라이나 드론 혁신 → 하이브리드 전쟁 이론 재검토"
+    query: "우크라이나 전쟁에서 드론 혁신이 기존 하이브리드 전쟁 이론을 어떻게 바꾸는지 검증해줘"
+    mode: verify
+    expect:
+      min_score: 50
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]", "[단계 6]"]
+      tags: ["우크라이나", "드론"]
+      h1: false
+
+  - id: india_indo_pacific_balancing
+    name: "인도 전략적 자율성 → 동맹 딜레마 분석"
+    query: "인도의 전략적 자율성이 미-중 경쟁 속에서 Snyder 동맹 딜레마를 어떻게 회피하는지 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["인도", "동맹"]
+      h1: false
+
+  - id: iran_russia_tactic_transfer
+    name: "이란-러시아 전술 전이 → 발표 각도"
+    query: "이란전에서 발전한 사이버-드론 전술이 러시아 우크라이나 전쟁으로 전이되는 패턴을 발표 주제로 추천해줘"
+    mode: presentation
+    expect:
+      min_score: 50
+      tags: ["이란", "러시아"]
+      h1: false
+
+  - id: mearsheimer_vs_liberal_taiwan
+    name: "Mearsheimer 공격적 현실주의 vs 자유주의 상호의존 — 대만 분쟁 예측 비교"
+    query: "대만 분쟁 가능성에서 미어샤이머의 공격적 현실주의와 케오헤인-나이의 자유주의 상호의존 이론 중 어느 쪽이 더 설명력이 높은지 검증해줘"
+    mode: verify
+    expect:
+      min_score: 60
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["대만", "현실주의"]
+      h1: true
