@@ -38,6 +38,17 @@ _REGION_DEFAULT_TICKER: dict[str, str] = {
     "sahel":             "GLD",    # 사헬: 금 (지역 불안 프록시)
 }
 
+# [Cycle 6-B] 섹터 기본 ticker — 지역 미식별 시 섹터로 대리변수 선택
+# 사이버·기술 섹터 H1은 지역 코드 없이 섹터만 식별되는 경우가 많음
+_SECTOR_DEFAULT_TICKER: dict[str, str] = {
+    "cyber":       "ITA",    # 사이버 공격 → 미 방산 ETF (APT 공격 → 방산투자 반응)
+    "techno":      "SOXX",   # 기술 패권 → 반도체 ETF (공급망 충격 반응)
+    "maritime":    "CL=F",   # 해양 → WTI 유가 (SLOC 차단 에너지 프리미엄)
+    "energy":      "CL=F",   # 에너지 → WTI 유가
+    "indo_pacific": "TSM",   # 인도-태평양 → TSMC (대만해협 긴장 프록시)
+    "gray_zone":   "GLD",    # 회색지대 → 금 (불확실성 안전자산 도피)
+}
+
 # 분석 기간: 최근 18개월 (이벤트 데이터 충분성 확보)
 _LOOKBACK_MONTHS = 24  # 18→24: 2년 데이터로 Granger 통계력 강화 (Korean p=0.048 VERIFIED 확인)
 
@@ -80,15 +91,16 @@ async def _run_granger_for_spec(
             import pandas as pd
             market_series = market_series.resample("W").last()
 
-        p_value, best_lag, n_obs = run_granger(event_series, market_series)
+        p_value, best_lag, n_obs, f_stat = run_granger(event_series, market_series)
         spec.n_obs = n_obs
 
         if p_value is None:
             spec.error = "Granger 검정 실패 (관측값 부족 또는 분산=0)"
             return spec
 
-        spec.granger_p = round(p_value, 4)
-        spec.best_lag  = best_lag
+        spec.granger_p    = round(p_value, 4)
+        spec.f_statistic  = f_stat
+        spec.best_lag     = best_lag
 
         if p_value < 0.05:
             spec.verification_status = "VERIFIED"
@@ -100,13 +112,13 @@ async def _run_granger_for_spec(
         if proxy_label:
             spec.error = (
                 f"[대리변수 사용] {proxy_label} → {spec.ticker} "
-                f"(p={spec.granger_p}, lag={best_lag})"
+                f"(p={spec.granger_p}, F={f_stat}, lag={best_lag})"
             )
 
         logger.info(
-            "[hypothesis] %s | region=%s ticker=%s p=%.4f lag=%s → %s%s",
+            "[hypothesis] %s | region=%s ticker=%s p=%.4f F=%s lag=%s → %s%s",
             spec.h1[:50], spec.region_code, spec.ticker,
-            p_value, best_lag, spec.verification_status,
+            p_value, f_stat, best_lag, spec.verification_status,
             f" [{proxy_label}]" if proxy_label else "",
         )
     except Exception as exc:
@@ -189,6 +201,24 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     results.append(spec)
                     continue
 
+            # [Cycle 6-B] 섹터 proxy 경로: region 미식별이지만 섹터 키워드로 ticker 결정
+            sector_proxy = _get_sector_proxy(spec)
+            if sector_proxy:
+                proxy_ticker, proxy_label = sector_proxy
+                spec.var_type = "Type_C"
+                spec.ticker   = proxy_ticker
+                # region 없으면 event_archive 조회 불가 → middle_east fallback
+                if not spec.region_code:
+                    spec.region_code = "middle_east"
+                spec = await _run_granger_for_spec(
+                    spec, start, end,
+                    _load_event_series, _get_market_series, _run_granger,
+                    proxy_label=f"섹터 proxy: {proxy_label}",
+                )
+                logger.info("[hypothesis] 섹터proxy %s: %s", spec.verification_status, spec.h1[:60])
+                results.append(spec)
+                continue
+
             missing = []
             if not spec.region_code:
                 missing.append("region")
@@ -207,3 +237,27 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         results.append(spec)
 
     return results
+
+
+def _get_sector_proxy(spec: "HypothesisSpec") -> tuple[str, str] | None:
+    """
+    [Cycle 6-B] 지역 미식별 시 섹터로 대리변수 ticker를 선택한다.
+    H1 텍스트에서 섹터 키워드를 탐지해 _SECTOR_DEFAULT_TICKER로 매핑.
+    반환: (ticker, proxy_label) 또는 None
+    """
+    h1_lower = spec.h1.lower()
+    # 우선순위: 구체적(specific) → 일반(general) 순서로 배치
+    sector_keywords = {
+        "cyber":        ["사이버", "cyber", "apt", "해킹", "악성코드", "랜섬웨어"],
+        "indo_pacific": ["대만", "taiwan", "tsmc", "인도-태평양", "indo-pacific", "a2ad"],
+        "techno":       ["반도체", "semiconductor", "soxx", "chip", "희토류", "공급망"],
+        "energy":       ["유가", "원유", "에너지", "lng", "가스", "oil", "호르무즈"],
+        "maritime":     ["해양", "해협", "sloc", "초크포인트", "chokepoint", "선박"],
+        "gray_zone":    ["회색지대", "gray zone", "하이브리드", "프록시"],
+    }
+    for sector, keywords in sector_keywords.items():
+        if any(kw in h1_lower for kw in keywords):
+            ticker = _SECTOR_DEFAULT_TICKER.get(sector)
+            if ticker:
+                return ticker, f"{sector} 섹터 대리변수 → {ticker}"
+    return None

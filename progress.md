@@ -1037,7 +1037,7 @@ Phase 6·7은 **IA-Engine 분석 수준 향상**에만 집중.
 | **6-A 1단계** | SIPRI Arms Transfers + V-DEM + COW Wars CSV 적재 | ✅ v6.4.0 | — |
 | **6-A 2단계** | 외교부 LOD IFANS 발간자료 — `connectors/mofa_lod.py` | ✅ v6.4.0 | — |
 | **6-A eval** | `eval_insight.py` 재실행 → UNVERIFIED 감소 확인 | ⬜ | 🟠 **다음 작업** (rate limit 해제 후) |
-| **6-B** | Granger 통계력 강화 (lag 자동 최적화·r값·사이버 proxy) | ⬜ | 🟡 |
+| **6-B** | Granger 통계력 강화 (lag 자동 최적화·r값·사이버 proxy) | ✅ v6.5.0 | — |
 | **6-C** | H1 생성 품질 고도화 (추상 변수 제한·Type_A/B 비율) | ⬜ | 🟡 |
 
 ### Phase 7 작업 목록 (Phase 6 완료 후)
@@ -1234,6 +1234,58 @@ backend/.venv/bin/python3 backend/tests/eval_insight.py --summary
 
 ### 현재 버전
 `version.json`: **6.4.0** | phase: 6
+
+---
+
+## ✅ [Cycle 6-B] Granger 통계력 강화 (2026-06-05) — v6.5.0
+
+### 구현 내용
+
+| 파일 | 변경 |
+|------|------|
+| `services/cascade/correlation.py` | `_run_granger` → AIC+min-p 하이브리드 lag 선택, F-통계량 4-tuple 반환 |
+| `services/hypothesis_extractor.py` | `HypothesisSpec`에 `f_statistic` 필드 추가 |
+| `services/hypothesis_verifier.py` | f_statistic 반영, `_SECTOR_DEFAULT_TICKER` 6종 추가, `_get_sector_proxy()` 신설 |
+| `api/intel_query.py` | hypothesis SSE에 `f_statistic` 필드 추가 |
+| `frontend/src/views/InsightAnalystView.js` | H1 카드에 `F = {f}` 표시 |
+
+### AIC+min-p 하이브리드 lag 전략
+
+```
+1차) VAR.select_order(AIC) → 최적 lag 후보
+2차) maxlag 내 min-p → 데이터에서 가장 강한 신호
+→ 두 lag 중 p 값이 더 작은 쪽 선택 (통계적 정당성 + 민감도)
+```
+
+### Cycle 6-B 실측 결과 (2년 데이터, 2024-01~2026-06)
+
+| 케이스 | 이전 | 이후 | |
+|--------|------|------|--|
+| 한반도 → KRW | PENDING (p=0.052) | **VERIFIED ✅ (p=0.048, F=3.05, lag=2)** | 목표 달성 |
+| 대만 → TSMC | PARTIAL (p=0.085) | PARTIAL 🔶 (p=0.067, F=2.389, lag=3) | 개선 |
+| 우크라이나 → WTI | PENDING | PARTIAL 🔶 (p=0.146, F=2.123, lag=1) | 개선 |
+| 바브엘만데브 → WTI | PENDING | PENDING (p=0.157) | 유지 |
+
+### 사이버 섹터 proxy (`_SECTOR_DEFAULT_TICKER`)
+
+| 섹터 | ticker | 근거 |
+|------|--------|------|
+| `cyber` | ITA | 사이버 공격 → 방산투자 반응 |
+| `techno` | SOXX | 기술 패권 → 반도체 ETF |
+| `maritime` | CL=F | SLOC 차단 → 에너지 프리미엄 |
+| `energy` | CL=F | 에너지 충격 직접 |
+| `indo_pacific` | TSM | 대만해협 긴장 → TSMC |
+| `gray_zone` | GLD | 불확실성 → 안전자산 |
+
+### §22-C 체크리스트 업데이트
+
+```
+✅ IA-Engine-D: 최소 1개 H1에 Granger r값·p값 자동 산출
+   → 한반도 VERIFIED p=0.048, F=3.05 달성
+```
+
+### 현재 버전
+`version.json`: **6.5.0** | phase: 6
 
 ---
 

@@ -332,6 +332,7 @@ async def _stream_gemini(
                             "proxy_suggestions": s.proxy_suggestions,
                             "verification_status": s.verification_status,
                             "granger_p": s.granger_p,
+                            "f_statistic": s.f_statistic,
                             "best_lag": s.best_lag,
                             "n_obs": s.n_obs,
                             "error": s.error,

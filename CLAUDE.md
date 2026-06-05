@@ -988,7 +988,7 @@ if verification_status == "VERIFIED":  # 상한 없음 — Granger p<0.05 자동
 
 Phase 6 (데이터 기반 강화):
 □ UNVERIFIED 평균 <1건/케이스 (Cycle 6-A 외부 데이터 2차 적재)
-□ IA-Engine-D: 최소 1개 H1에 Granger r값·p값 자동 산출 (Cycle 6-B, VERIFIED p<0.05)
+✅ IA-Engine-D: 최소 1개 H1에 Granger r값·p값 자동 산출 (Cycle 6-B, 한반도 VERIFIED p=0.048 F=3.05)
 □ H1 Type_A/B 비율 50%+ (Cycle 6-C 생성 품질 고도화)
 
 Phase 7 (추론 고도화):

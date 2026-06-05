@@ -549,9 +549,11 @@ export class InsightAnalystView {
     const cards = hypotheses.map(h => {
       const st = _statusLabel[h.verification_status] ?? _statusLabel.PENDING;
       const vt = _typeLabel[h.var_type] ?? _typeLabel.Type_A;
-      const pStr  = h.granger_p  != null ? `p = ${h.granger_p}` : '—';
-      const lagStr = h.best_lag  != null ? `lag ${h.best_lag}일` : '—';
-      const nStr   = h.n_obs > 0         ? `n = ${h.n_obs}`      : '—';
+      const pStr   = h.granger_p   != null ? `p = ${h.granger_p}` : '—';
+      const fStr   = h.f_statistic != null ? `F = ${h.f_statistic}` : '';
+      const lagStr = h.best_lag   != null ? `lag ${h.best_lag}일` : '—';
+      const nStr   = h.n_obs > 0          ? `n = ${h.n_obs}`     : '—';
+      const statsStr = [pStr, fStr, lagStr, nStr].filter(Boolean).join(' · ');
       const regionBadge = h.region_code ? `<span class="ia__hyp-tag">${h.region_code}</span>` : '';
       const tickerBadge = h.ticker      ? `<span class="ia__hyp-tag">${h.ticker}</span>`      : '';
       const typeBadge   = `<span class="ia__hyp-tag ia__hyp-tag--type">${vt.icon} ${vt.text}</span>`;
@@ -565,7 +567,7 @@ export class InsightAnalystView {
           <div class="ia__hyp-header">
             <span class="ia__hyp-status">${st.icon} ${st.text}</span>
             ${typeBadge}${regionBadge}${tickerBadge}
-            <span class="ia__hyp-stats">${pStr} · ${lagStr} · ${nStr}</span>
+            <span class="ia__hyp-stats">${statsStr}</span>
           </div>
           <div class="ia__hyp-h1"><strong>H1</strong> ${h.h1}</div>
           <div class="ia__hyp-h0"><strong>H0</strong> ${h.h0}</div>

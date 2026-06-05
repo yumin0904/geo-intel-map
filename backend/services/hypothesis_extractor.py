@@ -33,6 +33,7 @@ class HypothesisSpec:
     proxy_suggestions: list[str] = field(default_factory=list)  # Type_C 대리변수 제안
     verification_status: VerificationStatus = "PENDING"
     granger_p: float | None = None
+    f_statistic: float | None = None   # Granger F-통계량 (§22-A H1 스키마)
     best_lag: int | None = None
     n_obs: int = 0
     error: str | None = None
