@@ -71,13 +71,15 @@ _REGION_ALIASES: dict[str, list[str]] = {
 
 # ── 행위자(국가) 매핑 — ISO3 ──────────────────────────────────────────────
 _ACTOR_ALIASES: dict[str, list[str]] = {
-    "CHN": ["중국", "china", "prc", "pla", "중화인민공화국", "베이징", "beijing"],
+    "CHN": ["중국", "china", "prc", "pla", "중화인민공화국", "베이징", "beijing",
+            "salt typhoon", "솔트 타이폰", "volt typhoon", "볼트 타이폰", "hafnium", "apt41"],
     "USA": ["미국", "usa", "us", "united states", "america", "워싱턴", "washington", "pentagon"],
-    "RUS": ["러시아", "russia", "러시아 연방", "모스크바", "moscow", "크렘린", "kremlin"],
-    "IRN": ["이란", "iran", "테헤란", "tehran", "혁명수비대", "irgc"],
+    "RUS": ["러시아", "russia", "러시아 연방", "모스크바", "moscow", "크렘린", "kremlin",
+            "sandworm", "fancy bear", "cozy bear", "apt28", "apt29"],
+    "IRN": ["이란", "iran", "테헤란", "tehran", "혁명수비대", "irgc", "apt33", "apt35"],
+    "PRK": ["북한", "north korea", "dprk", "평양", "pyongyang", "김정은", "lazarus"],
     "TWN": ["대만", "taiwan", "타이완", "taipei", "타이베이"],
     "KOR": ["한국", "south korea", "대한민국", "서울", "seoul"],
-    "PRK": ["북한", "north korea", "dprk", "평양", "pyongyang", "김정은"],
     "JPN": ["일본", "japan", "도쿄", "tokyo", "자위대", "jsdf"],
     "SAU": ["사우디", "saudi", "saudi arabia", "리야드", "riyadh", "aramco"],
     "ISR": ["이스라엘", "israel", "이스라엘 방위군", "idf", "텔아비브", "tel aviv"],
@@ -117,6 +119,15 @@ _SECTOR_KEYWORDS: dict[str, list[str]] = {
         "사이버전", "사이버 공격", "cyberwar", "cyberattack", "apt",
         "랜섬웨어", "ransomware", "해킹", "hack", "허위정보", "disinformation",
         "인지전", "cognitive war", "information operation",
+        # 사이버 억지·귀속·주요 APT 키워드 (Cycle 7-D 추가)
+        "사이버 억지", "cyber deterrence", "억지", "deterrence",
+        "귀속", "attribution", "libicki", "리비키",
+        "salt typhoon", "솔트 타이폰", "솔트 타이푼",
+        "volt typhoon", "볼트 타이폰", "볼트 타이푼",
+        "sandworm", "lazarus", "fancy bear", "cozy bear",
+        "apt28", "apt29", "apt40", "apt41", "hafnium",
+        "malware", "악성코드", "스파이웨어", "espionage", "스파이",
+        "zero-day", "제로데이", "공급망 공격", "supply chain attack",
     ],
 }
 

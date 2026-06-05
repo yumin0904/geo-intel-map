@@ -433,8 +433,8 @@ def _get_csis_incidents(actors: list[str], regions: list[str],
         "middle_east":      ["IRN", "ISR", "USA"],
         "east_china_sea":   ["CHN", "JPN", "USA"],
     }
-    # cyber 섹터 포함 시 더 넓은 범위 조회
-    is_cyber = "cyber" in sectors
+    # cyber 또는 techno 섹터 포함 시 더 넓은 범위 조회
+    is_cyber = "cyber" in sectors or "techno" in sectors
 
     iso3_set = set(actors)
     for r in regions:
