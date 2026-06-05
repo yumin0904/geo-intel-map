@@ -61,18 +61,47 @@ _RE_CHAIN_STRENGTH = re.compile(
 
 # §P0-B 데이터 공백 패널티 ────────────────────────────────────────────────────
 
-def apply_data_void_penalty(confidence: int, event_stats_regions: int, cascade_links: int) -> int:
+def apply_data_void_penalty(
+    confidence: int,
+    event_stats_regions: int,
+    cascade_links: int,
+    structured_sources: int = 0,
+) -> int:
     """
-    ACLED 이벤트와 Cascade가 없을 때 신뢰도 상한을 제한한다 (P0-B).
+    ACLED 이벤트·Cascade가 없을 때 신뢰도 상한을 제한한다 (P0-B).
 
-    둘 다 0 → 상한 60 (데이터 공백, 순수 서술 수준)
-    하나만 0 → 상한 72 (부분 공백)
+    [Cycle 7-D L1-a] 정형 수치 소스 보정 추가.
+    ACLED/Cascade가 없어도 WBK·ITU·HIIK·CSIS·semi·FRED·SIPRI·V-DEM 등
+    정형 수치 데이터가 충분하면 "순수 서술"이 아니므로 상한을 완화한다.
+
+    structured_sources: 비어있지 않은 정형 수치 소스 개수.
+
+    판정:
+      ACLED + Cascade 둘 다 존재  → 캡 없음 (동적 인과 근거 완비)
+      한 축만 존재               → 정형 보강 시 80, 아니면 72
+      둘 다 없음                 → 정형 소스 개수로 차등:
+                                    ≥3 → 85 / 2 → 78 / 1 → 70 / 0 → 60
     """
-    if event_stats_regions == 0 and cascade_links == 0:
-        return min(confidence, 60)
-    if event_stats_regions == 0 or cascade_links == 0:
-        return min(confidence, 72)
-    return confidence
+    has_acled   = event_stats_regions > 0
+    has_cascade = cascade_links > 0
+
+    # 동적 인과 근거(이벤트 시계열 + Cascade) 완비 → 캡 없음
+    if has_acled and has_cascade:
+        return confidence
+
+    # 한 축의 동적 데이터 존재 → 정형 보강 시 상한 상향
+    if has_acled or has_cascade:
+        base_cap = 80 if structured_sources >= 3 else 72
+        return min(confidence, base_cap)
+
+    # ACLED·Cascade 둘 다 없음 — 정형 수치 소스만으로 근거 평가
+    if structured_sources >= 3:
+        return min(confidence, 85)   # 풍부한 정형 데이터 — 횡단면 근거 충분
+    if structured_sources == 2:
+        return min(confidence, 78)
+    if structured_sources == 1:
+        return min(confidence, 70)
+    return min(confidence, 60)        # 진짜 데이터 공백 (순수 서술)
 
 
 # §P0-A 인사이트 완결성 검사 ──────────────────────────────────────────────────

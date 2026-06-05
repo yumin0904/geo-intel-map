@@ -193,6 +193,42 @@ def _score_completeness(section_results: dict) -> float:
     return sum(section_results.values()) / len(section_results)
 
 
+# ── 응답 잘림 탐지 (일시적 Gemini 잘림 재시도용) ─────────────────────────────
+
+_TRUNCATION_THRESHOLD = 0.6  # 필수 섹션 충족률이 이 미만이면 잘림으로 간주
+
+
+def _section_fill(text: str, required: list[str]) -> float:
+    """필수 섹션 충족률 0~1."""
+    if not required:
+        return 1.0
+    return sum(1 for s in required if s in text) / len(required)
+
+
+def _is_retryable(sse: dict, required: list[str]) -> tuple[bool, str]:
+    """
+    재시도 대상인지 판정한다.
+
+    재시도 사유:
+      1. API 오류 (503 / 빈 응답 / 타임아웃) — 일시적 서버 측 문제
+      2. 응답 잘림 — 200 응답이지만 필수 섹션 60% 미만 (정상 응답은 거의 100%)
+
+    Returns: (재시도 여부, 사유 문자열)
+    """
+    err = str(sse.get("error", "") or "")
+    if "503" in err or "빈 응답" in err or "타임아웃" in err:
+        return True, "API오류"
+    # 오류 없는 200 응답인데 섹션이 크게 부족 → 잘림
+    if not sse.get("error"):
+        text = sse.get("full_text", "")
+        if text and _section_fill(text, required) < _TRUNCATION_THRESHOLD:
+            pct = round(_section_fill(text, required) * 100)
+            return True, f"잘림({pct}%)"
+        if not text:
+            return True, "빈응답"
+    return False, ""
+
+
 def evaluate_case(case: dict) -> dict:
     """단일 케이스 실행 및 평가."""
     name    = case["name"]
@@ -211,14 +247,18 @@ def evaluate_case(case: dict) -> dict:
     print(f"  실행 중...", end="", flush=True)
 
     sse = _collect_sse(query, mode)
-    # 503 오류 시 최대 2회 재시도 (30초, 60초 간격)
-    for wait in (30, 60):
-        if not (sse.get("error") and "503" in str(sse.get("error", ""))):
+    # API 오류(503/빈응답/타임아웃) 또는 응답 잘림 시 최대 2회 재시도
+    # (잘림은 일시적 Gemini 현상 — 200이지만 후반 섹션이 누락됨)
+    retries = 0
+    for wait in (15, 40):
+        retryable, reason = _is_retryable(sse, req_sec)
+        if not retryable:
             break
-        print(f" 503 → {wait}초 후 재시도...", end="", flush=True)
+        print(f" {reason} → {wait}초 후 재시도...", end="", flush=True)
         time.sleep(wait)
         sse = _collect_sse(query, mode)
-    print(f" {sse['elapsed']}s")
+        retries += 1
+    print(f" {sse['elapsed']}s" + (f" (재시도 {retries}회)" if retries else ""))
 
     if sse["error"]:
         print(f"  ❌ 오류: {sse['error']}")
@@ -294,6 +334,7 @@ def evaluate_case(case: dict) -> dict:
         "rival_check": rival_check,
         "full_text": text,  # 상세 분석용 (JSON에 포함)
         "expected_min_score": exp_score,
+        "retries": retries,
     }
 
 
@@ -328,6 +369,13 @@ def _print_summary(results: list[dict]) -> None:
 
     avg_elapsed = sum(r.get("elapsed", 0) for r in results) / max(len(results), 1)
     print(f"평균 응답 시간: {avg_elapsed:.1f}s")
+
+    # 잘림·API오류 재시도 통계 (일시적 Gemini 현상 모니터링)
+    retried = [r for r in results if r.get("retries", 0) > 0]
+    if retried:
+        total_retries = sum(r.get("retries", 0) for r in retried)
+        print(f"♻️  재시도 발생: {len(retried)}개 케이스 / 총 {total_retries}회 "
+              f"(잘림·API오류 자동 복구)")
 
 
 def _diagnosis(results: list[dict]) -> str:

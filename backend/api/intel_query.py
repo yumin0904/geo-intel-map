@@ -111,14 +111,27 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
         "결과 이벤트가 원인 이벤트보다 이전에 발생한 경우, [TEMPORAL_REVERSAL] 태그를 붙이고 "
         "'A가 B를 유발'이 아닌 '공통 구조적 선행 조건' 또는 'B가 A의 선행 지표'로 재공식화하라.\n\n"
 
-        "## H1 가설 작성 규칙 (Cycle 6-C — 검증 가능성 강제)\n"
+        "## H1 가설 작성 규칙 (Cycle 6-C/7-D — 검증 가능성 강제)\n"
         "H1의 X(독립변수)와 Y(종속변수)는 반드시 **측정 가능한 정량 지표**여야 한다:\n"
         "✅ 허용: 건수, 가격(USD), 비율(%), 지수(0~1), 금액(bn), 환율, 주가, 생산량(Mbpd)\n"
         "❌ 금지: '의지', '역량', '의도', '신뢰', '포지션', '패권' 같은 추상 개념\n"
         "예시 ✅: 'ACLED 분쟁 이벤트 월별 건수가 증가할 때 WTI 유가(USD/배럴)가 통계적으로 유의하게 상승한다'\n"
-        "예시 ❌: '미국의 전략적 억지 의지가 약화될 때 중국의 강압 역량이 증가한다'\n"
+        "예시 ❌: '미국의 전략적 억지 의지가 약화될 때 중국의 강압 역량이 증가한다'\n\n"
+        "★ [L2-b] 독립변수 X는 가능하면 아래 '검증 가능한 형태'로 설정하라 (Granger 검정 가능):\n"
+        "   ① ACLED 분쟁 이벤트 건수 — 단, 반드시 **지역을 명시**할 것 "
+        "(예: '사헬 ACLED 분쟁 건수', '호르무즈 분쟁 건수'). 지역 없는 '공격 빈도'는 검증 불가.\n"
+        "   ② 시장·거시 지표 — 유가, 환율, 주가지수, 금 등 (context의 FRED·EIA 인용).\n"
+        "   '행위자의 행동 빈도'(예: APT 공격 횟수, 침범 횟수)를 X로 쓸 때는 그 자체가 "
+        "ACLED·CSIS로 집계되는 사건임을 명시하고 **지역 또는 섹터**를 반드시 붙여라. "
+        "지역·집계 출처가 없는 행동 변수는 검증 불가(PENDING)하므로 지양한다.\n\n"
         "카드당 H1은 최대 **1개**만 작성하라. 측정 가능한 정량 H1이 없다면 "
 "'[가설] 현 데이터로 검증 가능한 정량 가설 없음'으로 표기하고 [검증포인트]에 대안 서술하라.\n\n"
+
+        "## [L4-b] 쿼리 키워드 반영\n"
+        f"사용자 쿼리: \"{pq.raw_query}\"\n"
+        "쿼리에 등장한 핵심 용어(예: 수출규제·봉쇄·억지·제재 등)를 "
+        "[헤드라인]과 [관찰]에 반드시 자연스럽게 포함하라. "
+        "분석이 질문의 초점을 벗어나지 않도록 한다.\n\n"
 
         "## 신뢰도 점수 (§19-D) — 절대 자체 산출 금지\n"
         "신뢰도 숫자 점수(N점/100)는 외부 시스템이 자동 산출한다. "
@@ -196,8 +209,15 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
 - H0 (귀무 가설): [H1이 틀렸을 때 관찰될 패턴]
 
 ### [단계 4] 경쟁 이론
-이 현상을 다르게 설명하는 이론 1~2개를 나열하고, 어느 것을 먼저 기각할지 근거를 제시하라.
-각 이론마다: 설명 / 반례(이론의 설명력이 떨어지는 조건)
+이 현상을 다르게 설명하는 이론 1~2개를 나열하라.
+각 이론은 반드시 아래 형식을 **그대로** 사용하라 (레이블 변경 금지 — insight 모드와 동일):
+
+이론명 (학자):
+  예측: [이 이론이 현 상황에 대해 예측하는 방향·수치]
+  실측: [<context> 데이터의 실제 수치 — 없으면 [UNVERIFIED]]
+  판정: 우세/열세 — [예측 대비 실측 편차 1줄]
+
+⚠️ '예측:', '실측:', '판정:' 레이블 생략 불가. 수사적 기각 금지 — 수치 근거로 판정.
 
 ### [단계 5] 근거 평가
 컨텍스트 데이터에서:
@@ -325,19 +345,32 @@ async def _stream_gemini(
         if full_text:
             score_result = score_output(full_text)
 
-            # [P0-B] 데이터 공백 패널티: ACLED·Cascade 없는 지역은 상한 제한
+            # [P0-B / L1-a] 데이터 공백 패널티: ACLED·Cascade 없어도
+            # 정형 수치 소스(WBK·ITU·HIIK·CSIS·semi·FRED·SIPRI 등)가 있으면 완화
             if source_counts:
+                # 비어있지 않은 정형 수치 소스 개수 집계 (L1-c에서 추가된 카운트 포함)
+                _STRUCTURED_KEYS = (
+                    "sipri_countries", "cow_alliances", "kiel_donors", "eia_entries",
+                    "csis_incidents", "sipri_arms", "vdem_entries", "cow_wars",
+                    "fred", "wbk", "polity5", "itu", "hiik", "semi", "owid",
+                )
+                structured_sources = sum(
+                    1 for k in _STRUCTURED_KEYS if source_counts.get(k, 0) > 0
+                )
                 penalized = apply_data_void_penalty(
                     score_result["confidence"],
                     source_counts.get("event_stats_regions", 0),
                     source_counts.get("cascade_links", 0),
+                    structured_sources,
                 )
                 if penalized != score_result["confidence"]:
                     logger.info(
-                        "[intel] 데이터 공백 패널티 적용: %d → %d (events=%d cascade=%d)",
+                        "[intel] 데이터 공백 패널티 적용: %d → %d "
+                        "(events=%d cascade=%d structured=%d)",
                         score_result["confidence"], penalized,
                         source_counts.get("event_stats_regions", 0),
                         source_counts.get("cascade_links", 0),
+                        structured_sources,
                     )
                     score_result["confidence"] = penalized
                     score_result["provisional"] = penalized < 60
@@ -346,11 +379,13 @@ async def _stream_gemini(
             specs = extract_hypotheses(full_text)
             if specs:
                 specs = await verify_hypotheses(specs)
-                # 가장 낮은 검증 상태로 신뢰도 캡 결정
+                # [L1-b] 가장 높은 검증 상태로 캡 결정 — 1개라도 VERIFIED면
+                # 그 인사이트는 검증된 인과 주장을 포함하므로 상한을 해제한다.
+                # (이전: 최악 상태 기준 → VERIFIED를 PENDING이 끌어내리는 결함)
                 status_order = {"PENDING": 0, "PARTIAL": 1, "VERIFIED": 2}
-                worst = min(specs, key=lambda s: status_order.get(s.verification_status, 0))
+                best = max(specs, key=lambda s: status_order.get(s.verification_status, 0))
                 score_result["confidence"] = apply_verification_cap(
-                    score_result["confidence"], worst.verification_status
+                    score_result["confidence"], best.verification_status
                 )
                 score_result["provisional"] = score_result["confidence"] < 60
                 # hypothesis 이벤트 전송

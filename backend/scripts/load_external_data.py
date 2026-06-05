@@ -143,6 +143,13 @@ def _ensure_tables(con: sqlite3.Connection) -> None:
         source TEXT, region_hint TEXT, notes TEXT,
         UNIQUE(category, metric, year)
     );
+    CREATE TABLE IF NOT EXISTS owid_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dataset TEXT NOT NULL, iso3 TEXT NOT NULL,
+        country TEXT, year INTEGER NOT NULL,
+        value REAL, unit TEXT,
+        UNIQUE(dataset, iso3, year)
+    );
     """)
     # csis_cyber_incidents 기존 DB 마이그레이션 (estimated_damage_usd 추가)
     try:
@@ -720,6 +727,35 @@ def _load_hiik_seed(con: sqlite3.Connection) -> int:
 
 # ── Semiconductor Market Data ──────────────────────────────────────────────────
 
+def _load_owid_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 Our World in Data (군사비·핵탄두) 적재."""
+    seed = _EXT_DIR / "owid_seed.csv"
+    if not seed.exists():
+        logger.warning("OWID 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR REPLACE INTO owid_data"
+                    " (dataset, iso3, country, year, value, unit)"
+                    " VALUES (?,?,?,?,?,?)",
+                    (
+                        row["dataset"], row["iso3"], row.get("country"),
+                        int(row["year"]),
+                        float(row["value"]) if row.get("value") else None,
+                        row.get("unit"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
 def _load_semi_market_seed(con: sqlite3.Connection) -> int:
     """시드 CSV에서 반도체·기술 시장 데이터 적재."""
     seed = _EXT_DIR / "semi_market_seed.csv"
@@ -970,6 +1006,11 @@ def main(sources: list[str], update: bool) -> None:
         results["semi"] = n
         logger.info("반도체 시장 데이터 적재 완료: %d행", n)
 
+    if "owid" in sources:
+        n = _load_owid_seed(con)
+        results["owid"] = n
+        logger.info("OWID 군사비·핵탄두 적재 완료: %d행", n)
+
     con.close()
 
     total = sum(results.values())
@@ -994,7 +1035,7 @@ if __name__ == "__main__":
     _ALL_SOURCES = [
         "sipri", "cow", "kiel", "eia", "csis",
         "sipri_arms", "vdem", "cow_wars",
-        "fred", "world_bank", "polity5", "itu", "hiik", "semi",
+        "fred", "world_bank", "polity5", "itu", "hiik", "semi", "owid",
     ]
     srcs = _ALL_SOURCES if args.source == "all" \
         else [s.strip() for s in args.source.split(",")]

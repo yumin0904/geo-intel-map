@@ -1,0 +1,264 @@
+# Our World in Data — 군사비·핵탄두 (큐레이션 subset, 2015-2023)
+# Source: ourworldindata.org (SIPRI/FAS 원천)
+dataset,iso3,country,year,value,unit
+military_exp_gdp,AUS,Australia,2015,1.9445297,%GDP
+military_exp_gdp,AUS,Australia,2016,2.08132,%GDP
+military_exp_gdp,AUS,Australia,2017,1.9974569,%GDP
+military_exp_gdp,AUS,Australia,2018,1.8883163,%GDP
+military_exp_gdp,AUS,Australia,2019,1.8722862,%GDP
+military_exp_gdp,AUS,Australia,2020,2.0014734,%GDP
+military_exp_gdp,AUS,Australia,2021,1.973466,%GDP
+military_exp_gdp,AUS,Australia,2022,1.877108,%GDP
+military_exp_gdp,AUS,Australia,2023,1.8555831,%GDP
+military_exp_gdp,CHN,China,2015,1.7422395,%GDP
+military_exp_gdp,CHN,China,2016,1.7344987,%GDP
+military_exp_gdp,CHN,China,2017,1.6802504,%GDP
+military_exp_gdp,CHN,China,2018,1.6436669,%GDP
+military_exp_gdp,CHN,China,2019,1.6505247,%GDP
+military_exp_gdp,CHN,China,2020,1.7205417,%GDP
+military_exp_gdp,CHN,China,2021,1.571637,%GDP
+military_exp_gdp,CHN,China,2022,1.5918125,%GDP
+military_exp_gdp,CHN,China,2023,1.6215131,%GDP
+military_exp_gdp,DEU,Germany,2015,1.1149198,%GDP
+military_exp_gdp,DEU,Germany,2016,1.129443,%GDP
+military_exp_gdp,DEU,Germany,2017,1.1305821,%GDP
+military_exp_gdp,DEU,Germany,2018,1.1471719,%GDP
+military_exp_gdp,DEU,Germany,2019,1.239307,%GDP
+military_exp_gdp,DEU,Germany,2020,1.3555577,%GDP
+military_exp_gdp,DEU,Germany,2021,1.2977482,%GDP
+military_exp_gdp,DEU,Germany,2022,1.3360198,%GDP
+military_exp_gdp,DEU,Germany,2023,1.5033264,%GDP
+military_exp_gdp,FRA,France,2015,1.8697327,%GDP
+military_exp_gdp,FRA,France,2016,1.8517182,%GDP
+military_exp_gdp,FRA,France,2017,1.8523088,%GDP
+military_exp_gdp,FRA,France,2018,1.8460426,%GDP
+military_exp_gdp,FRA,France,2019,1.8528852,%GDP
+military_exp_gdp,FRA,France,2020,2.0216746,%GDP
+military_exp_gdp,FRA,France,2021,1.9802222,%GDP
+military_exp_gdp,FRA,France,2022,1.9587812,%GDP
+military_exp_gdp,FRA,France,2023,1.9481759,%GDP
+military_exp_gdp,GBR,United Kingdom,2015,2.036618,%GDP
+military_exp_gdp,GBR,United Kingdom,2016,1.9715134,%GDP
+military_exp_gdp,GBR,United Kingdom,2017,1.9363234,%GDP
+military_exp_gdp,GBR,United Kingdom,2018,1.9273136,%GDP
+military_exp_gdp,GBR,United Kingdom,2019,1.9684762,%GDP
+military_exp_gdp,GBR,United Kingdom,2020,2.1414232,%GDP
+military_exp_gdp,GBR,United Kingdom,2021,2.0391788,%GDP
+military_exp_gdp,GBR,United Kingdom,2022,2.011767,%GDP
+military_exp_gdp,GBR,United Kingdom,2023,2.1518152,%GDP
+military_exp_gdp,IND,India,2015,2.4574502,%GDP
+military_exp_gdp,IND,India,2016,2.5431516,%GDP
+military_exp_gdp,IND,India,2017,2.5315113,%GDP
+military_exp_gdp,IND,India,2018,2.4242845,%GDP
+military_exp_gdp,IND,India,2019,2.5459983,%GDP
+military_exp_gdp,IND,India,2020,2.8036158,%GDP
+military_exp_gdp,IND,India,2021,2.4687414,%GDP
+military_exp_gdp,IND,India,2022,2.3830981,%GDP
+military_exp_gdp,IND,India,2023,2.3567944,%GDP
+military_exp_gdp,IRN,Iran,2015,2.5570908,%GDP
+military_exp_gdp,IRN,Iran,2016,2.7964356,%GDP
+military_exp_gdp,IRN,Iran,2017,2.8443384,%GDP
+military_exp_gdp,IRN,Iran,2018,2.3562949,%GDP
+military_exp_gdp,IRN,Iran,2019,2.1469474,%GDP
+military_exp_gdp,IRN,Iran,2020,2.1770103,%GDP
+military_exp_gdp,IRN,Iran,2021,2.3176205,%GDP
+military_exp_gdp,IRN,Iran,2022,2.2380736,%GDP
+military_exp_gdp,IRN,Iran,2023,2.4938111,%GDP
+military_exp_gdp,ISR,Israel,2015,5.275252,%GDP
+military_exp_gdp,ISR,Israel,2016,5.1708465,%GDP
+military_exp_gdp,ISR,Israel,2017,5.268896,%GDP
+military_exp_gdp,ISR,Israel,2018,5.13034,%GDP
+military_exp_gdp,ISR,Israel,2019,4.9583154,%GDP
+military_exp_gdp,ISR,Israel,2020,5.1191754,%GDP
+military_exp_gdp,ISR,Israel,2021,4.8119926,%GDP
+military_exp_gdp,ISR,Israel,2022,4.3363233,%GDP
+military_exp_gdp,ISR,Israel,2023,5.279164,%GDP
+military_exp_gdp,JPN,Japan,2015,0.9285849,%GDP
+military_exp_gdp,JPN,Japan,2016,0.910113,%GDP
+military_exp_gdp,JPN,Japan,2017,0.8937632,%GDP
+military_exp_gdp,JPN,Japan,2018,0.9413192,%GDP
+military_exp_gdp,JPN,Japan,2019,0.9680657,%GDP
+military_exp_gdp,JPN,Japan,2020,0.99028957,%GDP
+military_exp_gdp,JPN,Japan,2021,1.0259697,%GDP
+military_exp_gdp,JPN,Japan,2022,0.9699722,%GDP
+military_exp_gdp,JPN,Japan,2023,1.0968772,%GDP
+military_exp_gdp,KOR,South Korea,2015,2.3763711,%GDP
+military_exp_gdp,KOR,South Korea,2016,2.3358,%GDP
+military_exp_gdp,KOR,South Korea,2017,2.298131,%GDP
+military_exp_gdp,KOR,South Korea,2018,2.3615098,%GDP
+military_exp_gdp,KOR,South Korea,2019,2.51932,%GDP
+military_exp_gdp,KOR,South Korea,2020,2.642977,%GDP
+military_exp_gdp,KOR,South Korea,2021,2.6190493,%GDP
+military_exp_gdp,KOR,South Korea,2022,2.5764256,%GDP
+military_exp_gdp,KOR,South Korea,2023,2.5992577,%GDP
+military_exp_gdp,NOR,Norway,2015,1.4981233,%GDP
+military_exp_gdp,NOR,Norway,2016,1.6173439,%GDP
+military_exp_gdp,NOR,Norway,2017,1.7051532,%GDP
+military_exp_gdp,NOR,Norway,2018,1.7152975,%GDP
+military_exp_gdp,NOR,Norway,2019,1.8437353,%GDP
+military_exp_gdp,NOR,Norway,2020,1.9659837,%GDP
+military_exp_gdp,NOR,Norway,2021,1.6763217,%GDP
+military_exp_gdp,NOR,Norway,2022,1.4580567,%GDP
+military_exp_gdp,NOR,Norway,2023,1.8220117,%GDP
+military_exp_gdp,PAK,Pakistan,2015,3.1629868,%GDP
+military_exp_gdp,PAK,Pakistan,2016,3.2037768,%GDP
+military_exp_gdp,PAK,Pakistan,2017,3.364449,%GDP
+military_exp_gdp,PAK,Pakistan,2018,3.5869617,%GDP
+military_exp_gdp,PAK,Pakistan,2019,3.50584,%GDP
+military_exp_gdp,PAK,Pakistan,2020,3.486679,%GDP
+military_exp_gdp,PAK,Pakistan,2021,3.3892388,%GDP
+military_exp_gdp,PAK,Pakistan,2022,3.1768322,%GDP
+military_exp_gdp,PAK,Pakistan,2023,2.8910604,%GDP
+military_exp_gdp,PHL,Philippines,2015,1.0884631,%GDP
+military_exp_gdp,PHL,Philippines,2016,1.0455852,%GDP
+military_exp_gdp,PHL,Philippines,2017,1.1679609,%GDP
+military_exp_gdp,PHL,Philippines,2018,1.1842471,%GDP
+military_exp_gdp,PHL,Philippines,2019,1.1313313,%GDP
+military_exp_gdp,PHL,Philippines,2020,1.29724,%GDP
+military_exp_gdp,PHL,Philippines,2021,1.4068226,%GDP
+military_exp_gdp,PHL,Philippines,2022,1.3163013,%GDP
+military_exp_gdp,PHL,Philippines,2023,1.1765469,%GDP
+military_exp_gdp,RUS,Russia,2015,4.871515,%GDP
+military_exp_gdp,RUS,Russia,2016,5.4251475,%GDP
+military_exp_gdp,RUS,Russia,2017,4.2489963,%GDP
+military_exp_gdp,RUS,Russia,2018,3.7198224,%GDP
+military_exp_gdp,RUS,Russia,2019,3.8474202,%GDP
+military_exp_gdp,RUS,Russia,2020,4.144717,%GDP
+military_exp_gdp,RUS,Russia,2021,3.6036875,%GDP
+military_exp_gdp,RUS,Russia,2022,4.555855,%GDP
+military_exp_gdp,RUS,Russia,2023,5.271703,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2015,12.573415,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2016,9.237588,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2017,9.497264,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2018,8.415885,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2019,7.3532896,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2020,8.406576,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2021,6.430973,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2022,5.7236238,%GDP
+military_exp_gdp,SAU,Saudi Arabia,2023,6.38161,%GDP
+military_exp_gdp,TUR,Turkey,2015,1.8104473,%GDP
+military_exp_gdp,TUR,Turkey,2016,2.047652,%GDP
+military_exp_gdp,TUR,Turkey,2017,2.0384707,%GDP
+military_exp_gdp,TUR,Turkey,2018,2.4920666,%GDP
+military_exp_gdp,TUR,Turkey,2019,2.638384,%GDP
+military_exp_gdp,TUR,Turkey,2020,2.1557796,%GDP
+military_exp_gdp,TUR,Turkey,2021,1.8144584,%GDP
+military_exp_gdp,TUR,Turkey,2022,1.6248041,%GDP
+military_exp_gdp,TUR,Turkey,2023,1.6852716,%GDP
+military_exp_gdp,TWN,Taiwan,2015,1.8340577,%GDP
+military_exp_gdp,TWN,Taiwan,2016,1.7755353,%GDP
+military_exp_gdp,TWN,Taiwan,2017,1.7710036,%GDP
+military_exp_gdp,TWN,Taiwan,2018,1.7198662,%GDP
+military_exp_gdp,TWN,Taiwan,2019,1.7903355,%GDP
+military_exp_gdp,TWN,Taiwan,2020,1.7694936,%GDP
+military_exp_gdp,TWN,Taiwan,2021,1.7865926,%GDP
+military_exp_gdp,TWN,Taiwan,2022,1.9920746,%GDP
+military_exp_gdp,TWN,Taiwan,2023,2.1576843,%GDP
+military_exp_gdp,UKR,Ukraine,2015,3.8478487,%GDP
+military_exp_gdp,UKR,Ukraine,2016,3.6686177,%GDP
+military_exp_gdp,UKR,Ukraine,2017,3.2414927,%GDP
+military_exp_gdp,UKR,Ukraine,2018,3.6351662,%GDP
+military_exp_gdp,UKR,Ukraine,2019,4.067938,%GDP
+military_exp_gdp,UKR,Ukraine,2020,4.400315,%GDP
+military_exp_gdp,UKR,Ukraine,2021,3.425492,%GDP
+military_exp_gdp,UKR,Ukraine,2022,25.64241,%GDP
+military_exp_gdp,UKR,Ukraine,2023,36.031414,%GDP
+military_exp_gdp,USA,United States,2015,3.4644928,%GDP
+military_exp_gdp,USA,United States,2016,3.4026022,%GDP
+military_exp_gdp,USA,United States,2017,3.2977235,%GDP
+military_exp_gdp,USA,United States,2018,3.3040006,%GDP
+military_exp_gdp,USA,United States,2019,3.409214,%GDP
+military_exp_gdp,USA,United States,2020,3.6415763,%GDP
+military_exp_gdp,USA,United States,2021,3.3981383,%GDP
+military_exp_gdp,USA,United States,2022,3.3034158,%GDP
+military_exp_gdp,USA,United States,2023,3.2936525,%GDP
+military_exp_gdp,VNM,Vietnam,2015,2.5545506,%GDP
+military_exp_gdp,VNM,Vietnam,2016,2.460935,%GDP
+military_exp_gdp,VNM,Vietnam,2017,2.2763612,%GDP
+military_exp_gdp,VNM,Vietnam,2018,2.2230997,%GDP
+military_exp_gdp,VNM,Vietnam,2019,2.1701136,%GDP
+military_exp_gdp,VNM,Vietnam,2020,2.065689,%GDP
+military_exp_gdp,VNM,Vietnam,2021,2.0537202,%GDP
+military_exp_gdp,VNM,Vietnam,2022,1.7156181,%GDP
+military_exp_gdp,VNM,Vietnam,2023,1.833966,%GDP
+nuclear_warheads,CHN,China,2015,260,warheads
+nuclear_warheads,CHN,China,2016,260,warheads
+nuclear_warheads,CHN,China,2017,270,warheads
+nuclear_warheads,CHN,China,2018,280,warheads
+nuclear_warheads,CHN,China,2019,290,warheads
+nuclear_warheads,CHN,China,2020,350,warheads
+nuclear_warheads,CHN,China,2021,370,warheads
+nuclear_warheads,CHN,China,2022,390,warheads
+nuclear_warheads,CHN,China,2023,410,warheads
+nuclear_warheads,FRA,France,2015,300,warheads
+nuclear_warheads,FRA,France,2016,300,warheads
+nuclear_warheads,FRA,France,2017,300,warheads
+nuclear_warheads,FRA,France,2018,300,warheads
+nuclear_warheads,FRA,France,2019,300,warheads
+nuclear_warheads,FRA,France,2020,290,warheads
+nuclear_warheads,FRA,France,2021,290,warheads
+nuclear_warheads,FRA,France,2022,290,warheads
+nuclear_warheads,FRA,France,2023,290,warheads
+nuclear_warheads,GBR,United Kingdom,2015,225,warheads
+nuclear_warheads,GBR,United Kingdom,2016,225,warheads
+nuclear_warheads,GBR,United Kingdom,2017,225,warheads
+nuclear_warheads,GBR,United Kingdom,2018,225,warheads
+nuclear_warheads,GBR,United Kingdom,2019,225,warheads
+nuclear_warheads,GBR,United Kingdom,2020,225,warheads
+nuclear_warheads,GBR,United Kingdom,2021,225,warheads
+nuclear_warheads,GBR,United Kingdom,2022,225,warheads
+nuclear_warheads,GBR,United Kingdom,2023,225,warheads
+nuclear_warheads,IND,India,2015,110,warheads
+nuclear_warheads,IND,India,2016,120,warheads
+nuclear_warheads,IND,India,2017,130,warheads
+nuclear_warheads,IND,India,2018,140,warheads
+nuclear_warheads,IND,India,2019,140,warheads
+nuclear_warheads,IND,India,2020,150,warheads
+nuclear_warheads,IND,India,2021,160,warheads
+nuclear_warheads,IND,India,2022,160,warheads
+nuclear_warheads,IND,India,2023,164,warheads
+nuclear_warheads,ISR,Israel,2015,80,warheads
+nuclear_warheads,ISR,Israel,2016,80,warheads
+nuclear_warheads,ISR,Israel,2017,80,warheads
+nuclear_warheads,ISR,Israel,2018,80,warheads
+nuclear_warheads,ISR,Israel,2019,80,warheads
+nuclear_warheads,ISR,Israel,2020,90,warheads
+nuclear_warheads,ISR,Israel,2021,90,warheads
+nuclear_warheads,ISR,Israel,2022,90,warheads
+nuclear_warheads,ISR,Israel,2023,90,warheads
+nuclear_warheads,PAK,Pakistan,2015,125,warheads
+nuclear_warheads,PAK,Pakistan,2016,130,warheads
+nuclear_warheads,PAK,Pakistan,2017,140,warheads
+nuclear_warheads,PAK,Pakistan,2018,150,warheads
+nuclear_warheads,PAK,Pakistan,2019,150,warheads
+nuclear_warheads,PAK,Pakistan,2020,160,warheads
+nuclear_warheads,PAK,Pakistan,2021,165,warheads
+nuclear_warheads,PAK,Pakistan,2022,165,warheads
+nuclear_warheads,PAK,Pakistan,2023,170,warheads
+nuclear_warheads,PRK,North Korea,2015,5,warheads
+nuclear_warheads,PRK,North Korea,2016,5,warheads
+nuclear_warheads,PRK,North Korea,2017,5,warheads
+nuclear_warheads,PRK,North Korea,2018,10,warheads
+nuclear_warheads,PRK,North Korea,2019,15,warheads
+nuclear_warheads,PRK,North Korea,2020,15,warheads
+nuclear_warheads,PRK,North Korea,2021,20,warheads
+nuclear_warheads,PRK,North Korea,2022,25,warheads
+nuclear_warheads,PRK,North Korea,2023,30,warheads
+nuclear_warheads,RUS,Russia,2015,4500,warheads
+nuclear_warheads,RUS,Russia,2016,4490,warheads
+nuclear_warheads,RUS,Russia,2017,4300,warheads
+nuclear_warheads,RUS,Russia,2018,4350,warheads
+nuclear_warheads,RUS,Russia,2019,4330,warheads
+nuclear_warheads,RUS,Russia,2020,4310,warheads
+nuclear_warheads,RUS,Russia,2021,4495,warheads
+nuclear_warheads,RUS,Russia,2022,4477,warheads
+nuclear_warheads,RUS,Russia,2023,4489,warheads
+nuclear_warheads,USA,United States,2015,4571,warheads
+nuclear_warheads,USA,United States,2016,4018,warheads
+nuclear_warheads,USA,United States,2017,3822,warheads
+nuclear_warheads,USA,United States,2018,3785,warheads
+nuclear_warheads,USA,United States,2019,3805,warheads
+nuclear_warheads,USA,United States,2020,3750,warheads
+nuclear_warheads,USA,United States,2021,3713,warheads
+nuclear_warheads,USA,United States,2022,3768,warheads
+nuclear_warheads,USA,United States,2023,3748,warheads

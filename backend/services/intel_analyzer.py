@@ -809,6 +809,54 @@ def _get_semi_market(sectors: list[str], regions: list[str]) -> list[dict]:
         return []
 
 
+# ── 22. Our World in Data 군사비·핵탄두 (Cycle 7-D-3) ──────────────────────
+
+def _get_owid_data(actors: list[str], regions: list[str], sectors: list[str]) -> list[dict]:
+    """OWID 군사비 %GDP·핵탄두 — indo_pacific 군사력 비교 수치화."""
+    # 군사 비교가 의미있는 쿼리만: indo_pacific·maritime 섹터 또는 행위자 지정
+    _REGION_ACTORS_MIL: dict[str, list[str]] = {
+        "taiwan_strait":    ["CHN", "USA", "TWN", "JPN"],
+        "korean_peninsula": ["PRK", "KOR", "USA", "CHN"],
+        "south_china_sea":  ["CHN", "USA", "VNM", "PHL"],
+        "east_china_sea":   ["CHN", "JPN", "USA"],
+        "eastern_europe":   ["RUS", "UKR", "USA"],
+    }
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_ACTORS_MIL.get(r, []))
+    # 군사 관련 섹터가 아니고 행위자도 없으면 스킵
+    if not iso3_set and not ({"indo_pacific", "maritime"} & set(sectors)):
+        return []
+    if not iso3_set:
+        iso3_set = {"USA", "CHN", "RUS"}  # 군사 섹터 기본 비교군
+
+    try:
+        placeholders = ",".join("?" * len(iso3_set))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT dataset, iso3, country, year, value, unit
+                    FROM owid_data
+                    WHERE iso3 IN ({placeholders})
+                    ORDER BY dataset, iso3, year DESC""",
+                list(iso3_set),
+            ).fetchall()
+        # dataset+iso3별 최신값만
+        seen = set()
+        result = []
+        for r in rows:
+            key = (r[0], r[1])
+            if key not in seen:
+                seen.add(key)
+                result.append({
+                    "dataset": r[0], "iso3": r[1], "country": r[2],
+                    "year": r[3], "value": r[4], "unit": r[5],
+                })
+        return result
+    except Exception as e:
+        logger.warning("[intel] owid_data 실패: %s", e)
+        return []
+
+
 # ── 7. 국가 프로파일 ──────────────────────────────────────────────────────────
 
 def _get_country_profiles(actors: list[str]) -> dict:
@@ -849,6 +897,7 @@ def _build_context(
     itu_data:         list[dict] | None = None,
     hiik_data:        list[dict] | None = None,
     semi_data:        list[dict] | None = None,
+    owid_data:        list[dict] | None = None,
 ) -> str:
     lines: list[str] = []
     total_chars = 0
@@ -1234,6 +1283,24 @@ def _build_context(
         lines.append("  출처: SIA, TechInsights, USGS, ASML Annual Report")
         lines.append("")
 
+    # ── OWID 군사비·핵탄두 (Cycle 7-D-3) ──────────────────────────────────────
+    if owid_data:
+        milex = [d for d in owid_data if d.get("dataset") == "military_exp_gdp"]
+        nukes = [d for d in owid_data if d.get("dataset") == "nuclear_warheads"]
+        lines.append("## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)")
+        if milex:
+            lines.append("**국방비 (% of GDP, 최신연도)**")
+            for d in sorted(milex, key=lambda x: -(x.get("value") or 0))[:8]:
+                v = f"{d['value']:.2f}" if d.get("value") is not None else "?"
+                lines.append(f"- {d['country']} ({d['iso3']}): {v}% ({d.get('year')})")
+        if nukes:
+            lines.append("**핵탄두 보유량 (최신연도)**")
+            for d in sorted(nukes, key=lambda x: -(x.get("value") or 0))[:6]:
+                v = int(d['value']) if d.get("value") is not None else "?"
+                lines.append(f"- {d['country']} ({d['iso3']}): {v}기 ({d.get('year')})")
+        lines.append("  출처: Our World in Data (ourworldindata.org)")
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -1273,6 +1340,7 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_itu_ict, pq.actors, pq.sectors),
         loop.run_in_executor(None, _get_hiik_conflict, pq.regions),
         loop.run_in_executor(None, _get_semi_market, pq.sectors, pq.regions),
+        loop.run_in_executor(None, _get_owid_data, pq.actors, pq.regions, pq.sectors),
         return_exceptions=True,
     )
 
@@ -1300,12 +1368,14 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
     itu_data          = _safe(results[18], [])
     hiik_data         = _safe(results[19], [])
     semi_data         = _safe(results[20], [])
+    owid_data         = _safe(results[21], [])
 
     context_text = _build_context(
         pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
         sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
         sipri_arms, vdem_data, cow_wars, ifans_pubs,
         fred_data, wbk_data, polity5_data, itu_data, hiik_data, semi_data,
+        owid_data,
     )
     # Cycle 7-B: 경쟁 이론 비교 컨텍스트 추가 (공백 없으면 스킵)
     if theory_cmp_ctx:
@@ -1343,6 +1413,14 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
             "cow_wars":            len(cow_wars),
             "ifans_pubs":          len(ifans_pubs),
             "theory_cmp_chars":    len(theory_cmp_ctx),
+            # Cycle 7-D 신규 정형 수치 소스 (L1-c — data_void_penalty 보정용)
+            "fred":                len(fred_data),
+            "wbk":                 len(wbk_data),
+            "polity5":             len(polity5_data),
+            "itu":                 len(itu_data),
+            "hiik":                len(hiik_data),
+            "semi":                len(semi_data),
+            "owid":                len(owid_data),
         },
         "like_items":        like_items,
         "sector_items":      sector_items,
