@@ -1015,23 +1015,65 @@ Gemini 스트리밍 완료
 
 ## 다음 세션 시작점
 
-| 항목 | 상태 | 우선순위 |
-|------|------|---------|
-| 신뢰도 버그 픽스 (P0) | ✅ v6.0.0~6.0.1 | — |
-| 시간 역전 탐지 (A-2) | ✅ v6.0.1 | — |
-| IA-Engine-D H1 자동 생성 + Granger | ✅ v6.1.0 | — |
-| ACLED 대만해협 Cascade 0건 조사·수정 | ✅ v6.1.1 | — |
-| IA-Engine 3-Bug Fix (P0-A/B, P1) | ✅ v6.2.0 | — |
-| 브리핑 적재 GZ 3종·EN 3종·TC-1 | ✅ v6.2.0 (45개) | — |
-| **TC-2** Chatham AI 버블 붕괴 | ✅ (46개) | — |
-| **IP-1** WotR 북한 드론 한반도 이식 | ✅ (47개) | — |
-| **IP-2** 보류 처리 | — | — |
-| **IP-3** Chatham 트럼프 대만·동맹 신뢰 침식 | ✅ (48개) | — |
-| **IP-4** CFR 트럼프 인도-태평양 방기 | ✅ (49개) | — |
-| **GZ 추가** WotR 우크라이나 전장 혁신 루프 (eastern_europe) | ✅ (50개) | — |
-| **Phase 6 게이트 총량 50개 달성** | ✅ **50/50** | 🎉 |
-| Phase 6 브리핑 지식 그래프 P6-1~5 | ⬜ | 🟠 **다음 작업** |
-| 이론 라이브러리 12개 프로파일 구축 | ⬜ | 🟢 중기 |
+### Phase 6/7 방향 재정의 (2026-06-05)
+
+**결정**: 시각화(브리핑 그래프 뷰 등) → Phase 8로 후순위 이동.
+Phase 6·7은 **IA-Engine 분석 수준 향상**에만 집중.
+로드맵: 계획 → 구현/테스트 → `eval_insight.py` 자동 평가 → 수정 → 재계획
+
+### 현재 지표 (v6.3.2 자동화 테스트 기준)
+
+| 지표 | 현재 | Phase 6 목표 | Phase 7 목표 |
+|------|------|------------|------------|
+| 신뢰도 평균 | 70/100 | 78+ | 85+ |
+| Granger VERIFIED | 0건 | 1건+ (p<0.05) | 3건+ |
+| UNVERIFIED 평균 | ~3.5건/케이스 | <1건 | <0.5건 |
+| 분석 수준 | 박사 초입 81% | — | 박사 완성 90%+ |
+
+### Phase 6 작업 목록
+
+| Cycle | 항목 | 상태 | 우선순위 |
+|-------|------|------|---------|
+| **6-A 1단계** | SIPRI Arms Transfers + V-DEM + COW Wars CSV 적재 | ✅ v6.4.0 | — |
+| **6-A 2단계** | 외교부 LOD IFANS 발간자료 — `connectors/mofa_lod.py` | ✅ v6.4.0 | — |
+| **6-A eval** | `eval_insight.py` 재실행 → UNVERIFIED 감소 확인 | ⬜ | 🟠 **다음 작업** (rate limit 해제 후) |
+| **6-B** | Granger 통계력 강화 (lag 자동 최적화·r값·사이버 proxy) | ⬜ | 🟡 |
+| **6-C** | H1 생성 품질 고도화 (추상 변수 제한·Type_A/B 비율) | ⬜ | 🟡 |
+
+### Phase 7 작업 목록 (Phase 6 완료 후)
+
+| Cycle | 항목 | 상태 |
+|-------|------|------|
+| **7-A** | 이론 라이브러리 구조화 — 12개 이론 예측변수·반례 추가 | ⬜ |
+| **7-B** | 경쟁 이론 비교 엔진 — 3개 이론 예측값 편차 비교 | ⬜ |
+| **7-C** | 종합 평가 — 자동화 테스트 20케이스, 신뢰도 85+ 선언 | ⬜ |
+
+### Phase 8 (후순위)
+
+브리핑 연쇄 그래프(P8-1) · 행위자 네트워크(P8-2) · 교차 인사이트(P8-4) · 타임라인 뷰(P8-5)
+
+---
+
+### 외교부 LOD 조사 결과 (2026-06-05)
+
+SPARQL 엔드포인트: `https://opendata.mofa.go.kr/lod/sparql` (검증 완료)
+REST JSON 패턴: `GET /mofapub/resource/Publication/{id}.json.data`
+구현 파일: `backend/connectors/mofa_lod.py` (6-A 2단계에서 신규 생성)
+
+| 데이터셋 | 건수 | IA-Engine 활용 | 판정 |
+|---------|------|--------------|------|
+| `mofapub` IFANS 발간자료 | 4,174건 | intel_analyzer 11번째 소스 (한반도·동아시아 컨텍스트) | ✅ 6-A 2단계 |
+| `mofabrief` 대변인 브리핑 | 191건 (2022~2023) | 외교 신호 보조 | ✅ 동일 커넥터 |
+| `mofadaily` 외교일지 | 6,288건 | 조약 데이터 — COW와 중복, 활용 낮음 | ❌ |
+| `schema:Event` 역사 이벤트 | 2,128건 | 날짜 없음 — Granger 직접 사용 불가, DBpedia 브릿지로만 활용 | ⚠️ |
+
+**온톨로지 핵심 발견**: 모든 Country + Event 엔티티에 `owl:sameAs` → DBpedia URI 연결 확인.
+`mofa_lod.py`는 ISO2 국가코드 조회(경로 1)와 DBpedia 이벤트 URI 조회(경로 2) 두 경로 지원.
+
+DBpedia 이벤트 URI 예시 (호르무즈 UNVERIFIED 직접 해소용):
+- `dbpedia:Abqaiq–Khurais_attack` → 아브카이크 공격 관련 IFANS 발간자료
+- `dbpedia:Houthi_insurgency` → 후티 반란 관련 발간자료
+- `dbpedia:2022_Russian_invasion_of_Ukraine` → 러-우 전쟁 관련 발간자료
 
 ---
 
@@ -1143,12 +1185,91 @@ backend/.venv/bin/python3 backend/tests/eval_insight.py --summary
 
 ---
 
+## ✅ [Cycle 6-A] 외부 데이터 2차 적재 (2026-06-05) — v6.4.0
+
+### 1단계 — 정형 수치 데이터 CSV 적재
+
+**신규 파일**
+
+| 파일 | 건수 | 내용 |
+|------|------|------|
+| `data/external/sipri_arms_seed.csv` | 37행 | SIPRI Arms Transfers 2020~2024 (공급국→수령국, TIV, 무기종류) |
+| `data/external/vdem_seed.csv` | 42행 | V-DEM Democracy Index v14 (자유민주 지수·체제유형·부패지수) |
+| `data/external/cow_wars_seed.csv` | 21행 | COW Wars DB — 한국전쟁·걸프전·러-우·이스라엘-하마스 등 주요 전쟁 선례 |
+| `data/external/kiel_ukraine_support_seed.csv` | 22행 | Kiel Tracker Release 21 업데이트 (2024-06 → **2024-12**, BEL·ITA·ESP 추가) |
+
+**신규 DB 테이블 3개** (`schema.sql` + `load_external_data.py`):
+`sipri_arms_transfers` · `vdem_index` · `cow_wars`
+
+### 2단계 — 외교부 LOD SPARQL 커넥터
+
+**`backend/connectors/mofa_lod.py` 신규 생성**
+
+| 항목 | 내용 |
+|------|------|
+| 엔드포인트 | `https://opendata.mofa.go.kr/lod/sparql` |
+| 데이터셋 | IFANS 발간자료 4,174건 (2025-09까지 최신) |
+| 경로 1 | ISO3→ISO2→국가 URI → relatedCountry 발간자료 |
+| 경로 2 | DBpedia 이벤트 URI → owl:sameAs → relatedEvent 발간자료 |
+| predicate 수정 | `bibo:abstract` · `mofadocu:relatedCountry` (온톨로지 검증 완료) |
+
+### intel_analyzer.py 확장 (10소스 → 14소스)
+
+| 소스 # | 이름 | 쿼리 조건 |
+|--------|------|---------|
+| 11 | `_get_sipri_arms` | 행위자 ISO3 supplier/recipient 매칭 |
+| 12 | `_get_vdem` | 행위자 ISO3 |
+| 13 | `_get_cow_wars` | 지역 relevance_tag + 행위자 ISO3 |
+| 14 | `_get_ifans_publications` | 지역 DBpedia 이벤트 URI + 행위자 ISO2 |
+
+### 검증 결과 (Gemini 미호출, 소스 레벨)
+
+| 케이스 | Arms | VDEM | Wars | IFANS | 컨텍스트 |
+|--------|------|------|------|-------|---------|
+| 호르무즈 | 6건 | 2건 | 5건 | 5건 | 16,993자 |
+| 북극 | 10건 | 2건 | 5건 | 4건 | 15,322자 |
+| 한반도 | 4건 | 2건 | 2건 | 5건 | 16,598자 |
+
+기존 대비 컨텍스트 +2,000~3,000자 증가. `eval_insight.py` 재실행은 Gemini rate limit 해제 후 다음 세션에서.
+
+### 현재 버전
+`version.json`: **6.4.0** | phase: 6
+
+---
+
 ## 다음 세션 시작점
 
-| 항목 | 상태 | 우선순위 |
-|------|------|---------|
-| 자동화 테스트 인프라 | ✅ v6.3.1 | — |
-| Granger 통계력 강화 (2년 데이터) | ✅ v6.3.2 | — |
-| **Phase 6 브리핑 지식 그래프 P6-1~5** | ⬜ | 🟠 **다음 작업** |
-| 이론 라이브러리 12개 프로파일 구축 | ⬜ | 🟢 중기 |
-| Granger VERIFIED 1건 달성 (p<0.05) | ⬜ | 🟢 중기 (데이터 축적 후) |
+### Phase 6/7 방향 재정의 (2026-06-05)
+
+**결정**: 시각화(브리핑 그래프 뷰 등) → Phase 8로 후순위 이동.
+Phase 6·7은 **IA-Engine 분석 수준 향상**에만 집중.
+로드맵: 계획 → 구현/테스트 → `eval_insight.py` 자동 평가 → 수정 → 재계획
+
+### 현재 지표 (v6.3.2 자동화 테스트 기준)
+
+| 지표 | 현재 | Phase 6 목표 | Phase 7 목표 |
+|------|------|------------|------------|
+| 신뢰도 평균 | 70/100 | 78+ | 85+ |
+| Granger VERIFIED | 0건 | 1건+ (p<0.05) | 3건+ |
+| UNVERIFIED 평균 | ~3.5건/케이스 | <1건 | <0.5건 |
+| 분석 수준 | 박사 초입 81% | — | 박사 완성 90%+ |
+
+### Phase 6 작업 목록 (Cycle 순서)
+
+| Cycle | 항목 | 핵심 파일 | 상태 |
+|-------|------|---------|------|
+| **6-A** | 외부 데이터 2차 적재 (SIPRI Arms·V-DEM·COW Wars·Kiel 2025) | `data/external/` + `intel_analyzer.py` | ⬜ **다음 작업** |
+| **6-B** | Granger 통계력 강화 (lag 자동 최적화·r값 추가·사이버 proxy) | `hypothesis_verifier.py` + `correlation.py` | ⬜ |
+| **6-C** | H1 생성 품질 고도화 (추상 변수 제한·Type_A/B 비율 향상) | `hypothesis_extractor.py` + 프롬프트 | ⬜ |
+
+### Phase 7 작업 목록 (Phase 6 완료 후)
+
+| Cycle | 항목 | 핵심 파일 | 상태 |
+|-------|------|---------|------|
+| **7-A** | 이론 라이브러리 구조화 — 12개 이론 예측변수·반례 프론트매터 추가 | `library/` 마크다운 + `intel_analyzer.py` | ⬜ |
+| **7-B** | 경쟁 이론 비교 엔진 — 3개 이론 예측값 편차 비교 → 우세 이론 선택 | `intel_analyzer.py` + 프롬프트 | ⬜ |
+| **7-C** | 종합 평가 — 자동화 테스트 20케이스 확장, 신뢰도 85+ 선언 | `eval_insight.py` 확장 | ⬜ |
+
+### Phase 8 (후순위, Phase 7 완료 후)
+
+브리핑 연쇄 그래프(P8-1) · 행위자 네트워크(P8-2) · 교차 인사이트(P8-4) · 타임라인 뷰(P8-5)

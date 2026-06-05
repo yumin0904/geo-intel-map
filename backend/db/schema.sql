@@ -210,7 +210,58 @@ CREATE TABLE IF NOT EXISTS kiel_ukraine_support (
     financial_eur_bn REAL DEFAULT 0,
     humanitarian_eur_bn REAL DEFAULT 0,
     total_eur_bn     REAL DEFAULT 0,
-    data_period      TEXT,       -- 예: "2022-01~2024-06"
+    data_period      TEXT,       -- 예: "2022-01~2024-12"
     updated_at       TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     UNIQUE(donor_iso3, data_period)
 );
+
+-- IA-Engine Cycle 6-A: 외부 데이터 2차 적재
+
+CREATE TABLE IF NOT EXISTS sipri_arms_transfers (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    supplier_iso3    TEXT NOT NULL,
+    supplier_name    TEXT,
+    recipient_iso3   TEXT NOT NULL,
+    recipient_name   TEXT,
+    year             INTEGER NOT NULL,
+    tiv_mn           REAL,           -- SIPRI TIV (백만 달러 환산 표준화 지수)
+    weapon_category  TEXT,           -- aircraft/missile/armoured_vehicle/naval/air_defence/other
+    notes            TEXT,
+    UNIQUE(supplier_iso3, recipient_iso3, year, weapon_category)
+);
+
+CREATE INDEX IF NOT EXISTS idx_arms_supplier  ON sipri_arms_transfers(supplier_iso3, year DESC);
+CREATE INDEX IF NOT EXISTS idx_arms_recipient ON sipri_arms_transfers(recipient_iso3, year DESC);
+
+CREATE TABLE IF NOT EXISTS vdem_index (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    iso3          TEXT NOT NULL,
+    country_name  TEXT,
+    year          INTEGER NOT NULL,
+    v2x_libdem    REAL,   -- 자유민주주의 지수 (0-1)
+    v2x_regime    INTEGER, -- 0=폐쇄권위, 1=선거권위, 2=선거민주, 3=자유민주
+    v2x_polyarchy REAL,   -- 선거민주주의 지수 (0-1)
+    v2x_corr      REAL,   -- 정치부패 지수 (0=낮음, 1=높음)
+    notes         TEXT,
+    UNIQUE(iso3, year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_vdem_iso3_year ON vdem_index(iso3, year DESC);
+CREATE INDEX IF NOT EXISTS idx_vdem_regime    ON vdem_index(v2x_regime);
+
+CREATE TABLE IF NOT EXISTS cow_wars (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    war_id       INTEGER UNIQUE,
+    war_name     TEXT NOT NULL,
+    start_year   INTEGER,
+    end_year     INTEGER,           -- NULL = 진행 중
+    side_a_iso3  TEXT,              -- 파이프(|)로 다국 구분
+    side_b_iso3  TEXT,
+    region       TEXT,              -- eastern_europe/middle_east/asia/...
+    battle_deaths INTEGER,
+    outcome      INTEGER,           -- 1=A승/2=B승/3=협상/4=정전/5=진행중
+    relevance_tag TEXT              -- 지정학 분석 관련 지역 태그
+);
+
+CREATE INDEX IF NOT EXISTS idx_cow_wars_region ON cow_wars(region);
+CREATE INDEX IF NOT EXISTS idx_cow_wars_year   ON cow_wars(start_year);

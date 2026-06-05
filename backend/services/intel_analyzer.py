@@ -4,12 +4,20 @@ services/intel_analyzer.py
 멀티소스 병렬 검색 + 컨텍스트 조립 (Token-Zero).
 
 소스:
-  1. LIKE 검색 — 한국어 키워드로 브리핑·이론 title/body 검색
-  2. 섹터 필터 — 섹터별 최신 브리핑
-  3. 브리핑 원문 (body) — 상위 3개 전체 본문 포함 (핵심 개선)
-  4. event_archive 통계 — 지역별 집계
-  5. cascade_links — 지역 발화 실적 + 이론 텍스트
-  6. country_geopolitics.yaml — 행위자 국가 프로파일
+  1.  LIKE 검색 — 한국어 키워드로 브리핑·이론 title/body 검색
+  2.  섹터 필터 — 섹터별 최신 브리핑
+  3.  event_archive 통계 — 지역별 집계
+  4.  cascade_links — 지역 발화 실적 + 이론 텍스트
+  5.  country_geopolitics.yaml — 행위자 국가 프로파일
+  6.  SIPRI Military Expenditure — 국방비 %GDP
+  7.  COW Alliances — 공식 동맹
+  8.  Kiel Ukraine Support Tracker — 서방 지원액
+  9.  EIA Energy — 초크포인트 통과량
+  10. CSIS Cyber Incidents — APT 사건 선례
+  11. SIPRI Arms Transfers — 무기 의존도·공급망 (Cycle 6-A)
+  12. V-DEM Democracy Index — 행위자 체제 유형 정량화 (Cycle 6-A)
+  13. COW Wars — 전쟁 선례 시계열 (Cycle 6-A)
+  14. 외교부 LOD IFANS — 한반도·동아시아 한국 시각 발간자료 (Cycle 6-A)
 """
 from __future__ import annotations
 
@@ -460,6 +468,124 @@ def _get_csis_incidents(actors: list[str], regions: list[str],
         return []
 
 
+# ── Cycle 6-A 신규 소스 ────────────────────────────────────────────────────
+
+def _get_sipri_arms(actors: list[str], regions: list[str]) -> list[dict]:
+    """SIPRI Arms Transfers — 행위자 관련 무기 공급망 조회."""
+    if not actors:
+        return []
+    try:
+        placeholders = ",".join("?" * len(actors))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT supplier_iso3, supplier_name, recipient_iso3, recipient_name,
+                           year, tiv_mn, weapon_category, notes
+                    FROM sipri_arms_transfers
+                    WHERE supplier_iso3 IN ({placeholders})
+                       OR recipient_iso3 IN ({placeholders})
+                    ORDER BY year DESC
+                    LIMIT 10""",
+                actors * 2,
+            ).fetchall()
+        return [
+            {
+                "supplier": r[1] or r[0], "recipient": r[3] or r[2],
+                "year": r[4], "tiv_mn": r[5],
+                "category": r[6], "notes": r[7],
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        logger.warning("[intel] sipri_arms 실패: %s", e)
+        return []
+
+
+def _get_vdem(actors: list[str]) -> list[dict]:
+    """V-DEM 민주주의 지수 — 행위자 체제 유형 정량화."""
+    if not actors:
+        return []
+    try:
+        placeholders = ",".join("?" * len(actors))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT iso3, country_name, year, v2x_libdem, v2x_regime,
+                           v2x_polyarchy, v2x_corr, notes
+                    FROM vdem_index
+                    WHERE iso3 IN ({placeholders})
+                    ORDER BY year DESC""",
+                actors,
+            ).fetchall()
+        regime_labels = {0: "폐쇄권위주의", 1: "선거권위주의", 2: "선거민주주의", 3: "자유민주주의"}
+        return [
+            {
+                "iso3": r[0], "country": r[1] or r[0], "year": r[2],
+                "libdem": r[3], "regime_type": regime_labels.get(r[4], "미분류"),
+                "polyarchy": r[5], "corruption": r[6], "notes": r[7],
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        logger.warning("[intel] vdem 실패: %s", e)
+        return []
+
+
+def _get_cow_wars(regions: list[str], actors: list[str]) -> list[dict]:
+    """COW Wars — 지역·행위자 관련 전쟁 선례 조회."""
+    try:
+        conditions: list[str] = []
+        params: list = []
+        if regions:
+            ph = ",".join("?" * len(regions))
+            conditions.append(f"relevance_tag IN ({ph})")
+            params.extend(regions)
+        if actors:
+            actor_conds = [
+                "(side_a_iso3 LIKE ? OR side_b_iso3 LIKE ?)"
+                for _ in actors
+            ]
+            conditions.append("(" + " OR ".join(actor_conds) + ")")
+            for a in actors:
+                params.extend([f"%{a}%", f"%{a}%"])
+        if not conditions:
+            return []
+        where = " OR ".join(conditions)
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT war_name, start_year, end_year,
+                           side_a_iso3, side_b_iso3, region,
+                           battle_deaths, outcome, relevance_tag
+                    FROM cow_wars WHERE {where}
+                    ORDER BY start_year DESC LIMIT 8""",
+                params,
+            ).fetchall()
+        outcome_labels = {1: "A측 승", 2: "B측 승", 3: "협상 타결", 4: "정전", 5: "진행 중"}
+        return [
+            {
+                "name": r[0],
+                "period": f"{r[1]}~{r[2] or '진행중'}",
+                "sides": f"{r[3]} vs {r[4]}",
+                "region": r[5],
+                "battle_deaths": r[6],
+                "outcome": outcome_labels.get(r[7], "?"),
+                "tag": r[8],
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        logger.warning("[intel] cow_wars 실패: %s", e)
+        return []
+
+
+def _get_ifans_publications(actors: list[str], regions: list[str]) -> list[dict]:
+    """외교부 LOD IFANS 발간자료 — 한반도·동아시아 한국 시각 컨텍스트."""
+    try:
+        from connectors.mofa_lod import fetch_ifans_publications
+        return fetch_ifans_publications(actors, regions)
+    except Exception as e:
+        logger.warning("[intel] ifans_publications 실패: %s", e)
+        return []
+
+
 # ── 7. 국가 프로파일 ──────────────────────────────────────────────────────────
 
 def _get_country_profiles(actors: list[str]) -> dict:
@@ -489,6 +615,10 @@ def _build_context(
     kiel_data:        list[dict] | None = None,
     eia_data:         dict | None = None,
     csis_incidents:   list[dict] | None = None,
+    sipri_arms:       list[dict] | None = None,
+    vdem_data:        list[dict] | None = None,
+    cow_wars:         list[dict] | None = None,
+    ifans_pubs:       list[dict] | None = None,
 ) -> str:
     lines: list[str] = []
     total_chars = 0
@@ -707,6 +837,59 @@ def _build_context(
         lines.append("  출처: CSIS Strategic Technologies Program 2024")
         lines.append("")
 
+    # ── SIPRI 무기 이전 (Cycle 6-A) ──────────────────────────────────────────
+    if sipri_arms:
+        lines.append("## 무기 공급망 (SIPRI Arms Transfers Database)")
+        for arm in sipri_arms[:6]:
+            lines.append(
+                f"- {arm.get('year')} | {arm.get('supplier')} → {arm.get('recipient')}"
+                f" | {arm.get('category', '')} | TIV {arm.get('tiv_mn', '?')}mn"
+            )
+            if arm.get("notes"):
+                lines.append(f"  {arm['notes'][:100]}")
+        lines.append("  출처: SIPRI Arms Transfers Database 2020-2024")
+        lines.append("")
+
+    # ── V-DEM 민주주의 지수 (Cycle 6-A) ─────────────────────────────────────
+    if vdem_data:
+        lines.append("## 행위자 체제 유형 (V-Dem Democracy Index v14)")
+        for v in vdem_data:
+            libdem = f"{v['libdem']:.2f}" if v.get("libdem") is not None else "?"
+            corr   = f"{v['corruption']:.2f}" if v.get("corruption") is not None else "?"
+            lines.append(
+                f"- **{v.get('country')}** ({v.get('iso3')}, {v.get('year')}): "
+                f"{v.get('regime_type')} | 자유민주주의 지수: {libdem} | 부패지수: {corr}"
+            )
+            if v.get("notes"):
+                lines.append(f"  {v['notes'][:80]}")
+        lines.append("  출처: V-Dem Institute, University of Gothenburg 2024")
+        lines.append("")
+
+    # ── COW 전쟁 선례 (Cycle 6-A) ───────────────────────────────────────────
+    if cow_wars:
+        lines.append("## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)")
+        for w in cow_wars[:5]:
+            deaths = f"{w['battle_deaths']:,}" if w.get("battle_deaths") else "미집계"
+            lines.append(
+                f"- **{w.get('name')}** ({w.get('period')}) | "
+                f"{w.get('sides')} | 사망: {deaths} | 결과: {w.get('outcome')}"
+            )
+        lines.append("  출처: Correlates of War Project v4.0")
+        lines.append("")
+
+    # ── 외교부 IFANS 발간자료 (Cycle 6-A) ────────────────────────────────────
+    if ifans_pubs:
+        lines.append("## 한국 외교부 IFANS 발간자료 (국립외교원 학술 분석)")
+        for pub in ifans_pubs[:4]:
+            date = str(pub.get("date", ""))
+            date_fmt = f"{date[:4]}-{date[4:6]}-{date[6:8]}" if len(date) == 8 else date
+            lines.append(f"- [{date_fmt}] **{pub.get('title', '')}**")
+            abstract = (pub.get("abstract") or "")[:300]
+            if abstract:
+                lines.append(f"  {abstract}")
+            lines.append(f"  출처: {pub.get('source', '외교부 IFANS')}")
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -727,33 +910,46 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_kiel_data, pq.regions),
         loop.run_in_executor(None, _get_eia_data, pq.actors, pq.regions),
         loop.run_in_executor(None, _get_csis_incidents, pq.actors, pq.regions, pq.sectors),
+        # Cycle 6-A 신규 소스
+        loop.run_in_executor(None, _get_sipri_arms, pq.actors, pq.regions),
+        loop.run_in_executor(None, _get_vdem, pq.actors),
+        loop.run_in_executor(None, _get_cow_wars, pq.regions, pq.actors),
+        loop.run_in_executor(None, _get_ifans_publications, pq.actors, pq.regions),
         return_exceptions=True,
     )
 
     def _safe(r, default):
         return r if not isinstance(r, Exception) else default
 
-    like_items       = _safe(results[0], [])
-    sector_items     = _safe(results[1], [])
-    event_stats      = _safe(results[2], {})
-    cascade_ctx      = _safe(results[3], {"links": [], "rules": []})
-    country_profiles = _safe(results[4], {})
-    sipri_data       = _safe(results[5], {})
-    cow_alliances    = _safe(results[6], [])
-    kiel_data        = _safe(results[7], [])
-    eia_data         = _safe(results[8], {})
-    csis_incidents   = _safe(results[9], [])
+    like_items        = _safe(results[0], [])
+    sector_items      = _safe(results[1], [])
+    event_stats       = _safe(results[2], {})
+    cascade_ctx       = _safe(results[3], {"links": [], "rules": []})
+    country_profiles  = _safe(results[4], {})
+    sipri_data        = _safe(results[5], {})
+    cow_alliances     = _safe(results[6], [])
+    kiel_data         = _safe(results[7], [])
+    eia_data          = _safe(results[8], {})
+    csis_incidents    = _safe(results[9], [])
+    sipri_arms        = _safe(results[10], [])
+    vdem_data         = _safe(results[11], [])
+    cow_wars          = _safe(results[12], [])
+    ifans_pubs        = _safe(results[13], [])
 
     context_text = _build_context(
         pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
         sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
+        sipri_arms, vdem_data, cow_wars, ifans_pubs,
     )
 
     logger.debug(
-        "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d EIA=%d CSIS=%d 총%d자",
+        "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d "
+        "EIA=%d CSIS=%d Arms=%d VDEM=%d Wars=%d IFANS=%d 총%d자",
         len(like_items), len(sector_items),
         len(sipri_data), len(cow_alliances), len(kiel_data),
-        len(eia_data), len(csis_incidents), len(context_text),
+        len(eia_data), len(csis_incidents),
+        len(sipri_arms), len(vdem_data), len(cow_wars), len(ifans_pubs),
+        len(context_text),
     )
 
     return {
@@ -769,6 +965,10 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
             "kiel_donors":         len(kiel_data),
             "eia_entries":         len(eia_data),
             "csis_incidents":      len(csis_incidents),
+            "sipri_arms":          len(sipri_arms),
+            "vdem_entries":        len(vdem_data),
+            "cow_wars":            len(cow_wars),
+            "ifans_pubs":          len(ifans_pubs),
         },
         "like_items":        like_items,
         "sector_items":      sector_items,
@@ -780,4 +980,8 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         "kiel_data":         kiel_data,
         "eia_data":          eia_data,
         "csis_incidents":    csis_incidents,
+        "sipri_arms":        sipri_arms,
+        "vdem_data":         vdem_data,
+        "cow_wars":          cow_wars,
+        "ifans_pubs":        ifans_pubs,
     }

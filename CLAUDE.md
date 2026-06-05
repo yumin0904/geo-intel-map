@@ -435,56 +435,211 @@ geomap/
 
 ---
 
-### Phase 5 — 추론 지능화
+### Phase 5 — 추론 지능화 ✅ (완료, v5.4.0)
 
 목표: 규칙·매칭 기반 → 가설 생성·반증 추론
 
-**게이트**: Phase 4 전체 완료 후. 항목 8은 §14 Token-Zero 원칙 위반이 아님을 명문화 후 착수
-(사용자 명시 요청 기반 LLM 호출 = §14 허용 범위).
-
 | # | 항목 | 파일 | 상태 |
 |---|------|------|------|
-| 5 | Stage 5 (명분·의도) 구현 — GKG 톤/테마 + actor posture 결합 | `services/reasoning/stages.py` | [ ] |
-| 6 | 추론 체인 자기검증 — 8단계 ↔ Sandbox BFS 가설·반증 루프 | `services/reasoning/engine.py` / `sandbox_solver.py` | [ ] |
-| 7 | 멀티에이전트 — 섹터별 추론 에이전트 병렬 + 종합 에이전트 | `services/reasoning/agents/` (신규) | [ ] |
-| 8 | LLM 종합 브리핑 계층 — importance≥0.7 게이트, 사용자 명시 요청만, 태깅 금지(§14) | `api/briefing.py` | [ ] |
+| 5 | Stage 5 (명분·의도) 구현 — GKG 톤/테마 + actor posture 결합 | `services/reasoning/stages.py` | ✅ v5.0.0 |
+| 6 | 추론 체인 자기검증 — 8단계 ↔ Sandbox BFS 가설·반증 루프 | `services/reasoning/engine.py` / `sandbox_solver.py` | ✅ v5.1.0 |
+| 7 | 멀티에이전트 — 섹터별 추론 에이전트 병렬 + 종합 에이전트 | `services/reasoning/agents/` (신규) | ✅ v5.4.0 |
+| 8 | LLM 종합 브리핑 계층 | — | ❌ 취소 (IA-Engine으로 대체) |
 
 ---
 
-### Phase 6 — 브리핑 지식 그래프 & 교차 분석
+### Phase 6 — IA-Engine 데이터 기반 강화 (현재 진행 중, v6.3.2)
 
-목표: 브리핑 적재 데이터를 원료로, 브리핑 간 연쇄·행위자 네트워크·교차 인사이트를 자동 도출하고 시각화하는 분석 계층 추가.
+목표: 분석의 원료(데이터) 확충 + Granger 통계력 강화 → UNVERIFIED 감소, VERIFIED 달성
 
-**게이트**: Phase 5 완료 후 + **브리핑 30개 이상 누적** (2026-06-01 기준 7개).
-브리핑 표본이 부족하면 교차 분석의 설득력이 낮음. 데이터 선적재 우선.
+**게이트**: Phase 5 완료 ✅ + 브리핑 50개 ✅ (2026-06-04 달성)
+
+**사이클 구조**: 계획 → 구현/테스트 → 자동화 평가(`eval_insight.py`) → 수정 → 재계획
+
+| # | Cycle | 목표 | 핵심 파일 | 상태 |
+|---|-------|------|---------|------|
+| 6-A | 외부 데이터 2차 적재 | UNVERIFIED 평균 <1건/케이스 | `data/external/` + `intel_analyzer.py` | ⬜ |
+| 6-B | Granger 통계력 강화 | VERIFIED 1건+ (p<0.05) | `hypothesis_verifier.py` + `correlation.py` | ⬜ |
+| 6-C | H1 생성 품질 고도화 | Type_A/B 비율 50%+ | `hypothesis_extractor.py` + 프롬프트 | ⬜ |
+
+**Cycle 6-A 세부 (외부 데이터 2차 적재)**
+
+현재 UNVERIFIED 높은 케이스: 북극(21건) · 호르무즈(4건) · 사헬(3건) → 해당 지역 커버 소스 부재
+
+**1단계 — 정형 수치 데이터 (CSV seed, 즉시 ROI 최대)**
+
+| 소스 | 해결 공백 | 우선순위 |
+|------|---------|---------|
+| SIPRI Arms Transfers DB | 무기 의존도·동맹 자율성 수치화 | ★★★ |
+| V-DEM Democracy Index | 행위자 체제 유형 정량화 (사헬·북극) | ★★★ |
+| COW Wars DB | 전쟁 선례 시계열 (역사 비교) | ★★ |
+| Kiel Tracker 2025 업데이트 | 현재 2024-06 기준 → 최신화 | ★★ |
+| IISS Military Balance 주요 수치 | 군사력 비교 직접 인용 | ★★ |
+
+**2단계 — 외교부 LOD SPARQL (1단계 완료 후)**
+
+- SPARQL 엔드포인트: `https://opendata.mofa.go.kr/lod/sparql`
+- REST JSON 패턴: `GET /mofapub/resource/Publication/{id}.json.data`
+- 구현 파일: `backend/connectors/mofa_lod.py`
+
+**온톨로지 구조 (검증 완료, 2026-06-05)**
+
+Core 클래스 7종: `Area · Country · City · Person · Organization · Event · Year`
+Domain 클래스 4종: `Publication · Briefing · Press · DiplomatJ`
+
+| 데이터셋 | 건수 | 활용 방식 |
+|---------|------|---------|
+| `mofapub` IFANS 발간자료 | 4,174건 | intel_analyzer 11번째 소스 — 한반도·동아시아 한국 시각 |
+| `mofabrief` 대변인 브리핑 | 191건 (2022~2023) | 한국 정부 외교 신호 보조 |
+| `schema:Event` 역사 이벤트 | 2,128건 | DBpedia sameAs 브릿지 (날짜 없음, 직접 사용 불가) |
+
+**핵심: `owl:sameAs` → DBpedia 전체 연결 (검증 완료)**
+
+모든 Country와 Event 엔티티가 DBpedia URI에 연결되어 있음:
+```
+Country/RU  → dbpedia:Russia
+Country/KP  → dbpedia:North_Korea
+Event: 러시아-우크라이나 전쟁(2022) → dbpedia:2022_Russian_invasion_of_Ukraine
+Event: 후티 반란(2004)             → dbpedia:Houthi_insurgency
+Event: 2019년 아브카이크 공격        → dbpedia:Abqaiq–Khurais_attack
+```
+
+**`mofa_lod.py` 쿼리 경로 2종 (모두 검증 완료)**
+
+경로 1 — ISO2 국가 코드로 발간자료 조회:
+```sparql
+SELECT ?label ?date ?abstract WHERE {
+  ?s a <http://opendata.mofa.go.kr/mofapub/Publication> .
+  ?s <http://www.w3.org/2004/02/skos/core#prefLabel> ?label .
+  ?s <http://opendata.mofa.go.kr/mofapub/pubDate> ?date .
+  ?s <http://opendata.mofa.go.kr/mofapub/abstract> ?abstract .
+  ?s <http://opendata.mofa.go.kr/core/relatedCountry>
+     <http://opendata.mofa.go.kr/core/resource/Country/{ISO2}> .
+} ORDER BY DESC(?date) LIMIT 5
+```
+
+경로 2 — DBpedia 이벤트 URI → 관련 발간자료 조회 (UNVERIFIED 직접 감소):
+```sparql
+SELECT ?label ?date ?abstract WHERE {
+  ?event <http://www.w3.org/2002/07/owl#sameAs> <{dbpedia_uri}> .
+  ?s <http://opendata.mofa.go.kr/core/relatedEvent> ?event .
+  ?s a <http://opendata.mofa.go.kr/mofapub/Publication> .
+  ?s <http://www.w3.org/2004/02/skos/core#prefLabel> ?label .
+  ?s <http://opendata.mofa.go.kr/mofapub/pubDate> ?date .
+  ?s <http://opendata.mofa.go.kr/mofapub/abstract> ?abstract .
+} ORDER BY DESC(?date) LIMIT 5
+```
+
+intel_analyzer 진입 로직:
+```python
+# entity_parser가 지역 코드 추출 → ISO2 매핑 (경로 1)
+# 또는 쿼리 키워드 → DBpedia URI 매핑 테이블 (경로 2)
+# 예: "hormuz" → dbpedia:Abqaiq–Khurais_attack 등 관련 이벤트 URI 목록
+```
+
+평가 기준: `eval_insight.py` 재실행 → UNVERIFIED 평균 3.5건 → <1건
+
+**Cycle 6-B 세부 (Granger 통계력)**
+
+현재: PARTIAL 5건(p≤0.145), VERIFIED 0건
+
+| 문제 | 수정 방법 |
+|------|---------|
+| 사이버 섹터 proxy 변수 없음 | `_REGION_DEFAULT_TICKER`에 cyber 섹터 매핑 추가 |
+| lag 고정(4) | AIC 기준 자동 lag 선택 (`statsmodels select_order`) |
+| Granger F-통계량 미출력 | `r값` 추가 → §22-A H1 스키마 완전 충족 |
+
+평가 기준: VERIFIED 1건 달성 (대만·한반도 집중 공략, 현재 p=0.085/0.052)
+
+**Cycle 6-C 세부 (H1 품질)**
+
+현재: 추상 변수(의도·의지) H1 → Granger 불가 구조
+
+| 문제 | 수정 방법 |
+|------|---------|
+| 추상 변수 H1 | 프롬프트: "X/Y는 측정 가능한 지표(건수·가격·비율·금액)여야 함" |
+| H1 과잉 생성(최대 4개) | 최대 2개 제한 + 검증 가능성 우선 |
+| Type_C proxy 품질 | proxy 제안 시 실제 소스명 함께 제시 |
+
+평가 기준: `eval_insight.py` Type_A/B 비율 50%+
+
+---
+
+### Phase 7 — IA-Engine 추론 고도화 (예정)
+
+목표: 경쟁 이론 실제 비교 + 이론 라이브러리 구조화 → 박사 수준 90%+
+
+**게이트**: Phase 6 전체 Cycle 완료 + UNVERIFIED 평균 <1건 + VERIFIED 1건+
+
+**사이클 구조**: 계획 → 구현/테스트 → 자동화 평가 → 수정 → 재계획
+
+| # | Cycle | 목표 | 핵심 파일 | 상태 |
+|---|-------|------|---------|------|
+| 7-A | 이론 라이브러리 구조화 | 12개 이론 예측 변수·반례 구조화 | `library/` 프론트매터 확장 | ⬜ |
+| 7-B | 경쟁 이론 비교 엔진 | 3개 이론 예측값 편차 비교 (v8.0) | `intel_analyzer.py` + 프롬프트 | ⬜ |
+| 7-C | 종합 평가 & 캡 해제 | 신뢰도 평균 85+, 자동화 20케이스 | `eval_insight.py` 확장 | ⬜ |
+
+**Cycle 7-A 세부 (이론 라이브러리 구조화)**
+
+현재: 이론이 마크다운 텍스트로만 존재 → Gemini가 태그로만 참조, 예측 도구로 활용 불가
+
+목표 구조 (각 이론 프로파일 프론트매터 확장):
+```yaml
+independent_var: "공급망 집중도 (HHI 지수)"
+dependent_var: "피의존국 외교 양보 빈도"
+conditions: ["비대칭 의존 구조", "대체재 부재"]
+falsifiable_prediction: "집중도 증가 시 양보 증가 (통제: 군사력 균형)"
+known_counterexample: "중국 SMIC 자립화 시 설명력 하락"
+rival_theories: ["Balance of Power", "Liberal Interdependence"]
+```
+
+대상 12개 이론: Mahan · Farrell&Newman · Snyder · Mearsheimer · Waltz · Libicki · Hirschman · Hoffman · A2AD · Digital Iron Curtain · Gray Zone · Granger
+
+평가 기준: [경쟁설명] 섹션에서 수치 편차 비교 등장 비율 50%+
+
+**Cycle 7-B 세부 (경쟁 이론 비교 엔진)**
+
+현재: 경쟁 이론 기각이 수사적 수준 ("~라는 반례가 있다")
+목표: 이론 A 예측값 vs 이론 B 예측값 vs 실측값 비교 → 우세 이론 자동 선택
+
+```
+쿼리 입력
+  → 관련 이론 2~3개 자동 선택 (이론 프로파일 기반)
+  → 각 이론의 예측 방향 도출
+  → ACLED/SIPRI/EIA 실측값과 비교
+  → 예측 성공률 높은 이론 우세 판정
+  → [경쟁설명] 섹션에 수치 편차 포함
+```
+
+**Cycle 7-C 세부 (종합 평가)**
+
+- Granger VERIFIED + 경쟁 이론 비교 완료 → 신뢰도 상한 캡 재검토
+- 자동화 테스트 10개 → 20개 확장
+- §22-C 박사 수준 체크리스트 전항목 충족 선언
+
+---
+
+### Phase 8 — 시각화 (후순위, 분석 엔진 완성 후)
+
+목표: Phase 6/7에서 강화된 분석 엔진의 결과를 시각적으로 표현
+
+**게이트**: Phase 7 완료 + 박사 수준 90%+ 달성 후
 
 | # | 항목 | 파일 | 상태 |
 |---|------|------|------|
-| P6-1 | 브리핑 연쇄 그래프 뷰 — `series_ref` 연결을 Cytoscape 노드·엣지로 시각화 | `frontend/src/views/BriefingGraphView.js` (신규) | [ ] |
-| P6-2 | 행위자 네트워크 자동 추출 — 브리핑 `event_refs` 집계 → 공통 행위자 노드/엣지 생성 | `backend/api/library.py` 확장 | [ ] |
-| P6-3 | Cascade 엔진 커버리지 갭 트리거 3종 추가 — `source_type: cyber / defense_policy / economic_coercion` | `backend/config/cascade_rules.yaml` / `engine.py` | [ ] |
-| P6-4 | 교차 인사이트 자동 생성 — 공통 행위자·지역·섹터 기반 브리핑 연결 발견, `api/briefing_graph.py` | `backend/api/briefing_graph.py` (신규) | [ ] |
-| P6-5 | 브리핑 타임라인 뷰 — 외교 이벤트 시퀀스를 vis-timeline 기반으로 표시 | `frontend/src/views/BriefingTimelineView.js` (신규) | [ ] |
+| P8-1 | 브리핑 연쇄 그래프 뷰 — `series_ref` Cytoscape 시각화 | `frontend/src/views/BriefingGraphView.js` | [ ] |
+| P8-2 | 행위자 네트워크 자동 추출 — `event_refs` 공통 노드 생성 | `backend/api/library.py` 확장 | [ ] |
+| P8-3 | Cascade 커버리지 갭 트리거 3종 — cyber/defense_policy/economic_coercion | `cascade_rules.yaml` / `engine.py` | [ ] |
+| P8-4 | 교차 인사이트 자동 생성 | `backend/api/briefing_graph.py` | [ ] |
+| P8-5 | 브리핑 타임라인 뷰 | `frontend/src/views/BriefingTimelineView.js` | [ ] |
 
-### P6 설계 배경 (2026-06-01 세션 분석)
+### P8 설계 배경 보존 (2026-06-01 분석)
 
-7개 브리핑 교차 검토에서 도출된 3가지 분석 가설 — 브리핑 30개+ 누적 시 구현:
+7개 브리핑 교차 검토에서 도출된 교차 인사이트 가설 — Phase 8 착수 시 활용:
 
-**① 한국 전략 공간의 이중 압박 구조** (382호 × 일본 국가행동분석)
-- 북한(다극세계론): 비핵화 레버리지 약화 → 한국 북쪽 압박
-- 일본(능동적 행위자화): 수출규제·담론 공세 → 한국 동쪽 압박
-- 두 압박이 동시 작동할 때 한국의 미중 사이 자율성이 최소화됨
-
-**② 대항연합 외교 도미노** (845호 → 848호 → 382호)
-- 중러 정상회담(05-22) → 북중 예고(05-27) → 북한 글로벌사우스 확장(지속)
-- 849호(한국 핵잠 05-26) 발표가 이 연쇄의 직접 대응임이 타임라인으로 드러남
-
-**③ Cascade 엔진 커버리지 갭 맵** (844 × 849 × 일본 분석 각 1개씩)
-| 맹점 유형 | 발견 브리핑 | 미포착 이유 |
-|-----------|------------|-----------|
-| `cyber` | 844호 (이란 사이버전) | ACLED 물리적 폭력 중심 |
-| `defense_policy` | 849호 (핵잠 기본계획) | GDELT 행동 코드 없음 |
-| `economic_coercion` | 일본 분석 (수출규제) | ACLED/GDELT 모두 미포착 |
+- **한국 전략 공간 이중 압박**: 382호(북한) × 일본 국가행동분석 동시 작동 구조
+- **외교 도미노 타임라인**: 중러(845) → 북중(848) → 다극(382) → 핵잠(849) 10일 연쇄
+- **Cascade 엔진 맹점 3유형**: cyber·defense_policy·economic_coercion 미포착
 
 ---
 
@@ -775,12 +930,20 @@ Pydantic 모델: `backend/models/intelligence.py` → `IntelligenceMetadata`
 
 ```
 v5.x (완료): 행위자 프로파일 → 이론 매핑 → 서술적 인사이트
-v6.0 (현재): 행위자 프로파일 → 변수 식별 → 10소스 병렬 데이터 조회 → 수치 근거 포함 인사이트
-             + §19-D 역산 신뢰도 점수 (IA-Engine-C) + 시간 역전 탐지 (A-2)
-             → 평균 81% 박사 초입 도달 (2026-06-04 평가 기준)
-v7.0 목표:   인사이트 → H1/H0 자동 생성 → Granger 예비 검증 실행 → 유의성(r, p값) 주입
-             (IA-Engine-D, 상한 캡: PENDING≤75, PARTIAL≤88, VERIFIED=무제한)
-v8.0 목표:   3개 이상 경쟁 이론 동시 적용 → 예측값 편차 비교 → 우세 이론 선택 (박사 완성)
+v6.x (완료): 행위자 프로파일 → 변수 식별 → 10소스 병렬 데이터 조회 → 수치 근거 포함 인사이트
+             + §19-D 역산 신뢰도 점수 (IA-Engine-C) + 시간 역전 탐지 + H1 자동 생성 + Granger
+             → 평균 70/100, PARTIAL 5건, 박사 초입 81% (2026-06-04 자동화 테스트 기준)
+
+Phase 6 목표 (데이터 기반 강화):
+  Cycle 6-A: 외부 데이터 2차 적재 → UNVERIFIED <1건/케이스
+  Cycle 6-B: Granger 통계력 강화 → VERIFIED 1건+ (p<0.05)
+  Cycle 6-C: H1 생성 품질 고도화 → Type_A/B 비율 50%+
+  → 목표: 신뢰도 평균 78+
+
+Phase 7 목표 (추론 엔진 고도화):
+  Cycle 7-A: 이론 라이브러리 구조화 (12개 예측 변수·반례 필드)
+  Cycle 7-B: 경쟁 이론 비교 엔진 — 예측값 편차 비교 → 우세 이론 선택
+  Cycle 7-C: 신뢰도 평균 85+, 박사 수준 90%+ 달성
 ```
 
 **핵심 전환 원칙:**
@@ -820,10 +983,16 @@ if verification_status == "VERIFIED":  # 상한 없음 — Granger p<0.05 자동
 현재 81% (박사 초입). 완전한 박사 수준(90%+) 조건:
 
 ```
-□ IA-Engine-D: 최소 1개 H1에 Granger r값·p값 자동 산출
-□ 경쟁 이론 기각: "반례 제시" → "예측값 편차 비교"로 고도화
-□ 시간 역전 오류: [TEMPORAL_REVERSAL] 자동 탐지 및 재공식화 (v6.0 추가 ✅)
-□ 이론 라이브러리 3개 이상 이론 동시 적용 + 우세 이론 선택
-□ 분석 근거 footnote 자동 첨부 (데이터 소스 투명성)
-□ ACLED 대만해협 이벤트 필터 수정 → Cascade 대만 0건 해소
+✅ 시간 역전 오류: [TEMPORAL_REVERSAL] 자동 탐지 및 재공식화 (v6.0 추가)
+✅ ACLED 대만해협 이벤트 필터 수정 → Cascade 대만 0건 해소 (v6.1.1)
+
+Phase 6 (데이터 기반 강화):
+□ UNVERIFIED 평균 <1건/케이스 (Cycle 6-A 외부 데이터 2차 적재)
+□ IA-Engine-D: 최소 1개 H1에 Granger r값·p값 자동 산출 (Cycle 6-B, VERIFIED p<0.05)
+□ H1 Type_A/B 비율 50%+ (Cycle 6-C 생성 품질 고도화)
+
+Phase 7 (추론 고도화):
+□ 이론 라이브러리 12개 이론 동시 적용 + 우세 이론 선택 (Cycle 7-A)
+□ 경쟁 이론 기각: "반례 제시" → "예측값 편차 비교"로 고도화 (Cycle 7-B)
+□ 분석 근거 footnote 자동 첨부 (데이터 소스 투명성) (Cycle 7-B)
 ```

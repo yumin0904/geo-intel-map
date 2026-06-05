@@ -1,0 +1,49 @@
+# V-Dem (Varieties of Democracy) Dataset v14 (v-dem.net)
+# Source: V-Dem Institute, University of Gothenburg, 2024
+# v2x_libdem: Liberal Democracy Index (0-1, 높을수록 민주적)
+# v2x_regime: Regime type — 0=Closed Autocracy, 1=Electoral Autocracy, 2=Electoral Democracy, 3=Liberal Democracy
+# v2x_polyarchy: Electoral Democracy Index (0-1)
+# v2x_corr: Political Corruption Index (0=낮음, 1=높음)
+iso3,country_name,year,v2x_libdem,v2x_regime,v2x_polyarchy,v2x_corr,notes
+USA,United States,2023,0.79,3,0.87,0.18,Liberal Democracy
+GBR,United Kingdom,2023,0.83,3,0.88,0.14,Liberal Democracy
+DEU,Germany,2023,0.86,3,0.90,0.10,Liberal Democracy
+FRA,France,2023,0.77,3,0.85,0.22,Liberal Democracy
+JPN,Japan,2023,0.74,3,0.83,0.19,Liberal Democracy — 일당지배 경향
+KOR,South Korea,2023,0.71,3,0.82,0.24,Electoral Democracy
+AUS,Australia,2023,0.84,3,0.89,0.12,Liberal Democracy
+CAN,Canada,2023,0.85,3,0.90,0.11,Liberal Democracy
+NOR,Norway,2023,0.90,3,0.93,0.05,Liberal Democracy
+SWE,Sweden,2023,0.88,3,0.92,0.07,Liberal Democracy
+RUS,Russia,2023,0.08,0,0.22,0.87,Closed Autocracy — 2022 침공 후 지수 하락
+CHN,China,2023,0.05,0,0.09,0.82,Closed Autocracy
+PRK,North Korea,2023,0.01,0,0.01,0.97,Closed Autocracy
+IRN,Iran,2023,0.07,0,0.19,0.89,Closed Autocracy
+BLR,Belarus,2023,0.06,0,0.14,0.88,Closed Autocracy — Lukashenko 권력 공고화
+VEN,Venezuela,2023,0.08,1,0.21,0.90,Electoral Autocracy
+TUR,Turkey,2023,0.21,1,0.52,0.65,Electoral Autocracy — Erdogan 집권 이후 하락
+HUN,Hungary,2023,0.28,1,0.58,0.71,Electoral Autocracy — EU 내 민주주의 후퇴
+SAU,Saudi Arabia,2023,0.04,0,0.06,0.75,Closed Autocracy
+ARE,UAE,2023,0.09,0,0.12,0.45,Closed Autocracy — 경제 개방, 정치 폐쇄
+EGY,Egypt,2023,0.09,0,0.18,0.81,Closed Autocracy
+PAK,Pakistan,2023,0.24,1,0.49,0.74,Electoral Autocracy — 군부 개입
+IND,India,2023,0.37,2,0.61,0.44,Electoral Democracy — BJP 하 민주주의 후퇴 논란
+IDN,Indonesia,2023,0.44,2,0.68,0.56,Electoral Democracy
+BRA,Brazil,2023,0.52,2,0.74,0.48,Electoral Democracy
+UKR,Ukraine,2023,0.38,2,0.62,0.55,Electoral Democracy — 전시 지수 유지
+POL,Poland,2023,0.63,3,0.79,0.37,Electoral Democracy — PiS 하 하락, 현재 회복 중
+ISR,Israel,2023,0.59,3,0.76,0.35,Electoral Democracy — 사법개혁 논란
+ZAF,South Africa,2023,0.55,2,0.72,0.58,Electoral Democracy
+NGA,Nigeria,2023,0.29,1,0.51,0.79,Electoral Autocracy
+ETH,Ethiopia,2023,0.18,1,0.37,0.73,Electoral Autocracy — 내전 후 재건
+MLI,Mali,2023,0.08,0,0.13,0.82,Closed Autocracy — 군사 쿠데타 (2021)
+BFA,Burkina Faso,2023,0.06,0,0.11,0.84,Closed Autocracy — 군사 쿠데타 (2022)
+NER,Niger,2023,0.07,0,0.12,0.83,Closed Autocracy — 군사 쿠데타 (2023)
+SDN,Sudan,2023,0.07,0,0.13,0.85,Closed Autocracy — 군사 쿠데타 (2021)
+SOM,Somalia,2023,0.09,1,0.17,0.90,Electoral Autocracy — 국가 취약성 극단
+MMR,Myanmar,2023,0.07,0,0.12,0.86,Closed Autocracy — 군사 쿠데타 (2021)
+VNM,Vietnam,2023,0.08,0,0.11,0.72,Closed Autocracy
+CUB,Cuba,2023,0.06,0,0.08,0.76,Closed Autocracy
+SYR,Syria,2023,0.03,0,0.05,0.93,Closed Autocracy — Assad 정권
+YEM,Yemen,2023,0.08,0,0.16,0.88,Closed Autocracy — 분열 국가
+LBY,Libya,2023,0.10,0,0.19,0.86,Closed Autocracy — 분열 국가

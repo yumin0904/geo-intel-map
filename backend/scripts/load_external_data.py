@@ -1,7 +1,7 @@
 """
 scripts/load_external_data.py
 
-IA-Engine-B1: SIPRI · COW · Kiel Tracker 외부 정형 데이터를 intel.db에 적재한다.
+IA-Engine-B1/Cycle-6A: SIPRI · COW · Kiel · EIA · CSIS · V-DEM · SIPRI Arms · COW Wars 외부 정형 데이터를 intel.db에 적재한다.
 
 기본 동작: data/external/*_seed.csv 시드 파일 사용 (오프라인 작동)
 업데이트 모드 (--update): 원본 사이트에서 최신 Excel/ZIP 다운로드 시도
@@ -60,6 +60,30 @@ def _ensure_tables(con: sqlite3.Connection) -> None:
         data_period TEXT,
         updated_at TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
         UNIQUE(donor_iso3, data_period)
+    );
+    CREATE TABLE IF NOT EXISTS sipri_arms_transfers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        supplier_iso3 TEXT NOT NULL, supplier_name TEXT,
+        recipient_iso3 TEXT NOT NULL, recipient_name TEXT,
+        year INTEGER NOT NULL,
+        tiv_mn REAL, weapon_category TEXT, notes TEXT,
+        UNIQUE(supplier_iso3, recipient_iso3, year, weapon_category)
+    );
+    CREATE TABLE IF NOT EXISTS vdem_index (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        iso3 TEXT NOT NULL, country_name TEXT,
+        year INTEGER NOT NULL,
+        v2x_libdem REAL, v2x_regime INTEGER,
+        v2x_polyarchy REAL, v2x_corr REAL, notes TEXT,
+        UNIQUE(iso3, year)
+    );
+    CREATE TABLE IF NOT EXISTS cow_wars (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        war_id INTEGER UNIQUE, war_name TEXT NOT NULL,
+        start_year INTEGER, end_year INTEGER,
+        side_a_iso3 TEXT, side_b_iso3 TEXT,
+        region TEXT, battle_deaths INTEGER,
+        outcome INTEGER, relevance_tag TEXT
     );
     CREATE TABLE IF NOT EXISTS eia_energy (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -469,6 +493,106 @@ def _load_csis_seed(con: sqlite3.Connection) -> int:
     return rows
 
 
+def _load_sipri_arms_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 SIPRI Arms Transfers 데이터 적재."""
+    seed = _EXT_DIR / "sipri_arms_seed.csv"
+    if not seed.exists():
+        logger.warning("SIPRI Arms 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR IGNORE INTO sipri_arms_transfers"
+                    " (supplier_iso3, supplier_name, recipient_iso3, recipient_name,"
+                    "  year, tiv_mn, weapon_category, notes)"
+                    " VALUES (?,?,?,?,?,?,?,?)",
+                    (
+                        row["supplier_iso3"], row.get("supplier_name"),
+                        row["recipient_iso3"], row.get("recipient_name"),
+                        int(row["year"]),
+                        float(row["tiv_mn"]) if row.get("tiv_mn") else None,
+                        row.get("weapon_category"), row.get("notes"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
+def _load_vdem_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 V-DEM 민주주의 지수 데이터 적재."""
+    seed = _EXT_DIR / "vdem_seed.csv"
+    if not seed.exists():
+        logger.warning("V-DEM 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR REPLACE INTO vdem_index"
+                    " (iso3, country_name, year, v2x_libdem, v2x_regime,"
+                    "  v2x_polyarchy, v2x_corr, notes)"
+                    " VALUES (?,?,?,?,?,?,?,?)",
+                    (
+                        row["iso3"], row.get("country_name"),
+                        int(row["year"]),
+                        float(row["v2x_libdem"]) if row.get("v2x_libdem") else None,
+                        int(row["v2x_regime"]) if row.get("v2x_regime") else None,
+                        float(row["v2x_polyarchy"]) if row.get("v2x_polyarchy") else None,
+                        float(row["v2x_corr"]) if row.get("v2x_corr") else None,
+                        row.get("notes"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
+def _load_cow_wars_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 COW Wars 전쟁 데이터 적재."""
+    seed = _EXT_DIR / "cow_wars_seed.csv"
+    if not seed.exists():
+        logger.warning("COW Wars 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR IGNORE INTO cow_wars"
+                    " (war_id, war_name, start_year, end_year,"
+                    "  side_a_iso3, side_b_iso3, region,"
+                    "  battle_deaths, outcome, relevance_tag)"
+                    " VALUES (?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        int(row["war_id"]) if row.get("war_id") else None,
+                        row["war_name"],
+                        int(row["start_year"]) if row.get("start_year") else None,
+                        int(row["end_year"]) if row.get("end_year") else None,
+                        row.get("side_a_iso3"), row.get("side_b_iso3"),
+                        row.get("region"),
+                        int(row["battle_deaths"]) if row.get("battle_deaths") else None,
+                        int(row["outcome"]) if row.get("outcome") else None,
+                        row.get("relevance_tag"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
 def _download_csis() -> Path | None:
     """CSIS Significant Cyber Incidents Excel 다운로드 시도."""
     try:
@@ -536,6 +660,21 @@ def main(sources: list[str], update: bool) -> None:
         results["csis"] = n
         logger.info("CSIS 적재 완료: %d행", n)
 
+    if "sipri_arms" in sources:
+        n = _load_sipri_arms_seed(con)
+        results["sipri_arms"] = n
+        logger.info("SIPRI Arms 적재 완료: %d행", n)
+
+    if "vdem" in sources:
+        n = _load_vdem_seed(con)
+        results["vdem"] = n
+        logger.info("V-DEM 적재 완료: %d행", n)
+
+    if "cow_wars" in sources:
+        n = _load_cow_wars_seed(con)
+        results["cow_wars"] = n
+        logger.info("COW Wars 적재 완료: %d행", n)
+
     con.close()
 
     total = sum(results.values())
@@ -547,11 +686,12 @@ def main(sources: list[str], update: bool) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="외부 정형 데이터 적재")
     parser.add_argument("--source", default="all",
-                        help="all | sipri | cow | kiel (쉼표로 복수 지정 가능)")
+                        help="all | sipri | cow | kiel | eia | csis | sipri_arms | vdem | cow_wars (쉼표로 복수 지정)")
     parser.add_argument("--update", action="store_true",
                         help="원본 사이트에서 최신 데이터 다운로드 시도")
     args = parser.parse_args()
 
-    srcs = ["sipri", "cow", "kiel", "eia", "csis"] if args.source == "all" \
+    srcs = ["sipri", "cow", "kiel", "eia", "csis", "sipri_arms", "vdem", "cow_wars"] \
+        if args.source == "all" \
         else [s.strip() for s in args.source.split(",")]
     main(srcs, args.update)

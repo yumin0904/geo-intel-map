@@ -1,0 +1,27 @@
+# COW (Correlates of War) Inter-State War Dataset v4.0 + updates
+# Source: correlatesofwar.org — Inter-State Wars + Intra-State Wars (선별)
+# battle_deaths: 전투 사망자 추정치
+# outcome: 1=SideA승, 2=SideB승, 3=협상타결, 4=교착/정전, 5=진행중
+# relevance: 현재 지정학 분석 관련성 태그
+war_id,war_name,start_year,end_year,side_a_iso3,side_b_iso3,region,battle_deaths,outcome,relevance_tag
+225,Korean War,1950,1953,USA|KOR,PRK|CHN,asia,36940,4,korean_peninsula
+236,Vietnam War,1965,1975,USA|KOR,VNM,asia,58220,2,indo_pacific
+263,Yom Kippur War,1973,1973,EGY|SYR,ISR,middle_east,15000,3,energy_geopolitics
+270,Soviet-Afghan War,1979,1989,AFG,RUS,asia,15000,2,gray_zone
+287,Iran-Iraq War,1980,1988,IRQ,IRN,middle_east,500000,3,hormuz
+298,Falklands War,1982,1982,ARG,GBR,latin_america,907,2,maritime
+318,Gulf War,1991,1991,IRQ,USA|SAU|GBR,middle_east,35000,1,energy_geopolitics
+334,Bosnia War,1992,1995,YUG,BIH|CRO,europe,100000,3,gray_zone
+360,Kosovo War,1999,1999,YUG,USA|NATO,europe,13535,1,gray_zone
+368,Afghanistan War,2001,2021,AFG|TLB,USA|NATO,asia,176000,2,gray_zone
+370,Iraq War,2003,2011,IRQ,USA|GBR,middle_east,200000,2,energy_geopolitics
+385,Georgia War,2008,2008,GEO,RUS,europe,850,2,eastern_europe
+395,Libya Civil War,2011,2011,LBY,NATO,middle_east,10000,3,gray_zone
+400,Syria Civil War,2011,2020,SYR,multiple,middle_east,500000,5,gray_zone
+410,Ukraine-Donbas,2014,2021,UKR,RUS_proxy,europe,14000,5,eastern_europe
+420,Yemen War,2015,2023,YEM_gov|SAU,YEM_houthi|IRN,middle_east,377000,5,bab_el_mandeb
+430,Nagorno-Karabakh 2020,2020,2020,ARM,AZE,europe,6600,2,energy_geopolitics
+440,Russia-Ukraine War,2022,2025,RUS,UKR,europe,500000,5,eastern_europe
+450,Sudan Civil War,2023,2025,SAF_RSF,SAF_SAF,africa,15000,5,gray_zone
+460,Israel-Hamas War,2023,2025,ISR,PSE_Hamas,middle_east,45000,5,hormuz
+470,Iran-Israel Shadow War,2024,2025,IRN,ISR,middle_east,500,5,hormuz
