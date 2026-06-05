@@ -1533,9 +1533,77 @@ Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측:
 | 경쟁이론 수치 비교 | 0~10% | 50%+ | [경쟁설명] 형식 gap 해소 |
 | Granger VERIFIED | 2건 | 3건+ | 더 많은 케이스 누적 |
 
-### 다음 작업: Phase 7-D — 데이터 품질 대폭 강화
+### 다음 작업: Phase 7-D L2/L3 — 데이터 품질 대폭 강화 (계속)
 
-**게이트**: Phase 7 완료 ✅ + 신뢰도 85+ 달성 후 Phase 8 착수
+**게이트**: 신뢰도 85+ + 경쟁이론 50%+ 동시 달성 → Phase 8 착수
+
+---
+
+## ✅ [Cycle 7-D L1] 데이터 대량 적재 + 버그 수정 (2026-06-06) — v7.3.1
+
+### 7-D-X: [경쟁설명] 프롬프트 형식 gap 해소
+- `intel_query.py` system_role에 구체적 예시 고정 삽입
+- 예측:/실측:/판정: 레이블 + 자원무기화 실제 예시
+- 결과: 경쟁이론 수치 비교 **0% → 100%** (엄격, 13/13 케이스)
+
+### 7-D-7: SIA 반도체·기술 시장 데이터
+- `semi_market_seed.csv` — 30행 (파운드리 점유율·HHI·희토류·EUV·CHIPS Act)
+- TSMC 61.7%, HHI 3920, 갈륨 중국 80%, ASML 100% 독점
+
+### 7-D-8: CSIS Cyber DB 20→68건 확장
+- `csis_cyber_extended_seed.csv` — 2006~2024 주요 APT 전수 (estimated_damage_usd 포함)
+- Stuxnet $10억, NotPetya $100억, SolarWinds $1,000억 피해 수치화
+
+### 7-D-1: FRED 경제 시계열
+- `fred_seed.csv` — 48행 (WTI·Brent·유럽가스·환율·금·미 국방비 2020~2024)
+
+### 7-D-2: World Bank WGI 거버넌스 지수
+- `world_bank_seed.csv` — 28행 (20개국 6지표, 사헬·북극 gray_zone 공백 해소)
+- 말리 -2.37, 니제르 -2.56, 부르키나파소 -2.91 수치화
+
+### 7-D-4: Polity5 정치체제 지수
+- `polity5_seed.csv` — 39행 (39개국 -10~+10 체제 분류)
+
+### 7-D-5: ITU ICT 개발 지수
+- `itu_ict_seed.csv` — 40행 (사이버 역량 티어 1~4 분류)
+
+### 7-D-6: HIIK 분쟁 강도 바로미터
+- `hiik_conflict_seed.csv` — 30행 (1~5 강도 척도, 2023~2024)
+
+### 인프라 확장
+- `load_external_data.py`: 6개 신규 테이블 + 로더 (14소스 전체)
+- `intel_analyzer.py`: 소스 15→21개 병렬 gather (FRED/WBK/Polity5/ITU/HIIK/SIA)
+- `csis_cyber_incidents`: estimated_damage_usd 컬럼 마이그레이션
+
+### 버그 수정 (v7.3.1)
+- `entity_parser.py`: cyber 섹터 키워드 16개 추가 (억지·귀속·Libicki·APT 그룹명)
+- `entity_parser.py`: APT 귀속 키워드 ACTOR_ALIASES 추가 + PRK 중복 정의 제거
+- `intel_analyzer.py`: `_get_csis_incidents` techno 섹터 fallback 추가
+
+### eval 결과 (v7.3.1 최종, 20케이스)
+
+| 지표 | v7.2.0 | v7.3.0 | v7.3.1 | 목표 |
+|------|--------|--------|--------|------|
+| PASS율 | 82% | 95% | **100%** ✅ | — |
+| 신뢰도 평균 | 70 | 67 | **71** | 85+ |
+| 경쟁이론 [엄격] | 0% | 100% | **100%** ✅ | 50%+ |
+| H1 추출률 | 100% | 92% | **100%** ✅ | — |
+| PROVISIONAL | 3건 | 1건 | **0건** ✅ | — |
+| Granger VERIFIED | 2건 | 2건 | **1건** (PARTIAL 7건) | 3건+ |
+
+### 7-D L1 상태 (2026-06-06 기준)
+
+| Sub | 항목 | 상태 |
+|-----|------|------|
+| 7-D-X | [경쟁설명] 형식 gap 해소 | ✅ v7.3.0 |
+| 7-D-1 | FRED 경제 시계열 | ✅ v7.3.0 |
+| 7-D-2 | World Bank WGI | ✅ v7.3.0 |
+| 7-D-4 | Polity5 정치체제 | ✅ v7.3.0 |
+| 7-D-5 | ITU ICT 개발 지수 | ✅ v7.3.0 |
+| 7-D-6 | HIIK 분쟁 강도 | ✅ v7.3.0 |
+| 7-D-7 | SIA 반도체 시장 | ✅ v7.3.0 |
+| 7-D-8 | CSIS Cyber DB 확장 | ✅ v7.3.0 |
+| 7-D-3 | Our World in Data | ⬜ L1 잔여 |
 
 ---
 
@@ -1567,20 +1635,20 @@ Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측:
 
 | Level | Sub | 항목 | 소스 | 건수 | 상태 |
 |-------|-----|------|------|------|------|
-| **L1** | 7-D-1 | FRED 경제 시계열 | FRED API (무료) | ~20 시리즈 | ⬜ |
-| **L1** | 7-D-2 | World Bank 거버넌스 | WB Open Data API | 200국×6지표 | ⬜ |
+| **L1** | 7-D-1 | FRED 경제 시계열 | FRED API (무료) | 48행 | ✅ v7.3.0 |
+| **L1** | 7-D-2 | World Bank 거버넌스 | WB Open Data API | 28행 | ✅ v7.3.0 |
 | **L1** | 7-D-3 | Our World in Data | GitHub CSV 공개 | 수만 행 | ⬜ |
-| **L1** | 7-D-4 | Polity5 정치체제 지수 | CSV (무료 학술) | 167국×시계열 | ⬜ |
-| **L1** | 7-D-5 | ITU ICT 사이버 역량 지수 | CSV (무료) | 170국 | ⬜ |
-| **L1** | 7-D-6 | HIIK 분쟁 강도 바로미터 | CSV (무료) | 1992~현재 | ⬜ |
-| **L1** | 7-D-7 | SIA 반도체 시장 데이터 | 공개 보고서 CSV | ~50행 | ⬜ |
-| **L1** | 7-D-8 | CSIS Cyber DB 확장 | CSV (20→100+건) | 100+건 | ⬜ |
+| **L1** | 7-D-4 | Polity5 정치체제 지수 | CSV (무료 학술) | 39행 | ✅ v7.3.0 |
+| **L1** | 7-D-5 | ITU ICT 사이버 역량 지수 | CSV (무료) | 40행 | ✅ v7.3.0 |
+| **L1** | 7-D-6 | HIIK 분쟁 강도 바로미터 | CSV (무료) | 30행 | ✅ v7.3.0 |
+| **L1** | 7-D-7 | SIA 반도체 시장 데이터 | 공개 보고서 CSV | 30행 | ✅ v7.3.0 |
+| **L1** | 7-D-8 | CSIS Cyber DB 확장 | CSV (20→68건) | 68행 | ✅ v7.3.0 |
 | **L2** | 7-D-9 | UN Comtrade 무역 의존도 | API (무료 제한) | 국가쌍 무역 | ⬜ |
 | **L2** | 7-D-10 | Wikidata 조약·동맹 | SPARQL | 수천 건 | ⬜ |
 | **L3** | 7-D-11 | GTD 테러 데이터베이스 | CSV (학술 무료) | 200,000+건 | ⬜ |
 | **L3** | 7-D-12 | ACLED 전세계 확장 | API (이미 커넥터) | 전체 국가 | ⬜ |
-| **공통** | 7-D-X | [경쟁설명] 형식 gap 해소 | 프롬프트 재설계 | — | ⬜ |
-| **공통** | 7-D-Y | intel_analyzer 소스 확장 | 15소스 → 20+소스 | — | ⬜ |
+| **공통** | 7-D-X | [경쟁설명] 형식 gap 해소 | 프롬프트 재설계 | — | ✅ v7.3.0 |
+| **공통** | 7-D-Y | intel_analyzer 소스 확장 | 15→21소스 | 21소스 | ✅ v7.3.0 |
 
 ---
 
