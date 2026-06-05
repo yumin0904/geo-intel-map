@@ -495,32 +495,58 @@ export class InsightAnalystView {
   // ── §19-D 신뢰도 점수 렌더링 ──────────────────────────────────────────────
 
   _renderScore(metaBar, scoreData) {
-    const { confidence, provisional, breakdown } = scoreData;
+    const { confidence, provisional, breakdown,
+            inference_grade, inference_caveat } = scoreData;
     const resultArea = this._pane.querySelector('#ia-result-area');
 
-    // 메타 바에 점수 배지 삽입
+    // ── 2축 표시: 증거 등급(grounding) + 추론 등급(causal ladder) ──────────
+    // 학술 재설계: 신뢰도 숫자는 '인과 확신'이 아니라 '근거 충실도'다.
+    const _ladderMeta = {
+      '선행성': { cls: 'precedence',    icon: '🟢' },
+      '상관':   { cls: 'correlational', icon: '🟡' },
+      '기술적': { cls: 'descriptive',   icon: '⚪' },
+    };
     const badge = metaBar.querySelector('#ia-score-badge');
     if (badge) {
       const cls  = confidence >= 80 ? 'high' : confidence >= 60 ? 'mid' : 'low';
       const fill = Math.round(confidence / 10);
       const bar  = '█'.repeat(fill) + '░'.repeat(10 - fill);
+      const lm   = _ladderMeta[inference_grade] ?? _ladderMeta['기술적'];
       badge.innerHTML = `
         <span class="ia__meta-sep">|</span>
         <span class="ia__score-badge ia__score-badge--${cls}"
-              title="§19-D: 수치인용${breakdown.numeric_citation} + 1차사료${breakdown.primary_source} + 가설${breakdown.hypothesis} + 경쟁이론${breakdown.competing_theory} + 고리강도${breakdown.chain_strength}">
-          신뢰도 ${bar} ${confidence}점
+              title="§19-D 증거 충실도: 수치인용${breakdown.numeric_citation} + 1차사료${breakdown.primary_source} + 가설${breakdown.hypothesis} + 경쟁이론${breakdown.competing_theory} + 고리강도${breakdown.chain_strength} — 인과 확신 아님">
+          증거 ${bar} ${confidence}
+        </span>
+        <span class="ia__meta-sep">|</span>
+        <span class="ia__ladder-badge ia__ladder-badge--${lm.cls}"
+              title="${inference_caveat ?? ''}">
+          추론 ${lm.icon} ${inference_grade ?? '기술적'}
         </span>
       `;
     }
 
-    // 60점 미만 → PROVISIONAL 배너를 결과 최상단에 삽입
+    // 두 축의 의미를 명확히 — 증거↑ 라도 추론(인과)은 별개임을 결과 상단에 고지
+    const note = resultArea.querySelector('.ia__axis-note');
+    if (!note) {
+      const el = document.createElement('div');
+      el.className = 'ia__axis-note';
+      el.innerHTML = `
+        <strong>2축 해석</strong> — <b>증거 등급</b>(데이터·이론 충실도)과
+        <b>추론 등급</b>(인과추론 사다리: 기술적 &lt; 상관 &lt; 선행성)은 별개입니다.
+        ${inference_caveat ? `<small>추론 단서: ${inference_caveat}</small>` : ''}
+      `;
+      resultArea.prepend(el);
+    }
+
+    // 60점 미만 → PROVISIONAL 배너 (증거 충실도 기준)
     if (provisional) {
       const existing = resultArea.querySelector('.ia__provisional-banner');
       if (!existing) {
         const banner = document.createElement('div');
         banner.className = 'ia__provisional-banner';
         banner.innerHTML = `
-          ⚠️ <strong>[PROVISIONAL]</strong> 신뢰도 ${confidence}점 — 수치 근거·경쟁 이론이 부족합니다.
+          ⚠️ <strong>[PROVISIONAL]</strong> 증거 등급 ${confidence}점 — 수치 근거·경쟁 이론이 부족합니다.
           <small>§19-D 기준: 60점 미만은 잠정 분석으로 처리.</small>
         `;
         resultArea.prepend(banner);
@@ -533,31 +559,35 @@ export class InsightAnalystView {
   _renderHypotheses(resultArea, hypotheses) {
     if (!hypotheses.length) return;
 
-    const _statusLabel = {
-      VERIFIED: { cls: 'verified', icon: '✅', text: 'VERIFIED', desc: 'Granger p<0.05 — 통계적 유의' },
-      PARTIAL:  { cls: 'partial',  icon: '🔶', text: 'PARTIAL',  desc: 'Granger p<0.15 — 경향성 확인' },
-      PENDING:  { cls: 'pending',  icon: '⏳', text: 'PENDING',  desc: '미검증' },
-    };
-
-    // [P1] 변수 유형 뱃지
-    const _typeLabel = {
-      Type_A: { icon: '📈', text: 'Type A', desc: '금융 ticker Granger' },
-      Type_B: { icon: '📊', text: 'Type B', desc: 'ACLED 이벤트 비교' },
-      Type_C: { icon: '🔍', text: 'Type C', desc: '추상 변수 → 대리변수 필요' },
+    // 학술 재설계: 인과추론 사다리 (기술적 < 상관 < 선행성). 인과 단정 어휘 배제.
+    const _ladderLabel = {
+      '선행성': { cls: 'precedence',    icon: '🟢', text: '선행성',
+                  desc: 'Granger 예측적 선행 (통제변수 조건부) — 구조적 인과는 아님' },
+      '상관':   { cls: 'correlational', icon: '🟡', text: '상관',
+                  desc: '시사적 — 선행성 미달(교란 미통제·이론근거 약함·p<0.15)' },
+      '기술적': { cls: 'descriptive',   icon: '⚪', text: '기술적',
+                  desc: '서술·이론 근거만 — 인과 검정 미달/불가' },
     };
 
     const cards = hypotheses.map(h => {
-      const st = _statusLabel[h.verification_status] ?? _statusLabel.PENDING;
-      const vt = _typeLabel[h.var_type] ?? _typeLabel.Type_A;
+      const grade = h.inference_grade ?? '기술적';
+      const st = _ladderLabel[grade] ?? _ladderLabel['기술적'];
       const pStr   = h.granger_p   != null ? `p = ${h.granger_p}` : '—';
+      const qStr   = h.granger_q   != null ? `q = ${h.granger_q}` : '';   // FDR
       const fStr   = h.f_statistic != null ? `F = ${h.f_statistic}` : '';
-      const lagStr = h.best_lag   != null ? `lag ${h.best_lag}일` : '—';
-      const nStr   = h.n_obs > 0          ? `n = ${h.n_obs}`     : '—';
-      const statsStr = [pStr, fStr, lagStr, nStr].filter(Boolean).join(' · ');
-      const regionBadge = h.region_code ? `<span class="ia__hyp-tag">${h.region_code}</span>` : '';
-      const tickerBadge = h.ticker      ? `<span class="ia__hyp-tag">${h.ticker}</span>`      : '';
-      const typeBadge   = `<span class="ia__hyp-tag ia__hyp-tag--type">${vt.icon} ${vt.text}</span>`;
-      const errorNote   = h.error       ? `<div class="ia__hyp-error">⚠️ ${h.error}</div>`    : '';
+      const lagStr = h.best_lag   != null ? `lag ${h.best_lag}` : '';
+      const nStr   = h.n_obs > 0          ? `n = ${h.n_obs}`     : '';
+      const statsStr = [pStr, qStr, fStr, lagStr, nStr].filter(Boolean).join(' · ');
+      // 검정 절차 투명성 뱃지 (정상성 차분·교란통제·이론근거)
+      const guards = [];
+      if (h.controlled)      guards.push(`<span class="ia__hyp-tag ia__hyp-tag--ok">교란통제${h.control_name ? `(${h.control_name})` : ''}</span>`);
+      else                   guards.push(`<span class="ia__hyp-tag ia__hyp-tag--warn">교란 미통제</span>`);
+      if (h.differenced)     guards.push(`<span class="ia__hyp-tag">정상성 차분</span>`);
+      if (h.theory_grounded) guards.push(`<span class="ia__hyp-tag ia__hyp-tag--ok">이론근거</span>`);
+      const targetBadge = h.dependent_region
+        ? `<span class="ia__hyp-tag">${h.region_code} → ${h.dependent_region} (사건→사건)</span>`
+        : (h.region_code ? `<span class="ia__hyp-tag">${h.region_code}${h.ticker ? ` → ${h.ticker}` : ''}</span>` : '');
+      const caveatNote  = h.inference_caveat ? `<div class="ia__hyp-caveat">⚠️ ${h.inference_caveat}</div>` : '';
       const proxyNote   = (h.var_type === 'Type_C' && h.proxy_suggestions?.length)
         ? `<div class="ia__hyp-proxy">권장 대리변수: ${h.proxy_suggestions.join(' · ')}</div>`
         : '';
@@ -565,16 +595,16 @@ export class InsightAnalystView {
       return `
         <div class="ia__hyp-card ia__hyp-card--${st.cls}">
           <div class="ia__hyp-header">
-            <span class="ia__hyp-status">${st.icon} ${st.text}</span>
-            ${typeBadge}${regionBadge}${tickerBadge}
+            <span class="ia__hyp-status">${st.icon} 추론: ${st.text}</span>
+            ${targetBadge}
             <span class="ia__hyp-stats">${statsStr}</span>
           </div>
           <div class="ia__hyp-h1"><strong>H1</strong> ${h.h1}</div>
           <div class="ia__hyp-h0"><strong>H0</strong> ${h.h0}</div>
-          ${h.control_vars?.length ? `<div class="ia__hyp-ctrl">통제변수: ${h.control_vars.join(', ')}</div>` : ''}
-          <div class="ia__hyp-desc">${vt.desc}</div>
+          <div class="ia__hyp-guards">${guards.join(' ')}</div>
+          <div class="ia__hyp-desc">${st.desc}</div>
+          ${caveatNote}
           ${proxyNote}
-          ${errorNote}
         </div>
       `;
     }).join('');
@@ -582,7 +612,10 @@ export class InsightAnalystView {
     const section = document.createElement('div');
     section.className = 'ia__hyp-section';
     section.innerHTML = `
-      <div class="ia__hyp-title">🔬 IA-Engine-D — H1 가설 검증 (Granger)</div>
+      <div class="ia__hyp-title">🔬 인과추론 사다리 — H1 선행성 검정 (Granger, 인과 아님)</div>
+      <div class="ia__hyp-ladder-legend">
+        기술적(서술) &lt; 상관(시사) &lt; 선행성(통제 조건부 예측 선행) — 어느 칸도 구조적 인과를 단정하지 않음
+      </div>
       ${cards}
     `;
     resultArea.appendChild(section);

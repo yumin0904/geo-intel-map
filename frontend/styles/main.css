@@ -3627,3 +3627,69 @@ body:not(.study-mode) .notebook { display: none; }
   font-size: 0.75rem;
   margin-top: 4px;
 }
+
+/* ── 학술 재설계: 2축 + 인과추론 사다리 ───────────────────────────────── */
+
+/* 추론 등급 배지 (메타바) */
+.ia__ladder-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.ia__ladder-badge--precedence    { color: #22c55e; border-color: #22c55e; }
+.ia__ladder-badge--correlational { color: #f59e0b; border-color: #f59e0b; }
+.ia__ladder-badge--descriptive   { color: #6b7280; }
+
+/* 2축 해석 고지 */
+.ia__axis-note {
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.ia__axis-note small { display: block; color: var(--text-muted); margin-top: 3px; }
+
+/* 사다리 카드 색상 (선행성=초록 / 상관=주황 / 기술적=회색) */
+.ia__hyp-card--precedence    { border-left-color: #22c55e; }
+.ia__hyp-card--correlational { border-left-color: #f59e0b; }
+.ia__hyp-card--descriptive   { border-left-color: #6b7280; }
+.ia__hyp-card--precedence    .ia__hyp-status { color: #22c55e; }
+.ia__hyp-card--correlational .ia__hyp-status { color: #f59e0b; }
+.ia__hyp-card--descriptive   .ia__hyp-status { color: #6b7280; }
+
+/* 검정 절차 투명성 뱃지 */
+.ia__hyp-guards { margin: 4px 0; display: flex; gap: 4px; flex-wrap: wrap; }
+.ia__hyp-tag--ok {
+  background: color-mix(in srgb, #22c55e 14%, transparent);
+  border-color: color-mix(in srgb, #22c55e 40%, transparent);
+  color: #22c55e;
+}
+.ia__hyp-tag--warn {
+  background: color-mix(in srgb, #f59e0b 14%, transparent);
+  border-color: color-mix(in srgb, #f59e0b 40%, transparent);
+  color: #f59e0b;
+}
+
+/* 추론 단서 (Granger 한계 명시) */
+.ia__hyp-caveat {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  background: color-mix(in srgb, #f59e0b 7%, transparent);
+  border-left: 2px solid #f59e0b;
+  padding: 3px 6px;
+  margin-top: 4px;
+  border-radius: 0 3px 3px 0;
+  line-height: 1.4;
+}
+
+.ia__hyp-ladder-legend {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-style: italic;
+}
