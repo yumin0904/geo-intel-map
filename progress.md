@@ -1533,9 +1533,121 @@ Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측:
 | 경쟁이론 수치 비교 | 0~10% | 50%+ | [경쟁설명] 형식 gap 해소 |
 | Granger VERIFIED | 2건 | 3건+ | 더 많은 케이스 누적 |
 
-### 다음 작업: Phase 8 — 시각화 (브리핑 그래프·행위자 네트워크)
+### 다음 작업: Phase 7-D — 데이터 품질 대폭 강화
 
-**게이트**: Phase 7 완료 ✅
+**게이트**: Phase 7 완료 ✅ + 신뢰도 85+ 달성 후 Phase 8 착수
+
+---
+
+## Phase 7-D 계획 (2026-06-05 구상, 미착수)
+
+### 목표
+
+신뢰도 평균 70 → 85+ / 경쟁이론 수치 비교 0% → 50%+ / Granger VERIFIED 2 → 3건+
+
+### 배경
+
+현재 신뢰도 70의 원인: 섹터별 수치 데이터 공백
+→ Gemini는 이미 H1·연쇄강도·경쟁이론 서술은 양호
+→ 문제는 컨텍스트에 수치가 없어 [관찰]·[근거] 섹션 수치 인용 불가
+
+| 섹터 | 현재 신뢰도 | 공백 | 해결 소스 |
+|------|-----------|------|---------|
+| cyber | 50~60 | APT 빈도·피해액 없음 | CSIS 확장 |
+| techno | 60~75 | 반도체 HHI·점유율 없음 | SIA CSV |
+| gray_zone (사헬·북극) | 60~75 | 거버넌스·취약국 지수 없음 | World Bank WGI |
+| energy·maritime | 75 | 상대적 양호 (EIA·SIPRI 있음) | FRED 보완 |
+
+### 사이클 구조
+
+| Sub | 항목 | 소스 | 핵심 파일 | 상태 |
+|-----|------|------|---------|------|
+| **7-D-1** | FRED 경제 시계열 | FRED API (무료) | `connectors/fred_adapter.py` | ⬜ |
+| **7-D-2** | World Bank 거버넌스 지수 | WB Open Data API (무료) | `data/external/world_bank_seed.csv` | ⬜ |
+| **7-D-3** | 반도체·기술 시장 데이터 | SIA·공개 보고서 CSV | `data/external/semi_market_seed.csv` | ⬜ |
+| **7-D-4** | CSIS Cyber DB 확장 | CSV 추가 수집 (20→100+건) | `data/external/csis_cyber_extended.csv` | ⬜ |
+| **7-D-5** | [경쟁설명] 형식 gap 해소 | 프롬프트 재설계 | `api/intel_query.py` | ⬜ |
+
+### Cycle 7-D-1: FRED 경제 시계열
+
+**소스**: Federal Reserve Economic Data (무료 REST API)
+
+| 시리즈 | 내용 | 활용 지역/섹터 |
+|--------|------|-------------|
+| DCOILWTICO | WTI 유가 월별 시계열 | hormuz·energy |
+| DCOILBRENTEU | Brent 유가 월별 | hormuz·energy |
+| KOREUS | 원/달러 환율 | korean_peninsula |
+| EXCHUS | 위안/달러 환율 | taiwan_strait |
+| PNGASEUUSDM | 유럽 천연가스 가격 | eastern_europe·energy |
+
+**구현**: `data/external/fred_seed.csv` + `connectors/fred_adapter.py`  
+**DB 테이블**: `fred_indicators` (series_id · date · value · unit)  
+**intel_analyzer**: 지역 매핑 → 관련 시리즈 자동 조회  
+**기대 효과**: 유가·환율 시계열 수치 직접 주입 → 수치 인용(+30) 달성률 상승
+
+### Cycle 7-D-2: World Bank 거버넌스 지수
+
+**소스**: World Bank Open Data API (무료)
+
+| 지표 코드 | 내용 |
+|---------|------|
+| PV.EST | 정치 안정성 지수 |
+| CC.EST | 부패 통제 지수 |
+| RL.EST | 법치 지수 |
+| GE.EST | 정부 효과성 |
+
+**대상**: Mali·Niger·Burkina Faso·Russia·China·Iran·DPRK·Ukraine 등 20개국  
+**구현**: `data/external/world_bank_seed.csv` + `intel_analyzer._get_wbk_governance()`  
+**기대 효과**: 사헬 케이스 [관찰]에 "말리 정치안정 지수 -1.8 (하위 5%)" 수치 인용 가능
+
+### Cycle 7-D-3: 반도체·기술 시장 데이터
+
+| 데이터 | 내용 | 활용 |
+|--------|------|------|
+| SIA 파운드리 점유율 | 대만 52%, 한국 17%, 중국 7% | techno HHI 계산 |
+| 핵심 광물 의존도 | 갈륨 중국 80%+, 게르마늄 60%+ | techno 수치화 |
+| ASML 장비 수출 | 극자외선(EUV) 독점 공급 | techno Weaponized Interdependence |
+
+**구현**: `data/external/semi_market_seed.csv`  
+**DB 테이블**: `semi_market_data`
+
+### Cycle 7-D-4: CSIS Cyber DB 확장
+
+- 현재: 20건 (2015~2024 주요 사건만)
+- 목표: 100+건 (2006~2024 전체, 국가별 귀속 통계 포함)
+- 추가 필드: `perpetrator_country` · `target_sector` · `estimated_damage_usd`
+- **구현**: `data/external/csis_cyber_extended_seed.csv`
+
+### Cycle 7-D-5: [경쟁설명] 형식 gap 해소
+
+**문제**: Gemini가 경쟁이론 비교 내용은 서술하지만 `예측:` `실측:` 정확한 레이블 미사용
+
+**수정 방법**: `intel_query.py` system_role에 형식 예시를 **구체적 예시와 함께** 고정 삽입
+
+```
+[경쟁설명] 작성 시 반드시 아래 형식을 사용하라:
+
+이론명 (학자):
+  예측: [이 이론이 현 상황에서 예측하는 수치·방향]
+  실측: [context 내 실제 수치 (소스명)]
+  판정: 우세 — [근거] 또는 열세 — [반례]
+
+예시:
+  자원무기화 (Hirschman):
+    예측: 에너지 의존도 증가 시 정치적 양보 증가
+    실측: EU 러시아 가스 의존도 2021년 45% → 2024년 8% (EIA)
+    판정: 열세 — 대체재 출현으로 무기화 효과 약화
+```
+
+### 평가 기준
+
+`eval_insight.py` 재실행 → 신뢰도 평균 85+ + 경쟁이론 수치 비교 50%+
+
+### Phase 8 착수 조건
+
+- 신뢰도 평균 85+ 달성
+- 경쟁이론 수치 비교 50%+ 달성
+- 두 조건 동시 충족 시 Phase 8 착수
 
 ### Phase 8 (후순위, Phase 7 완료 후)
 
