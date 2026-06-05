@@ -27,7 +27,8 @@ class HypothesisSpec:
     independent_var: str                 # 원문 독립변수 기술
     dependent_var: str                   # 원문 종속변수 기술
     control_vars: list[str] = field(default_factory=list)
-    region_code: str | None = None       # event_archive 조회용
+    region_code: str | None = None       # event_archive 조회용 (독립변수 지역 X)
+    dependent_region: str | None = None  # [B4] 사건→사건: 종속 지역 Y (event_archive)
     ticker: str | None = None            # 시장/지표 시계열 조회용
     var_type: VariableType = "Type_A"    # 변수 유형 3분류 (P1)
     proxy_suggestions: list[str] = field(default_factory=list)  # Type_C 대리변수 제안
@@ -43,6 +44,8 @@ class HypothesisSpec:
     theory_grounded: bool = False        # 종속변수 쌍에 문헌상 인과 메커니즘 존재 여부
     granger_q: float | None = None       # 다중검정 FDR 보정 q값 (Benjamini-Hochberg)
     differenced: bool = False            # 정상성 보정(1차 차분) 적용 여부
+    controlled: bool = False             # B3 통제변수(VIX) 조건부 Granger 적용 여부
+    control_name: str | None = None      # 사용된 통제변수명
 
 
 # ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────
@@ -151,16 +154,55 @@ _RE_CONTROL = re.compile(
 
 # "X가 증가할 때 Y가" 구조에서 독립/종속변수 추출
 _RE_WHEN_THEN = re.compile(
-    r'(.+?)\s*(?:가|이|이\s*)?(?:증가|상승|강화|확대|악화|발생|감소|하락)할\s*때.{0,10}?(.+?)\s*(?:가|이|이\s*)?(?:통계적|유의|증가|감소|상승|하락)',
+    r'(.+?)\s*(?:가|이|이\s*)?(?:증가|상승|강화|확대|악화|발생|감소|하락)'
+    r'(?:할\s*때|\s*시|하면|할\s*수록|\s*때)'
+    r'.{0,10}?(.+?)\s*(?:가|이|이\s*)?(?:통계적|유의|증가|감소|상승|하락)',
     re.IGNORECASE,
 )
 
 
-def _match_region(text: str) -> str | None:
-    """텍스트에서 region_code를 결정론적으로 추출한다."""
+def _ordered_regions(text: str) -> list[str]:
+    """텍스트에 등장하는 region_code를 **등장 위치 순서대로** 반환한다 (중복 제거).
+
+    사건→사건 방향(독립=먼저, 종속=나중) 판정에 필수.
+    """
     text_lower = text.lower()
+    hits: list[tuple[int, str]] = []
     for keywords, code in _REGION_MAP:
-        if any(kw in text_lower for kw in keywords):
+        positions = [text_lower.find(kw) for kw in keywords if kw in text_lower]
+        if positions:
+            hits.append((min(positions), code))
+    hits.sort()
+    ordered: list[str] = []
+    for _, code in hits:
+        if code not in ordered:
+            ordered.append(code)
+    return ordered
+
+
+def _match_region(text: str) -> str | None:
+    """텍스트에서 region_code를 추출한다 (등장 위치가 가장 빠른 지역)."""
+    ordered = _ordered_regions(text)
+    return ordered[0] if ordered else None
+
+
+# [B4] 종속변수가 '다른 지역의 사건/분쟁'을 가리킬 때 쓰는 키워드
+_EVENT_DEP_KEYWORDS: list[str] = [
+    "분쟁", "사건", "충돌", "교전", "도발", "공격", "테러", "건수", "발생",
+    "conflict", "incident", "clash", "attack", "event",
+]
+
+
+def _match_dependent_region(text: str, exclude: str | None) -> str | None:
+    """
+    [B4] 종속변수 텍스트에서 독립 지역과 **다른** 지역을 찾는다 (사건→사건).
+    사건/분쟁 키워드가 있어야 하며(시장지표 종속과 구분), exclude 지역은 제외.
+    등장 위치 순서로 첫 번째 다른 지역을 반환 (방향 정확성).
+    """
+    if not any(kw in text.lower() for kw in _EVENT_DEP_KEYWORDS):
+        return None
+    for code in _ordered_regions(text):
+        if code != exclude:
             return code
     return None
 
@@ -219,11 +261,21 @@ def extract_hypotheses(text: str) -> list[HypothesisSpec]:
             independent_var = h1_clean
             dependent_var = ""
 
-        # region/ticker 매핑 — H1 전체 + 독립/종속변수 합쳐서 검색
+        # region/ticker 매핑 — 독립 지역은 독립변수 우선, 종속은 종속변수에서
         combined_text = f"{h1_clean} {independent_var} {dependent_var}"
-        region_code = _match_region(combined_text)
+        region_code = _match_region(independent_var) or _match_region(combined_text)
         ticker_match = _match_ticker(combined_text)
         ticker = ticker_match[0] if ticker_match else None
+
+        # [B4] 사건→사건 탐지: 종속변수가 다른 지역의 분쟁/사건을 가리키고
+        #      시장 ticker로 매핑되지 않을 때 → dependent_region 설정
+        dependent_region = None
+        if region_code:
+            dep_text = dependent_var or h1_clean
+            dependent_region = _match_dependent_region(dep_text, exclude=region_code)
+            # 종속이 사건→사건이면 시장 ticker는 무시 (둘 중 사건→사건 우선)
+            if dependent_region:
+                ticker = None
 
         # [P1] 변수 유형 3분류 — 종속변수 기준으로 판별
         var_type, proxy_suggestions = _classify_variable_type(dependent_var or h1_clean)
@@ -235,6 +287,7 @@ def extract_hypotheses(text: str) -> list[HypothesisSpec]:
             dependent_var=dependent_var or "미식별",
             control_vars=control_vars,
             region_code=region_code,
+            dependent_region=dependent_region,
             ticker=ticker,
             var_type=var_type,
             proxy_suggestions=proxy_suggestions,

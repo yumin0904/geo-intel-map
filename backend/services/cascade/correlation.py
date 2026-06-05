@@ -226,6 +226,43 @@ def _load_event_series(region: str, start: date, end: date) -> pd.Series:
     return series
 
 
+def _load_global_conflict_series(
+    start: date, end: date, exclude: list[str] | None = None,
+) -> pd.Series:
+    """
+    [B4] 전세계 일별 분쟁 강도 합산 시계열 — 사건→사건 Granger의 통제변수(Z).
+
+    공통 충격(계절성·글로벌 불안정)이 여러 지역 분쟁을 동시에 움직이는 교란을
+    통제하기 위해, 검정 대상 두 지역을 제외한 전세계 severity 합산을 사용한다.
+    """
+    region = _REGION_ALIAS  # noqa: 별칭 일관성 참조
+    exclude = [_REGION_ALIAS.get(r, r) for r in (exclude or [])]
+    con = sqlite3.connect(_DB_PATH)
+    placeholders = ",".join("?" * len(exclude)) if exclude else ""
+    where_excl = f"AND region_code NOT IN ({placeholders})" if exclude else ""
+    df = pd.read_sql_query(
+        f"""
+        SELECT DATE(timestamp) AS day, SUM(severity) AS sev_sum
+        FROM event_archive
+        WHERE region_code IS NOT NULL
+          AND DATE(timestamp) BETWEEN ? AND ?
+          {where_excl}
+        GROUP BY day
+        ORDER BY day
+        """,
+        con,
+        params=(start.isoformat(), end.isoformat(), *exclude),
+        parse_dates=["day"],
+    )
+    con.close()
+    if df.empty:
+        return pd.Series(dtype=float, name="global_conflict")
+    idx = pd.date_range(start, end, freq="D")
+    series = df.set_index("day")["sev_sum"].reindex(idx, fill_value=0.0)
+    series.name = "global_conflict"
+    return series
+
+
 # ── 시장 시계열 구축 ──────────────────────────────────────────────────────────
 
 def _load_fred_series(indicator: str, start: date, end: date) -> pd.Series | None:
@@ -407,6 +444,91 @@ def _run_granger(
 
     except Exception as exc:
         logger.error("[correlation] Granger 검정 실패: %s", exc)
+        return None, None, 0, None, meta
+
+
+# ── [B3] 조건부 Granger (통제변수) ────────────────────────────────────────────
+
+# 통제변수 후보: 글로벌 위험 선호(VIX) — 지정학 충격과 시장을 동시에 움직이는 공통 교란.
+# VIX 실패 시 S&P500(시장 전체 움직임)로 대체.
+_CONTROL_CANDIDATES: list[tuple[str, str]] = [("^VIX", "VIX"), ("SPY", "S&P500")]
+
+
+async def _get_control_series(start: date, end: date) -> tuple[pd.Series | None, str | None]:
+    """[B3] 조건부 Granger용 통제변수 시계열(일별 % 변동)을 반환한다."""
+    for ticker, label in _CONTROL_CANDIDATES:
+        s = await _download_yfinance(ticker, start, end)
+        if s is not None and len(s) >= 30:
+            s = s.copy()
+            s.name = "Z"
+            return s, label
+    return None, None
+
+
+def _run_conditional_granger(
+    event_series: pd.Series,
+    market_series: pd.Series,
+    control_series: pd.Series,
+    max_lag: int = _MAX_LAG,
+) -> tuple[float | None, int | None, int, float | None, dict]:
+    """
+    [B3] 통제변수 Z **조건부** Granger — VAR.test_causality.
+
+    X→Y 선행성을 Z(글로벌 위험 VIX) 통제 하에 검정한다.
+    3변량 VAR에서 X의 시차계수가 Y 방정식에서 결합 0인지 F-검정 →
+    Y 자기시차 + Z를 통제한 뒤에도 X가 Y 예측에 기여하는지 본다.
+    이로써 양변량 교란(공통 위험요인) 문제를 완화한다 (여전히 인과 단정 불가).
+
+    반환: (p_value, best_lag, n_obs, f_statistic, meta)
+    """
+    meta: dict = {"controlled": True, "lag_method": "AIC",
+                  "differenced": False, "bivariate_uncontrolled": False}
+    try:
+        from statsmodels.tsa.vector_ar.var_model import VAR
+
+        combined = pd.concat(
+            [market_series.rename("Y"), event_series.rename("X"),
+             control_series.rename("Z")],
+            axis=1,
+        ).dropna()
+
+        if len(combined) < max_lag + 25:
+            return None, None, len(combined), None, meta
+        if combined["X"].std() == 0:
+            return None, None, len(combined), None, meta
+
+        # [B1] 컬럼별 독립 차분
+        diffed = []
+        for col in ("X", "Y", "Z"):
+            if _adf_stationary(combined[col]) is False:
+                combined[col] = combined[col].diff()
+                diffed.append(col)
+        if diffed:
+            combined = combined.dropna()
+            meta["differenced"] = True
+            meta["differenced_cols"] = diffed
+            if len(combined) < max_lag + 25 or combined["X"].std() == 0:
+                return None, None, len(combined), None, meta
+
+        # [B2] AIC 사전 고정 lag
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            model = VAR(combined[["Y", "X", "Z"]])
+            sel = model.select_order(maxlags=min(max_lag, len(combined) // 6))
+            best_lag = int(sel.aic) if sel.aic and sel.aic >= 1 else 1
+            res = model.fit(best_lag)
+            test = res.test_causality("Y", ["X"], kind="f")
+
+        p_value = float(test.pvalue)
+        f_stat  = float(test.test_statistic)
+        logger.debug(
+            "[correlation] 조건부 Granger(Z통제) lag=%d p=%.4f F=%.3f n=%d diff=%s",
+            best_lag, p_value, f_stat, len(combined), meta["differenced"],
+        )
+        return p_value, best_lag, len(combined), round(f_stat, 3), meta
+
+    except Exception as exc:
+        logger.warning("[correlation] 조건부 Granger 실패: %s", exc)
         return None, None, 0, None, meta
 
 
