@@ -19,6 +19,18 @@ theorists:
 theory_id: indo_pacific_a2ad_strategy
 title: 반접근/지역거부 전략 (A2/AD Strategy)
 year: 2003
+independent_var: "A2/AD 무기 체계 배치 밀도 (역내 미사일·기뢰·잠수함 수량)"
+dependent_var: "상대국 전력 투사 비용 (항모 작전 운용 비용 지수)"
+conditions:
+  - "지리적 근접성 (도서·반도 지형)"
+  - "정밀 타격 능력 (IRBM·ASBM 보유)"
+  - "ISR 네트워크 완성도"
+falsifiable_prediction: "A2/AD 밀도 증가 시 상대국 항모 타격단 운용 비용 증가 (통제: 상대국 방어 돌파 능력)"
+known_counterexample: "우크라이나·하마스 드론이 저비용으로 정규 방어선 침투 — 비대칭 저비용 수단이 A2/AD 비용 구조를 역전 가능"
+rival_theories:
+  - "Power Projection Theory"
+  - "AirSea Battle Doctrine (JOAC)"
+  - "Mahan Sea Power Theory"
 ---
 
 ## 핵심 주장

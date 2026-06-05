@@ -20,6 +20,18 @@ theorists:
 theory_id: gray_zone_gray_zone_strategy
 title: 회색지대 전략 (Gray Zone Strategy)
 year: 2015
+independent_var: "회색지대 행동 빈도 (군사 이하 강압 행동 건수/월)"
+dependent_var: "목표국의 정책 변화 빈도 (양보·철회·수용 건수)"
+conditions:
+  - "핵 억지로 인한 전면전 회피 환경"
+  - "법적 모호성 활용 가능 (귀속 불명확)"
+  - "상대국 대응 연합 형성 어려움"
+falsifiable_prediction: "회색지대 행동 강도 증가 시 목표국 정책 양보 증가 (통제: 동맹 지원 수준)"
+known_counterexample: "중국 남중국해 인공섬 건설 이후 ASEAN 결속 강화·미국 FONOPs 증가 — 누적 기정사실이 역효과 유발 가능"
+rival_theories:
+  - "Hybrid Warfare Theory (Hoffman)"
+  - "Conventional Deterrence Theory"
+  - "Coercive Diplomacy (George)"
 ---
 
 ## 핵심 주장

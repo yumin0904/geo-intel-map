@@ -19,6 +19,18 @@ theorists:
 theory_id: maritime_mahan_sea_power
 title: 마한의 해양력 이론 (Sea Power Theory)
 year: 1890
+independent_var: "해군력 투자 비중 (%GDP) 및 해외기지 수"
+dependent_var: "해상 교통로(SLOC) 통제 범위 및 상업 운송 안전도"
+conditions:
+  - "지리적 해양 접근성 확보"
+  - "상선대 규모 충분"
+  - "경쟁국 대비 해군력 우위"
+falsifiable_prediction: "해군력 투자 증가 시 SLOC 통제 범위 확대 (통제: 경쟁국 해군력 규모)"
+known_counterexample: "중국 A2/AD 전략이 미국 항모 타격단 투사 비용을 상승시켜 절대 해양 지배 명제를 약화시킴"
+rival_theories:
+  - "Mackinder Land Power Theory"
+  - "A2/AD Strategy"
+  - "Corbett Limited Sea Control"
 ---
 
 ## 핵심 주장

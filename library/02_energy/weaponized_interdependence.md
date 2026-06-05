@@ -19,6 +19,18 @@ theorists:
 theory_id: energy_weaponized_interdependence
 title: 상호의존의 무기화 (Weaponized Interdependence)
 year: 2019
+independent_var: "공급망 집중도 (HHI 지수, 특정 허브 의존도)"
+dependent_var: "피의존국 외교 양보 빈도 및 정책 변화율"
+conditions:
+  - "비대칭 의존 구조 (허브 보유국 vs 피의존국)"
+  - "단기 대체재 부재"
+  - "허브 통제 능력 (차단·감시 역량)"
+falsifiable_prediction: "공급망 집중도 증가 시 피의존국 외교 양보 빈도 증가 (통제: 군사력 균형)"
+known_counterexample: "유럽의 러시아 가스 의존도 탈피 성공(2022~2024) — LNG 다변화로 무기화 효과 약화; 중국 SMIC 자립화 시 반도체 허브 레버리지 하락"
+rival_theories:
+  - "Liberal Interdependence (Keohane & Nye)"
+  - "Balance of Power (Waltz)"
+  - "Resource Weaponization (Hirschman)"
 ---
 
 ## 핵심 주장

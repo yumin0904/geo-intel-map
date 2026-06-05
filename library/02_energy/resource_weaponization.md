@@ -21,6 +21,18 @@ theorists:
 theory_id: energy_resource_weaponization
 title: 자원무기화 (Resource Weaponization)
 year: 1945
+independent_var: "에너지·원자재 수입 의존도 (단일 공급국 비율 %)"
+dependent_var: "공급 차단 위협에 대한 피의존국 정치적 양보 빈도"
+conditions:
+  - "단일 공급원 집중 (대체 불가)"
+  - "비대칭 시장 권력 (공급국 우위)"
+  - "단기 대안 부재"
+falsifiable_prediction: "의존도 증가 시 공급 위협에 대한 정치적 양보 증가 (통제: 군사 균형, 대체 공급원 접근성)"
+known_counterexample: "미국 셰일 혁명 이후 OPEC 무기화 효과 감소 — 대체재 출현 시 설명력 하락; 유럽 가스 대체 성공"
+rival_theories:
+  - "Weaponized Interdependence (Farrell & Newman)"
+  - "Liberal Interdependence (Keohane & Nye)"
+  - "Commodity Power Theory"
 ---
 
 ## 핵심 주장

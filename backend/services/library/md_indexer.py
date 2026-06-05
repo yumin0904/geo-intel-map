@@ -71,7 +71,14 @@ CREATE TABLE IF NOT EXISTS theories (
     source_org         TEXT,            -- CSIS / INSS / RAND / Brookings 등
     published_date     TEXT,            -- YYYY-MM-DD
     source_url         TEXT,            -- 원문 URL
-    event_refs         TEXT             -- JSON 배열: Stage 3 매칭 키워드
+    event_refs         TEXT,            -- JSON 배열: Stage 3 매칭 키워드
+    -- Phase 7 이론 프로파일 필드 (예측 도구화, §11 Cycle 7-A) ──────────
+    independent_var    TEXT,            -- 독립변수 (측정 가능 지표)
+    dependent_var      TEXT,            -- 종속변수 (측정 가능 지표)
+    conditions         TEXT,            -- 적용 조건 (JSON 배열)
+    falsifiable_prediction TEXT,        -- 반증 가능 예측 명제
+    known_counterexample   TEXT,        -- 알려진 반례
+    rival_theories     TEXT             -- 경쟁 이론 목록 (JSON 배열)
 );
 
 -- FTS5 가상 테이블: theories 테이블을 content source로 사용
@@ -108,6 +115,12 @@ def _get_conn() -> sqlite3.Connection:
         ("published_date",      "NULL"),
         ("source_url",          "NULL"),
         ("event_refs",          "NULL"),
+        ("independent_var",     "NULL"),
+        ("dependent_var",       "NULL"),
+        ("conditions",          "NULL"),
+        ("falsifiable_prediction", "NULL"),
+        ("known_counterexample","NULL"),
+        ("rival_theories",      "NULL"),
     ]
     for col, default in _new_cols:
         try:
@@ -204,6 +217,20 @@ def parse_front_matter(path: Path) -> dict:
     meta["published_date"] = str(meta.get("published_date", "")) or None
     meta["source_url"]     = meta.get("source_url") or None
 
+    # ── Phase 7 이론 프로파일 필드 (§11 Cycle 7-A) ───────────────────────────
+    meta["independent_var"]        = meta.get("independent_var") or None
+    meta["dependent_var"]          = meta.get("dependent_var") or None
+    meta["falsifiable_prediction"] = meta.get("falsifiable_prediction") or None
+    meta["known_counterexample"]   = meta.get("known_counterexample") or None
+    for field in ("conditions", "rival_theories"):
+        val = meta.get(field, [])
+        if isinstance(val, list):
+            meta[field] = json.dumps(val, ensure_ascii=False) if val else None
+        elif val:
+            meta[field] = json.dumps([str(val)], ensure_ascii=False)
+        else:
+            meta[field] = None
+
     event_refs = meta.get("event_refs", [])
     if isinstance(event_refs, list):
         meta["event_refs"] = json.dumps(event_refs, ensure_ascii=False)
@@ -267,8 +294,10 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                      asset_type, era, use_case,
                      geopol_region, temporal_era, level_of_analysis,
                      instrument_of_power, strategic_posture,
-                     source_org, published_date, source_url, event_refs)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     source_org, published_date, source_url, event_refs,
+                     independent_var, dependent_var, conditions,
+                     falsifiable_prediction, known_counterexample, rival_theories)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     meta["theory_id"],
@@ -293,6 +322,12 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                     meta["published_date"],
                     meta["source_url"],
                     meta["event_refs"],
+                    meta["independent_var"],
+                    meta["dependent_var"],
+                    meta["conditions"],
+                    meta["falsifiable_prediction"],
+                    meta["known_counterexample"],
+                    meta["rival_theories"],
                 ),
             )
             upserted += 1

@@ -1327,6 +1327,60 @@ backend/.venv/bin/python3 backend/tests/eval_insight.py --summary
 
 ---
 
+## ✅ [Cycle 7-A] 이론 라이브러리 구조화 (2026-06-05) — v7.0.0
+
+### 구현 내용
+
+**목표**: 12개 이론에 예측변수·반례·경쟁이론 프론트매터 추가 → Gemini가 이론을 "레이블"이 아닌 "예측 도구"로 사용
+
+**신규 DB 필드 6개** (`md_indexer.py` 스키마 + 마이그레이션 + INSERT):
+
+| 필드 | 내용 |
+|------|------|
+| `independent_var` | 독립변수 (측정 가능 지표) |
+| `dependent_var` | 종속변수 (측정 가능 지표) |
+| `conditions` | 적용 조건 (JSON 배열) |
+| `falsifiable_prediction` | 반증 가능 예측 명제 |
+| `known_counterexample` | 알려진 반례 |
+| `rival_theories` | 경쟁 이론 목록 (JSON 배열) |
+
+**이론 파일 작업 (12개)**:
+
+기존 8개 파일 프론트매터 업데이트:
+- `mahan_sea_power.md` — IV: 해군력 투자 %GDP, 반례: A2/AD 비용 상승
+- `weaponized_interdependence.md` — IV: 공급망 HHI, 반례: 유럽 가스 다변화
+- `resource_weaponization.md` — IV: 에너지 의존도 %, 반례: 셰일 혁명
+- `alliance_theory.md` — IV: 조약 강도 pact_intensity, 반례: 아프간 철수
+- `hybrid_warfare.md` — IV: 비정규전 혼합 지수, 반례: 러-우 정규전 확전
+- `a2ad_strategy.md` — IV: A2/AD 배치 밀도, 반례: 드론 비용 역전
+- `digital_iron_curtain.md` — IV: 차단 지수, 반례: 중국 AI 글로벌 침투
+- `gray_zone_strategy.md` — IV: 강압 행동 빈도/월, 반례: ASEAN 결속 강화
+
+신규 4개 파일 생성:
+- `library/04_indo_pacific/mearsheimer_offensive_realism.md` — 공격적 현실주의, 권력 극대화·지역 패권
+- `library/04_indo_pacific/waltz_defensive_realism.md` — 방어적 현실주의·3수준 분석
+- `library/06_cyber/libicki_cyber_deterrence.md` — 사이버 억지, 귀속 불확실성
+- `library/00_methods/granger_causality.md` — Granger 인과분석 방법론
+
+**intel_analyzer.py 확장**:
+- SELECT 쿼리에 6개 신규 필드 추가
+- `_build_context()`에 `## 이론 프로파일 (예측 도구)` 섹션 신규 추가
+  - `asset_type=theory` + `independent_var` 있는 항목 최대 4개
+  - IV·DV·반증 예측·반례·경쟁이론 구조화 출력 → Gemini 경쟁 이론 비교에 직접 활용
+
+**검증 결과**:
+- md_indexer 재실행: 94건 upserted, 0건 skipped/error
+- `independent_var` 있는 이론 DB 조회: **12건** ✅
+- 샘플 확인: Mahan·Weaponized Interdependence·Granger 등 정상 저장
+
+**이론 연결**: §11 Phase 7-A 목표 — 이론을 텍스트 레이블에서 예측 도구로 전환.
+Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측: 유럽 가스 다변화 성공" 형태의 수치 편차 비교 가능.
+
+### 현재 버전
+`version.json`: **7.0.0** | phase: 7
+
+---
+
 ## 다음 세션 시작점 (2026-06-05 세션 이후)
 
 ### 현재 지표 (v6.6.0, 2026-06-05 최종)
@@ -1346,12 +1400,12 @@ backend/.venv/bin/python3 backend/tests/eval_insight.py --summary
 | 6-B | Granger 통계력 강화 (AIC lag·F-통계량·사이버 proxy) | ✅ v6.5.0 |
 | 6-C | H1 품질 고도화 + SIPRI Arms 섹터 필터 + [UNVERIFIED] 규칙 개선 | ✅ v6.6.0 |
 
-### 다음 작업: Phase 7 — 이론 라이브러리 구조화
+### 다음 작업: Phase 7-B — 경쟁 이론 비교 엔진
 
 | Cycle | 항목 | 핵심 파일 | 상태 |
 |-------|------|---------|------|
-| **7-A** | 이론 라이브러리 구조화 — 12개 이론 예측변수·반례 프론트매터 추가 | `library/` 마크다운 + `intel_analyzer.py` | ⬜ **다음 작업** |
-| **7-B** | 경쟁 이론 비교 엔진 — 3개 이론 예측값 편차 비교 → 우세 이론 선택 | `intel_analyzer.py` + 프롬프트 | ⬜ |
+| **7-A** | 이론 라이브러리 구조화 — 12개 이론 예측변수·반례 프론트매터 추가 | `library/` 마크다운 + `intel_analyzer.py` | ✅ v7.0.0 |
+| **7-B** | 경쟁 이론 비교 엔진 — 3개 이론 예측값 편차 비교 → 우세 이론 선택 | `intel_analyzer.py` + 프롬프트 | ⬜ **다음 작업** |
 | **7-C** | 종합 평가 — 자동화 테스트 20케이스 확장, 신뢰도 85+ 선언 | `eval_insight.py` 확장 | ⬜ |
 
 ### Phase 8 (후순위, Phase 7 완료 후)

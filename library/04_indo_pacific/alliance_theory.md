@@ -20,6 +20,18 @@ theorists:
 theory_id: indo_pacific_alliance_theory
 title: 동맹 이론 (Alliance Theory)
 year: 1987
+independent_var: "동맹 약속의 명시성 (조약 강도, pact_intensity 0~1)"
+dependent_var: "연루(entrapment) vs 방기(abandonment) 위험도 분리 지수"
+conditions:
+  - "비대칭 동맹 구조 (강대국-약소국)"
+  - "위협 인식 차이 (동맹국 간)"
+  - "공약 신뢰성 (credible commitment)"
+falsifiable_prediction: "약속 강도 증가 시 방기 위험 감소·연루 위험 증가 (음의 상관, 통제: 위협 수준)"
+known_counterexample: "미국의 아프가니스탄 철수(2021) — 강한 약속에도 방기 발생; NATO 확장에도 방기 우려 지속 (Commitment Paradox)"
+rival_theories:
+  - "Hegemonic Stability Theory (Kindleberger)"
+  - "Balance of Threat Theory (Walt)"
+  - "Nuclear Deterrence Theory"
 ---
 
 ## 핵심 주장

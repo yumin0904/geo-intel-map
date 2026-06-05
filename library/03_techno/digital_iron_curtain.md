@@ -20,6 +20,18 @@ theorists:
 theory_id: techno_digital_iron_curtain
 title: 디지털 철의 장막 (Digital Iron Curtain)
 year: 2011
+independent_var: "인터넷 차단·검열 강도 지수 (Freedom on the Net 역산)"
+dependent_var: "기술 표준 분절화 정도 (AI·통신·플랫폼 표준 수렴 vs 분기)"
+conditions:
+  - "디지털 주권 선언 (데이터 국경 통제)"
+  - "기술 기업 국산화 정책 추진"
+  - "인터넷 인프라 자립화 (BGP 분리)"
+falsifiable_prediction: "차단 지수 증가 시 기술 표준 양극화 가속 (통제: 경제 개방도)"
+known_counterexample: "중국 AI 기업(바이두·화웨이)의 글로벌 시장 침투 — 차단이 반드시 기술 고립으로 이어지지 않음; 글로벌 사우스 중국 표준 채택"
+rival_theories:
+  - "Multi-Stakeholder Internet Governance"
+  - "Techno-Globalism"
+  - "Techno-Nationalism"
 ---
 
 ## 핵심 주장

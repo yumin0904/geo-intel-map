@@ -103,7 +103,9 @@ def _search_library_like(query: str, regions: list[str],
                 f"""
                 SELECT theory_id, title, sector_tag, summary,
                        source_org, geopol_region, asset_type,
-                       published_date, body
+                       published_date, body,
+                       independent_var, dependent_var, conditions,
+                       falsifiable_prediction, known_counterexample, rival_theories
                 FROM theories
                 WHERE {conditions}
                 ORDER BY published_date DESC NULLS LAST
@@ -130,7 +132,9 @@ def _search_library_by_sector(sectors: list[str], limit: int = 6) -> list[dict]:
                 f"""
                 SELECT theory_id, title, sector_tag, summary,
                        source_org, geopol_region, asset_type,
-                       published_date, body
+                       published_date, body,
+                       independent_var, dependent_var, conditions,
+                       falsifiable_prediction, known_counterexample, rival_theories
                 FROM theories
                 WHERE sector_tag IN ({placeholders})
                 ORDER BY published_date DESC NULLS LAST
@@ -678,6 +682,31 @@ def _build_context(
             summary = (item.get("summary") or "")[:150]
             if summary:
                 lines.append(f"  {summary}")
+        lines.append("")
+
+    # ── Phase 7 이론 프로파일 (예측변수·반례·경쟁이론) ────────────────────
+    # asset_type=theory이면서 프로파일 필드가 있는 항목만 추출
+    import json as _json
+    theory_profiles = [
+        item for item in all_items
+        if item.get("asset_type") == "theory" and item.get("independent_var")
+    ]
+    if theory_profiles:
+        lines.append("## 이론 프로파일 (예측 도구)")
+        for tp in theory_profiles[:4]:
+            lines.append(f"### {tp.get('title', tp.get('theory_id', ''))}")
+            lines.append(f"- 독립변수: {tp['independent_var']}")
+            lines.append(f"- 종속변수: {tp.get('dependent_var', '?')}")
+            if tp.get("falsifiable_prediction"):
+                lines.append(f"- 반증 가능 예측: {tp['falsifiable_prediction']}")
+            if tp.get("known_counterexample"):
+                lines.append(f"- 알려진 반례: {tp['known_counterexample']}")
+            if tp.get("rival_theories"):
+                try:
+                    rivals = _json.loads(tp["rival_theories"])
+                    lines.append(f"- 경쟁 이론: {', '.join(rivals)}")
+                except Exception:
+                    pass
         lines.append("")
 
     # ── Cascade 룰 이론 텍스트 ────────────────────────────────────────────

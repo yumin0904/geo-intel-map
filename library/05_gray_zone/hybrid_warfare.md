@@ -21,6 +21,18 @@ theorists:
 theory_id: gray_zone_hybrid_warfare
 title: 하이브리드 전쟁 (Hybrid Warfare)
 year: 2007
+independent_var: "비정규전 수단 혼합 지수 (정보전+사이버+대리전 동시 활용 건수)"
+dependent_var: "목표국 정치적 의사결정 비용 (대응 지연 일수·정책 변화율)"
+conditions:
+  - "핵 억지로 인한 전면전 회피 환경"
+  - "법적 모호성 활용 가능 (귀속 불명확)"
+  - "대리 행위자 통제 역량 보유"
+falsifiable_prediction: "혼합 수단 다양성 증가 시 목표국 대응 비용 증가 (통제: 정규군 균형)"
+known_counterexample: "2022 러-우 전쟁에서 하이브리드 단계(2014~2021) 이후 정규전 확전 — 하이브리드만으로 전략 목표 달성 불가 실증"
+rival_theories:
+  - "Conventional Deterrence Theory"
+  - "Gray Zone Strategy (Mazarr)"
+  - "Coercive Diplomacy"
 ---
 
 ## 핵심 주장
