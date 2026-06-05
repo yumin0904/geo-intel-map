@@ -295,21 +295,48 @@ async def _get_market_series(ticker: str, start: date, end: date) -> pd.Series |
 
 # ── Granger 검정 ──────────────────────────────────────────────────────────────
 
+def _adf_stationary(series: pd.Series, alpha: float = 0.05) -> bool | None:
+    """
+    [B1] ADF 단위근 검정으로 정상성을 판정한다.
+
+    H0: 단위근 존재(비정상). p < alpha → H0 기각 → 정상.
+    검정 불가(표본 부족·분산 0) 시 None 반환.
+    """
+    s = series.dropna()
+    if len(s) < 20 or s.std() == 0:
+        return None
+    try:
+        from statsmodels.tsa.stattools import adfuller
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            pval = adfuller(s, autolag="AIC")[1]
+        return bool(pval < alpha)
+    except Exception:
+        return None
+
+
 def _run_granger(
     event_series: pd.Series,
     market_series: pd.Series,
     max_lag: int = _MAX_LAG,
-) -> tuple[float | None, int | None, int, float | None]:
+) -> tuple[float | None, int | None, int, float | None, dict]:
     """
-    Granger F-test를 수행하고 (p_value, best_lag, n_obs, f_statistic)를 반환한다.
+    Granger **선행성(precedence)** F-test. (p_value, best_lag, n_obs, f_statistic, meta) 반환.
 
-    lag 선택 전략:
-      1차) AIC 기준 VAR 최적 lag 자동 선택 (통계적 정당성)
-      2차) AIC 실패 시 maxlag 내 min-p fallback
+    ⚠️ 학술적 주의 (검증층 정직 격하):
+      Granger 인과는 **예측적 선행성**이지 구조적·반사실적 인과가 아니다.
+      본 검정은 **양변량**이며 **교란변수를 통제하지 않는다** (B3 조건부 Granger 차기).
+      유의 결과는 "인과추론 사다리"의 '선행성' 칸까지만 주장 가능.
 
-    statsmodels grangercausalitytests: [Y, X] 컬럼 순서 요구.
-    H0: X의 과거값이 Y 예측에 유의하지 않다.
+    적용된 계량 가드:
+      [B1] ADF 정상성 검정 → 비정상이면 1차 차분 (Granger-Newbold 1974 허위회귀 방지)
+      [B2] lag = AIC 기준 사전 고정 (min-p 명세탐색 폐기 → p값 의미 보존)
+
+    statsmodels grangercausalitytests: [Y, X] 컬럼 순서. H0: X 과거값이 Y 예측에 무의미.
+    meta: {differenced, lag_method, stationary_y_pre, stationary_x_pre}
     """
+    meta: dict = {"differenced": False, "lag_method": "AIC",
+                  "bivariate_uncontrolled": True}
     try:
         from statsmodels.tsa.stattools import grangercausalitytests
         from statsmodels.tsa.vector_ar.var_model import VAR
@@ -320,14 +347,35 @@ def _run_granger(
 
         if len(combined) < max_lag + 20:
             logger.warning("[correlation] 관측값 부족: %d", len(combined))
-            return None, None, len(combined), None
-
+            return None, None, len(combined), None, meta
         if combined["X"].std() == 0:
             logger.warning("[correlation] 이벤트 분산=0")
-            return None, None, len(combined), None
+            return None, None, len(combined), None, meta
 
-        # ── AIC 기반 최적 lag 선택 ────────────────────────────────────────
-        aic_lag: int | None = None
+        # ── [B1] 정상성 검정 → 컬럼별 독립 1차 차분 ────────────────────────
+        # 시장 Y는 이미 수익률(pct_change, 정상)인 경우가 많으므로 컬럼별로 판정해
+        # 비정상인 컬럼만 차분한다. 두 컬럼 일괄 차분은 정상 컬럼을 과차분(over-difference).
+        y_stat = _adf_stationary(combined["Y"])
+        x_stat = _adf_stationary(combined["X"])
+        meta["stationary_y_pre"] = y_stat
+        meta["stationary_x_pre"] = x_stat
+        diffed_cols = []
+        if x_stat is False:
+            combined["X"] = combined["X"].diff()
+            diffed_cols.append("X")
+        if y_stat is False:
+            combined["Y"] = combined["Y"].diff()
+            diffed_cols.append("Y")
+        if diffed_cols:
+            combined = combined.dropna()
+            meta["differenced"] = True
+            meta["differenced_cols"] = diffed_cols
+            if len(combined) < max_lag + 20 or combined["X"].std() == 0:
+                logger.warning("[correlation] 차분 후 관측값 부족: %d", len(combined))
+                return None, None, len(combined), None, meta
+
+        # ── [B2] lag = AIC 사전 고정 (min-p 탐색 폐기) ─────────────────────
+        best_lag = 1
         try:
             max_aic_lag = min(max_lag, len(combined) // 5)
             if max_aic_lag >= 1:
@@ -335,46 +383,31 @@ def _run_granger(
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     lag_order = var_model.select_order(maxlags=max_aic_lag)
-                aic_lag = int(lag_order.aic) if lag_order.aic >= 1 else 1
+                aic = lag_order.aic
+                best_lag = int(aic) if aic and aic >= 1 else 1
         except Exception:
-            aic_lag = None
+            best_lag = 1
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             results = grangercausalitytests(
-                combined[["Y", "X"]], maxlag=max_lag, verbose=False
+                combined[["Y", "X"]], maxlag=best_lag, verbose=False
             )
 
-        # AIC lag와 min-p lag 중 더 유의한 쪽 선택
-        # AIC: 통계적 정당성 / min-p: 데이터에서 가장 강한 신호 포착
-        p_values = {lag: res[0]["ssr_ftest"][1] for lag, res in results.items()}
-        minp_lag = int(min(p_values, key=p_values.__getitem__))
-
-        if aic_lag and aic_lag in results:
-            aic_p = float(results[aic_lag][0]["ssr_ftest"][1])
-            min_p = float(p_values[minp_lag])
-            # 더 유의한 쪽 선택 (p 값이 작을수록 유의)
-            if aic_p <= min_p:
-                best_lag = aic_lag
-                p_value  = aic_p
-            else:
-                best_lag = minp_lag
-                p_value  = min_p
-        else:
-            best_lag = minp_lag
-            p_value  = float(p_values[best_lag])
-
-        f_stat = float(results[best_lag][0]["ssr_ftest"][0])
+        # AIC가 고른 lag의 결과만 사용 (min-p 탐색 안 함)
+        res = results[best_lag][0]["ssr_ftest"]
+        p_value = float(res[1])
+        f_stat  = float(res[0])
 
         logger.debug(
-            "[correlation] Granger lag=%d (AIC=%s) p=%.4f F=%.3f n=%d",
-            best_lag, aic_lag, p_value, f_stat, len(combined),
+            "[correlation] Granger lag=%d(AIC) p=%.4f F=%.3f n=%d diff=%s",
+            best_lag, p_value, f_stat, len(combined), meta["differenced"],
         )
-        return p_value, best_lag, len(combined), round(f_stat, 3)
+        return p_value, best_lag, len(combined), round(f_stat, 3), meta
 
     except Exception as exc:
         logger.error("[correlation] Granger 검정 실패: %s", exc)
-        return None, None, 0, None
+        return None, None, 0, None, meta
 
 
 def _run_extreme_correlation(
@@ -481,7 +514,7 @@ async def run_correlation_analysis(
                 ))
                 continue
 
-            p_val, best_lag, n_obs = _run_granger(event_series, market_series)
+            p_val, best_lag, n_obs, _f, _meta = _run_granger(event_series, market_series)
 
             # 극단 이벤트 비선형 분석 (Granger 비유의 이유 진단)
             extreme = _run_extreme_correlation(event_series, market_series)
@@ -632,7 +665,7 @@ async def run_candidate_scan(
                 if market_series is None or len(market_series) < 30:
                     continue
 
-                p_val, best_lag, n_obs = _run_granger(event_series, market_series)
+                p_val, best_lag, n_obs, _f, _meta = _run_granger(event_series, market_series)
                 extreme = _run_extreme_correlation(event_series, market_series)
 
                 # 후보 여부 판정

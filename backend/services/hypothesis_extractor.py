@@ -37,6 +37,12 @@ class HypothesisSpec:
     best_lag: int | None = None
     n_obs: int = 0
     error: str | None = None
+    # ── 학술 정합성 재설계 (인과추론 사다리) ──────────────────────────────
+    inference_grade: str = "기술적"      # 기술적 → 상관 → 선행성 → 준실험 → 실험
+    inference_caveat: str = ""           # Granger 한계·교란 미통제 등 정직한 단서
+    theory_grounded: bool = False        # 종속변수 쌍에 문헌상 인과 메커니즘 존재 여부
+    granger_q: float | None = None       # 다중검정 FDR 보정 q값 (Benjamini-Hochberg)
+    differenced: bool = False            # 정상성 보정(1차 차분) 적용 여부
 
 
 # ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────

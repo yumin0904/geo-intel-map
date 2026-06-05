@@ -274,8 +274,9 @@ def evaluate_case(case: dict) -> dict:
     rival_check   = _check_rival_comparison(text)
 
     score_ev   = sse["score_event"] or {}
-    confidence = score_ev.get("confidence", 0)
+    confidence = score_ev.get("confidence", 0)        # 증거 등급 (grounding)
     provisional = score_ev.get("provisional", True)
+    inference_grade = score_ev.get("inference_grade", "기술적")  # 추론 등급 (causal)
     # hypothesis 이벤트는 {"type":"hypothesis", "hypotheses":[{...},...]} 구조
     hyp_summary = []
     for ev in hyp_events:
@@ -285,6 +286,10 @@ def evaluate_case(case: dict) -> dict:
                 "status": h.get("verification_status", "PENDING"),
                 "var_type": h.get("var_type", ""),
                 "p_value": h.get("granger_p"),
+                "granger_q": h.get("granger_q"),
+                "inference_grade": h.get("inference_grade", "기술적"),
+                "theory_grounded": h.get("theory_grounded", False),
+                "differenced": h.get("differenced", False),
             })
 
     completeness = _score_completeness(section_check)
@@ -311,10 +316,14 @@ def evaluate_case(case: dict) -> dict:
     print(f"  {cmp_mark} 경쟁이론 수치 비교: 예측{'✓' if rival_check['has_prediction_label'] else '✗'} 실측{'✓' if rival_check['has_measured_label'] else '✗'} 판정{'✓' if rival_check['has_verdict_label'] else '✗'}")
     if hyp_summary:
         for h in hyp_summary:
-            mark = "🟢" if h["status"] == "VERIFIED" else "🟡" if h["status"] == "PARTIAL" else "⚪"
-            print(f"  {mark} H1 [{h['status']}] type={h['var_type']} p={h['p_value']}")
+            ig = h.get("inference_grade", "기술적")
+            mark = "🟢" if ig == "선행성" else "🟡" if ig == "상관" else "⚪"
+            q = f" q={h['granger_q']}" if h.get("granger_q") is not None else ""
+            print(f"  {mark} 추론[{ig}] type={h['var_type']} p={h['p_value']}{q}"
+                  f" grounded={h.get('theory_grounded')}")
     elif exp_h1:
         print(f"  ⚠ H1 가설 미추출 (기대: True)")
+    print(f"  📐 증거 등급 {confidence} / 추론 등급 [{inference_grade}]")
 
     return {
         "id": cid,
@@ -323,6 +332,7 @@ def evaluate_case(case: dict) -> dict:
         "passed": passed,
         "elapsed": sse["elapsed"],
         "confidence": confidence,
+        "inference_grade": inference_grade,
         "provisional": provisional,
         "completeness_pct": round(completeness * 100),
         "missing_sections": missing_sections,
@@ -369,6 +379,21 @@ def _print_summary(results: list[dict]) -> None:
 
     avg_elapsed = sum(r.get("elapsed", 0) for r in results) / max(len(results), 1)
     print(f"평균 응답 시간: {avg_elapsed:.1f}s")
+
+    # ── 2축 보고 (학술 재설계) ───────────────────────────────────────────────
+    # 증거 등급(grounding)과 추론 등급(causal ladder)을 분리 보고.
+    # 추론 등급 분포가 진짜 학술 지표 — 증거 숫자만 보면 인과로 오독.
+    from collections import Counter as _C
+    valid = [r for r in results if not r.get("error")]
+    if valid:
+        avg_ev = sum(r.get("confidence", 0) for r in valid) // len(valid)
+        ladder = _C(r.get("inference_grade", "기술적") for r in valid)
+        print(f"\n📐 [2축] 평균 증거 등급: {avg_ev}/100 (근거 충실도 — 인과 아님)")
+        print(f"   추론 등급 분포 (인과추론 사다리):")
+        for grade in ("선행성", "상관", "기술적"):
+            n = ladder.get(grade, 0)
+            print(f"     {grade}: {n}/{len(valid)}")
+        print(f"   ⚠️ '선행성'도 Granger 예측적 선행일 뿐 구조적 인과 아님 (교란 미통제)")
 
     # 잘림·API오류 재시도 통계 (일시적 Gemini 현상 모니터링)
     retried = [r for r in results if r.get("retries", 0) > 0]

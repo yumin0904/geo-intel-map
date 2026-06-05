@@ -219,20 +219,18 @@ def score_output(text: str) -> dict:
 
 
 # §22-B 신뢰도 상한 캡 (IA-Engine-D)
+# ⚠️ DEPRECATED (2026-06-06 학술 정합성 재설계 A1):
+#   이 캡은 '증거 충실도'(신뢰도)와 '인과 검증'(Granger)을 한 숫자로 뭉개는
+#   Goodhart 결함이었다. 두 축을 분리(증거 등급 + 추론 등급)하면서 호출 폐기.
+#   함수는 하위 호환·참고용으로만 유지. intel_query는 더 이상 호출하지 않는다.
 _VERIFICATION_CAPS: dict[str, int] = {
     "PENDING":  75,
     "PARTIAL":  88,
-    "VERIFIED": 100,  # 상한 없음
+    "VERIFIED": 100,
 }
 
 
 def apply_verification_cap(confidence: int, verification_status: str) -> int:
-    """
-    Granger 검증 상태에 따라 신뢰도 점수에 상한 캡을 적용한다 (§22-B).
-
-    PENDING  → 최대 75점 (가설 미검증)
-    PARTIAL  → 최대 88점 (경향성 확인, p<0.15)
-    VERIFIED → 상한 없음 (Granger p<0.05 충족)
-    """
+    """[DEPRECATED — A1 2축 분리로 폐기] Granger 상태별 신뢰도 상한. 더는 호출되지 않음."""
     cap = _VERIFICATION_CAPS.get(verification_status, 75)
     return min(confidence, cap)

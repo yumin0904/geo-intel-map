@@ -52,6 +52,55 @@ _SECTOR_DEFAULT_TICKER: dict[str, str] = {
 # 분석 기간: 최근 18개월 (이벤트 데이터 충분성 확보)
 _LOOKBACK_MONTHS = 24  # 18→24: 2년 데이터로 Granger 통계력 강화 (Korean p=0.048 VERIFIED 확인)
 
+# ── 인과추론 사다리 (학술 정합성 재설계) ──────────────────────────────────────
+# Granger는 '선행성(precedence)'까지만 주장 가능. 인과 아님.
+_LADDER_DESCRIPTIVE = "기술적"   # 검정 불가/미실행 — 서술적 근거만
+_LADDER_CORRELATIONAL = "상관"   # p<0.15 or 이론근거 약한 쌍 — 시사적
+_LADDER_PRECEDENCE = "선행성"    # p<0.05 + 이론근거 — Granger 예측적 선행 (인과 아님)
+
+_GRANGER_CAVEAT = (
+    "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제(B3 차기)"
+)
+_WEAK_PAIR_CAVEAT = (
+    "이론적 인과 메커니즘이 약한 대리쌍 — 허위상관 가능성, 상관 이상 주장 불가"
+)
+
+# 문헌상 인과 메커니즘이 정립된 (region, ticker) 쌍 — correlation.py _VALIDATION_PAIRS 기반
+# 이 화이트리스트 밖의 쌍(섹터 편의 proxy)은 유의해도 '상관' 칸으로 상한
+_THEORY_GROUNDED_PAIRS: set[tuple[str, str]] = {
+    ("ukraine", "ZW=F"), ("ukraine", "CL=F"),
+    ("eastern_europe", "ZW=F"), ("eastern_europe", "CL=F"),
+    ("bab_el_mandeb", "CL=F"),
+    ("hormuz", "CL=F"),
+    ("middle_east", "GLD"),
+    ("korean_peninsula", "KRW=X"), ("north_korea", "KRW=X"),
+    ("taiwan_strait", "TSM"), ("taiwan_strait", "SOXX"),
+    ("east_china_sea", "ITA"), ("south_china_sea", "ITA"),
+    ("malacca", "NG=F"), ("suez", "CL=F"),
+}
+
+
+def _classify_inference_grade(
+    p_value: float | None,
+    theory_grounded: bool,
+) -> tuple[str, str]:
+    """
+    Granger p값 + 이론근거 → 인과추론 사다리 등급 + 단서.
+
+    핵심 원칙 (학술 정직성):
+      - 어떤 결과도 '선행성'을 넘어 인과를 주장하지 않는다.
+      - 이론근거 없는 쌍은 유의해도 '상관'에서 상한 (허위상관 방어).
+    """
+    if p_value is None:
+        return _LADDER_DESCRIPTIVE, "Granger 검정 미실행/불가 — 인과 추론 근거 없음"
+    if p_value < 0.05:
+        if theory_grounded:
+            return _LADDER_PRECEDENCE, _GRANGER_CAVEAT
+        return _LADDER_CORRELATIONAL, _WEAK_PAIR_CAVEAT  # A3: 근거 약하면 상한
+    if p_value < 0.15:
+        return _LADDER_CORRELATIONAL, _GRANGER_CAVEAT + " · 경향성 수준(p<0.15)"
+    return _LADDER_DESCRIPTIVE, "Granger 비유의(p≥0.15) — 선행성 근거 없음"
+
 
 def _get_date_range() -> tuple[date, date]:
     end = date.today()
@@ -91,20 +140,30 @@ async def _run_granger_for_spec(
             import pandas as pd
             market_series = market_series.resample("W").last()
 
-        p_value, best_lag, n_obs, f_stat = run_granger(event_series, market_series)
+        p_value, best_lag, n_obs, f_stat, meta = run_granger(event_series, market_series)
         spec.n_obs = n_obs
+        spec.differenced = bool(meta.get("differenced")) if meta else False
 
         if p_value is None:
             spec.error = "Granger 검정 실패 (관측값 부족 또는 분산=0)"
+            spec.inference_grade  = _LADDER_DESCRIPTIVE
+            spec.inference_caveat = "검정 불가 — 인과 추론 근거 없음"
             return spec
 
         spec.granger_p    = round(p_value, 4)
         spec.f_statistic  = f_stat
         spec.best_lag     = best_lag
 
-        if p_value < 0.05:
-            spec.verification_status = "VERIFIED"
-        elif p_value < 0.15:
+        # ── 이론근거 판정 + 인과추론 사다리 등급 ──────────────────────────
+        spec.theory_grounded = (spec.region_code or "", spec.ticker or "") in _THEORY_GROUNDED_PAIRS
+        spec.inference_grade, spec.inference_caveat = _classify_inference_grade(
+            p_value, spec.theory_grounded
+        )
+
+        # verification_status: 하위 호환용 — 사다리에서 파생 (인과 단정 어휘 배제)
+        if spec.inference_grade == _LADDER_PRECEDENCE:
+            spec.verification_status = "VERIFIED"   # = '선행성 유의' (UI에서 사다리로 표기)
+        elif spec.inference_grade == _LADDER_CORRELATIONAL:
             spec.verification_status = "PARTIAL"
         else:
             spec.verification_status = "PENDING"
@@ -112,13 +171,15 @@ async def _run_granger_for_spec(
         if proxy_label:
             spec.error = (
                 f"[대리변수 사용] {proxy_label} → {spec.ticker} "
-                f"(p={spec.granger_p}, F={f_stat}, lag={best_lag})"
+                f"(p={spec.granger_p}, F={f_stat}, lag={best_lag}, "
+                f"diff={spec.differenced})"
             )
 
         logger.info(
-            "[hypothesis] %s | region=%s ticker=%s p=%.4f F=%s lag=%s → %s%s",
+            "[hypothesis] %s | region=%s ticker=%s p=%.4f lag=%s grounded=%s diff=%s → %s%s",
             spec.h1[:50], spec.region_code, spec.ticker,
-            p_value, f_stat, best_lag, spec.verification_status,
+            p_value, best_lag, spec.theory_grounded, spec.differenced,
+            spec.inference_grade,
             f" [{proxy_label}]" if proxy_label else "",
         )
     except Exception as exc:
@@ -235,6 +296,31 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             _load_event_series, _get_market_series, _run_granger,
         )
         results.append(spec)
+
+    # ── [B2] 다중검정 보정 (Benjamini-Hochberg FDR) ──────────────────────────
+    # 한 쿼리에서 여러 가설을 검정하면 우연 유의가 누적된다.
+    # 같은 쿼리 범위 내 Granger p값을 FDR 보정 → '선행성' 등급 재판정.
+    tested = [s for s in results if s.granger_p is not None]
+    if len(tested) >= 2:
+        try:
+            from statsmodels.stats.multitest import multipletests
+            pvals = [s.granger_p for s in tested]
+            _, qvals, _, _ = multipletests(pvals, alpha=0.05, method="fdr_bh")
+            for s, q in zip(tested, qvals):
+                s.granger_q = round(float(q), 4)
+                # FDR 미통과 시 '선행성' → '상관'으로 정직 강등
+                if s.inference_grade == _LADDER_PRECEDENCE and q >= 0.05:
+                    s.inference_grade = _LADDER_CORRELATIONAL
+                    s.inference_caveat = (
+                        f"{_GRANGER_CAVEAT} · 다중검정 FDR 미통과(q={s.granger_q})"
+                    )
+                    s.verification_status = "PARTIAL"
+                    logger.info(
+                        "[hypothesis] FDR 강등: %s (p=%.4f q=%.4f)",
+                        s.h1[:40], s.granger_p, q,
+                    )
+        except Exception as exc:
+            logger.warning("[hypothesis] FDR 보정 실패: %s", exc)
 
     return results
 

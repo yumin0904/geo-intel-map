@@ -42,7 +42,7 @@ def _db() -> Iterator[sqlite3.Connection]:
 from services.entity_parser import parse_query, ParsedQuery
 from services.intel_analyzer import build_intel_context
 from services.confidence_scorer import (
-    score_output, apply_verification_cap,
+    score_output,
     apply_data_void_penalty, validate_insight_completeness,
 )
 from services.hypothesis_extractor import extract_hypotheses
@@ -344,6 +344,10 @@ async def _stream_gemini(
         # §19-D 신뢰도 점수 역산 — 스트리밍 완료 후 score 이벤트 전송
         if full_text:
             score_result = score_output(full_text)
+            # [A1 2축] 추론 등급 기본값: 인과 검정이 없으면 '기술적'(서술적 근거만).
+            # 증거 등급(confidence)이 높아도 인과 검증과 무관함을 항상 표시.
+            score_result["inference_grade"]  = "기술적"
+            score_result["inference_caveat"] = "인과 검정 미수행 — 서술·이론 근거만(인과 아님)"
 
             # [P0-B / L1-a] 데이터 공백 패널티: ACLED·Cascade 없어도
             # 정형 수치 소스(WBK·ITU·HIIK·CSIS·semi·FRED·SIPRI 등)가 있으면 완화
@@ -375,19 +379,21 @@ async def _stream_gemini(
                     score_result["confidence"] = penalized
                     score_result["provisional"] = penalized < 60
 
-            # IA-Engine-D: H1 가설 추출 → Granger 검증 → 신뢰도 캡 적용
+            # IA-Engine-D: H1 가설 추출 → Granger 선행성 검정
+            # [학술 재설계 A1] 검증을 신뢰도 숫자에 합치지 않고 '추론 등급'으로 분리.
+            #   - 증거 등급(confidence): 데이터·이론 충실도 (§19-D + data_void)
+            #   - 추론 등급(inference_grade): 인과추론 사다리 (기술적<상관<선행성)
+            # verification_cap 폐기 — 두 축을 하나의 숫자로 뭉개던 결함(Goodhart) 제거.
             specs = extract_hypotheses(full_text)
             if specs:
                 specs = await verify_hypotheses(specs)
-                # [L1-b] 가장 높은 검증 상태로 캡 결정 — 1개라도 VERIFIED면
-                # 그 인사이트는 검증된 인과 주장을 포함하므로 상한을 해제한다.
-                # (이전: 최악 상태 기준 → VERIFIED를 PENDING이 끌어내리는 결함)
-                status_order = {"PENDING": 0, "PARTIAL": 1, "VERIFIED": 2}
-                best = max(specs, key=lambda s: status_order.get(s.verification_status, 0))
-                score_result["confidence"] = apply_verification_cap(
-                    score_result["confidence"], best.verification_status
+                # 사다리 최고 등급을 인사이트 대표 추론 등급으로 (인과 단정 아님)
+                _LADDER_ORDER = {"기술적": 0, "상관": 1, "선행성": 2}
+                best_spec = max(
+                    specs, key=lambda s: _LADDER_ORDER.get(s.inference_grade, 0)
                 )
-                score_result["provisional"] = score_result["confidence"] < 60
+                score_result["inference_grade"]  = best_spec.inference_grade
+                score_result["inference_caveat"] = best_spec.inference_caveat
                 # hypothesis 이벤트 전송
                 yield _sse({
                     "type": "hypothesis",
@@ -404,9 +410,15 @@ async def _stream_gemini(
                             "var_type": s.var_type,
                             "proxy_suggestions": s.proxy_suggestions,
                             "verification_status": s.verification_status,
+                            # 학술 재설계: 인과추론 사다리 필드
+                            "inference_grade": s.inference_grade,
+                            "inference_caveat": s.inference_caveat,
+                            "theory_grounded": s.theory_grounded,
                             "granger_p": s.granger_p,
+                            "granger_q": s.granger_q,
                             "f_statistic": s.f_statistic,
                             "best_lag": s.best_lag,
+                            "differenced": s.differenced,
                             "n_obs": s.n_obs,
                             "error": s.error,
                         }
