@@ -1539,109 +1539,280 @@ Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측:
 
 ---
 
-## Phase 7-D 계획 (2026-06-05 구상, 미착수)
+## Phase 7-D 계획 — 풀스케일 데이터 대량 적재 (2026-06-05 확정)
 
 ### 목표
 
 신뢰도 평균 70 → 85+ / 경쟁이론 수치 비교 0% → 50%+ / Granger VERIFIED 2 → 3건+
 
-### 배경
+### 핵심 원칙
 
-현재 신뢰도 70의 원인: 섹터별 수치 데이터 공백
-→ Gemini는 이미 H1·연쇄강도·경쟁이론 서술은 양호
-→ 문제는 컨텍스트에 수치가 없어 [관찰]·[근거] 섹션 수치 인용 불가
+- **대량 적재 + 스마트 라우팅**: DB에 많이 넣되, 쿼리 지역/섹터 → 관련 소스만 선택해서 Gemini에게 전달
+- **컨텍스트 상한 유지**: 총 ~20,000자 상한 안에서 최적 소스 조합 자동 선택
+- **Token-Zero 유지**: 모든 적재·라우팅 결정론적 처리. LLM 호출 금지
 
-| 섹터 | 현재 신뢰도 | 공백 | 해결 소스 |
-|------|-----------|------|---------|
-| cyber | 50~60 | APT 빈도·피해액 없음 | CSIS 확장 |
-| techno | 60~75 | 반도체 HHI·점유율 없음 | SIA CSV |
-| gray_zone (사헬·북극) | 60~75 | 거버넌스·취약국 지수 없음 | World Bank WGI |
-| energy·maritime | 75 | 상대적 양호 (EIA·SIPRI 있음) | FRED 보완 |
+### 섹터별 공백 진단
 
-### 사이클 구조
+| 섹터 | 현재 신뢰도 | 공백 원인 | 해결 소스 |
+|------|-----------|---------|---------|
+| cyber | 50~60 | APT 빈도·피해액 수치 없음 | CSIS 확장 + GTD |
+| techno | 60~75 | 반도체 HHI·점유율 없음 | SIA + Our World in Data |
+| gray_zone (사헬·북극) | 60~75 | 거버넌스·취약국 지수 없음 | WB WGI + Polity5 + HIIK |
+| energy·maritime | 75 | 상대적 양호 | FRED 시계열 보완 |
+| indo_pacific | 75 | 군사력 비교 얕음 | Our World in Data 군사 |
 
-| Sub | 항목 | 소스 | 핵심 파일 | 상태 |
-|-----|------|------|---------|------|
-| **7-D-1** | FRED 경제 시계열 | FRED API (무료) | `connectors/fred_adapter.py` | ⬜ |
-| **7-D-2** | World Bank 거버넌스 지수 | WB Open Data API (무료) | `data/external/world_bank_seed.csv` | ⬜ |
-| **7-D-3** | 반도체·기술 시장 데이터 | SIA·공개 보고서 CSV | `data/external/semi_market_seed.csv` | ⬜ |
-| **7-D-4** | CSIS Cyber DB 확장 | CSV 추가 수집 (20→100+건) | `data/external/csis_cyber_extended.csv` | ⬜ |
-| **7-D-5** | [경쟁설명] 형식 gap 해소 | 프롬프트 재설계 | `api/intel_query.py` | ⬜ |
+---
 
-### Cycle 7-D-1: FRED 경제 시계열
+### 사이클 전체 구조 (12개 sub-cycle)
 
-**소스**: Federal Reserve Economic Data (무료 REST API)
+| Level | Sub | 항목 | 소스 | 건수 | 상태 |
+|-------|-----|------|------|------|------|
+| **L1** | 7-D-1 | FRED 경제 시계열 | FRED API (무료) | ~20 시리즈 | ⬜ |
+| **L1** | 7-D-2 | World Bank 거버넌스 | WB Open Data API | 200국×6지표 | ⬜ |
+| **L1** | 7-D-3 | Our World in Data | GitHub CSV 공개 | 수만 행 | ⬜ |
+| **L1** | 7-D-4 | Polity5 정치체제 지수 | CSV (무료 학술) | 167국×시계열 | ⬜ |
+| **L1** | 7-D-5 | ITU ICT 사이버 역량 지수 | CSV (무료) | 170국 | ⬜ |
+| **L1** | 7-D-6 | HIIK 분쟁 강도 바로미터 | CSV (무료) | 1992~현재 | ⬜ |
+| **L1** | 7-D-7 | SIA 반도체 시장 데이터 | 공개 보고서 CSV | ~50행 | ⬜ |
+| **L1** | 7-D-8 | CSIS Cyber DB 확장 | CSV (20→100+건) | 100+건 | ⬜ |
+| **L2** | 7-D-9 | UN Comtrade 무역 의존도 | API (무료 제한) | 국가쌍 무역 | ⬜ |
+| **L2** | 7-D-10 | Wikidata 조약·동맹 | SPARQL | 수천 건 | ⬜ |
+| **L3** | 7-D-11 | GTD 테러 데이터베이스 | CSV (학술 무료) | 200,000+건 | ⬜ |
+| **L3** | 7-D-12 | ACLED 전세계 확장 | API (이미 커넥터) | 전체 국가 | ⬜ |
+| **공통** | 7-D-X | [경쟁설명] 형식 gap 해소 | 프롬프트 재설계 | — | ⬜ |
+| **공통** | 7-D-Y | intel_analyzer 소스 확장 | 15소스 → 20+소스 | — | ⬜ |
 
-| 시리즈 | 내용 | 활용 지역/섹터 |
-|--------|------|-------------|
-| DCOILWTICO | WTI 유가 월별 시계열 | hormuz·energy |
+---
+
+### Level 1 — 즉각 적재 (CSV seed + 가벼운 API)
+
+#### 7-D-1: FRED 경제 시계열
+
+**소스**: Federal Reserve Economic Data (무료 REST API, api.stlouisfed.org)
+
+| 시리즈 ID | 내용 | 활용 지역/섹터 |
+|---------|------|-------------|
+| DCOILWTICO | WTI 유가 월별 | hormuz·energy |
 | DCOILBRENTEU | Brent 유가 월별 | hormuz·energy |
+| PNGASEUUSDM | 유럽 천연가스 가격 | eastern_europe·energy |
 | KOREUS | 원/달러 환율 | korean_peninsula |
 | EXCHUS | 위안/달러 환율 | taiwan_strait |
-| PNGASEUUSDM | 유럽 천연가스 가격 | eastern_europe·energy |
+| EXJPUS | 엔/달러 환율 | taiwan_strait·indo_pacific |
+| RUBUSD | 루블/달러 (비공식 proxy) | eastern_europe |
+| MHHNGSP | 헨리허브 천연가스 | energy |
+| GOLDAMGBD228NLBM | 금 가격 | gray_zone 불확실성 |
+| USMC | 미국 군사비 (연간) | indo_pacific |
 
-**구현**: `data/external/fred_seed.csv` + `connectors/fred_adapter.py`  
-**DB 테이블**: `fred_indicators` (series_id · date · value · unit)  
-**intel_analyzer**: 지역 매핑 → 관련 시리즈 자동 조회  
-**기대 효과**: 유가·환율 시계열 수치 직접 주입 → 수치 인용(+30) 달성률 상승
+**구현**: `connectors/fred_adapter.py` + `data/external/fred_seed.csv`  
+**DB 테이블**: `fred_indicators` (series_id · series_name · date · value · unit · region_hint)
 
-### Cycle 7-D-2: World Bank 거버넌스 지수
+#### 7-D-2: World Bank 거버넌스 지수 (WGI)
 
-**소스**: World Bank Open Data API (무료)
+**소스**: World Bank Open Data API (data.worldbank.org/api)
 
-| 지표 코드 | 내용 |
-|---------|------|
-| PV.EST | 정치 안정성 지수 |
-| CC.EST | 부패 통제 지수 |
-| RL.EST | 법치 지수 |
-| GE.EST | 정부 효과성 |
+| 지표 코드 | 내용 | 섹터 |
+|---------|------|------|
+| PV.EST | 정치 안정성·폭력 부재 | gray_zone |
+| CC.EST | 부패 통제 | gray_zone |
+| RL.EST | 법치 | gray_zone |
+| GE.EST | 정부 효과성 | gray_zone |
+| RQ.EST | 규제 품질 | techno |
+| VA.EST | 발언·책임성 | cyber·인지전 |
 
-**대상**: Mali·Niger·Burkina Faso·Russia·China·Iran·DPRK·Ukraine 등 20개국  
+**대상 20개국**: USA·CHN·RUS·IRN·PRK·UKR·SAU·ISR·IND·JPN·KOR·TUR·QAT·MLI·NER·BFA·ETH·YEM·NOR·CAN  
 **구현**: `data/external/world_bank_seed.csv` + `intel_analyzer._get_wbk_governance()`  
-**기대 효과**: 사헬 케이스 [관찰]에 "말리 정치안정 지수 -1.8 (하위 5%)" 수치 인용 가능
+**기대 효과**: "말리 정치안정 -1.82 (전세계 하위 3%)" 수치 직접 인용
 
-### Cycle 7-D-3: 반도체·기술 시장 데이터
+#### 7-D-3: Our World in Data (대량 — 핵심 데이터셋)
 
-| 데이터 | 내용 | 활용 |
+**소스**: Our World in Data GitHub (owid/owid-datasets) — 모든 CSV 공개
+
+| 데이터셋 | 내용 | 행 수 | 섹터 |
+|---------|------|------|------|
+| military-expenditure | 국가별 군비 지출 1960~ | ~5,000 | indo_pacific |
+| share-of-gdp-military | 군비 GDP 비율 | ~5,000 | indo_pacific |
+| armed-conflict | 국가간·내전 연간 사망자 | ~3,000 | gray_zone |
+| battle-deaths | 분쟁 사망자 시계열 | ~3,000 | gray_zone |
+| nuclear-warheads | 핵탄두 보유량 | ~500 | indo_pacific |
+| energy-production-by-source | 에너지원별 생산량 | ~10,000 | energy |
+| fossil-fuel-subsidies | 화석연료 보조금 | ~2,000 | energy |
+| internet-users-by-country | 인터넷 보급률 | ~4,000 | cyber |
+| trade-openness | 무역 개방도 | ~5,000 | energy·techno |
+
+**구현**: `scripts/load_owid_data.py` (GitHub raw CSV 직접 다운로드)  
+**DB 테이블**: `owid_data` (dataset · country · year · value · unit)
+
+#### 7-D-4: Polity5 정치체제 지수
+
+**소스**: Center for Systemic Peace (공개 CSV)
+
+- 167개국 1800~현재 정치체제 점수 (-10 전제군주 ~ +10 완전민주)
+- Polity5 점수 + 체제 전환 연도
+- **활용**: V-DEM 보완, 행위자 체제 분류 강화  
+**DB 테이블**: `polity5` (country_iso3 · year · polity_score · regime_type)
+
+#### 7-D-5: ITU ICT Development Index
+
+**소스**: ITU (itu.int, 공개 CSV)
+
+- 170개국 ICT 인프라·이용·역량 종합 지수
+- 사이버 보안 역량 proxy
+- **활용**: cyber 섹터 국가별 사이버 역량 수치화  
+**DB 테이블**: `itu_ict` (country_iso3 · year · idi_score · rank)
+
+#### 7-D-6: HIIK 분쟁 강도 바로미터
+
+**소스**: Heidelberg Institute for International Conflict Research (HIIK, 무료)
+
+- 1992~현재 연간 분쟁 강도 (1=분쟁~5=전쟁)
+- 200+개 분쟁 지역별 기록
+- **활용**: ACLED 보완, 분쟁 강도 시계열 수치화  
+**DB 테이블**: `hiik_conflict` (region · year · intensity · conflict_name)
+
+#### 7-D-7: 반도체·기술 시장 데이터
+
+| 데이터 | 수치 | 활용 |
 |--------|------|------|
-| SIA 파운드리 점유율 | 대만 52%, 한국 17%, 중국 7% | techno HHI 계산 |
-| 핵심 광물 의존도 | 갈륨 중국 80%+, 게르마늄 60%+ | techno 수치화 |
-| ASML 장비 수출 | 극자외선(EUV) 독점 공급 | techno Weaponized Interdependence |
+| SIA 파운드리 시장 점유율 | TSMC 52%, 삼성 17%, SMIC 7% (2023) | techno HHI |
+| 핵심 광물 중국 의존도 | 갈륨 80%, 게르마늄 60%, 희토류 90% | techno |
+| ASML EUV 장비 독점 | 네덜란드 100% 독점, 연간 ~50대 | techno |
+| AI 칩 수출규제 품목 수 | A100/H100 등 BIS 통제 품목 | techno·cyber |
+| 반도체 장비 5개국 HHI | ASML·AMAT·LAM·TEL 집중도 | techno |
 
 **구현**: `data/external/semi_market_seed.csv`  
-**DB 테이블**: `semi_market_data`
+**DB 테이블**: `semi_market_data` (category · metric · value · year · source)
 
-### Cycle 7-D-4: CSIS Cyber DB 확장
+#### 7-D-8: CSIS Cyber Incidents DB 확장
 
-- 현재: 20건 (2015~2024 주요 사건만)
-- 목표: 100+건 (2006~2024 전체, 국가별 귀속 통계 포함)
-- 추가 필드: `perpetrator_country` · `target_sector` · `estimated_damage_usd`
+- **현재**: 20건 (2015~2024 주요 사건)
+- **목표**: 100+건 (2006~2024 전체)
+- **추가 필드**: `perpetrator_country` · `target_country` · `target_sector` · `attack_type` · `estimated_damage_usd`
+- **출처**: CSIS Significant Cyber Incidents 전체 목록 (csis.org/programs/strategic-technologies-program/significant-cyber-incidents)
 - **구현**: `data/external/csis_cyber_extended_seed.csv`
 
-### Cycle 7-D-5: [경쟁설명] 형식 gap 해소
+---
 
-**문제**: Gemini가 경쟁이론 비교 내용은 서술하지만 `예측:` `실측:` 정확한 레이블 미사용
+### Level 2 — 단기 (API 커넥터 구축, 1~2세션)
 
-**수정 방법**: `intel_query.py` system_role에 형식 예시를 **구체적 예시와 함께** 고정 삽입
+#### 7-D-9: UN Comtrade 무역 의존도
 
+**소스**: UN Comtrade API (comtradeapi.un.org, 무료 제한 100회/일)
+
+- 국가쌍 무역 의존도 (HS 코드별)
+- **핵심**: 반도체(HS 8542)·에너지(HS 27)·희토류(HS 2846) 무역 집중도
+- HHI 자동 계산 → Weaponized Interdependence IV 직접 수치화
+- **구현**: `connectors/comtrade_adapter.py`
+
+#### 7-D-10: Wikidata 조약·동맹 SPARQL
+
+**소스**: Wikidata SPARQL (query.wikidata.org, 무료)
+
+외교부 LOD와 동일한 패턴 — 조약·국제기구 멤버십 대량 추출:
+```sparql
+SELECT ?treaty ?treatyLabel ?signDate ?country WHERE {
+  ?treaty wdt:P31 wd:Q131569 .        # instance of: international treaty
+  ?treaty wdt:P710 ?country .          # participant
+  ?treaty wdt:P571 ?signDate .         # inception date
+}
 ```
-[경쟁설명] 작성 시 반드시 아래 형식을 사용하라:
+- **활용**: COW Alliance 보완, 미등록 양자 조약 커버
+- **구현**: `connectors/wikidata_treaty.py`
+
+---
+
+### Level 3 — 중기 (대형 DB, 2~3세션)
+
+#### 7-D-11: Global Terrorism Database (GTD)
+
+**소스**: National Consortium for the Study of Terrorism (START), University of Maryland  
+(학술 무료 등록, `data/external/` 로컬 보관)
+
+- **규모**: 200,000+건 (1970~2020)
+- **필드**: date · country · region · attack_type · target_type · group_name · killed · wounded
+- **활용**: gray_zone·cyber 섹터 테러 강도 수치, ACLED 보완 (1970~2000 공백 해소)
+- **DB 테이블**: `gtd_events` (연도별 파티셔닝, 지역 집계 인덱스)
+- **주의**: 파일 크기 대용량 → 지역별 필터 후 적재
+
+#### 7-D-12: ACLED 전세계 확장
+
+**현재**: 41개국 252,409건 (아시아·중동·아프리카 일부)  
+**목표**: 전세계 커버리지 (유럽·아메리카·오세아니아 포함)
+
+- **방법**: 기존 `acled_bulk_ingest.py` 재실행 + 국가 목록 확장
+- **추가 지역**: 동유럽(벨라루스·조지아·아르메니아) + 라틴아메리카(베네수엘라·콜롬비아) + 사헬 전체
+- **기대 건수**: 400,000+건
+
+---
+
+### 공통 인프라 업그레이드
+
+#### 7-D-X: [경쟁설명] 형식 gap 해소
+
+**문제**: 경쟁이론 수치 비교 0% — Gemini가 내용은 서술하지만 `예측:` `실측:` 레이블 미사용
+
+`intel_query.py` system_role에 구체적 예시 고정 삽입:
+```
+[경쟁설명] 섹션은 반드시 아래 형식을 사용하라:
 
 이론명 (학자):
-  예측: [이 이론이 현 상황에서 예측하는 수치·방향]
-  실측: [context 내 실제 수치 (소스명)]
-  판정: 우세 — [근거] 또는 열세 — [반례]
+  예측: [수치·방향]
+  실측: [context 소스의 실제 수치]
+  판정: 우세/열세 — [근거 1줄]
 
-예시:
-  자원무기화 (Hirschman):
-    예측: 에너지 의존도 증가 시 정치적 양보 증가
-    실측: EU 러시아 가스 의존도 2021년 45% → 2024년 8% (EIA)
-    판정: 열세 — 대체재 출현으로 무기화 효과 약화
+예시 — 자원무기화 (Hirschman):
+  예측: 에너지 의존도 증가 시 정치적 양보 증가
+  실측: EU 러시아 가스 의존도 2021년 45% → 2024년 8% (EIA)
+  판정: 열세 — 대체재 출현으로 무기화 효과 약화, 셰일 혁명이 반례
+```
+
+#### 7-D-Y: intel_analyzer.py 소스 확장
+
+현재 15소스 → 20+소스 병렬:
+
+```python
+# 신규 추가 소스
+loop.run_in_executor(None, _get_fred_data, pq.regions, pq.sectors),      # #16
+loop.run_in_executor(None, _get_wbk_governance, pq.actors, pq.regions),  # #17
+loop.run_in_executor(None, _get_owid_data, pq.actors, pq.regions),       # #18
+loop.run_in_executor(None, _get_polity5, pq.actors),                     # #19
+loop.run_in_executor(None, _get_itu_ict, pq.actors),                     # #20
+loop.run_in_executor(None, _get_semi_market, pq.sectors, pq.regions),    # #21
+loop.run_in_executor(None, _get_gtd_stats, pq.regions),                  # #22 (L3 후)
+```
+
+스마트 라우팅 원칙:
+- cyber 쿼리 → CSIS + ITU + GTD 우선
+- techno 쿼리 → SIA + UN Comtrade + OWID 우선
+- gray_zone 쿼리 → WB WGI + Polity5 + HIIK + GTD 우선
+- energy 쿼리 → FRED + EIA + OWID 에너지 우선
+
+---
+
+### 진행 순서 (우선순위)
+
+```
+즉시 (L1, 1세션):
+  7-D-X (프롬프트 gap) → 즉각 효과
+  7-D-7 (SIA 반도체) + 7-D-8 (CSIS 확장) → CSV만
+  7-D-1 (FRED) + 7-D-2 (WB WGI) → API + seed
+  7-D-3 (Our World in Data) + 7-D-4 (Polity5) + 7-D-5 (ITU) + 7-D-6 (HIIK)
+
+단기 (L2, 1~2세션):
+  7-D-9 (UN Comtrade) + 7-D-10 (Wikidata 조약)
+
+중기 (L3, 2~3세션):
+  7-D-11 (GTD 200,000건) + 7-D-12 (ACLED 전세계)
+
+공통:
+  7-D-Y (intel_analyzer 20+소스 확장) — 각 데이터 완료 후 점진적 통합
 ```
 
 ### 평가 기준
 
-`eval_insight.py` 재실행 → 신뢰도 평균 85+ + 경쟁이론 수치 비교 50%+
+각 Level 완료 후 `eval_insight.py` 재실행:
+- **L1 완료 후**: 신뢰도 평균 78+ + 경쟁이론 수치 비교 30%+
+- **L2 완료 후**: 신뢰도 평균 82+
+- **L3 완료 후**: 신뢰도 평균 85+ + 경쟁이론 수치 비교 50%+ → **Phase 8 착수**
 
 ### Phase 8 착수 조건
 

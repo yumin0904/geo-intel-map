@@ -623,24 +623,41 @@ rival_theories: ["Balance of Power", "Liberal Interdependence"]
 현재 미달 원인: 섹터별 수치 데이터 공백 → cyber·techno·gray_zone 60점대 고착
 목표: 신뢰도 평균 70 → 85+, 경쟁이론 수치 비교 0% → 50%+
 
-| Sub | 항목 | 소스 | 해결 섹터 | 우선순위 |
-|-----|------|------|---------|---------|
-| 7-D-1 | FRED 경제 시계열 | FRED API (무료) | energy·경제강압·환율 | ★★★ |
-| 7-D-2 | World Bank 거버넌스 지수 | WB Open Data API (무료) | gray_zone·사헬·북극 | ★★★ |
-| 7-D-3 | 반도체·기술 시장 데이터 | SIA·공개 보고서 CSV | techno | ★★ |
-| 7-D-4 | CSIS Cyber DB 확장 | CSV 추가 수집 (20→100+건) | cyber | ★★ |
-| 7-D-5 | [경쟁설명] 형식 gap 해소 | intel_query.py 프롬프트 재설계 | 전 섹터 | ★★★ |
+**풀스케일 12-sub-cycle (2026-06-05 확정)**
 
-**데이터 공백 진단:**
+| Level | Sub | 항목 | 소스 | 규모 | 우선순위 |
+|-------|-----|------|------|------|---------|
+| L1 | 7-D-1 | FRED 경제 시계열 | FRED API (무료) | ~20 시리즈 | ★★★ |
+| L1 | 7-D-2 | World Bank WGI | WB Open Data API | 200국×6지표 | ★★★ |
+| L1 | 7-D-3 | Our World in Data | GitHub CSV 공개 | 수만 행 | ★★★ |
+| L1 | 7-D-4 | Polity5 정치체제 지수 | CSV (학술 무료) | 167국 시계열 | ★★ |
+| L1 | 7-D-5 | ITU ICT 사이버 역량 | CSV (무료) | 170국 | ★★ |
+| L1 | 7-D-6 | HIIK 분쟁 강도 바로미터 | CSV (무료) | 1992~현재 | ★★ |
+| L1 | 7-D-7 | SIA 반도체 시장 데이터 | 공개 보고서 CSV | ~50행 | ★★★ |
+| L1 | 7-D-8 | CSIS Cyber DB 확장 | CSV (20→100+건) | 100+건 | ★★★ |
+| L2 | 7-D-9 | UN Comtrade 무역 의존도 | API (무료 제한) | 국가쌍 무역 | ★★ |
+| L2 | 7-D-10 | Wikidata 조약·동맹 | SPARQL | 수천 건 | ★★ |
+| L3 | 7-D-11 | GTD 테러 데이터베이스 | CSV (학술 무료) | 200,000+건 | ★★★ |
+| L3 | 7-D-12 | ACLED 전세계 확장 | API (커넥터 있음) | 400,000+건 목표 | ★★★ |
+| 공통 | 7-D-X | [경쟁설명] 형식 gap 해소 | 프롬프트 재설계 | — | ★★★ |
+| 공통 | 7-D-Y | intel_analyzer 20+소스 확장 | 점진적 통합 | — | ★★★ |
+
+**섹터별 공백 진단:**
 
 | 섹터 | 현재 신뢰도 | 공백 | 해결 소스 |
 |------|-----------|------|---------|
-| cyber | 50~60 | APT 빈도·피해액 없음 | CSIS 확장 |
-| techno | 60 | 반도체 HHI·점유율 없음 | SIA CSV |
-| gray_zone (사헬·북극) | 60 | 거버넌스·취약국 지수 없음 | World Bank WGI |
-| energy·maritime | 75 | 상대적 양호 (EIA·SIPRI 있음) | FRED 보완 |
+| cyber | 50~60 | APT 빈도·피해액 수치 없음 | CSIS 확장 + GTD + ITU |
+| techno | 60~75 | 반도체 HHI·점유율 없음 | SIA + Our World in Data + Comtrade |
+| gray_zone (사헬·북극) | 60~75 | 거버넌스·취약국 지수 없음 | WB WGI + Polity5 + HIIK + GTD |
+| energy·maritime | 75 | 상대적 양호 | FRED 시계열 보완 |
+| indo_pacific | 75 | 군사력 비교 얕음 | Our World in Data 군사 데이터 |
 
-**평가 기준**: `eval_insight.py` 재실행 → 신뢰도 평균 85+ + 경쟁이론 수치 비교 50%+
+**평가 기준:**
+- L1 완료 후: 신뢰도 평균 78+ + 경쟁이론 수치 비교 30%+
+- L2 완료 후: 신뢰도 평균 82+
+- L3 완료 후: 신뢰도 평균 85+ + 경쟁이론 수치 비교 50%+ → **Phase 8 착수**
+
+상세 계획: `progress.md` Phase 7-D 섹션 참조
 
 ---
 
