@@ -471,7 +471,9 @@ def _get_csis_incidents(actors: list[str], regions: list[str],
 # ── Cycle 6-A 신규 소스 ────────────────────────────────────────────────────
 
 def _get_sipri_arms(actors: list[str], regions: list[str]) -> list[dict]:
-    """SIPRI Arms Transfers — 행위자 관련 무기 공급망 조회."""
+    """SIPRI Arms Transfers — 행위자 관련 무기 공급망 조회.
+    techno/cyber 섹터 전용 쿼리에는 미주입 (무관한 주장 유발 방지).
+    """
     if not actors:
         return []
     try:
@@ -911,7 +913,11 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_eia_data, pq.actors, pq.regions),
         loop.run_in_executor(None, _get_csis_incidents, pq.actors, pq.regions, pq.sectors),
         # Cycle 6-A 신규 소스
-        loop.run_in_executor(None, _get_sipri_arms, pq.actors, pq.regions),
+        # Arms: techno/cyber 섹터 전용 쿼리에는 미주입 (무관한 주장 유발 방지)
+        loop.run_in_executor(None, _get_sipri_arms,
+                             pq.actors if not {"techno","cyber"}.issubset(set(pq.sectors or [])) and
+                             not all(s in {"techno","cyber"} for s in (pq.sectors or [])) else [],
+                             pq.regions),
         loop.run_in_executor(None, _get_vdem, pq.actors),
         loop.run_in_executor(None, _get_cow_wars, pq.regions, pq.actors),
         loop.run_in_executor(None, _get_ifans_publications, pq.actors, pq.regions),

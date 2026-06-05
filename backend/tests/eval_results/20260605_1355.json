@@ -1,0 +1,15 @@
+{
+  "timestamp": "20260605_1355",
+  "server": "http://localhost:8000",
+  "total": 1,
+  "passed": 0,
+  "results": [
+    {
+      "id": "hormuz_oil_verify",
+      "name": "호르무즈 봉쇄 → 유가 인과 검증",
+      "error": "⚠️ Gemini API 오류 (429)",
+      "elapsed": 0.8
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n"
+}

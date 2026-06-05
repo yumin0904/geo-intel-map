@@ -1,0 +1,15 @@
+{
+  "timestamp": "20260605_1400",
+  "server": "http://localhost:8000",
+  "total": 1,
+  "passed": 0,
+  "results": [
+    {
+      "id": "ukraine_russia_energy",
+      "name": "러-우 에너지 인프라 공격 → 유럽 시장 연쇄",
+      "error": "⚠️ Gemini API 오류 (429)",
+      "elapsed": 2.0
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n"
+}
