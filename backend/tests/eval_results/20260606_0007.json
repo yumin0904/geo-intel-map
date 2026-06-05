@@ -1,0 +1,144 @@
+{
+  "timestamp": "20260606_0007",
+  "server": "http://localhost:8000",
+  "total": 3,
+  "passed": 3,
+  "results": [
+    {
+      "id": "taiwan_semiconductor",
+      "name": "대만해협 긴장 → 반도체 공급망",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 24.9,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: 대만해협 ACLED 분쟁 이벤트의 월별 건수가 증가할 때 반도체 ETF(SOXX)의 일일 종가가 통계적으로 유의하게 하락한다 ().",
+          "status": "PARTIAL",
+          "var_type": "Type_A",
+          "p_value": 0.0997
+        },
+        {
+          "h1": "H1: AI 기반 사이버 공격 도구의 접근성 지수(0-1)가 1단위 증가할 때, 반도체 제조 시설에 대한 사이버 공격(CSIS Cyber Incidents DB: sabotage 유형)의 월별 발생 건수가 통계적으로 유의하게 증가한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 2,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": true,
+        "has_measured_label": true,
+        "has_verdict_label": true,
+        "theory_mentions": 7,
+        "has_numbers_in_rival": true,
+        "quantitative_comparison": true,
+        "comparative_comparison": true
+      },
+      "expected_min_score": 60
+    },
+    {
+      "id": "pla_taiwan_a2ad",
+      "name": "PLA A2/AD → Mahan vs Mearsheimer 비교",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 23.9,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: \"중국 PLA의 대만해협 내 A2/AD 관련 무기 배치 건수(미사일, 기뢰)가 증가할 때, 미국 태평양 함대 항모 타격단의 대만해협 인근 작전 일수당 유지 비용(USD)이 통계적으로 유의미하게 상승한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.212
+        },
+        {
+          "h1": "H1: \"중국 기업의 인도네시아 니켈 정련 점유율(%)이 증가할 때, 미국 방산 기업의 핵심 소재 조달 비용(USD)이 통계적으로 유의하게 상승한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 3,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": true,
+        "has_measured_label": true,
+        "has_verdict_label": true,
+        "theory_mentions": 6,
+        "has_numbers_in_rival": true,
+        "quantitative_comparison": true,
+        "comparative_comparison": true
+      },
+      "expected_min_score": 60
+    },
+    {
+      "id": "mearsheimer_vs_liberal_taiwan",
+      "name": "Mearsheimer 공격적 현실주의 vs 자유주의 상호의존 — 대만 분쟁 예측 비교",
+      "mode": "verify",
+      "passed": true,
+      "elapsed": 22.7,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "중국의 GDP 대비 국방비 지출 비율이 미국의 GDP 대비 국방비 지출 비율에 근접할수록(권력 격차 감소) 대만해협의 ACLED 분쟁 이벤트 월별 건수가 통계적으로 유의미하게 증가한다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 1,
+        "SPECULATIVE": 2,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 1
+      },
+      "rival_check": {
+        "has_prediction_label": true,
+        "has_measured_label": true,
+        "has_verdict_label": true,
+        "theory_mentions": 5,
+        "has_numbers_in_rival": true,
+        "quantitative_comparison": true,
+        "comparative_comparison": true
+      },
+      "expected_min_score": 60
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n\n\n### 신뢰도 분포\n- 최고: 75, 최저: 75, 평균: 75\n- 60 미만(PROVISIONAL): 0/3\n\n### H1 가설 추출률\n- 3/3 케이스에서 H1 추출 성공\n  ✅ [taiwan_semiconductor]\n  ✅ [pla_taiwan_a2ad]\n  ✅ [mearsheimer_vs_liberal_taiwan]\n\n### 경쟁이론 수치 비교 충족률 (Cycle 7-B 평가)\n- [엄격] 예측+실측 레이블: 2/2 (100%)\n- [완화] 이론 2개+수치+판정: 2/2 (100%)\n- '예측:' 레이블: 2/2\n- '실측:' 레이블: 2/2\n- 목표(50%+) 엄격: ✅ 달성 / 완화: ✅ 달성\n\n### Granger 검증 현황 (5개 가설)\n- PENDING: 4개\n- PARTIAL: 1개"
+}

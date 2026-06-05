@@ -1,0 +1,53 @@
+# FRED (Federal Reserve Economic Data) — Key Economic Indicators for Geopolitical Analysis
+# Source: Federal Reserve Bank of St. Louis (fred.stlouisfed.org)
+# Format: series_id, series_name, date, value, unit, region_hint
+# Annual averages unless noted; date = YYYY-MM-01 for monthly, YYYY-01-01 for annual
+series_id,series_name,date,value,unit,region_hint
+DCOILWTICO,WTI Crude Oil Price,2020-01-01,41.47,USD/barrel,hormuz|energy
+DCOILWTICO,WTI Crude Oil Price,2021-01-01,68.14,USD/barrel,hormuz|energy
+DCOILWTICO,WTI Crude Oil Price,2022-01-01,94.53,USD/barrel,hormuz|energy
+DCOILWTICO,WTI Crude Oil Price,2023-01-01,77.58,USD/barrel,hormuz|energy
+DCOILWTICO,WTI Crude Oil Price,2024-01-01,76.96,USD/barrel,hormuz|energy
+DCOILBRENTEU,Brent Crude Oil Price,2020-01-01,41.84,USD/barrel,hormuz|energy
+DCOILBRENTEU,Brent Crude Oil Price,2021-01-01,70.68,USD/barrel,hormuz|energy
+DCOILBRENTEU,Brent Crude Oil Price,2022-01-01,99.05,USD/barrel,hormuz|energy
+DCOILBRENTEU,Brent Crude Oil Price,2023-01-01,82.49,USD/barrel,hormuz|energy
+DCOILBRENTEU,Brent Crude Oil Price,2024-01-01,80.22,USD/barrel,hormuz|energy
+PNGASEUUSDM,European Natural Gas Price (TTF),2020-01-01,3.25,USD/MMBtu,eastern_europe|energy
+PNGASEUUSDM,European Natural Gas Price (TTF),2021-01-01,16.10,USD/MMBtu,eastern_europe|energy
+PNGASEUUSDM,European Natural Gas Price (TTF),2022-01-01,40.72,USD/MMBtu,eastern_europe|energy
+PNGASEUUSDM,European Natural Gas Price (TTF),2023-01-01,13.78,USD/MMBtu,eastern_europe|energy
+PNGASEUUSDM,European Natural Gas Price (TTF),2024-01-01,10.12,USD/MMBtu,eastern_europe|energy
+KOREUS,Korean Won per US Dollar,2020-01-01,1180.27,KRW/USD,korean_peninsula
+KOREUS,Korean Won per US Dollar,2021-01-01,1144.42,KRW/USD,korean_peninsula
+KOREUS,Korean Won per US Dollar,2022-01-01,1291.85,KRW/USD,korean_peninsula
+KOREUS,Korean Won per US Dollar,2023-01-01,1305.66,KRW/USD,korean_peninsula
+KOREUS,Korean Won per US Dollar,2024-01-01,1362.45,KRW/USD,korean_peninsula
+EXCHUS,Chinese Yuan per US Dollar,2020-01-01,6.9008,CNY/USD,taiwan_strait
+EXCHUS,Chinese Yuan per US Dollar,2021-01-01,6.4500,CNY/USD,taiwan_strait
+EXCHUS,Chinese Yuan per US Dollar,2022-01-01,6.7291,CNY/USD,taiwan_strait
+EXCHUS,Chinese Yuan per US Dollar,2023-01-01,7.0790,CNY/USD,taiwan_strait
+EXCHUS,Chinese Yuan per US Dollar,2024-01-01,7.2479,CNY/USD,taiwan_strait
+EXJPUS,Japanese Yen per US Dollar,2020-01-01,106.77,JPY/USD,taiwan_strait|indo_pacific
+EXJPUS,Japanese Yen per US Dollar,2021-01-01,109.79,JPY/USD,taiwan_strait|indo_pacific
+EXJPUS,Japanese Yen per US Dollar,2022-01-01,131.45,JPY/USD,taiwan_strait|indo_pacific
+EXJPUS,Japanese Yen per US Dollar,2023-01-01,140.49,JPY/USD,taiwan_strait|indo_pacific
+EXJPUS,Japanese Yen per US Dollar,2024-01-01,153.84,JPY/USD,taiwan_strait|indo_pacific
+GOLDAMGBD228NLBM,Gold Price (London Fix),2020-01-01,1770.75,USD/oz,gray_zone
+GOLDAMGBD228NLBM,Gold Price (London Fix),2021-01-01,1798.61,USD/oz,gray_zone
+GOLDAMGBD228NLBM,Gold Price (London Fix),2022-01-01,1800.93,USD/oz,gray_zone
+GOLDAMGBD228NLBM,Gold Price (London Fix),2023-01-01,1941.14,USD/oz,gray_zone
+GOLDAMGBD228NLBM,Gold Price (London Fix),2024-01-01,2386.27,USD/oz,gray_zone
+MHHNGSP,Henry Hub Natural Gas Spot Price,2020-01-01,2.13,USD/MMBtu,energy
+MHHNGSP,Henry Hub Natural Gas Spot Price,2021-01-01,3.91,USD/MMBtu,energy
+MHHNGSP,Henry Hub Natural Gas Spot Price,2022-01-01,6.42,USD/MMBtu,energy
+MHHNGSP,Henry Hub Natural Gas Spot Price,2023-01-01,2.74,USD/MMBtu,energy
+MHHNGSP,Henry Hub Natural Gas Spot Price,2024-01-01,2.18,USD/MMBtu,energy
+USMC,US Federal Defense Outlays,2020-01-01,753.5,USD bn,indo_pacific
+USMC,US Federal Defense Outlays,2021-01-01,753.8,USD bn,indo_pacific
+USMC,US Federal Defense Outlays,2022-01-01,782.0,USD bn,indo_pacific
+USMC,US Federal Defense Outlays,2023-01-01,820.3,USD bn,indo_pacific
+USMC,US Federal Defense Outlays,2024-01-01,849.8,USD bn,indo_pacific
+EXUSEU,Euro per US Dollar (inverse),2022-01-01,1.053,EUR/USD,eastern_europe
+EXUSEU,Euro per US Dollar (inverse),2023-01-01,1.081,EUR/USD,eastern_europe
+EXUSEU,Euro per US Dollar (inverse),2024-01-01,1.085,EUR/USD,eastern_europe

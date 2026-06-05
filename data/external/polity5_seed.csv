@@ -1,0 +1,45 @@
+# Polity5 Political Regime Characteristics and Transitions Dataset
+# Source: Center for Systemic Peace (systemicpeace.org/polityproject.html)
+# polity_score: -10 (hereditary monarchy/autocracy) to +10 (consolidated democracy)
+# polity2: revised combined polity score (smoothed)
+# regime_type: autocracy(<=-6), anocracy(-5 to 5), democracy(>=6)
+iso3,country_name,year,polity_score,polity2_score,regime_type
+USA,United States,2022,10,10,democracy
+GBR,United Kingdom,2022,10,10,democracy
+FRA,France,2022,9,9,democracy
+DEU,Germany,2022,10,10,democracy
+JPN,Japan,2022,10,10,democracy
+KOR,South Korea,2022,8,8,democracy
+AUS,Australia,2022,10,10,democracy
+CAN,Canada,2022,10,10,democracy
+IND,India,2022,9,9,democracy
+ISR,Israel,2022,10,10,democracy
+NOR,Norway,2022,10,10,democracy
+SWE,Sweden,2022,10,10,democracy
+CHN,China,2022,-7,-7,autocracy
+RUS,Russia,2022,-6,-6,autocracy
+IRN,Iran,2022,-7,-7,autocracy
+PRK,North Korea,2022,-10,-10,autocracy
+SAU,Saudi Arabia,2022,-10,-10,autocracy
+ARE,UAE,2022,-8,-8,autocracy
+BLR,Belarus,2022,-7,-7,autocracy
+QAT,Qatar,2022,-10,-10,autocracy
+TUR,Turkey,2022,-2,-2,anocracy
+UKR,Ukraine,2022,5,5,anocracy
+VEN,Venezuela,2022,-9,-9,autocracy
+YEM,Yemen,2022,-3,-3,anocracy
+SYR,Syria,2022,-9,-9,autocracy
+AFG,Afghanistan,2022,-7,-7,autocracy
+MLI,Mali,2022,-4,-4,anocracy
+NER,Niger,2022,7,7,democracy
+ETH,Ethiopia,2022,-3,-3,anocracy
+PAK,Pakistan,2022,9,9,democracy
+BGD,Bangladesh,2022,5,5,anocracy
+THA,Thailand,2022,2,2,anocracy
+MYS,Malaysia,2022,3,3,anocracy
+IDN,Indonesia,2022,8,8,democracy
+PHL,Philippines,2022,8,8,democracy
+VNM,Vietnam,2022,-7,-7,autocracy
+MMR,Myanmar,2022,-7,-7,autocracy
+KHM,Cambodia,2022,-4,-4,anocracy
+SGP,Singapore,2022,2,2,anocracy

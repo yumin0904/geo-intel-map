@@ -97,9 +97,59 @@ def _ensure_tables(con: sqlite3.Connection) -> None:
         incident_id TEXT UNIQUE,
         incident_date TEXT, actor_iso3 TEXT, actor_group TEXT,
         victim_iso3 TEXT, victim_sector TEXT, incident_type TEXT,
+        estimated_damage_usd INTEGER,
         title TEXT, description TEXT
     );
+    CREATE TABLE IF NOT EXISTS fred_indicators (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        series_id TEXT NOT NULL, series_name TEXT,
+        date TEXT NOT NULL, value REAL,
+        unit TEXT, region_hint TEXT,
+        UNIQUE(series_id, date)
+    );
+    CREATE TABLE IF NOT EXISTS world_bank_wgi (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        iso3 TEXT NOT NULL, country_name TEXT,
+        year INTEGER NOT NULL,
+        pv_score REAL, cc_score REAL, rl_score REAL,
+        ge_score REAL, rq_score REAL, va_score REAL,
+        UNIQUE(iso3, year)
+    );
+    CREATE TABLE IF NOT EXISTS polity5 (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        iso3 TEXT NOT NULL, country_name TEXT,
+        year INTEGER NOT NULL, polity_score INTEGER,
+        polity2_score REAL, regime_type TEXT,
+        UNIQUE(iso3, year)
+    );
+    CREATE TABLE IF NOT EXISTS itu_ict (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        iso3 TEXT NOT NULL, country_name TEXT,
+        year INTEGER NOT NULL, idi_score REAL,
+        global_rank INTEGER, cyber_tier TEXT,
+        UNIQUE(iso3, year)
+    );
+    CREATE TABLE IF NOT EXISTS hiik_conflict (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        conflict_id TEXT UNIQUE, conflict_name TEXT,
+        primary_country_iso3 TEXT, region TEXT,
+        year INTEGER NOT NULL, intensity INTEGER,
+        intensity_label TEXT, involved_actors TEXT
+    );
+    CREATE TABLE IF NOT EXISTS semi_market_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL, metric TEXT NOT NULL,
+        value REAL, unit TEXT, year INTEGER,
+        source TEXT, region_hint TEXT, notes TEXT,
+        UNIQUE(category, metric, year)
+    );
     """)
+    # csis_cyber_incidents 기존 DB 마이그레이션 (estimated_damage_usd 추가)
+    try:
+        con.execute("ALTER TABLE csis_cyber_incidents ADD COLUMN estimated_damage_usd INTEGER")
+        con.commit()
+    except Exception:
+        pass  # 이미 컬럼 존재
     con.commit()
 
 
@@ -456,10 +506,13 @@ def _download_eia(api_key: str) -> int:
 # ── CSIS Cyber Incidents ───────────────────────────────────────────────────────
 
 def _load_csis_seed(con: sqlite3.Connection) -> int:
-    """시드 CSV에서 CSIS 사이버 사건 데이터 적재."""
-    seed = _EXT_DIR / "csis_cyber_seed.csv"
+    """시드 CSV에서 CSIS 사이버 사건 데이터 적재. 확장 버전 우선 사용."""
+    # 확장 버전(100+건) 우선, 없으면 기본 시드
+    seed = _EXT_DIR / "csis_cyber_extended_seed.csv"
     if not seed.exists():
-        logger.warning("CSIS 시드 파일 없음: %s", seed)
+        seed = _EXT_DIR / "csis_cyber_seed.csv"
+    if not seed.exists():
+        logger.warning("CSIS 시드 파일 없음")
         return 0
 
     rows = 0
@@ -469,11 +522,14 @@ def _load_csis_seed(con: sqlite3.Connection) -> int:
         )
         for row in reader:
             try:
+                dmg_raw = row.get("estimated_damage_usd") or None
+                dmg = int(dmg_raw) if dmg_raw and dmg_raw not in ("unknown", "") else None
                 con.execute(
                     "INSERT OR IGNORE INTO csis_cyber_incidents"
                     " (incident_id, incident_date, actor_iso3, actor_group,"
-                    "  victim_iso3, victim_sector, incident_type, title, description)"
-                    " VALUES (?,?,?,?,?,?,?,?,?)",
+                    "  victim_iso3, victim_sector, incident_type,"
+                    "  estimated_damage_usd, title, description)"
+                    " VALUES (?,?,?,?,?,?,?,?,?,?)",
                     (
                         row.get("incident_id"),
                         row.get("date"),
@@ -482,12 +538,221 @@ def _load_csis_seed(con: sqlite3.Connection) -> int:
                         row.get("victim_iso3") or None,
                         row.get("victim_sector") or None,
                         row.get("incident_type") or None,
+                        dmg,
                         row.get("title"),
                         row.get("description"),
                     ),
                 )
                 rows += 1
             except (sqlite3.IntegrityError, KeyError):
+                pass
+    con.commit()
+    return rows
+
+
+# ── FRED Economic Indicators ───────────────────────────────────────────────────
+
+def _load_fred_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 FRED 경제 지표 시계열 적재."""
+    seed = _EXT_DIR / "fred_seed.csv"
+    if not seed.exists():
+        logger.warning("FRED 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR REPLACE INTO fred_indicators"
+                    " (series_id, series_name, date, value, unit, region_hint)"
+                    " VALUES (?,?,?,?,?,?)",
+                    (
+                        row["series_id"], row.get("series_name"),
+                        row["date"],
+                        float(row["value"]) if row.get("value") else None,
+                        row.get("unit"), row.get("region_hint"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
+# ── World Bank WGI ─────────────────────────────────────────────────────────────
+
+def _load_world_bank_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 World Bank WGI 거버넌스 지수 적재."""
+    seed = _EXT_DIR / "world_bank_seed.csv"
+    if not seed.exists():
+        logger.warning("World Bank 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+
+    def _f(d: dict, k: str):
+        v = d.get(k)
+        return float(v) if v and v not in ("", "NULL") else None
+
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR REPLACE INTO world_bank_wgi"
+                    " (iso3, country_name, year, pv_score, cc_score,"
+                    "  rl_score, ge_score, rq_score, va_score)"
+                    " VALUES (?,?,?,?,?,?,?,?,?)",
+                    (
+                        row["iso3"], row.get("country_name"),
+                        int(row["year"]),
+                        _f(row, "pv_score"), _f(row, "cc_score"),
+                        _f(row, "rl_score"), _f(row, "ge_score"),
+                        _f(row, "rq_score"), _f(row, "va_score"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
+# ── Polity5 ────────────────────────────────────────────────────────────────────
+
+def _load_polity5_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 Polity5 정치체제 지수 적재."""
+    seed = _EXT_DIR / "polity5_seed.csv"
+    if not seed.exists():
+        logger.warning("Polity5 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR REPLACE INTO polity5"
+                    " (iso3, country_name, year, polity_score, polity2_score, regime_type)"
+                    " VALUES (?,?,?,?,?,?)",
+                    (
+                        row["iso3"], row.get("country_name"),
+                        int(row["year"]),
+                        int(row["polity_score"]) if row.get("polity_score") else None,
+                        float(row["polity2_score"]) if row.get("polity2_score") else None,
+                        row.get("regime_type"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
+# ── ITU ICT Development Index ──────────────────────────────────────────────────
+
+def _load_itu_ict_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 ITU ICT 개발 지수 적재."""
+    seed = _EXT_DIR / "itu_ict_seed.csv"
+    if not seed.exists():
+        logger.warning("ITU ICT 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR REPLACE INTO itu_ict"
+                    " (iso3, country_name, year, idi_score, global_rank, cyber_tier)"
+                    " VALUES (?,?,?,?,?,?)",
+                    (
+                        row["iso3"], row.get("country_name"),
+                        int(row["year"]),
+                        float(row["idi_score"]) if row.get("idi_score") else None,
+                        int(row["global_rank"]) if row.get("global_rank") else None,
+                        row.get("cyber_tier"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
+# ── HIIK Conflict Barometer ────────────────────────────────────────────────────
+
+def _load_hiik_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 HIIK 분쟁 강도 바로미터 적재."""
+    seed = _EXT_DIR / "hiik_conflict_seed.csv"
+    if not seed.exists():
+        logger.warning("HIIK 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                con.execute(
+                    "INSERT OR IGNORE INTO hiik_conflict"
+                    " (conflict_id, conflict_name, primary_country_iso3,"
+                    "  region, year, intensity, intensity_label, involved_actors)"
+                    " VALUES (?,?,?,?,?,?,?,?)",
+                    (
+                        row.get("conflict_id"), row.get("conflict_name"),
+                        row.get("primary_country_iso3"),
+                        row.get("region"),
+                        int(row["year"]) if row.get("year") else None,
+                        int(row["intensity"]) if row.get("intensity") else None,
+                        row.get("intensity_label"),
+                        row.get("involved_actors"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
+                pass
+    con.commit()
+    return rows
+
+
+# ── Semiconductor Market Data ──────────────────────────────────────────────────
+
+def _load_semi_market_seed(con: sqlite3.Connection) -> int:
+    """시드 CSV에서 반도체·기술 시장 데이터 적재."""
+    seed = _EXT_DIR / "semi_market_seed.csv"
+    if not seed.exists():
+        logger.warning("반도체 시장 시드 파일 없음: %s", seed)
+        return 0
+    rows = 0
+    with open(seed, encoding="utf-8") as f:
+        reader = csv.DictReader(line for line in f if not line.startswith("#"))
+        for row in reader:
+            try:
+                val_raw = row.get("value") or row.get("val")
+                val = None
+                if val_raw:
+                    # 날짜 형식(2023-01-01)은 숫자 변환 skip
+                    try:
+                        val = float(val_raw)
+                    except ValueError:
+                        val = None
+                con.execute(
+                    "INSERT OR REPLACE INTO semi_market_data"
+                    " (category, metric, value, unit, year, source, region_hint, notes)"
+                    " VALUES (?,?,?,?,?,?,?,?)",
+                    (
+                        row["category"], row["metric"],
+                        val,
+                        row.get("unit"),
+                        int(row["year"]) if row.get("year") else None,
+                        row.get("source"), row.get("region_hint"), row.get("notes"),
+                    ),
+                )
+                rows += 1
+            except (sqlite3.IntegrityError, KeyError, ValueError):
                 pass
     con.commit()
     return rows
@@ -675,6 +940,36 @@ def main(sources: list[str], update: bool) -> None:
         results["cow_wars"] = n
         logger.info("COW Wars 적재 완료: %d행", n)
 
+    if "fred" in sources:
+        n = _load_fred_seed(con)
+        results["fred"] = n
+        logger.info("FRED 적재 완료: %d행", n)
+
+    if "world_bank" in sources:
+        n = _load_world_bank_seed(con)
+        results["world_bank"] = n
+        logger.info("World Bank WGI 적재 완료: %d행", n)
+
+    if "polity5" in sources:
+        n = _load_polity5_seed(con)
+        results["polity5"] = n
+        logger.info("Polity5 적재 완료: %d행", n)
+
+    if "itu" in sources:
+        n = _load_itu_ict_seed(con)
+        results["itu"] = n
+        logger.info("ITU ICT 적재 완료: %d행", n)
+
+    if "hiik" in sources:
+        n = _load_hiik_seed(con)
+        results["hiik"] = n
+        logger.info("HIIK 분쟁 바로미터 적재 완료: %d행", n)
+
+    if "semi" in sources:
+        n = _load_semi_market_seed(con)
+        results["semi"] = n
+        logger.info("반도체 시장 데이터 적재 완료: %d행", n)
+
     con.close()
 
     total = sum(results.values())
@@ -685,13 +980,22 @@ def main(sources: list[str], update: bool) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="외부 정형 데이터 적재")
-    parser.add_argument("--source", default="all",
-                        help="all | sipri | cow | kiel | eia | csis | sipri_arms | vdem | cow_wars (쉼표로 복수 지정)")
+    parser.add_argument(
+        "--source", default="all",
+        help=(
+            "all | sipri | cow | kiel | eia | csis | sipri_arms | vdem | cow_wars | "
+            "fred | world_bank | polity5 | itu | hiik | semi (쉼표로 복수 지정)"
+        ),
+    )
     parser.add_argument("--update", action="store_true",
                         help="원본 사이트에서 최신 데이터 다운로드 시도")
     args = parser.parse_args()
 
-    srcs = ["sipri", "cow", "kiel", "eia", "csis", "sipri_arms", "vdem", "cow_wars"] \
-        if args.source == "all" \
+    _ALL_SOURCES = [
+        "sipri", "cow", "kiel", "eia", "csis",
+        "sipri_arms", "vdem", "cow_wars",
+        "fred", "world_bank", "polity5", "itu", "hiik", "semi",
+    ]
+    srcs = _ALL_SOURCES if args.source == "all" \
         else [s.strip() for s in args.source.split(",")]
     main(srcs, args.update)

@@ -1,0 +1,35 @@
+# HIIK Conflict Barometer 2024 (Heidelberg Institute for International Conflict Research)
+# Source: hiik.de/en/conflict-barometer/ — Annual conflict intensity assessment
+# intensity: 1=Dispute, 2=Non-violent Crisis, 3=Violent Crisis, 4=Limited War, 5=War
+# intensity_label: Dispute/Non-violent Crisis/Violent Crisis/Limited War/War
+conflict_id,conflict_name,primary_country_iso3,region,year,intensity,intensity_label,involved_actors
+HIIK-2024-UKR,Russia-Ukraine War,UKR,eastern_europe,2024,5,War,RUS|UKR
+HIIK-2024-PSE,Gaza-Israel War,ISR,middle_east,2024,5,War,ISR|PSE|IRN|USA
+HIIK-2024-SDN,Sudan Civil War,SDN,bab_el_mandeb,2024,5,War,SDN
+HIIK-2024-MMR,Myanmar Civil War,MMR,indo_pacific,2024,5,War,MMR
+HIIK-2024-MLI,Sahel-Mali Insurgency,MLI,sahel,2024,4,Limited War,MLI|FRA|RUS_PMC
+HIIK-2024-BFA,Sahel-Burkina Faso Insurgency,BFA,sahel,2024,4,Limited War,BFA|FRA
+HIIK-2024-NER,Sahel-Niger Post-coup Conflict,NER,sahel,2024,4,Limited War,NER|ECOWAS
+HIIK-2024-ETH,Ethiopia-Oromia,ETH,bab_el_mandeb,2024,4,Limited War,ETH
+HIIK-2024-SOM,Somalia-Al Shabaab,SOM,bab_el_mandeb,2024,4,Limited War,SOM|USA|AU
+HIIK-2024-YEM,Yemen Civil War,YEM,hormuz,2024,4,Limited War,YEM|SAU|IRN|HUT
+HIIK-2024-SYR,Syria Multi-actor Conflict,SYR,middle_east,2024,4,Limited War,SYR|RUS|USA|ISR
+HIIK-2024-IRQ,Iraq-Militia Conflict,IRQ,middle_east,2024,3,Violent Crisis,IRQ|IRN|USA
+HIIK-2024-AFG,Afghanistan-Taliban,AFG,indo_pacific,2024,3,Violent Crisis,AFG
+HIIK-2024-LBN,Lebanon-Hezbollah,LBN,middle_east,2024,4,Limited War,LBN|ISR|IRN
+HIIK-2024-TWN,Taiwan Strait Tension,TWN,taiwan_strait,2024,2,Non-violent Crisis,CHN|USA|TWN
+HIIK-2024-SCS,South China Sea Dispute,PHL,taiwan_strait,2024,2,Non-violent Crisis,CHN|PHL|USA|VNM
+HIIK-2024-KOR,Korean Peninsula Tension,KOR,korean_peninsula,2024,2,Non-violent Crisis,PRK|KOR|USA
+HIIK-2024-ARC,Arctic Sovereignty Dispute,NOR,arctic,2024,1,Dispute,RUS|NOR|USA|CAN
+HIIK-2024-HOR,Hormuz-Iran Tension,IRN,hormuz,2024,2,Non-violent Crisis,IRN|USA|SAU|ISR
+HIIK-2024-IND,India-Pakistan Tension,IND,indo_pacific,2024,2,Non-violent Crisis,IND|PAK
+HIIK-2024-AZR,Azerbaijan-Armenia,AZE,eastern_europe,2024,1,Dispute,AZE|ARM|RUS
+HIIK-2024-COD,DR Congo (DRC) Conflict,COD,sahel,2024,4,Limited War,COD|RWA|M23
+HIIK-2024-NGA,Nigeria-Boko Haram,NGA,sahel,2024,3,Violent Crisis,NGA|BKH
+HIIK-2024-CMR,Lake Chad Basin,CMR,sahel,2024,3,Violent Crisis,NGA|CMR|TCD|NER
+HIIK-2024-VEN,Venezuela-Guyana Dispute,VEN,maritime,2024,1,Dispute,VEN|GUY
+HIIK-2023-UKR,Russia-Ukraine War,UKR,eastern_europe,2023,5,War,RUS|UKR
+HIIK-2023-MLI,Sahel-Mali Insurgency,MLI,sahel,2023,5,War,MLI|RUS_PMC
+HIIK-2023-PSE,Israel-Hamas (Oct 7),ISR,middle_east,2023,5,War,ISR|PSE
+HIIK-2023-SDN,Sudan Civil War,SDN,bab_el_mandeb,2023,5,War,SDN
+HIIK-2023-BFA,Burkina Faso Insurgency,BFA,sahel,2023,4,Limited War,BFA

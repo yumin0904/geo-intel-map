@@ -1,0 +1,34 @@
+# Semiconductor & Critical Technology Market Data
+# Sources: SIA (Semiconductor Industry Association), CSIS, TechInsights, Statista 2023-2024
+# category: foundry_share / critical_mineral / equipment_dominance / export_control / market_size
+category,metric,value,unit,year,source,region_hint,notes
+foundry_share,TSMC global foundry market share,61.7,%,2024,TechInsights/SIA,taiwan_strait,TSMC 혼자 60%+ 점유 — 초크포인트 집중도 극단적
+foundry_share,Samsung Foundry market share,11.3,%,2024,TechInsights,taiwan_strait|korean_peninsula,2위이지만 TSMC와 격차 5배
+foundry_share,SMIC market share (China),5.9,%,2024,TechInsights,taiwan_strait,중국 최대 파운드리 — EUV 없이 28nm 이상만 생산
+foundry_share,Intel Foundry Services market share,1.8,%,2024,TechInsights,indo_pacific,미국 재공업화 CHIPS Act 핵심 수혜
+foundry_share,GlobalFoundries market share,5.3,%,2024,TechInsights,indo_pacific,미국+독일+싱가포르 기지
+foundry_share,UMC market share,7.0,%,2024,TechInsights,taiwan_strait,대만 2위 파운드리
+foundry_share,HHI (Herfindahl-Hirschman Index) foundry,3920,index,2024,SIA calculation,taiwan_strait,3920 = 극도 집중 (기준: >2500 = 독과점)
+critical_mineral,China gallium production share,80,%,2023,USGS,techno,수출 통제 2023년 8월 시행
+critical_mineral,China germanium production share,60,%,2023,USGS,techno,수출 통제 2023년 8월 시행
+critical_mineral,China rare earth mining share,60,%,2023,USGS,techno|energy,희토류 채굴 60% — 글로벌 공급망 지배
+critical_mineral,China rare earth processing share,85,%,2023,USGS,techno|energy,처리·정제는 85% 독점 (채굴보다 더 집중)
+critical_mineral,China cobalt refining share,68,%,2023,USGS,techno,전기차·배터리 핵심 소재
+critical_mineral,China lithium refining share,58,%,2023,USGS,techno|energy,배터리 원자재
+critical_mineral,China graphite production share,65,%,2023,USGS,techno,배터리 음극재 핵심 소재
+equipment_dominance,ASML EUV lithography global share,100,%,2023,ASML Annual Report,taiwan_strait|techno,네덜란드 완전 독점 — EUV 없으면 7nm 이하 불가
+equipment_dominance,ASML annual EUV shipments,53,units,2023,ASML Annual Report,taiwan_strait|techno,수요 대비 공급 병목
+equipment_dominance,Applied Materials CVD/PVD global share,23,%,2023,Gartner,techno,USA 선단 공정 장비 1위
+equipment_dominance,Lam Research etch equipment global share,33,%,2023,Gartner,techno,미국 식각 장비 1위
+equipment_dominance,Tokyo Electron (TEL) Japan share,25,%,2023,Gartner,indo_pacific,일본 최대 반도체 장비기업
+equipment_dominance,KLA Instruments wafer inspection share,53,%,2023,Gartner,techno,결함 검사 독점적 지위
+export_control,US CHIPS Act funding total,52.7,USD bn,2022,US DoC CHIPS Program,indo_pacific,미국 반도체 자국화 핵심 재원
+export_control,US BIS advanced chip export control start date,2022-10-07,date,2022,BIS,techno|taiwan_strait,A100/H100 CHN 수출 금지
+export_control,Netherlands EUV export ban to China,2023-01-01,date,2023,Dutch Govt,techno,미국 설득으로 네덜란드 EUV 수출 차단
+export_control,Japan semiconductor equipment export control,2023-07-23,date,2023,METI Japan,techno,선단 공정 23개 품목 수출 통제
+market_size,Global semiconductor market size,526.8,USD bn,2023,SIA Annual Report,techno,2023년 시장 가치
+market_size,Global semiconductor market size,611.2,USD bn,2024,SIA Annual Report,techno,2024년 회복 (AI 수요 주도)
+market_size,NVIDIA AI chip revenue,44.9,USD bn,2024,NVIDIA earnings,techno,AI GPU 시장 폭발적 성장
+market_size,China domestic semiconductor production,22.5,USD bn,2023,CSIA,taiwan_strait|techno,자급률 약 17% (목표 70%+ 2030)
+market_size,US CHIPS Act: domestic fab investment,200,USD bn,2024,BCG estimate,indo_pacific,CHIPS Act 발표 후 민간 투자 포함
+market_size,Taiwan semiconductor exports,175,USD bn,2023,MOEA Taiwan,taiwan_strait,대만 전체 수출의 38% 이상

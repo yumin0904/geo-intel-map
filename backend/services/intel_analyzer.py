@@ -594,6 +594,221 @@ def _get_ifans_publications(actors: list[str], regions: list[str]) -> list[dict]
         return []
 
 
+# ── 16. FRED 경제 시계열 (Cycle 7-D-1) ───────────────────────────────────────
+
+_REGION_FRED_SERIES: dict[str, list[str]] = {
+    "hormuz":           ["DCOILWTICO", "DCOILBRENTEU", "MHHNGSP"],
+    "eastern_europe":   ["PNGASEUUSDM", "DCOILWTICO", "GOLDAMGBD228NLBM"],
+    "korean_peninsula": ["KOREUS", "DCOILWTICO"],
+    "taiwan_strait":    ["EXCHUS", "EXJPUS", "DCOILWTICO"],
+    "indo_pacific":     ["EXJPUS", "EXCHUS", "USMC"],
+    "energy":           ["DCOILWTICO", "DCOILBRENTEU", "PNGASEUUSDM", "MHHNGSP"],
+    "gray_zone":        ["GOLDAMGBD228NLBM", "DCOILWTICO"],
+}
+
+def _get_fred_data(regions: list[str], sectors: list[str]) -> list[dict]:
+    """FRED 경제 지표 시계열 — 지역·섹터 기반 스마트 라우팅."""
+    series_ids: set[str] = set()
+    for r in regions:
+        series_ids.update(_REGION_FRED_SERIES.get(r, []))
+    if "energy" in sectors:
+        series_ids.update(_REGION_FRED_SERIES["energy"])
+    if "gray_zone" in sectors:
+        series_ids.update(_REGION_FRED_SERIES["gray_zone"])
+    if not series_ids:
+        series_ids = {"DCOILWTICO", "GOLDAMGBD228NLBM"}  # 기본값
+
+    try:
+        placeholders = ",".join("?" * len(series_ids))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT series_id, series_name, date, value, unit
+                    FROM fred_indicators
+                    WHERE series_id IN ({placeholders})
+                    ORDER BY series_id, date DESC""",
+                list(series_ids),
+            ).fetchall()
+        # 시리즈별로 최근 3개 값만 반환
+        result: dict[str, list] = {}
+        for r in rows:
+            sid = r[0]
+            if sid not in result:
+                result[sid] = []
+            if len(result[sid]) < 3:
+                result[sid].append({
+                    "series_id": sid, "series_name": r[1],
+                    "date": r[2], "value": r[3], "unit": r[4],
+                })
+        return [item for items in result.values() for item in items]
+    except Exception as e:
+        logger.warning("[intel] fred_data 실패: %s", e)
+        return []
+
+
+# ── 17. World Bank WGI 거버넌스 지수 (Cycle 7-D-2) ──────────────────────────
+
+def _get_world_bank_wgi(actors: list[str], regions: list[str]) -> list[dict]:
+    """World Bank WGI — 행위자 국가 거버넌스 지수 (gray_zone·사헬·북극 공백 해소)."""
+    _REGION_ACTORS_WB: dict[str, list[str]] = {
+        "sahel":            ["MLI", "NER", "BFA", "ETH", "NGA"],
+        "bab_el_mandeb":    ["ETH", "SOM", "YEM", "SAU"],
+        "hormuz":           ["IRN", "SAU", "QAT", "ARE"],
+        "eastern_europe":   ["UKR", "RUS", "BLR"],
+        "korean_peninsula": ["PRK", "KOR"],
+        "taiwan_strait":    ["CHN", "TWN", "USA"],
+        "arctic":           ["RUS", "NOR", "USA", "CAN"],
+    }
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_ACTORS_WB.get(r, []))
+    if not iso3_set:
+        return []
+
+    try:
+        placeholders = ",".join("?" * len(iso3_set))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT iso3, country_name, year, pv_score, cc_score,
+                           rl_score, ge_score, rq_score, va_score
+                    FROM world_bank_wgi
+                    WHERE iso3 IN ({placeholders})
+                    ORDER BY iso3, year DESC""",
+                list(iso3_set),
+            ).fetchall()
+        seen = set()
+        result = []
+        for r in rows:
+            if r[0] not in seen:
+                seen.add(r[0])
+                result.append({
+                    "iso3": r[0], "country": r[1] or r[0], "year": r[2],
+                    "political_stability": r[3], "corruption_control": r[4],
+                    "rule_of_law": r[5], "gov_effectiveness": r[6],
+                    "regulatory_quality": r[7], "voice_accountability": r[8],
+                })
+        return result
+    except Exception as e:
+        logger.warning("[intel] world_bank_wgi 실패: %s", e)
+        return []
+
+
+# ── 18. Polity5 정치체제 지수 (Cycle 7-D-4) ─────────────────────────────────
+
+def _get_polity5(actors: list[str]) -> list[dict]:
+    """Polity5 — 행위자 국가 체제 분류 강화 (V-DEM 보완)."""
+    if not actors:
+        return []
+    try:
+        placeholders = ",".join("?" * len(actors))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT iso3, country_name, year, polity_score, polity2_score, regime_type
+                    FROM polity5
+                    WHERE iso3 IN ({placeholders})
+                    ORDER BY iso3, year DESC""",
+                actors,
+            ).fetchall()
+        seen = set()
+        result = []
+        for r in rows:
+            if r[0] not in seen:
+                seen.add(r[0])
+                result.append({
+                    "iso3": r[0], "country": r[1] or r[0], "year": r[2],
+                    "polity_score": r[3], "polity2": r[4], "regime_type": r[5],
+                })
+        return result
+    except Exception as e:
+        logger.warning("[intel] polity5 실패: %s", e)
+        return []
+
+
+# ── 19. ITU ICT 개발 지수 (Cycle 7-D-5) ─────────────────────────────────────
+
+def _get_itu_ict(actors: list[str], sectors: list[str]) -> list[dict]:
+    """ITU ICT 개발 지수 — cyber/techno 섹터 국가별 역량 수치화."""
+    if not actors and "cyber" not in sectors and "techno" not in sectors:
+        return []
+    target_actors = list(actors)
+    # cyber/techno 쿼리면 핵심 행위자 자동 추가
+    if "cyber" in sectors or "techno" in sectors:
+        for iso3 in ["USA", "CHN", "RUS", "PRK", "IRN"]:
+            if iso3 not in target_actors:
+                target_actors.append(iso3)
+    if not target_actors:
+        return []
+    try:
+        placeholders = ",".join("?" * len(target_actors))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT iso3, country_name, year, idi_score, global_rank, cyber_tier
+                    FROM itu_ict
+                    WHERE iso3 IN ({placeholders})
+                    ORDER BY idi_score DESC""",
+                target_actors,
+            ).fetchall()
+        return [
+            {"iso3": r[0], "country": r[1] or r[0], "year": r[2],
+             "idi_score": r[3], "rank": r[4], "tier": r[5]}
+            for r in rows
+        ]
+    except Exception as e:
+        logger.warning("[intel] itu_ict 실패: %s", e)
+        return []
+
+
+# ── 20. HIIK 분쟁 강도 바로미터 (Cycle 7-D-6) ──────────────────────────────
+
+def _get_hiik_conflict(regions: list[str]) -> list[dict]:
+    """HIIK — 지역별 최신 분쟁 강도 (ACLED 보완, 분쟁 수치화)."""
+    if not regions:
+        return []
+    try:
+        placeholders = ",".join("?" * len(regions))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""SELECT conflict_id, conflict_name, primary_country_iso3,
+                           region, year, intensity, intensity_label, involved_actors
+                    FROM hiik_conflict
+                    WHERE region IN ({placeholders})
+                    ORDER BY intensity DESC, year DESC
+                    LIMIT 8""",
+                regions,
+            ).fetchall()
+        return [
+            {"id": r[0], "name": r[1], "country": r[2], "region": r[3],
+             "year": r[4], "intensity": r[5], "label": r[6], "actors": r[7]}
+            for r in rows
+        ]
+    except Exception as e:
+        logger.warning("[intel] hiik_conflict 실패: %s", e)
+        return []
+
+
+# ── 21. 반도체·기술 시장 데이터 (Cycle 7-D-7) ────────────────────────────────
+
+def _get_semi_market(sectors: list[str], regions: list[str]) -> list[dict]:
+    """SIA 반도체 시장 데이터 — techno/cyber 섹터 HHI·점유율 수치화."""
+    if "techno" not in sectors and "cyber" not in sectors and "taiwan_strait" not in regions:
+        return []
+    try:
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                """SELECT category, metric, value, unit, year, source, region_hint, notes
+                   FROM semi_market_data
+                   ORDER BY category, year DESC
+                   LIMIT 20""",
+            ).fetchall()
+        return [
+            {"category": r[0], "metric": r[1], "value": r[2], "unit": r[3],
+             "year": r[4], "source": r[5], "region_hint": r[6], "notes": r[7]}
+            for r in rows
+        ]
+    except Exception as e:
+        logger.warning("[intel] semi_market 실패: %s", e)
+        return []
+
+
 # ── 7. 국가 프로파일 ──────────────────────────────────────────────────────────
 
 def _get_country_profiles(actors: list[str]) -> dict:
@@ -627,6 +842,13 @@ def _build_context(
     vdem_data:        list[dict] | None = None,
     cow_wars:         list[dict] | None = None,
     ifans_pubs:       list[dict] | None = None,
+    # Cycle 7-D 신규 소스
+    fred_data:        list[dict] | None = None,
+    wbk_data:         list[dict] | None = None,
+    polity5_data:     list[dict] | None = None,
+    itu_data:         list[dict] | None = None,
+    hiik_data:        list[dict] | None = None,
+    semi_data:        list[dict] | None = None,
 ) -> str:
     lines: list[str] = []
     total_chars = 0
@@ -923,6 +1145,95 @@ def _build_context(
             lines.append(f"  출처: {pub.get('source', '외교부 IFANS')}")
         lines.append("")
 
+    # ── FRED 경제 시계열 (Cycle 7-D-1) ───────────────────────────────────────
+    if fred_data:
+        lines.append("## 주요 경제 지표 시계열 (FRED — Federal Reserve Economic Data)")
+        by_series: dict[str, list] = {}
+        for d in fred_data:
+            sid = d.get("series_id", "?")
+            by_series.setdefault(sid, []).append(d)
+        for sid, records in list(by_series.items())[:6]:
+            name = records[0].get("series_name", sid)
+            unit = records[0].get("unit", "")
+            trend = " → ".join(
+                f"{r['date'][:4]}:{r['value']}" for r in reversed(records) if r.get("value") is not None
+            )
+            lines.append(f"- **{name}** ({sid}): {trend} [{unit}]")
+        lines.append("  출처: FRED St. Louis Federal Reserve (fred.stlouisfed.org)")
+        lines.append("")
+
+    # ── World Bank WGI 거버넌스 지수 (Cycle 7-D-2) ──────────────────────────
+    if wbk_data:
+        lines.append("## 국가 거버넌스 지수 (World Bank WGI 2022)")
+        lines.append("점수 범위: -2.5(최하) ~ +2.5(최상)")
+        for d in wbk_data[:8]:
+            pv = f"{d['political_stability']:.2f}" if d.get("political_stability") is not None else "?"
+            cc = f"{d['corruption_control']:.2f}" if d.get("corruption_control") is not None else "?"
+            rl = f"{d['rule_of_law']:.2f}" if d.get("rule_of_law") is not None else "?"
+            lines.append(
+                f"- **{d['country']}** ({d['iso3']}): "
+                f"정치안정={pv} | 부패통제={cc} | 법치={rl}"
+            )
+        lines.append("  출처: World Bank Worldwide Governance Indicators 2023")
+        lines.append("")
+
+    # ── Polity5 정치체제 지수 (Cycle 7-D-4) ─────────────────────────────────
+    if polity5_data:
+        lines.append("## 정치체제 지수 (Polity5 2022)")
+        lines.append("점수: -10(완전권위) ~ +10(완전민주)")
+        for d in polity5_data[:8]:
+            score = d.get("polity_score")
+            regime = d.get("regime_type", "?")
+            lines.append(
+                f"- **{d['country']}** ({d['iso3']}): {score}점 ({regime})"
+            )
+        lines.append("  출처: Center for Systemic Peace, Polity5 Dataset")
+        lines.append("")
+
+    # ── ITU ICT 개발 지수 (Cycle 7-D-5) ─────────────────────────────────────
+    if itu_data:
+        lines.append("## 사이버 역량 지수 (ITU ICT Development Index 2023)")
+        lines.append("IDI 점수: 0-100 (인프라·이용·역량 종합)")
+        for d in itu_data[:8]:
+            score = d.get("idi_score")
+            rank = d.get("rank")
+            tier = d.get("tier", "?")
+            lines.append(
+                f"- **{d['country']}** ({d['iso3']}): IDI {score} (전세계 {rank}위, {tier}티어)"
+            )
+        lines.append("  출처: ITU ICT Development Index 2023")
+        lines.append("")
+
+    # ── HIIK 분쟁 강도 바로미터 (Cycle 7-D-6) ──────────────────────────────
+    if hiik_data:
+        lines.append("## 분쟁 강도 바로미터 (HIIK Conflict Barometer 2024)")
+        lines.append("강도: 1=분쟁 / 2=비폭력위기 / 3=폭력위기 / 4=제한전 / 5=전쟁")
+        for d in hiik_data[:6]:
+            lines.append(
+                f"- **{d['name']}** ({d['year']}): 강도 {d['intensity']} [{d['label']}]"
+                f" | 행위자: {d.get('actors', '?')}"
+            )
+        lines.append("  출처: HIIK Heidelberg Institute for International Conflict Research")
+        lines.append("")
+
+    # ── 반도체·기술 시장 데이터 (Cycle 7-D-7) ────────────────────────────────
+    if semi_data:
+        lines.append("## 반도체·기술 시장 데이터 (SIA/TechInsights 2023-2024)")
+        # 카테고리별 그룹핑
+        by_cat: dict[str, list] = {}
+        for d in semi_data:
+            by_cat.setdefault(d.get("category", "misc"), []).append(d)
+        for cat, items in list(by_cat.items())[:4]:
+            lines.append(f"**{cat}**")
+            for d in items[:4]:
+                val_str = f"{d['value']}" if d.get("value") is not None else "?"
+                unit_str = d.get("unit", "")
+                lines.append(f"  - {d['metric']}: {val_str} {unit_str} ({d.get('year', '?')})")
+                if d.get("notes"):
+                    lines.append(f"    {d['notes'][:100]}")
+        lines.append("  출처: SIA, TechInsights, USGS, ASML Annual Report")
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -955,6 +1266,13 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         # Cycle 7-B: 경쟁 이론 비교 프로파일 (예측값 vs 실측값)
         loop.run_in_executor(None, build_theory_comparison_context,
                              pq.sectors, pq.regions, pq.actors),
+        # Cycle 7-D: 신규 소스 6개
+        loop.run_in_executor(None, _get_fred_data, pq.regions, pq.sectors),
+        loop.run_in_executor(None, _get_world_bank_wgi, pq.actors, pq.regions),
+        loop.run_in_executor(None, _get_polity5, pq.actors),
+        loop.run_in_executor(None, _get_itu_ict, pq.actors, pq.sectors),
+        loop.run_in_executor(None, _get_hiik_conflict, pq.regions),
+        loop.run_in_executor(None, _get_semi_market, pq.sectors, pq.regions),
         return_exceptions=True,
     )
 
@@ -976,11 +1294,18 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
     cow_wars          = _safe(results[12], [])
     ifans_pubs        = _safe(results[13], [])
     theory_cmp_ctx    = _safe(results[14], "")
+    fred_data         = _safe(results[15], [])
+    wbk_data          = _safe(results[16], [])
+    polity5_data      = _safe(results[17], [])
+    itu_data          = _safe(results[18], [])
+    hiik_data         = _safe(results[19], [])
+    semi_data         = _safe(results[20], [])
 
     context_text = _build_context(
         pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
         sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
         sipri_arms, vdem_data, cow_wars, ifans_pubs,
+        fred_data, wbk_data, polity5_data, itu_data, hiik_data, semi_data,
     )
     # Cycle 7-B: 경쟁 이론 비교 컨텍스트 추가 (공백 없으면 스킵)
     if theory_cmp_ctx:
@@ -988,12 +1313,15 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
 
     logger.debug(
         "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d "
-        "EIA=%d CSIS=%d Arms=%d VDEM=%d Wars=%d IFANS=%d TheoryCmp=%d 총%d자",
+        "EIA=%d CSIS=%d Arms=%d VDEM=%d Wars=%d IFANS=%d Theory=%d "
+        "FRED=%d WBK=%d P5=%d ITU=%d HIIK=%d SEMI=%d 총%d자",
         len(like_items), len(sector_items),
         len(sipri_data), len(cow_alliances), len(kiel_data),
         len(eia_data), len(csis_incidents),
         len(sipri_arms), len(vdem_data), len(cow_wars), len(ifans_pubs),
         len(theory_cmp_ctx),
+        len(fred_data), len(wbk_data), len(polity5_data),
+        len(itu_data), len(hiik_data), len(semi_data),
         len(context_text),
     )
 

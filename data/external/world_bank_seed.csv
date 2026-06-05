@@ -1,0 +1,38 @@
+# World Bank Worldwide Governance Indicators (WGI) 2022
+# Source: World Bank Open Data (data.worldbank.org/indicator)
+# Scores: range approx -2.5 (worst) to +2.5 (best)
+# PV.EST = Political Stability & Absence of Violence/Terrorism
+# CC.EST = Control of Corruption
+# RL.EST = Rule of Law
+# GE.EST = Government Effectiveness
+# RQ.EST = Regulatory Quality
+# VA.EST = Voice & Accountability
+iso3,country_name,year,pv_score,cc_score,rl_score,ge_score,rq_score,va_score
+USA,United States,2022,0.30,1.31,1.61,1.44,1.59,1.12
+CHN,China,2022,-0.37,-0.47,-0.31,0.43,0.01,-1.55
+RUS,Russia,2022,-1.09,-0.73,-0.80,-0.26,-0.52,-1.32
+IRN,Iran,2022,-1.24,-0.96,-0.89,-0.32,-1.10,-1.61
+PRK,North Korea,2022,-1.50,-1.48,-1.67,-1.28,-2.01,-2.21
+UKR,Ukraine,2022,-2.15,-0.54,-0.36,-0.09,-0.21,0.00
+SAU,Saudi Arabia,2022,-0.38,-0.14,0.08,0.29,0.27,-1.70
+ISR,Israel,2022,-0.95,1.15,1.32,1.42,1.30,0.59
+IND,India,2022,-0.73,-0.42,0.15,0.36,0.07,0.38
+JPN,Japan,2022,1.00,1.67,1.73,1.82,1.22,1.01
+KOR,South Korea,2022,0.38,0.81,1.08,1.23,1.11,0.82
+TUR,Turkey,2022,-1.23,-0.47,-0.19,-0.03,0.14,-0.67
+QAT,Qatar,2022,1.05,0.72,0.77,1.01,0.73,-0.83
+MLI,Mali,2022,-2.37,-0.89,-1.19,-1.05,-1.12,-0.68
+NER,Niger,2022,-2.56,-0.87,-0.87,-1.12,-0.91,-0.38
+BFA,Burkina Faso,2022,-2.91,-0.50,-0.88,-1.14,-0.75,-0.58
+ETH,Ethiopia,2022,-1.89,-0.80,-0.82,-0.71,-0.52,-1.14
+YEM,Yemen,2022,-2.68,-1.28,-1.45,-1.60,-1.48,-1.42
+NOR,Norway,2022,1.46,2.14,2.01,1.98,1.54,1.60
+CAN,Canada,2022,0.94,2.00,1.87,1.91,1.63,1.30
+GBR,United Kingdom,2022,0.56,1.79,1.81,1.73,1.66,1.26
+DEU,Germany,2022,0.82,1.84,1.89,1.72,1.65,1.38
+FRA,France,2022,0.31,1.44,1.57,1.51,1.21,1.17
+AUS,Australia,2022,1.08,1.83,1.83,1.79,1.61,1.37
+BLR,Belarus,2022,-0.73,-0.63,-0.87,-0.30,-0.58,-1.99
+SYR,Syria,2022,-2.88,-1.33,-1.55,-1.59,-1.52,-1.83
+AFG,Afghanistan,2022,-2.93,-1.53,-1.71,-1.64,-1.50,-1.97
+VEN,Venezuela,2022,-1.92,-1.49,-1.73,-1.75,-2.01,-1.48
