@@ -1381,6 +1381,53 @@ Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측:
 
 ---
 
+## ✅ [Cycle 7-B] 경쟁 이론 비교 엔진 (2026-06-05) — v7.1.0
+
+### 구현 내용
+
+**신규 파일: `backend/services/theory_comparator.py`**
+
+- `build_theory_comparison_context(sectors, regions, actors) -> str`
+  - 섹터/지역 → 관련 이론 쌍 결정론적 선택 (6개 섹터·7개 지역 매핑 테이블)
+  - 각 이론 프로파일 DB 조회 (IV·DV·반증 예측·반례·경쟁이론)
+  - 이론별 실측값 조회 (SIPRI milex·Arms HHI·EIA 초크포인트·ACLED 건수·V-DEM)
+  - "예측: [방향] / 실측: [수치] / 판정 요청" 형태 비교 텍스트 생성
+
+**섹터-이론 쌍 매핑:**
+
+| 섹터/지역 | 메인 이론 | 경쟁 이론 |
+|-----------|---------|---------|
+| energy | Weaponized Interdependence | Resource Weaponization |
+| maritime | Mahan | A2AD |
+| techno | Digital Iron Curtain | Weaponized Interdependence |
+| indo_pacific | Mearsheimer | Waltz |
+| gray_zone | Gray Zone | Hybrid Warfare |
+| cyber | Libicki | Digital Iron Curtain |
+| taiwan_strait | Mearsheimer | Mahan |
+| hormuz | Resource Weaponization | Weaponized Interdependence |
+| eastern_europe | Waltz | Hybrid Warfare |
+| korean_peninsula | Alliance Theory | Mearsheimer |
+
+**intel_analyzer.py 확장** (소스 #15):
+- `build_theory_comparison_context()` gather 병렬 추가
+- `context_text`에 이론 비교 섹션 후위 결합
+
+**intel_query.py 프롬프트 강화:**
+- 원칙 4번에 `★ 경쟁 이론 비교 프로파일 활용 지침` 추가
+- [경쟁설명] 형식: `예측: [방향] / 실측: [수치] / 편차: [차이] / 우세: [이론명]`
+- 수사적 기각 금지 — 수치 근거로 판정 의무화
+
+**검증 결과:**
+- 호르무즈: theory_cmp_chars=1370자, 컨텍스트 15278자 ✅
+- 대만해협: Mearsheimer·Waltz·Mahan 3이론 동시 비교 ✅
+- 사이버: Libicki + Digital Iron Curtain 비교 ✅
+- 임포트 체인 전체 정상 ✅
+
+### 현재 버전
+`version.json`: **7.1.0** | phase: 7
+
+---
+
 ## 다음 세션 시작점 (2026-06-05 세션 이후)
 
 ### 현재 지표 (v6.6.0, 2026-06-05 최종)
@@ -1400,13 +1447,13 @@ Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측:
 | 6-B | Granger 통계력 강화 (AIC lag·F-통계량·사이버 proxy) | ✅ v6.5.0 |
 | 6-C | H1 품질 고도화 + SIPRI Arms 섹터 필터 + [UNVERIFIED] 규칙 개선 | ✅ v6.6.0 |
 
-### 다음 작업: Phase 7-B — 경쟁 이론 비교 엔진
+### Phase 7 완료 현황
 
 | Cycle | 항목 | 핵심 파일 | 상태 |
 |-------|------|---------|------|
 | **7-A** | 이론 라이브러리 구조화 — 12개 이론 예측변수·반례 프론트매터 추가 | `library/` 마크다운 + `intel_analyzer.py` | ✅ v7.0.0 |
-| **7-B** | 경쟁 이론 비교 엔진 — 3개 이론 예측값 편차 비교 → 우세 이론 선택 | `intel_analyzer.py` + 프롬프트 | ⬜ **다음 작업** |
-| **7-C** | 종합 평가 — 자동화 테스트 20케이스 확장, 신뢰도 85+ 선언 | `eval_insight.py` 확장 | ⬜ |
+| **7-B** | 경쟁 이론 비교 엔진 — 섹터/지역 기반 이론 쌍 선택 + 예측값 vs 실측값 편차 컨텍스트 | `theory_comparator.py` + `intel_analyzer.py` + 프롬프트 | ✅ v7.1.0 |
+| **7-C** | 종합 평가 — 자동화 테스트 20케이스 확장, 신뢰도 85+ 선언 | `eval_insight.py` 확장 | ⬜ **다음 작업** |
 
 ### Phase 8 (후순위, Phase 7 완료 후)
 

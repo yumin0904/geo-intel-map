@@ -18,6 +18,7 @@ services/intel_analyzer.py
   12. V-DEM Democracy Index — 행위자 체제 유형 정량화 (Cycle 6-A)
   13. COW Wars — 전쟁 선례 시계열 (Cycle 6-A)
   14. 외교부 LOD IFANS — 한반도·동아시아 한국 시각 발간자료 (Cycle 6-A)
+  15. 경쟁 이론 비교 프로파일 — 이론 예측값 vs 실측값 편차 컨텍스트 (Cycle 7-B)
 """
 from __future__ import annotations
 
@@ -31,6 +32,7 @@ from pathlib import Path
 from typing import Iterator
 
 from services.entity_parser import ParsedQuery
+from services.theory_comparator import build_theory_comparison_context
 
 logger = logging.getLogger(__name__)
 
@@ -950,6 +952,9 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_vdem, pq.actors),
         loop.run_in_executor(None, _get_cow_wars, pq.regions, pq.actors),
         loop.run_in_executor(None, _get_ifans_publications, pq.actors, pq.regions),
+        # Cycle 7-B: 경쟁 이론 비교 프로파일 (예측값 vs 실측값)
+        loop.run_in_executor(None, build_theory_comparison_context,
+                             pq.sectors, pq.regions, pq.actors),
         return_exceptions=True,
     )
 
@@ -970,20 +975,25 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
     vdem_data         = _safe(results[11], [])
     cow_wars          = _safe(results[12], [])
     ifans_pubs        = _safe(results[13], [])
+    theory_cmp_ctx    = _safe(results[14], "")
 
     context_text = _build_context(
         pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
         sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
         sipri_arms, vdem_data, cow_wars, ifans_pubs,
     )
+    # Cycle 7-B: 경쟁 이론 비교 컨텍스트 추가 (공백 없으면 스킵)
+    if theory_cmp_ctx:
+        context_text = context_text + "\n\n" + theory_cmp_ctx
 
     logger.debug(
         "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d "
-        "EIA=%d CSIS=%d Arms=%d VDEM=%d Wars=%d IFANS=%d 총%d자",
+        "EIA=%d CSIS=%d Arms=%d VDEM=%d Wars=%d IFANS=%d TheoryCmp=%d 총%d자",
         len(like_items), len(sector_items),
         len(sipri_data), len(cow_alliances), len(kiel_data),
         len(eia_data), len(csis_incidents),
         len(sipri_arms), len(vdem_data), len(cow_wars), len(ifans_pubs),
+        len(theory_cmp_ctx),
         len(context_text),
     )
 
@@ -1004,6 +1014,7 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
             "vdem_entries":        len(vdem_data),
             "cow_wars":            len(cow_wars),
             "ifans_pubs":          len(ifans_pubs),
+            "theory_cmp_chars":    len(theory_cmp_ctx),
         },
         "like_items":        like_items,
         "sector_items":      sector_items,
