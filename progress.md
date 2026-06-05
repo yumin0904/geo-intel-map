@@ -1607,6 +1607,84 @@ Gemini가 이제 "Farrell&Newman 예측: HHI 증가 → 양보 증가 vs 실측:
 
 ---
 
+## 다음 세션 개선 계획 (2026-06-06 분석 확정)
+
+### 근본 원인 진단 (코드·DB 근거)
+
+**신뢰도 71 고착의 산술적 분해 (20케이스):**
+
+| 점수 | 케이스 수 | 캡 원인 |
+|------|----------|--------|
+| 60 | 8개 | `data_void_penalty` — event_archive에 arctic·sahel·cyber·techno = 0건 |
+| 75 | 9개 | `verification_cap` PENDING — 최악 H1이 PENDING (캡 75) |
+| 88 | 2개 | PARTIAL 캡 88 |
+| 100 | 1개 | H1 없음 (캡 없음) |
+
+`8×60 + 9×75 + 2×88 + 1×100 = 1431 ÷ 20 = 71.55` → 정확히 일치.
+
+**결정적 결함 2가지:**
+
+① `data_void_penalty`가 7-D 신규 데이터를 `source_counts`에서 인식하지 못함.
+WBK·ITU·HIIK·CSIS·semi·FRED가 이미 DB에 있지만 패널티 판정에서 제외됨.
+sahel 쿼리는 WBK 거버넌스(말리 -2.37), HIIK 강도, Polity5가 있는데도 "데이터 없음"으로 판정 중.
+
+② `verification_cap`이 "최악 상태" 기준 → VERIFIED를 매장.
+`worst = min(specs, ...)` 로직: VERIFIED 1건 + PENDING 1건 → 전체가 75 캡.
+한 카드에서 Granger 검증을 통과해도 다른 H1의 PENDING이 전체를 끌어내림.
+
+```
+현재 71
+ → Layer 1 (점수 로직 교정)              ≈ 80~82   [즉시, 코드 소량]
+ → Layer 2 (Granger 깊이)               ≈ 83~85   [중간]
+ → Layer 3 (ACLED 사헬/북극 + 데이터 L2/L3)  ≈ 85+ → Phase 8 게이트
+```
+
+---
+
+### Layer 1 — 점수 로직 교정 (즉시, 코드 소량) ⬜
+
+| ID | 항목 | 파일 | 예상 효과 |
+|----|------|------|----------|
+| **L1-a** | `data_void_penalty`에 7-D 구조화 소스 반영 — fred/wbk/polity5/itu/hiik/semi 중 N개 이상이면 void 아님 | `confidence_scorer.py` | 60점 8케이스 → 75~90 |
+| **L1-b** | `verification_cap`을 "최악→최선" 기준으로 변경 — 1개라도 VERIFIED면 상한 해제 | `intel_query.py:351` | VERIFIED 보유 케이스 정상 평가 |
+| **L1-c** | `source_counts`에 신규 6소스 카운트 추가 (L1-a 전제조건) | `intel_analyzer.py:1330` | L1-a 동작 가능화 |
+
+---
+
+### Layer 2 — Granger 검증 깊이 (중간) ⬜
+
+| ID | 항목 | 파일 | 근거 |
+|----|------|------|------|
+| **L2-a** | CSIS 사이버 사건 → 월별 시계열 생성 → cyber H1 ITA/SOXX Granger 검증 | `hypothesis_verifier.py` + `correlation.py` | cyber는 region 없어 100% PENDING |
+| **L2-b** | Type_B 과잉 생성 억제 — H1 카드당 측정가능 가설 최우선 (38건 중 30건 PENDING이 대부분 Type_B) | `intel_query.py` 프롬프트 | PENDING 대량 발생 구조 해소 |
+| **L2-c** | actor-filter event study 구현 — PARTIAL 케이스(p=0.10~0.15) VERIFIED 돌파 (`hypothesis_verifier.py:156`에 "다음 버전 예정" 명시) | `hypothesis_verifier.py` | PARTIAL 7건 → VERIFIED 경로 |
+
+---
+
+### Layer 3 — 데이터 커버리지 공백 (7-D L2/L3 연계) ⬜
+
+| ID | 항목 | 효과 |
+|----|------|------|
+| **L3-a** | ACLED sahel·arctic 재적재 — event_archive에 region_code 태깅 | sahel/arctic Granger·cascade 가능화 (현재 0건) |
+| **L3-b** | 7-D-3 Our World in Data — 군사비·분쟁사망자·핵탄두·에너지 | indo_pacific 군사력 수치 |
+| **L3-c** | 7-D-9 UN Comtrade — HS 8542 반도체 무역 HHI | Weaponized Interdependence IV 실측화 |
+| **L3-d** | 7-D-10 Wikidata 조약·동맹 SPARQL | COW Alliances 보완 |
+
+---
+
+### Layer 4 — 출력 형식·프롬프트 (저비용) ⬜
+
+| ID | 항목 | 근거 |
+|----|------|------|
+| **L4-a** | verify 모드 `[단계 4]`에도 `예측:/실측:/판정:` 레이블 적용 | salt_typhoon·mearsheimer verify이라 rival_check 미탐지 |
+| **L4-b** | `china_ai` "수출규제" 키워드 누락 — 쿼리 핵심어 반영 지침 | 사소하나 키워드 체크 실패 |
+
+---
+
+**실행 순서**: L1-c → L1-a → L1-b → eval 재실행 → L2-b → L2-a → L3-a → eval 재실행
+
+---
+
 ## Phase 7-D 계획 — 풀스케일 데이터 대량 적재 (2026-06-05 확정)
 
 ### 목표
