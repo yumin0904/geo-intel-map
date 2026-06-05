@@ -34,6 +34,72 @@ _OUT_DIR.mkdir(exist_ok=True)
 
 BASE_URL = "http://localhost:8000"
 
+# ── [C1] 질적 평가 (LLM 심판) ──────────────────────────────────────────────
+# eval은 테스트 하네스이므로 Gemini 심판 사용은 Token-Zero 위반이 아니다.
+# 형식 충족(섹션 존재)이 아닌 '내용의 참·비자명성·추론 정직성'을 채점한다.
+_JUDGE_ENABLED = False  # --judge 플래그로 켬
+
+
+def _resolve_gemini_key() -> str | None:
+    import os
+    key = os.getenv("GEMINI_API_KEY")
+    if key:
+        return key
+    # backend/.env 폴백
+    env = _ROOT / ".env"
+    if env.exists():
+        for line in env.read_text().splitlines():
+            if line.startswith("GEMINI_API_KEY"):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return None
+
+
+_JUDGE_RUBRIC = """당신은 국제정치학 박사학위 논문 심사위원입니다.
+아래 지정학 분석 텍스트를 4개 축으로 각 1~5점 채점하세요. 엄격하게 평가하십시오.
+
+- non_obviousness (비자명성): 1=이미 알려진 사실 재서술 / 5=기존 문헌이 놓친 독창적 통찰
+- inference_honesty (추론 정직성): 1=상관을 인과로 과대주장 / 5=상관·선행성·인과를 정확히 구분하고 한계를 명시
+- competing_rigor (경쟁이론 엄밀성): 1=수사적 기각("한계가 있다") / 5=수치 편차로 이론 우열을 판정
+- falsifiability (반증가능성): 1=측정 불가 추상 주장 / 5=측정가능 변수로 반증가능한 H1 제시
+
+반드시 JSON만 출력 (다른 텍스트 금지):
+{"non_obviousness": N, "inference_honesty": N, "competing_rigor": N, "falsifiability": N, "one_line": "한 줄 총평"}
+
+분석 텍스트:
+"""
+
+
+def _judge_quality(full_text: str) -> dict | None:
+    """Gemini로 분석 텍스트를 4축 루브릭 채점한다. 실패 시 None."""
+    key = _resolve_gemini_key()
+    if not key or not full_text:
+        return None
+    url = ("https://generativelanguage.googleapis.com/v1beta/models/"
+           f"gemini-2.5-flash:generateContent?key={key}")
+    body = {
+        "contents": [{"parts": [{"text": _JUDGE_RUBRIC + full_text[:6000]}], "role": "user"}],
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 400,
+                             "thinkingConfig": {"thinkingBudget": 0}},
+    }
+    try:
+        r = httpx.post(url, json=body, timeout=60)
+        if r.status_code != 200:
+            return None
+        txt = (r.json()["candidates"][0]["content"]["parts"][0]["text"])
+        m = re.search(r"\{.*\}", txt, re.DOTALL)
+        if not m:
+            return None
+        data = json.loads(m.group())
+        # 1~5 정수 검증
+        for k in ("non_obviousness", "inference_honesty", "competing_rigor", "falsifiability"):
+            v = data.get(k)
+            if not isinstance(v, (int, float)) or not (1 <= v <= 5):
+                return None
+        return data
+    except Exception:
+        return None
+
+
 # ── 필수 섹션 기본값 (모드별) ─────────────────────────────────────────────
 _DEFAULT_SECTIONS = {
     "insight": ["[관찰]", "[주장]", "[가설]", "[근거]",
@@ -325,6 +391,17 @@ def evaluate_case(case: dict) -> dict:
         print(f"  ⚠ H1 가설 미추출 (기대: True)")
     print(f"  📐 증거 등급 {confidence} / 추론 등급 [{inference_grade}]")
 
+    # [C1] 질적 평가 (LLM 심판) — 형식이 아닌 내용 채점
+    quality = None
+    if _JUDGE_ENABLED and text:
+        quality = _judge_quality(text)
+        if quality:
+            q4 = (quality["non_obviousness"] + quality["inference_honesty"]
+                  + quality["competing_rigor"] + quality["falsifiability"]) / 4
+            print(f"  ⚖️  질적 {q4:.1f}/5 (비자명 {quality['non_obviousness']}·"
+                  f"정직 {quality['inference_honesty']}·경쟁 {quality['competing_rigor']}·"
+                  f"반증 {quality['falsifiability']}) — {quality.get('one_line','')[:40]}")
+
     return {
         "id": cid,
         "name": name,
@@ -345,6 +422,7 @@ def evaluate_case(case: dict) -> dict:
         "full_text": text,  # 상세 분석용 (JSON에 포함)
         "expected_min_score": exp_score,
         "retries": retries,
+        "quality": quality,  # [C1] LLM 심판 4축 (없으면 None)
     }
 
 
@@ -394,6 +472,20 @@ def _print_summary(results: list[dict]) -> None:
             n = ladder.get(grade, 0)
             print(f"     {grade}: {n}/{len(valid)}")
         print(f"   ⚠️ '선행성'도 Granger 예측적 선행일 뿐 구조적 인과 아님 (교란 미통제)")
+
+    # ── [C1] 질적 평가 집계 (LLM 심판, --judge 시) ────────────────────────────
+    judged = [r for r in valid if r.get("quality")]
+    if judged:
+        axes = ("non_obviousness", "inference_honesty", "competing_rigor", "falsifiability")
+        labels = {"non_obviousness": "비자명성", "inference_honesty": "추론정직성",
+                  "competing_rigor": "경쟁이론엄밀", "falsifiability": "반증가능성"}
+        print(f"\n⚖️  [질적 평가] LLM 심판 {len(judged)}케이스 (형식 아닌 내용 채점, 1~5)")
+        overall = 0.0
+        for ax in axes:
+            avg = sum(r["quality"][ax] for r in judged) / len(judged)
+            overall += avg
+            print(f"     {labels[ax]}: {avg:.2f}/5")
+        print(f"     종합: {overall/4:.2f}/5  ← '박사 수준' 진짜 척도 (형식 무관)")
 
     # 잘림·API오류 재시도 통계 (일시적 Gemini 현상 모니터링)
     retried = [r for r in results if r.get("retries", 0) > 0]
@@ -474,7 +566,12 @@ def main() -> None:
     parser.add_argument("--case", help="특정 케이스 ID만 실행 (부분 매칭)")
     parser.add_argument("--summary", action="store_true", help="latest.json 요약만 출력")
     parser.add_argument("--no-save-text", action="store_true", help="결과 JSON에 full_text 제외")
+    parser.add_argument("--judge", action="store_true",
+                        help="[C1] LLM 심판 질적 평가 활성화 (Gemini 추가 호출)")
     args = parser.parse_args()
+
+    global _JUDGE_ENABLED
+    _JUDGE_ENABLED = args.judge
 
     # --summary: 저장된 결과만 출력
     if args.summary:

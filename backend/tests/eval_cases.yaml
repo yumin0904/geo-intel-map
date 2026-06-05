@@ -206,3 +206,90 @@ cases:
       sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
       tags: ["호르무즈", "전이"]
       h1: true
+
+  # ── C2 케이스 확장 (사건→사건 전이 + 커버리지 다양화, 21→30) ──────────────
+
+  - id: hormuz_redsea_contagion
+    name: "호르무즈 → 홍해 후티 공격 전이 (B4)"
+    query: "호르무즈 해협의 이란 도발 건수가 홍해·바브엘만데브 후티 공격 건수로 전이되는지 두 지역 ACLED 시계열로 검증해줘. '호르무즈 사건 건수가 증가할 때 홍해 공격 건수가 유의하게 증가한다' 형태로."
+    mode: verify
+    expect:
+      min_score: 55
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["홍해", "전이"]
+      h1: true
+
+  - id: ukraine_middleeast_contagion
+    name: "러-우 → 중동 분쟁 전이 (B4)"
+    query: "우크라이나 분쟁 강도가 중동 분쟁 건수로 전이되는 강대국 관심 분산 가설을 두 지역 ACLED 시계열로 검증해줘. '우크라이나 분쟁 건수가 증가할 때 중동 사건 건수가 유의하게 변화한다' 형태로."
+    mode: verify
+    expect:
+      min_score: 55
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["중동", "전이"]
+      h1: true
+
+  - id: eia_gas_europe_energy
+    name: "유럽 가스 의존도 → 에너지 무기화 (수치 근거)"
+    query: "EU의 러시아 천연가스 의존도 변화가 에너지 무기화 효과에 미친 영향을 FRED·EIA 수치로 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["가스", "에너지"]
+      h1: true
+
+  - id: china_rareearth_techno
+    name: "중국 희토류 통제 → 반도체 공급망 HHI"
+    query: "중국의 희토류·갈륨 수출통제가 반도체 공급망 집중도(HHI)에 미치는 구조적 영향을 SIA 시장 데이터로 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["희토류", "반도체"]
+      h1: true
+
+  - id: sahel_governance_gray_zone
+    name: "사헬 거버넌스 붕괴 → 지하디스트 확산"
+    query: "사헬 국가들의 거버넌스 지수(WB WGI) 악화가 분쟁 강도(HIIK)에 미치는 영향을 회색지대 이론으로 분석해줘"
+    mode: insight
+    expect:
+      min_score: 50
+      tags: ["사헬", "거버넌스"]
+      h1: true
+
+  - id: nato_burden_sharing
+    name: "NATO 방위비 분담 → 자유편승 검증"
+    query: "NATO 회원국 국방비 %GDP 격차가 자유편승(free-riding) 이론을 지지하는지 SIPRI·OWID 군사비 데이터로 검증해줘"
+    mode: verify
+    expect:
+      min_score: 55
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["NATO", "국방비"]
+      h1: true
+
+  - id: south_china_sea_maritime
+    name: "남중국해 분쟁 → 해상 방산 수요"
+    query: "남중국해 영유권 분쟁 강도가 역내 방산 투자에 미치는 영향을 마한 해양력 이론으로 분석해줘"
+    mode: insight
+    expect:
+      min_score: 55
+      tags: ["남중국해", "해양"]
+      h1: true
+
+  - id: lazarus_crypto_cyber
+    name: "북한 라자루스 암호화폐 탈취 → 제재 회피"
+    query: "북한 라자루스 그룹의 암호화폐 탈취 규모 증가가 제재 회피·핵개발 자금에 미치는 영향을 CSIS 사이버 데이터로 분석해줘"
+    mode: insight
+    expect:
+      min_score: 50
+      tags: ["라자루스", "사이버"]
+      h1: false
+
+  - id: taiwan_liberal_vs_realist
+    name: "대만 — 자유주의 상호의존 vs 공격적 현실주의 (수치 비교)"
+    query: "대만해협에서 양안 무역 의존도(자유주의)와 군사력 격차(현실주의) 중 어느 변수가 분쟁 억제를 더 잘 설명하는지 수치로 검증해줘"
+    mode: verify
+    expect:
+      min_score: 60
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["대만", "상호의존"]
+      h1: true
