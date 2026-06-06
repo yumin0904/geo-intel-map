@@ -31,6 +31,7 @@ _REGION_DEFAULT_TICKER: dict[str, str] = {
     "taiwan_strait":     "TSM",    # 대만: TSMC 주가 (반도체 공급망)
     "hormuz":            "CL=F",   # 호르무즈: WTI 유가 (초크포인트)
     "korean_peninsula":  "KRW=X",  # 한반도: 원/달러 환율
+    "east_china_sea":    "ITA",    # 동중국해(일본): 미 방산 ETF (이론근거 쌍·로컬 캐시)
     "bab_el_mandeb":     "CL=F",   # 바브엘만데브: WTI 유가
     "suez":              "CL=F",   # 수에즈: WTI 유가
     "middle_east":       "GLD",    # 중동: 금 (안전자산 도피)

@@ -111,6 +111,7 @@ _REGION_MAP: list[tuple[list[str], str]] = [
     (["대만", "taiwan", "남중국해", "south china", "반도체", "tsmc"], "taiwan_strait"),
     (["호르무즈", "hormuz", "이란", "iran", "걸프", "gulf", "페르시아"], "hormuz"),
     (["한반도", "korean", "북한", "dprk", "조선"], "korean_peninsula"),
+    (["동중국해", "east china", "센카쿠", "senkaku", "일본", "japan", "자위대", "jsdf"], "east_china_sea"),
     (["홍해", "red sea", "바브엘만데브", "bab el", "예멘", "후티", "houthi"], "bab_el_mandeb"),
     (["수에즈", "suez", "이집트", "egypt"], "suez"),
     (["중동", "middle east", "이스라엘", "israel", "팔레스타인"], "middle_east"),

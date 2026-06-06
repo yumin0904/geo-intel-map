@@ -55,6 +55,7 @@ _REGION_THEORY_PAIRS: dict[str, list[str]] = {
     "korean_peninsula": ["indo_pacific_alliance_theory", "indo_pacific_mearsheimer_offensive_realism"],
     "bab_el_mandeb":    ["energy_resource_weaponization", "gray_zone_gray_zone_strategy"],
     "south_china_sea":  ["maritime_mahan_sea_power", "indo_pacific_a2ad_strategy"],
+    "east_china_sea":   ["maritime_mahan_sea_power", "indo_pacific_mearsheimer_offensive_realism"],
     "sahel":            ["gray_zone_gray_zone_strategy", "gray_zone_hybrid_warfare"],
 }
 
@@ -161,6 +162,7 @@ def _get_fred_for_theories(regions: list[str]) -> dict:
         "eastern_europe": ["PNGASEUUSDM", "DCOILBRENTEU"],
         "taiwan_strait":  ["EXCHUS"],
         "korean_peninsula": ["KOREUS"],
+        "east_china_sea": ["EXJPUS"],
     }
     series_ids: list[str] = []
     for r in regions:
@@ -236,6 +238,7 @@ def _get_acled_event_count(regions: list[str]) -> dict:
         "eastern_europe": ["Ukraine", "Russia"],
         "hormuz": ["Iran", "Yemen"],
         "korean_peninsula": ["North Korea", "South Korea"],
+        "east_china_sea": ["Japan", "China"],
         "bab_el_mandeb": ["Yemen", "Ethiopia"],
         "sahel": ["Mali", "Niger", "Burkina Faso"],
     }

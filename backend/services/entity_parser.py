@@ -63,6 +63,8 @@ _REGION_ALIASES: dict[str, list[str]] = {
     ],
     "east_china_sea": [
         "동중국해", "east china sea", "센카쿠", "senkaku", "댜오위다오", "diaoyu",
+        # 일본의 1차 지정학 분쟁 무대가 동중국해 → Japan 쿼리의 기본 지역
+        "일본", "japan", "자위대", "jsdf",
     ],
     "suez": [
         "수에즈", "suez", "수에즈 운하", "suez canal",
