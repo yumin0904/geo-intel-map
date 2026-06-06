@@ -54,13 +54,29 @@ def _resolve_gemini_key() -> str | None:
     return None
 
 
+# [AR-3] 측정 가드레일: 5단계 전부 앵커링 → 심판 보간 변산(±0.3) 축소.
+# 1·5점만 정의하면 2·3·4가 모호해 노이즈 발생 → 각 점수에 구체 기준 고정.
 _JUDGE_RUBRIC = """당신은 국제정치학 박사학위 논문 심사위원입니다.
-아래 지정학 분석 텍스트를 4개 축으로 각 1~5점 채점하세요. 엄격하게 평가하십시오.
+아래 지정학 분석 텍스트를 4개 축으로 각 1~5점 채점하세요. 엄격하되, 아래 단계별 기준을 그대로 적용하십시오.
 
-- non_obviousness (비자명성): 1=이미 알려진 사실 재서술 / 5=기존 문헌이 놓친 독창적 통찰
-- inference_honesty (추론 정직성): 1=상관을 인과로 과대주장 / 5=상관·선행성·인과를 정확히 구분하고 한계를 명시
-- competing_rigor (경쟁이론 엄밀성): 1=수사적 기각("한계가 있다") / 5=수치 편차로 이론 우열을 판정
-- falsifiability (반증가능성): 1=측정 불가 추상 주장 / 5=측정가능 변수로 반증가능한 H1 제시
+[non_obviousness 비자명성]
+1=뉴스·교과서 수준 통념 재서술 / 2=통념에 약간 부연, 새로움 거의 없음 /
+3=알려진 요소들의 새로운 조합, 부분적 통찰 / 4=반직관·교차도메인 주장 + 메커니즘 제시 /
+5=기존 문헌이 놓친 독창적 통찰 + 검증가능한 공백 구체 식별
+
+[inference_honesty 추론 정직성]
+1=상관·일화를 인과로 단정('유발한다') / 2=인과 동사 남용하나 일부 한계 언급 /
+3=등급 표기하나 본문 동사와 불일치 / 4=상관·선행성 구분 + 등급에 맞는 동사 + 한계 명시 /
+5=인과추론 사다리 정확 적용 + 교란·반례·시간역전까지 점검
+
+[competing_rigor 경쟁이론 엄밀성]
+1=단일 이론, 경쟁이론 없음 / 2=경쟁이론 나열하나 수사적 기각('한계가 있다') /
+3=경쟁이론 예측 제시하나 실측 수치 비교 없음 / 4=예측 vs 실측 수치 비교 일부 제시 /
+5=양 이론 수치 편차로 우열 판정 + 종합 판정 명시
+
+[falsifiability 반증가능성]
+1=측정불가 추상 주장 / 2=가설 있으나 변수 모호 / 3=H1 있으나 측정·통제변수 불완전 /
+4=측정가능 변수 + 통제변수 명시한 H1 / 5=반증가능 H1 + 검정 방법·데이터까지 특정
 
 반드시 JSON만 출력 (다른 텍스트 금지):
 {"non_obviousness": N, "inference_honesty": N, "competing_rigor": N, "falsifiability": N, "one_line": "한 줄 총평"}
@@ -76,8 +92,11 @@ def _judge_quality(full_text: str) -> dict | None:
         return None
     url = ("https://generativelanguage.googleapis.com/v1beta/models/"
            f"gemini-2.5-flash:generateContent?key={key}")
+    # [AR-3] 절단 한도 6000→12000: 인사이트 평균 5960자·최대 11051자(2장 구조).
+    # 6000자 절단 시 ~31% 케이스에서 늦게 나오는 [경쟁설명]·[문헌공백]이 잘려
+    # 체계적 저평가 + 노이즈 유발 → 전문을 심판에 전달.
     body = {
-        "contents": [{"parts": [{"text": _JUDGE_RUBRIC + full_text[:6000]}], "role": "user"}],
+        "contents": [{"parts": [{"text": _JUDGE_RUBRIC + full_text[:12000]}], "role": "user"}],
         "generationConfig": {"temperature": 0.2, "maxOutputTokens": 400,
                              "thinkingConfig": {"thinkingBudget": 0}},
     }
