@@ -326,11 +326,19 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         if spec.var_type == "Type_B":
             if not spec.region_code:
                 spec.error = "Type B (행동 변수): region_code 미식별 → ACLED 검증 불가"
+                spec.inference_caveat = (
+                    "검정 불가 — 종속변수가 '건수·빈도'(행동 변수)이나 집계 지역이 식별되지 않음. "
+                    "검정하려면 H1에 지역(예: '동중국해 분쟁 건수')과 집계 출처(ACLED/CSIS)를 명시해야 함."
+                )
             else:
                 spec.error = (
                     f"Type B (행동 변수): ACLED 이벤트 비교 필요 "
                     f"(region={spec.region_code}) "
                     f"→ actor_filter 기반 event study로 검증 가능 (다음 버전 구현 예정)"
+                )
+                spec.inference_caveat = (
+                    f"검정 불가 — 종속변수가 행동 변수(건수)로 {spec.region_code} ACLED 시계열은 있으나 "
+                    f"actor_filter 기반 event study 미구현. 현재는 서술·이론 근거만 가능."
                 )
             logger.info("[hypothesis] Type_B PENDING: %s", spec.h1[:60])
             results.append(spec)
@@ -355,6 +363,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             else:
                 proxy_str = ", ".join(spec.proxy_suggestions[:3]) if spec.proxy_suggestions else "대체 지표 필요"
                 spec.error = f"Type C (추상 변수): region 미식별 → 권장 대리변수: {proxy_str}"
+                spec.inference_caveat = (
+                    f"검정 불가 — 종속변수가 추상 지표(예: 의존도·취약성·생산비)로 직접 매핑 가능한 "
+                    f"시계열·ticker 없음. 권장 대리변수: {proxy_str}. "
+                    f"이 대리변수의 실측 시계열이 확보돼야 Granger 검정 가능."
+                )
             logger.info("[hypothesis] Type_C %s: %s", spec.verification_status, spec.h1[:60])
             results.append(spec)
             continue
@@ -414,10 +427,15 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
 
             missing = []
             if not spec.region_code:
-                missing.append("region")
+                missing.append("지역")
             if not spec.ticker:
-                missing.append("ticker")
+                missing.append("시장 ticker")
             spec.error = f"Type A (금융 ticker): 매핑 실패 — {', '.join(missing)} 미식별"
+            spec.inference_caveat = (
+                f"검정 불가 — {', '.join(missing)}을(를) 식별하지 못해 시계열 매핑 실패. "
+                f"종속변수를 환율·유가·주가·ETF 등 측정 가능한 시장 지표로 재정의하거나, "
+                f"H1에 분석 지역을 명시하면 검정 가능."
+            )
             logger.info("[hypothesis] Type_A PENDING (매핑 실패): %s", spec.h1[:60])
             results.append(spec)
             continue

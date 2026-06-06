@@ -1245,8 +1245,8 @@ def _build_context(
 
     # ── ITU ICT 개발 지수 (Cycle 7-D-5) ─────────────────────────────────────
     if itu_data:
-        lines.append("## 사이버 역량 지수 (ITU ICT Development Index 2023)")
-        lines.append("IDI 점수: 0-100 (인프라·이용·역량 종합)")
+        lines.append("## ICT 발전 지수 (ITU ICT Development Index 2023)")
+        lines.append("IDI 점수: 0-100 (ICT 인프라 보급·접근성·이용 종합)")
         for d in itu_data[:8]:
             score = d.get("idi_score")
             rank = d.get("rank")
@@ -1254,6 +1254,11 @@ def _build_context(
             lines.append(
                 f"- **{d['country']}** ({d['iso3']}): IDI {score} (전세계 {rank}위, {tier}티어)"
             )
+        lines.append(
+            "  ⚠️ IDI는 ICT **보급·접근성** 지표이며 사이버 **방어력**의 직접 측정값이 아니다. "
+            "사이버 억지·방어 역량 주장의 근거로 쓸 때는 간접 proxy임을 명시하고, "
+            "직접 근거로는 GCI(Global Cybersecurity Index)·NCSI가 더 타당하다고 한정하라."
+        )
         lines.append("  출처: ITU ICT Development Index 2023")
         lines.append("")
 

@@ -84,7 +84,12 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
         "## [UNVERIFIED] 태그 규칙 — 정확히 적용할 것\n"
         "✅ <context> 블록 안에 있는 수치·사실·기관명 → [UNVERIFIED] 없이 직접 인용 가능.\n"
         "❌ <context>에 없는 외부 수치·사실 → 반드시 [UNVERIFIED] 태그 첨부.\n"
-        "⚠️ [UNVERIFIED] 과잉 사용 금지: context 데이터를 충분히 활용했다면 [UNVERIFIED]는 최소화된다.\n\n"
+        "⚠️ [UNVERIFIED] 과잉 사용 금지: context 데이터를 충분히 활용했다면 [UNVERIFIED]는 최소화된다.\n"
+        "★ [고유명사 귀속 규칙] 작전명·프로그램명·사건 코드명 등 고유명사는 <context>에 등장한 그대로, "
+        "그 출처가 말하는 대상에만 사용하라. context에 없는 고유명사를 지어내지 말 것. "
+        "특히 context의 고유명사를 **다른 사건과 등치**시키지 말라 — 예: 한 기사 제목의 작전명을 "
+        "'이란전(작전명 X)'처럼 별개 사건의 공식 명칭으로 단정 금지. 두 대상이 같다고 context가 "
+        "명시하지 않으면 일반 명칭('미국의 대이란 군사작전')으로 서술하라.\n\n"
 
         "## 필수 분석 원칙 (§19-A)\n"
         "1. 현상 기술(관찰)에서 멈추지 말고 인과 검증 단계(가설·경쟁이론·데이터·고리강도)까지 진입하라.\n"
