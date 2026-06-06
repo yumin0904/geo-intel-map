@@ -52,6 +52,10 @@ _TICKER_TO_FRED: dict[str, str] = {
     "TSM":   "tsm_stock",
     "ITA":   "defense_etf",
     "NG=F":  "natgas_futures",
+    # AR-2: historical_macro_indices에 적재돼 있으나 미매핑이던 일별 시계열
+    "BZ=F":  "brent",      # Brent 원유 (WTI와 구분 — 유럽·중동 벤치마크)
+    "TWD=X": "usd_twd",    # 대만 달러 (대만해협 긴장의 직접 종속변수)
+    "^VIX":  "vix",        # 변동성지수 (안전자산 도피 proxy)
 }
 
 # P4-4 후보 스캔용 티커 확장 목록: ticker → (fred_indicator | None, 한국어 레이블)

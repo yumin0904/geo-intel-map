@@ -124,7 +124,12 @@ _REGION_MAP: list[tuple[list[str], str]] = [
 
 _TICKER_MAP: list[tuple[list[str], str, str]] = [
     # (키워드 목록, ticker, 설명)
-    (["wti", "원유", "유가", "crude", "oil", "brent"], "CL=F", "WTI 원유 선물"),
+    # AR-2: 구체 종속변수 우선 매칭 — 일반 'oil'보다 먼저 배치 (first-match)
+    (["brent", "브렌트"], "BZ=F", "Brent 원유 선물"),
+    (["대만 달러", "대만달러", "타이완 달러", "twd", "usd/twd", "신타이완달러"], "TWD=X", "대만 달러 환율"),
+    (["위안", "위안화", "cny", "rmb", "런민비", "인민폐"], "CNY=X", "위안/달러 환율"),
+    (["엔화", "엔/달러", "jpy", "달러엔", "엔달러"], "JPY=X", "엔/달러 환율"),
+    (["wti", "원유", "유가", "crude", "oil"], "CL=F", "WTI 원유 선물"),
     (["천연가스", "natural gas", "가스", "lng", "ng=f"], "NG=F", "천연가스 선물"),
     (["tsmc", "tsm", "반도체", "semiconductor", "파운드리"], "TSM", "TSMC 주가"),
     (["원달러", "usd/krw", "krw", "원화", "환율", "usd_krw", "달러원"], "KRW=X", "원/달러 환율"),
@@ -132,6 +137,7 @@ _TICKER_MAP: list[tuple[list[str], str, str]] = [
     (["금", "gold", "gld", "귀금속"], "GLD", "금 ETF"),
     (["방산", "defense", "무기", "ita", "군비"], "ITA", "방산 ETF"),
     (["soxx", "반도체etf", "semiconductor etf", "chips"], "SOXX", "반도체 ETF"),
+    # VIX는 통제변수(교란) 전용 — 종속변수로 매핑하면 조건부 Granger가 퇴화하므로 제외
 ]
 
 # ── 정규식 ────────────────────────────────────────────────────────────────────

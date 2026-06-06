@@ -92,6 +92,10 @@ _THEORY_GROUNDED_PAIRS: set[tuple[str, str]] = {
     ("taiwan_strait", "TSM"), ("taiwan_strait", "SOXX"),
     ("east_china_sea", "ITA"), ("south_china_sea", "ITA"),
     ("malacca", "NG=F"), ("suez", "CL=F"),
+    # AR-2: 신규 일별 시계열 매핑의 문헌상 인과쌍
+    ("taiwan_strait", "TWD=X"),    # 대만해협 긴장 → 대만 달러 (지정학 리스크 프리미엄)
+    ("eastern_europe", "BZ=F"), ("ukraine", "BZ=F"),  # 러-우 → Brent (에너지 무기화)
+    ("hormuz", "BZ=F"), ("bab_el_mandeb", "BZ=F"),    # 초크포인트 → Brent (중동 벤치마크)
 }
 
 
