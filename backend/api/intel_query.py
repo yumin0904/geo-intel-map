@@ -326,8 +326,13 @@ async def _stream_gemini(
     prompt: str,
     thinking: bool,
     source_counts: dict | None = None,
+    default_regions: list[str] | None = None,
 ) -> AsyncGenerator[str, None]:
-    """Gemini 2.5 Flash SSE 스트리밍. thinking=True 시 thinkingBudget 8192."""
+    """Gemini 2.5 Flash SSE 스트리밍. thinking=True 시 thinkingBudget 8192.
+
+    default_regions: H1에 지역명이 없을 때 상속할 쿼리 지역 (Granger 변수
+        매핑 오류 방지 — 예: korean_peninsula 쿼리가 middle_east→ITA로 검정되는 버그).
+    """
 
     if not _GEMINI_KEY:
         yield _sse({"text": "⚠️ GEMINI_API_KEY가 설정되지 않았습니다.", "done": False})
@@ -440,7 +445,7 @@ async def _stream_gemini(
             #   - 증거 등급(confidence): 데이터·이론 충실도 (§19-D + data_void)
             #   - 추론 등급(inference_grade): 인과추론 사다리 (기술적<상관<선행성)
             # verification_cap 폐기 — 두 축을 하나의 숫자로 뭉개던 결함(Goodhart) 제거.
-            specs = extract_hypotheses(full_text)
+            specs = extract_hypotheses(full_text, default_regions=default_regions)
             if specs:
                 specs = await verify_hypotheses(specs)
                 # 사다리 최고 등급을 인사이트 대표 추론 등급으로 (인과 단정 아님)
@@ -548,7 +553,9 @@ async def intel_query(req: IntelQueryRequest):
             "done":  False,
         })
 
-        async for chunk in _stream_gemini(prompt, pq.thinking, source_counts):
+        async for chunk in _stream_gemini(
+            prompt, pq.thinking, source_counts, default_regions=pq.regions
+        ):
             yield chunk
 
     return StreamingResponse(

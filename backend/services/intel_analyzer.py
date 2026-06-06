@@ -997,12 +997,16 @@ def _build_context(
     # ── Cascade 발화 실적 ─────────────────────────────────────────────────
     cascade_links = cascade_ctx.get("links", [])
     if cascade_links:
-        lines.append("## Cascade 발화 실적 (실제 데이터)")
+        lines.append("## Cascade 발화 실적 (룰 기반 — 통계 상관계수 아님)")
         for lnk in cascade_links[:5]:
             lines.append(
                 f"- {lnk['rule_name']} "
-                f"(상관계수 {lnk['correlation_score']}, {lnk.get('depth', 1)}단계)"
+                f"(룰 발화 점수 {lnk['correlation_score']}, {lnk.get('depth', 1)}단계)"
             )
+        lines.append(
+            "  ⚠️ '룰 발화 점수'는 cascade_rules.yaml 규칙이 매칭된 강도(0~1)이며, "
+            "교란 통제된 통계적 상관계수가 아니다. 이 값을 '상관계수'로 인용하지 말 것."
+        )
         lines.append("")
 
     # ── 이벤트 통계 ───────────────────────────────────────────────────────

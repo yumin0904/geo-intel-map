@@ -386,10 +386,15 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             if sector_proxy:
                 proxy_ticker, proxy_label = sector_proxy
                 spec.var_type = "Type_C"
-                spec.ticker   = proxy_ticker
-                # region 없으면 event_archive 조회 불가 → middle_east fallback
+                # [버그수정] 이미 정확히 추출된 ticker(예: 원/달러→KRW=X)는 보존.
+                #   섹터 키워드(사이버 등)로 ITA 등 엉뚱한 ticker로 덮어쓰지 않음.
+                region_fallback = False
+                if not spec.ticker:
+                    spec.ticker = proxy_ticker
+                # region 없으면 event_archive 조회 불가 → 섹터 대표 지역 폴백(명시)
                 if not spec.region_code:
                     spec.region_code = "middle_east"
+                    region_fallback = True
                 spec = await _run_granger_for_spec(
                     spec, start, end,
                     _load_event_series, _get_market_series, _run_granger,
@@ -397,6 +402,12 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     run_conditional_granger=_run_conditional_granger,
                     proxy_label=f"섹터 proxy: {proxy_label}",
                 )
+                # 지역을 추정 폴백한 경우 결과가 쿼리 지역과 다를 수 있음을 명시
+                if region_fallback:
+                    spec.inference_caveat = (
+                        f"[지역 미식별 — {spec.region_code} 추정 폴백] " +
+                        (spec.inference_caveat or "")
+                    )
                 logger.info("[hypothesis] 섹터proxy %s: %s", spec.verification_status, spec.h1[:60])
                 results.append(spec)
                 continue

@@ -229,12 +229,21 @@ def _make_h0(h1: str) -> str:
     return h0
 
 
-def extract_hypotheses(text: str) -> list[HypothesisSpec]:
+def extract_hypotheses(
+    text: str,
+    default_regions: list[str] | None = None,
+) -> list[HypothesisSpec]:
     """
     Gemini 출력 마크다운에서 HypothesisSpec 목록을 추출한다.
     인사이트 카드 2~3개에서 각각 [가설] 섹션을 파싱한다.
+
+    default_regions: H1 텍스트 자체에 지역명이 없을 때 상속할 쿼리 지역.
+        예) 쿼리가 'korean_peninsula'인데 H1이 '중국 광물 → 원/달러'처럼
+        지역명을 직접 안 쓰면 region_code가 None이 되어, 검증기가 엉뚱한
+        섹터 proxy(예: 사이버→ITA)와 middle_east 폴백으로 빠지는 버그 방지.
     """
     specs: list[HypothesisSpec] = []
+    _default_region = default_regions[0] if default_regions else None
 
     for m in _RE_H1.finditer(text):
         h1_raw = m.group(1).strip()
@@ -264,6 +273,11 @@ def extract_hypotheses(text: str) -> list[HypothesisSpec]:
         # region/ticker 매핑 — 독립 지역은 독립변수 우선, 종속은 종속변수에서
         combined_text = f"{h1_clean} {independent_var} {dependent_var}"
         region_code = _match_region(independent_var) or _match_region(combined_text)
+        # [버그수정] H1에 지역명이 없으면 쿼리 지역을 상속 — region=None일 때
+        #   검증기가 섹터 proxy(사이버→ITA)+middle_east 폴백으로 빠지는 것 방지.
+        #   예: korean_peninsula 쿼리의 '중국 광물→원/달러' H1 → KRW=X 정상 검정.
+        if not region_code and _default_region:
+            region_code = _default_region
         ticker_match = _match_ticker(combined_text)
         ticker = ticker_match[0] if ticker_match else None
 
