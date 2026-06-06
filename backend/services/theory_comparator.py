@@ -231,6 +231,155 @@ def _get_wbk_governance(actors: list[str]) -> dict:
     return result
 
 
+def _get_polity5(actors: list[str]) -> dict:
+    """Polity5 정치체제 지수 — Waltz/Mearsheimer 행위자 분류 강화.
+
+    V-DEM이 조직형태·부패 중심이라면, Polity5는 권위주의←→민주주의 연속 척도(-10~+10).
+    Waltz 방어적 현실주의: 민주국가(+7~+10)는 현상유지 경향 → 반례 탐색.
+    Mearsheimer 공격적 현실주의: 체제 무관하게 생존 추구 → 권위국가 군비 비교.
+    """
+    if not actors:
+        return {}
+    result: dict = {}
+    try:
+        with _db(_INTEL_DB) as con:
+            for iso3 in actors[:5]:
+                row = con.execute(
+                    "SELECT iso3, polity_score, regime_type, year "
+                    "FROM polity5 WHERE iso3=? ORDER BY year DESC LIMIT 1",
+                    (iso3,),
+                ).fetchone()
+                if row:
+                    result[iso3] = {
+                        "polity": row["polity_score"],
+                        "regime": row["regime_type"],
+                        "year": row["year"],
+                    }
+    except Exception as e:
+        logger.debug("[theory_cmp] polity5 조회 실패: %s", e)
+    return result
+
+
+def _get_hiik_conflict(regions: list[str]) -> dict:
+    """HIIK 분쟁 강도 바로미터 — Gray Zone/Hybrid 이론 실측 강화.
+
+    ACLED는 이벤트 건수, HIIK는 분쟁 **강도(1=분쟁~5=전쟁)** — 둘은 다른 차원.
+    Gray Zone 이론 예측: 강도 1~3(비전통) 지속 → 실측과 비교해 우세/열세 판정.
+    Hybrid Warfare 예측: 강도 3~4(위기~제한전) — 단순 ACLED 건수보다 정밀.
+    """
+    _REGION_MAP = {
+        "sahel":          ["Mali", "Niger", "Burkina Faso", "Sahel"],
+        "eastern_europe": ["Ukraine", "Russia"],
+        "hormuz":         ["Iran"],
+        "bab_el_mandeb":  ["Yemen"],
+        "korean_peninsula": ["North Korea", "South Korea"],
+        "east_china_sea": ["China", "Japan"],
+        "middle_east":    ["Israel", "Lebanon", "Syria"],
+    }
+    regions_lower = [r.lower() for r in regions]
+    result: dict = {}
+    try:
+        with _db(_INTEL_DB) as con:
+            for region in regions:
+                targets = _REGION_MAP.get(region, [])
+                for target in targets:
+                    rows = con.execute(
+                        "SELECT conflict_name, intensity, year "
+                        "FROM hiik_conflict WHERE region LIKE ? ORDER BY year DESC LIMIT 1",
+                        (f"%{target}%",),
+                    ).fetchall()
+                    for row in rows:
+                        key = f"{target}_{row['year']}"
+                        result[key] = {
+                            "conflict": row["conflict_name"],
+                            "intensity": row["intensity"],
+                            "year": row["year"],
+                            "region": region,
+                        }
+    except Exception as e:
+        logger.debug("[theory_cmp] hiik 조회 실패: %s", e)
+    return result
+
+
+def _get_itu_ict_for_theories(actors: list[str]) -> dict:
+    """ITU ICT 발전 지수 — Libicki 사이버 억지 이론 실측 강화.
+
+    Libicki 예측: ICT 역량 높은 국가(높은 IDI)는 귀속 능력이 높아 억지 성공률 ↑.
+    실측: 해당 행위자의 IDI 점수로 예측 방향(↑)과 대조.
+    주의: IDI는 사이버 '방어력' 직접 측정값이 아닌 인프라 보급 proxy.
+    """
+    if not actors:
+        return {}
+    result: dict = {}
+    try:
+        with _db(_INTEL_DB) as con:
+            for iso3 in actors[:5]:
+                row = con.execute(
+                    "SELECT iso3, country_name, idi_score, global_rank, year "
+                    "FROM itu_ict WHERE iso3=? ORDER BY year DESC LIMIT 1",
+                    (iso3,),
+                ).fetchone()
+                if row:
+                    result[iso3] = {
+                        "country": row["country_name"],
+                        "idi": row["idi_score"],
+                        "rank": row["global_rank"],
+                        "year": row["year"],
+                    }
+    except Exception as e:
+        logger.debug("[theory_cmp] itu_ict 조회 실패: %s", e)
+    return result
+
+
+def _get_owid_military(actors: list[str], regions: list[str]) -> dict:
+    """OWID 군비·핵탄두 시계열 — Mahan/A2AD 군사력 비교 강화.
+
+    SIPRI milex는 GDP% 단일값, OWID는 실제 지출액·핵탄두 수량 시계열.
+    Mahan 예측: 해군력(군비 지출) 증가 → SLOC 통제력 증가.
+    A2AD 예측: 군비 집중도(반접근 거부 투자) → 지역 억지력 변화.
+    """
+    _REGION_ACTORS: dict[str, list[str]] = {
+        "taiwan_strait":    ["CHN", "USA", "TWN"],
+        "east_china_sea":   ["CHN", "JPN", "USA"],
+        "south_china_sea":  ["CHN", "USA"],
+        "korean_peninsula": ["PRK", "KOR", "USA", "CHN"],
+        "eastern_europe":   ["RUS", "UKR", "USA"],
+        "hormuz":           ["IRN", "USA"],
+        "bab_el_mandeb":    ["USA", "SAU"],
+    }
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_ACTORS.get(r, []))
+    if not iso3_set:
+        return {}
+    result: dict = {}
+    try:
+        placeholders = ",".join("?" * len(iso3_set))
+        with _db(_INTEL_DB) as con:
+            # 군비 지출(USD bn)
+            rows = con.execute(
+                f"SELECT iso3, country, year, value, unit, dataset "
+                f"FROM owid_data WHERE iso3 IN ({placeholders}) "
+                f"AND dataset IN ('military_exp_gdp','nuclear_warheads') "
+                f"ORDER BY iso3, dataset, year DESC",
+                tuple(iso3_set),
+            ).fetchall()
+        for row in rows:
+            iso3 = row["iso3"]
+            ds = row["dataset"]
+            if iso3 not in result:
+                result[iso3] = {"country": row["country"]}
+            if ds == "military_exp_gdp" and "milex_gdp" not in result[iso3]:
+                result[iso3]["milex_gdp"] = row["value"]
+                result[iso3]["milex_year"] = row["year"]
+            elif ds == "nuclear_warheads" and "nukes" not in result[iso3]:
+                result[iso3]["nukes"] = row["value"]
+                result[iso3]["nukes_year"] = row["year"]
+    except Exception as e:
+        logger.debug("[theory_cmp] owid_military 조회 실패: %s", e)
+    return result
+
+
 def _get_acled_event_count(regions: list[str]) -> dict:
     """ACLED 분쟁 이벤트 수 — Gray Zone/A2AD IV proxy."""
     _REGION_COUNTRIES = {
@@ -420,6 +569,10 @@ def build_theory_comparison_context(
     semi    = _get_semi_market_for_theories(sectors, regions)
     fred    = _get_fred_for_theories(regions)
     wbk     = _get_wbk_governance(actors)
+    polity5 = _get_polity5(actors)
+    hiik    = _get_hiik_conflict(regions)
+    itu     = _get_itu_ict_for_theories(actors)
+    owid    = _get_owid_military(actors, regions)
 
     # 3. 비교 텍스트 생성
     lines: list[str] = ["## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)"]
@@ -454,6 +607,18 @@ def build_theory_comparison_context(
                     f"실측 — ACLED 분쟁 이벤트 24개월: {acled.get('event_count_24m', '?')}건 "
                     f"({', '.join(acled.get('countries', [])[:2])})"
                 )
+            # OWID 군비·핵탄두 — Mahan 해군력 투자 예측과 실측 수량 직접 비교
+            if owid:
+                parts = []
+                for iso3, d in list(owid.items())[:4]:
+                    entry = f"{d.get('country', iso3)}"
+                    if d.get("milex_gdp") is not None:
+                        entry += f" 군비 {d['milex_gdp']:.1f}% GDP ({d.get('milex_year','')})"
+                    if d.get("nukes") is not None:
+                        entry += f" 핵탄두 {int(d['nukes'])}기 ({d.get('nukes_year','')})"
+                    parts.append(entry)
+                if parts:
+                    empirical_lines.append(f"실측 — OWID 군사력: {' | '.join(parts)}")
 
         if "weaponized_interdependence" in tid or "resource_weaponization" in tid:
             if eia:
@@ -505,6 +670,28 @@ def build_theory_comparison_context(
                     for iso3, v in vdem.items()
                 )
                 empirical_lines.append(f"실측 — V-DEM 체제유형: {vdem_str}")
+            # Polity5 — Waltz '민주평화론' 반증 또는 Mearsheimer '체제무관 생존경쟁' 검증
+            if polity5:
+                p5_str = " | ".join(
+                    f"{iso3}: Polity {v.get('polity', '?')} ({v.get('regime', '?')}, {v.get('year', '?')})"
+                    for iso3, v in polity5.items()
+                )
+                empirical_lines.append(
+                    f"실측 — Polity5 체제점수(-10전제~+10민주): {p5_str} "
+                    f"[Waltz 예측: +7이상=현상유지 / Mearsheimer 예측: 점수무관 군비경쟁]"
+                )
+            # OWID 군사력 — 권력 격차 수치화
+            if owid:
+                parts = []
+                for iso3, d in list(owid.items())[:4]:
+                    entry = f"{d.get('country', iso3)}"
+                    if d.get("milex_gdp") is not None:
+                        entry += f" {d['milex_gdp']:.1f}%GDP"
+                    if d.get("nukes") is not None:
+                        entry += f" 핵{int(d['nukes'])}기"
+                    parts.append(entry)
+                if parts:
+                    empirical_lines.append(f"실측 — OWID 군사력 격차: {' | '.join(parts)}")
 
         if "alliance_theory" in tid:
             empirical_lines.append(
@@ -526,11 +713,38 @@ def build_theory_comparison_context(
                     empirical_lines.append(
                         f"실측 — WB 거버넌스(WGI, -2.5~+2.5 척도): {wbk_str}"
                     )
+            # HIIK 분쟁 강도 — Gray Zone 예측('강도 1~3 저강도 지속') vs 실측 비교
+            if hiik:
+                hiik_parts = []
+                for key, d in list(hiik.items())[:3]:
+                    intensity = d.get("intensity", "?")
+                    label = {1:"분쟁",2:"비폭력위기",3:"폭력위기",4:"제한전쟁",5:"전쟁"}.get(intensity, str(intensity))
+                    hiik_parts.append(
+                        f"{d.get('conflict','?')} 강도{intensity}({label}, {d.get('year','')})"
+                    )
+                if hiik_parts:
+                    empirical_lines.append(
+                        f"실측 — HIIK 분쟁강도(1~5): {' | '.join(hiik_parts)} "
+                        f"[Gray Zone 예측: 강도1~3 저강도 지속 / Hybrid 예측: 강도3~4 위기·제한전]"
+                    )
 
         if "libicki" in tid or "digital_iron_curtain" in tid:
             empirical_lines.append(
                 "실측 — CSIS Significant Cyber Incidents DB 참조 (context §CSIS 사이버 섹션)"
             )
+            # ITU IDI — Libicki '귀속 능력 높을수록 억지 성공' 예측의 proxy
+            if itu:
+                itu_parts = []
+                for iso3, d in list(itu.items())[:4]:
+                    itu_parts.append(
+                        f"{d.get('country', iso3)}: IDI {d.get('idi','?')} ({d.get('rank','?')}위, {d.get('year','')})"
+                    )
+                if itu_parts:
+                    empirical_lines.append(
+                        f"실측 — ITU ICT 발전지수(ICT 인프라 proxy, 사이버방어력 직접값 아님): "
+                        f"{' | '.join(itu_parts)} "
+                        f"[Libicki 예측: IDI↑ → 귀속능력↑ → 억지효과↑]"
+                    )
             # digital_iron_curtain: 기술 분리 속도를 semi_market으로 수치화
             if semi:
                 parts = []
