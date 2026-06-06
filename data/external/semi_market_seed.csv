@@ -32,3 +32,24 @@ market_size,NVIDIA AI chip revenue,44.9,USD bn,2024,NVIDIA earnings,techno,AI GP
 market_size,China domestic semiconductor production,22.5,USD bn,2023,CSIA,taiwan_strait|techno,자급률 약 17% (목표 70%+ 2030)
 market_size,US CHIPS Act: domestic fab investment,200,USD bn,2024,BCG estimate,indo_pacific,CHIPS Act 발표 후 민간 투자 포함
 market_size,Taiwan semiconductor exports,175,USD bn,2023,MOEA Taiwan,taiwan_strait,대만 전체 수출의 38% 이상
+memory_market,Samsung DRAM global market share,44,%,2024,TrendForce,korean_peninsula,DRAM 1위 — 메모리 집중도 높음
+memory_market,SK Hynix DRAM global market share,28,%,2024,TrendForce,korean_peninsula,HBM3E AI 메모리 주도
+memory_market,Micron DRAM global market share,22,%,2024,TrendForce,indo_pacific,미국 유일 DRAM 생산 거점
+memory_market,DRAM HHI (Herfindahl-Hirschman Index),3,144,index,2024,calculated,techno,3사 과점 3144 — 극도 집중 (Samsung+SK+Micron)
+memory_market,NAND Flash Samsung market share,33,%,2024,TrendForce,korean_peninsula,낸드 1위
+memory_market,China DRAM self-sufficiency rate,2,%,2024,DIGITIMES,techno,중국 DRAM 자급률 2% — 극단적 대외 의존
+china_self_sufficiency,SMIC advanced node gap vs TSMC,4,years,2024,SIA estimate,taiwan_strait,SMIC 현재 7nm 도달 — TSMC 3nm 대비 4세대 격차
+china_self_sufficiency,China advanced semiconductor import dependency,90,%,2023,CCIA China,taiwan_strait|techno,10nm 이하 칩 90% 수입 의존 (미국·대만·한국)
+china_self_sufficiency,China semiconductor import value,350,USD bn,2023,CUSTOMS China,techno,반도체 수입 석유보다 많은 중국 최대 수입 품목
+china_self_sufficiency,China semiconductor self-sufficiency target 2030,70,%,2030,MIIT China,techno,2030년 자급률 70% 목표 (현재 17%)
+china_self_sufficiency,SMIC 7nm yield rate,30,%,2024,analyst estimate,taiwan_strait,수율 30% = 상업 생산 불가 수준 (TSMC 95%+)
+china_self_sufficiency,China EDA tools dependency on USA,100,%,2023,BIS,techno,설계 소프트웨어(EDA) 100% 미국 의존 — Synopsys·Cadence
+export_control,US Entity List China semiconductor firms,43,firms,2024,BIS Entity List,techno,중국 반도체 기업 수출 통제 대상 43곳 (2024년 기준)
+export_control,China export restriction gallium effective,2023-08-01,date,2023,MOFCOM China,techno,중국의 갈륨·게르마늄 수출 허가제 실시 — 보복 카드
+export_control,NVIDIA H20 China export restriction,2024-04-01,date,2024,BIS/NVIDIA,techno,중국용 H20 칩도 추가 수출 통제 (2024년 4월)
+defense_tech,US F-35 advanced chips Taiwan dependency,35,%,2023,CSIS estimate,taiwan_strait|indo_pacific,F-35 전자장비 핵심 칩 35% 대만 조달 — 미 방산 취약점
+defense_tech,US DoD advanced semiconductor sourcing foreign,44,%,2023,GAO,indo_pacific,미국 국방부 선단 반도체 44% 해외 조달 (대만·한국 위주)
+defense_tech,PLA HPC cluster Huawei share,60,%,2024,CSET/Georgetown,techno,중국 인민해방군 고성능 컴퓨팅 60% 화웨이 의존
+advanced_nodes,Global 3nm and below capacity TSMC share,100,%,2024,TechInsights,taiwan_strait,3nm 이하 공정 TSMC 독점 — 대체 불가
+advanced_nodes,Global 5nm capacity TSMC share,86,%,2024,TechInsights,taiwan_strait,5nm TSMC 86% — Samsung 14%
+advanced_nodes,China maximum achievable node (no EUV),28,nm,2024,ASML analysis,techno,EUV 없이 중국 가능한 최선단 노드 28nm (2024)

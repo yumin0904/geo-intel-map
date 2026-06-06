@@ -73,3 +73,35 @@ CSIS-2024-007,2024-06-01,PRK,Unknown,KOR,defense_industry,espionage,unknown,Kore
 CSIS-2024-008,2024-04-05,CHN,Volt Typhoon,USA,military,espionage,unknown,Volt Typhoon Guam Cyber Pre-positioning,미국 괌 군사 기지 OT 네트워크 침투 확인. 대만 분쟁 시 조기 마비 포석
 CSIS-2024-009,2024-10-01,RUS,GRU,MULTI,election,disinformation,unknown,Russian Election Interference 2024,러시아의 미국·EU 선거 개입. 딥페이크·허위정보 AI 강화 캠페인
 CSIS-2024-010,2024-11-01,CHN,Unknown,USA,government,supply_chain,unknown,Treasury Department Breach,중국의 미국 재무부 BeyondTrust 공급망 공격. 재무장관 오피스 문서 접근
+CSIS-2024-011,2024-04-01,IRN,IRGC Cyber Command,ISR,critical_infra,sabotage,unknown,Iran Direct Cyber Strike on Israel Infra,이란의 이스라엘 수도·에너지 인프라 직접 공격 (4월 드론 공습과 동시). 병행 멀티도메인 작전 최초 사례
+CSIS-2024-012,2024-06-01,ISR,Unit 8200,IRN,energy,sabotage,unknown,Israel Counter-Cyber Iran Gas Stations,이스라엘 8200부대의 이란 전국 주유소 결제 시스템 마비. 3,200개 주유소 동시 중단. 이란 내부 불만 증폭 목적
+CSIS-2024-013,2024-09-01,IRN,APT42,ISR,defense_industry,espionage,unknown,Iran APT42 Israel Defense Espionage,이란 APT42의 이스라엘 방산 네트워크 침투. Iron Dome·Arrow 시스템 관련 정보 탈취 시도
+CSIS-2024-014,2024-10-01,IRN,Unknown,USA,election,disinformation,unknown,Iran 2024 US Election Interference,이란의 미국 대선 개입. 트럼프 선거 캠프 해킹 시도 + 허위정보 캠페인. FBI·DNI 공동 발표
+CSIS-2024-015,2024-07-01,ISR,Unknown,LBN,critical_infra,sabotage,unknown,Israel-Hezbollah Cyber Phase,이스라엘의 레바논 통신·에너지 인프라 공격. 페이저·워키토키 폭발과 병행 사이버 작전
+CSIS-2024-016,2024-03-01,CHN,APT31,EUR,government,espionage,unknown,China European Parliament Hack,중국 APT31의 유럽의회·EU 외교부 이메일 시스템 침투. 대중 정책 심의 내용 탈취
+CSIS-2024-017,2024-05-01,RUS,APT29,DEU,government,espionage,unknown,Germany SPD Hack,러시아 Cozy Bear의 독일 사민당(SPD) 이메일 시스템 침투. 독일 외무부 공개 귀속
+CSIS-2024-018,2024-08-01,PRK,Lazarus,IND,finance,theft,235000000,WazirX India Crypto Heist,북한 라자루스의 인도 최대 암호화폐 거래소 WazirX 해킹. $2.35억 탈취. 인도 최대 사이버 절도
+CSIS-2023-007,2023-08-01,CHN,APT40,AUS,government,espionage,unknown,APT40 Australia Campaign,호주 ACSC 귀속: 중국 APT40의 호주 정부·항공·해양 기관 침투. AUKUS 맥락
+CSIS-2023-008,2023-10-01,IRN,Cyber Av3ngers,USA,energy,sabotage,unknown,Iran IRGC Water Utility Attacks,이란 IRGC 연계 해커의 미국 10개 주 수도 시설 OT 공격 시리즈. Unitronics PLC 취약점 악용
+CSIS-2023-009,2023-11-01,PRK,Lazarus,KOR,defense_industry,espionage,unknown,Korea Navy System Breach,북한의 한국 해군 관련 기업 침투. 잠수함·수중무기 체계 설계 데이터 탈취 의혹
+CSIS-2023-010,2023-04-01,RUS,APT28,POL,government,espionage,unknown,Poland NATO Intelligence Breach,러시아 APT28의 폴란드 정보기관 ABW 이메일 침투. NATO 동부 방어선 정보 목표
+CSIS-2023-011,2023-07-01,CHN,Unknown,JPN,defense_industry,espionage,unknown,Japan JSDF Network Breach,중국 연계 해커의 일본 자위대 비밀 네트워크 침투 (2019~2023). 미국 NSA 알림 계기
+CSIS-2022-008,2022-11-01,PRK,Lazarus,MULTI,finance,theft,1700000000,North Korea 2022 Crypto Heists Total,북한 라자루스의 2022년 암호화폐 탈취 총액 $17억 (UN 패널 추정). 핵·미사일 자금 조달
+CSIS-2022-009,2022-08-01,CHN,Volt Typhoon,USA,military,espionage,unknown,Volt Typhoon Initial Discovery,중국 Volt Typhoon의 미국 군사 기지·에너지 인프라 사전 배치 최초 발견 (괌 포함)
+CSIS-2022-010,2022-06-01,IRN,APT35,USA,government,espionage,unknown,Iran Phishing US Officials 2022,이란 APT35의 바이든 행정부 전·현직 관리 피싱. 핵협상 복귀 관련 정보 수집 목적
+CSIS-2021-006,2021-08-01,CHN,APT41,IND,critical_infra,sabotage,unknown,Mumbai Power Outage China Link,중국 연계 해커의 인도 뭄바이 전력망 공격. 2020년 10월 정전 (122만명). 갈완 계곡 충돌 배경
+CSIS-2021-007,2021-10-01,IRN,APT35,ISR,critical_infra,sabotage,unknown,Iran Israel Hospital Cyber War,이란의 이스라엘 병원 시스템 공격 vs 이스라엘 반격 이란 항구 시스템 마비. 민간 인프라 에스컬레이션
+CSIS-2021-008,2021-04-23,IRN,Unknown,IRN,energy,sabotage,unknown,Natanz Nuclear Sabotage 2021,이스라엘 귀속(비공식) 이란 나탄즈 핵시설 전력 시스템 폭발. 물리-사이버 복합 작전
+CSIS-2020-005,2020-09-01,IRN,Unknown,ISR,energy,sabotage,unknown,Israel Water Infrastructure Attack,이란 연계 해커의 이스라엘 수도 처리시설 염소 농도 조작 시도. 이스라엘 반격 이란 항구 전산 마비
+CSIS-2020-006,2020-02-01,RUS,Sandworm,GEO,government,disruption,unknown,Georgia Web Defacement 2020,러시아 Sandworm의 조지아 웹사이트 2,000개 동시 훼손. 대통령 포함 정부기관
+CSIS-2019-005,2019-08-01,PRK,Lazarus,MULTI,finance,theft,571000000,Lazarus 2018-19 Exchange Heists,북한 라자루스의 아시아 암호화폐 거래소 연속 해킹. $5.71억 탈취 (UN 2019 보고서)
+CSIS-2018-004,2018-03-01,RUS,GRU,USA,critical_infra,espionage,unknown,US Energy Grid Russian Infiltration,러시아 GRU의 미국 전력망·원자력·항공·수도 시스템 침투 (DHS/FBI 공동 경보 TA18-074A)
+CSIS-2018-005,2018-06-01,CHN,APT10,USA,defense_industry,espionage,unknown,Navy Contractor 614GB Breach,중국 APT10의 미국 해군 계약업체 침투. 해저전 관련 614GB 기밀 탈취. 잠수함 음향 시스템 포함
+CSIS-2017-004,2017-08-01,IRN,Unknown,SAU,energy,sabotage,unknown,Triton/Trisis Safety System Attack,이란 연계 해커의 사우디 석유화학 안전시스템(Triconex SIS) 공격. 폭발 유발 의도. 최초 안전시스템 공격
+CSIS-2016-005,2016-12-01,RUS,Sandworm,USA,election,disruption,unknown,Ukraine Lessons to US Grid,러시아 사이버전 전술의 미국 전력망 적용 가능성 DHS 경고. 우크라이나 공격 패턴 분석
+CSIS-2015-004,2015-01-01,PRK,Lazarus,KOR,finance,disruption,unknown,Korea Banking DDoS 2015,북한의 한국 은행·주식시장 DDoS 공격 시리즈. 금융 시스템 교란 목적
+CSIS-2014-004,2014-01-01,CHN,APT1,USA,energy,espionage,unknown,China Energy Sector APT Campaign,중국 APT1의 미국 에너지 기업 지속 침투. 파이프라인 SCADA·LNG 플랜트 설계도 탈취
+CSIS-2013-003,2013-03-20,PRK,Unknown,KOR,finance,disruption,unknown,Korea Dark Seoul Attack,북한의 한국 방송사·은행 동시 사이버 공격. 32,000대 컴퓨터 마비. 3.20 사태
+CSIS-2012-005,2012-06-01,USA,NSA,IRN,government,espionage,unknown,Olympic Games / Stuxnet Expansion,NSA의 이란 대상 사이버 작전 확대. 스턱스넷 전후 정보수집 캠페인
+CSIS-2011-003,2011-06-01,CHN,Unknown,CHE,finance,espionage,unknown,IMF Network Breach,중국 연계 해커의 IMF 네트워크 침투. 유럽 재정 위기 관련 협상 문서 탈취 시도
+CSIS-2010-003,2010-09-01,CHN,Unknown,EUR,defense_industry,espionage,unknown,European Defence Sector APT,중국 연계 해커의 유럽 방산기업(에어버스·BAE·탈레스) 지속 침투. F-35·유로파이터 데이터 목표

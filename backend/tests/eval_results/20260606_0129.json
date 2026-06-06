@@ -1,0 +1,56 @@
+{
+  "timestamp": "20260606_0129",
+  "server": "http://localhost:8000",
+  "total": 1,
+  "passed": 1,
+  "results": [
+    {
+      "id": "ukraine_russia_energy",
+      "name": "러-우 에너지 인프라 공격 → 유럽 시장 연쇄",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 42.5,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: '러시아의 우크라이나 에너지 인프라에 대한 사이버 공격 건수(CSIS DB 기준, 월별)'가 증가할 때, '유럽 천연가스 가격(TTF, USD/MMBtu)'은 통계적으로 유의미하게 하락하거나 변화가 없을 것이다 ().",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.8173
+        },
+        {
+          "h1": "H1: '글로벌 사이버 위협 행위자의 AI 활용률(AI 지원 사이버 공격 보고서 수/월, [UNVERIFIED])'이 증가할 때, '유럽 에너지 인프라에 대한 사이버 공격 시도 건수(ENISA 보고서 기준, 월별, [UNVERIFIED])'가 통계적으로 유의하게 증가한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 5,
+        "SPECULATIVE": 1,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 1,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": true,
+        "has_measured_label": true,
+        "has_verdict_label": true,
+        "theory_mentions": 5,
+        "has_numbers_in_rival": true,
+        "quantitative_comparison": true,
+        "comparative_comparison": true
+      },
+      "expected_min_score": 60
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n\n\n### 신뢰도 분포\n- 최고: 75, 최저: 75, 평균: 75\n- 60 미만(PROVISIONAL): 0/1\n\n### H1 가설 추출률\n- 1/1 케이스에서 H1 추출 성공\n  ✅ [ukraine_russia_energy]\n\n### 경쟁이론 수치 비교 충족률 (Cycle 7-B 평가)\n- [엄격] 예측+실측 레이블: 1/1 (100%)\n- [완화] 이론 2개+수치+판정: 1/1 (100%)\n- '예측:' 레이블: 1/1\n- '실측:' 레이블: 1/1\n- 목표(50%+) 엄격: ✅ 달성 / 완화: ✅ 달성\n\n### Granger 검증 현황 (2개 가설)\n- PENDING: 2개"
+}

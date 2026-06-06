@@ -1,0 +1,66 @@
+{
+  "timestamp": "20260606_0221",
+  "server": "http://localhost:8000",
+  "total": 1,
+  "passed": 1,
+  "results": [
+    {
+      "id": "taiwan_semiconductor",
+      "name": "대만해협 긴장 → 반도체 공급망",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 23.5,
+      "confidence": 100,
+      "inference_grade": "상관",
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: \"대만해협 ACLED 분쟁 이벤트의 일별 발생 건수가 증가할 때 글로벌 반도체 ETF(SOXX)의 일별 종가 변화율(%)이 통계적으로 유의미하게 하락한다 ().",
+          "status": "PARTIAL",
+          "var_type": "Type_A",
+          "p_value": 0.1353,
+          "granger_q": null,
+          "inference_grade": "상관",
+          "theory_grounded": true,
+          "differenced": true
+        },
+        {
+          "h1": "H1: \"AI 모델의 사이버 공격 '온보딩 업리프트' 점수(%)가 증가할 때 대만해협 관련 핵심 인프라에 대한 저숙련 행위자 사이버 공격 시도 건수가 통계적으로 유의미하게 증가한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null,
+          "granger_q": null,
+          "inference_grade": "기술적",
+          "theory_grounded": false,
+          "differenced": false
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 1,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 1,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": true,
+        "has_measured_label": true,
+        "has_verdict_label": true,
+        "theory_mentions": 6,
+        "has_numbers_in_rival": true,
+        "quantitative_comparison": true,
+        "comparative_comparison": true
+      },
+      "expected_min_score": 60,
+      "retries": 0
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n\n\n### 신뢰도 분포\n- 최고: 100, 최저: 100, 평균: 100\n- 60 미만(PROVISIONAL): 0/1\n\n### H1 가설 추출률\n- 1/1 케이스에서 H1 추출 성공\n  ✅ [taiwan_semiconductor]\n\n### 경쟁이론 수치 비교 충족률 (Cycle 7-B 평가)\n- [엄격] 예측+실측 레이블: 1/1 (100%)\n- [완화] 이론 2개+수치+판정: 1/1 (100%)\n- '예측:' 레이블: 1/1\n- '실측:' 레이블: 1/1\n- 목표(50%+) 엄격: ✅ 달성 / 완화: ✅ 달성\n\n### Granger 검증 현황 (2개 가설)\n- PARTIAL: 1개\n- PENDING: 1개"
+}

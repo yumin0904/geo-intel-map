@@ -1,0 +1,847 @@
+{
+  "timestamp": "20260605_1542",
+  "server": "http://localhost:8000",
+  "total": 20,
+  "passed": 17,
+  "results": [
+    {
+      "id": "ukraine_russia_energy",
+      "name": "러-우 에너지 인프라 공격 → 유럽 시장 연쇄",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 51.4,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "러시아의 우크라이나 에너지 인프라에 대한 월별 사이버 공격 건수가 증가할 때, 유럽 천연가스 선물 가격(EUR/MWh)이 통계적으로 유의미하게 상승한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.8173
+        },
+        {
+          "h1": "러시아의 우크라이나 에너지 인프라 대상 사이버 공격 건수 또는 심각도 지수(0-100)가 증가할 때, EU 회원국들의 재생에너지 투자액(EUR 십억) 및 에너지 인프라 사이버 보안 관련 예산(EUR 십억)이 통계적으로 유의미하게 증가한다.",
+          "status": "PARTIAL",
+          "var_type": "Type_C",
+          "p_value": 0.1455
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 4,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 60
+    },
+    {
+      "id": "taiwan_semiconductor",
+      "name": "대만해협 긴장 → 반도체 공급망",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 50.3,
+      "confidence": 88,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: 대만해협 ACLED 분쟁 이벤트의 월별 발생 건수가 1건 증가할 때, 다음 날 반도체 ETF(SOXX) 종가(USD)는 통계적으로 유의미하게 하락한다 ().",
+          "status": "PARTIAL",
+          "var_type": "Type_A",
+          "p_value": 0.0997
+        },
+        {
+          "h1": "H1: 대만해협 ACLED 분쟁 이벤트 월별 건수 증가 및 중국 기업의 인도네시아 핵심 광물 생산량(톤) 증가가 동시에 발생할 때, 글로벌 반도체 제조사(TSMC, Samsung)의 연간 평균 생산 비용(USD/웨이퍼)은 통계적으로 유의미하게 상승한다.",
+          "status": "PARTIAL",
+          "var_type": "Type_A",
+          "p_value": 0.0997
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 60
+    },
+    {
+      "id": "korean_peninsula_alliance",
+      "name": "이란전 → 한미동맹 자율성",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 23.6,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: 이란전 이후 미국의 정밀유도무기 재고량이 2026년 2월 대비 50% 이상 감소할 때, 한국의 국방비 대비 GDP 비율(%)이 통계적으로 유의미하게 상승한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.2966
+        },
+        {
+          "h1": "H1: 중동 지역 ACLED 분쟁 이벤트 월별 건수가 2026년 2월 이후 월평균 10% 이상 증가할 때, 한국의 중동 지역으로부터의 원유 수입액(USD) 대비 원자재 수송 보험료(%)가 통계적으로 유의하게 상승한다.",
+          "status": "PARTIAL",
+          "var_type": "Type_A",
+          "p_value": 0.1324
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 1,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 1,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "china_cyber_us",
+      "name": "솔트 타이푼 → 미국 사이버 방어 공백",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 44.5,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: 미국의 대테러 예방 예산(USD million)이 감소할 때, 중국 국가 연계 행위자가 알려진 취약점(예: CVEs)을 악용하여 성공시킨 사이버 스파이 사건의 월별 건수(CSIS DB의 고유 사건 ID 및 취약점 유형으로 측정)가 통계적으로 유의미하게 증가한다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        },
+        {
+          "h1": "H1: 중국의 세계 핵심 광물(예: 갈륨, 니켈) 생산 점유율(%)이 증가할 때, 미국 국방 또는 핵심 인프라 부문을 표적화한 중국 국가 지원 사이버 스파이 사건의 연간 건수(CSIS DB의 고유 사건 ID로 측정)가 통계적으로 유의미하게 증가한다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 1,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 4,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "japan_korea_techno",
+      "name": "일본 수출규제 → 한국 기술 자율성",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 43.0,
+      "confidence": 88,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: 일본의 반도체 소재 수출규제 발표 이후 1년 간 한국 정부의 반도체 소재 관련 R&D 예산(USD)이 통계적으로 유의미하게 증가한다.",
+          "status": "PARTIAL",
+          "var_type": "Type_A",
+          "p_value": 0.0997
+        },
+        {
+          "h1": "H1: 일본의 반도체 소재 수출규제 발효 이후 3년 간 한국의 대중국 반도체 소재 수입 의존도(%)가 통계적으로 유의미하게 감소한다.",
+          "status": "PARTIAL",
+          "var_type": "Type_C",
+          "p_value": 0.0997
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 3,
+        "SPECULATIVE": 2,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 1,
+        "MEDIUM_chain": 3,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "sahel_jihadist_expansion",
+      "name": "서방 철수 → 사헬 지하디스트 확산",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 25.4,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 88,
+      "missing_sections": [
+        "[문헌공백]"
+      ],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: 미국 대테러 예방 예산(USD)의 연간 감소율이 증가할 때, 알샤바브와 JNIM의 추정 병력 합계가 통계적으로 유의미하게 증가한다.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 5,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "hormuz_oil_verify",
+      "name": "호르무즈 봉쇄 → 유가 인과 검증",
+      "mode": "verify",
+      "passed": true,
+      "elapsed": 19.4,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "호르무즈 해협 내 ACLED 'conflict' 이벤트의 월별 심각도 지수가 증가할 때, 국제 유가(WTI 또는 브렌트 유가, USD/배럴)가 통계적으로 유의미하게 상승한다.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.6068
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 4,
+        "SPECULATIVE": 1,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 3,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "arctic_lawfare_verify",
+      "name": "러-중 북극 법전쟁 → NSR 주권 주장 검증",
+      "mode": "verify",
+      "passed": false,
+      "elapsed": 8.9,
+      "confidence": 0,
+      "provisional": true,
+      "completeness_pct": 0,
+      "missing_sections": [
+        "[단계 1]",
+        "[단계 2]",
+        "[단계 3]",
+        "[단계 4]",
+        "[단계 5]",
+        "[단계 6]"
+      ],
+      "missing_tags": [],
+      "has_h1": false,
+      "h1_expected": true,
+      "hypothesis": [],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 0,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "iran_energy_presentation",
+      "name": "이란전 에너지 충격 → 발표 각도",
+      "mode": "presentation",
+      "passed": true,
+      "elapsed": 21.6,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: 미국 CPI에서 에너지 가격이 차지하는 비중이 증가할 때, 미국 행정부의 대규모 해외 군사 작전 발표 건수는 통계적으로 유의미하게 감소한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        },
+        {
+          "h1": "H1: 미국 대테러 예방 예산(USD)이 감소할 때, 중동 지역 내 이란 연계 비국가 행위자들의 월별 테러 공격 건수가 통계적으로 유의미하게 증가한다 ().",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 3,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 3,
+        "MEDIUM_chain": 5,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "us_china_tech_hegemony_presentation",
+      "name": "미-중 기술 패권 경쟁 → 발표 각도",
+      "mode": "presentation",
+      "passed": true,
+      "elapsed": 33.2,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: AI 모델의 사이버 작전 지원 기능성(예: CTF 과제 완료율 상승폭)이 증가할 때, 전 세계 월별 사이버 공격 이벤트 건수 중 저숙련 공격자의 기여도(%)가 통계적으로 유의하게 상승한다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        },
+        {
+          "h1": "H1: 중국 기업의 특정 핵심 광물에 대한 '소유 없는 통제 지수'(예: 현지 생산량 대비 중국 관련 기업의 통제 생산량 비율)가 증가할 때, 해당 광물의 국제 시장 가격 변동성(표준편차)이 통계적으로 유의하게 상승한다.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        },
+        {
+          "h1": "H1: 중국의 갈륨 수출 통제 강도(예: 수출량 감소율)가 증가할 때, 미국 국방 시스템 내 GaN 기반 부품의 조달 비용(USD)이 통계적으로 유의하게 상승한다.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        },
+        {
+          "h1": "**: \"H1: 중국의 갈륨 수출 통제 강도(예: 수출량 감소율)가 증가할 때, 미국 국방 시스템 내 GaN 기반 부품의 조달 비용(USD)이 통계적으로 유의하게 상승한다.\" 제시.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 3,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "hormuz_iran_blockade",
+      "name": "이란전 호르무즈 봉쇄 → 에너지 무기화 이론 비교",
+      "mode": "insight",
+      "passed": false,
+      "elapsed": 9.7,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 38,
+      "missing_sections": [
+        "[근거]",
+        "[한계]",
+        "[경쟁설명]",
+        "[검증포인트]",
+        "[문헌공백]"
+      ],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: 이란이 호르무즈 해협에서 군사적 긴장을 증가시킬 때 (ACLED Hormuz conflict 이벤트 월별 건수), WTI 유가(USD/배럴",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 60
+    },
+    {
+      "id": "russia_china_arctic_control",
+      "name": "러-중 북극 법전쟁 → 회색지대 전략 분석",
+      "error": "⚠️ Gemini API 오류 (503)",
+      "elapsed": 25.3
+    },
+    {
+      "id": "pla_taiwan_a2ad",
+      "name": "PLA A2/AD → Mahan vs Mearsheimer 비교",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 25.5,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: 중국의 대만해협 내 A2/AD 역량 강화(예: 군사 훈련 빈도 및 규모 증가, ACLED 분쟁 이벤트 월별 건수 증가)가 미국의 서태평양 군사 개입 비용(예: 가상 시나리오 기반 모델링된 전투 손실률)을 통계적으로 유의하게 증가시킨다.",
+          "status": "PARTIAL",
+          "var_type": "Type_C",
+          "p_value": 0.0997
+        },
+        {
+          "h1": "H1: 중국 연계 해커 그룹의 AI 활용 증가율(예: AI 도구 사용 흔적 발견 건수)이 미국 핵심 인프라에 대한 사이버 공격의 성공률(예: 침투 및 데이터 탈취 건수)을 통계적으로 유의하게 증가시킨다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 1,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 3,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 1,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 60
+    },
+    {
+      "id": "houthi_red_sea_sloc",
+      "name": "후티 홍해 공격 → SLOC 취약성",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 41.6,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "H1: \"바브엘만데브 지역의 ACLED 분쟁 이벤트 월별 건수가 증가할 때 WTI 유가(USD/배럴)는 통계적으로 유의미하게 상승한다.",
+          "status": "PARTIAL",
+          "var_type": "Type_A",
+          "p_value": 0.149
+        },
+        {
+          "h1": "H1: \"미국 대테러 예방 예산(USD)이 감소할 때, 바브엘만데브 지역의 ACLED 분쟁 이벤트 월별 평균 심각도(0-100)는 통계적으로 유의미하게 증가한다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 1,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 3,
+        "MEDIUM_chain": 1,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "salt_typhoon_cyber_deterrence",
+      "name": "솔트 타이푼 → Libicki 사이버 억지 검증",
+      "mode": "verify",
+      "passed": true,
+      "elapsed": 19.7,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "AI 모델 접근성이 증가할 때, 저숙련 공격자의 쉬운 사이버 공격 완료율은 통계적으로 유의미하게 증가하며, 이는 공격 주체의 귀속 난이도를 높인다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 4,
+        "SPECULATIVE": 2,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "china_ai_export_ban",
+      "name": "미국 AI 수출규제 → 디지털 철의 장막 이론",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 42.5,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "중국의 갈륨 수출 통제 강도(금수 조치 여부 및 기간)가 증가할 때, 미국 국방부의 GaN 기반 시스템(예: AN/SPY-6 레이더) 유지보수 비용(USD)이 통계적으로 유의하게 상승한다.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 5,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 1,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "ukraine_drone_innovation",
+      "name": "우크라이나 드론 혁신 → 하이브리드 전쟁 이론 재검토",
+      "mode": "verify",
+      "passed": true,
+      "elapsed": 25.7,
+      "confidence": 100,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [],
+      "labels": {
+        "UNVERIFIED": 12,
+        "SPECULATIVE": 2,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 2,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "india_indo_pacific_balancing",
+      "name": "인도 전략적 자율성 → 동맹 딜레마 분석",
+      "mode": "insight",
+      "passed": true,
+      "elapsed": 33.2,
+      "confidence": 60,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: '인도가 유치하는 반도체 제조 시설에 대한 연간 외국인 직접 투자(FDI) 금액(USD bn)이 증가할 때, 인도의 핵심 광물(니켈, 알루미늄 등) 수입에서 중국 의존도(%)는 통계적으로 유의미하게 감소한다.'",
+          "status": "PARTIAL",
+          "var_type": "Type_C",
+          "p_value": 0.0997
+        },
+        {
+          "h1": "H1: '인도의 연간 국방비 지출(GDP 대비 %)이 증가할 때, 인도가 참여하는 BRICS+ 공동 성명에 포함된 비서방 안보 협력 관련 문구의 빈도(건수)는 통계적으로 유의미하게 증가한다.'",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 0,
+        "MEDIUM_chain": 4,
+        "LOW_chain": 1
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 1,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 55
+    },
+    {
+      "id": "iran_russia_tactic_transfer",
+      "name": "이란-러시아 전술 전이 → 발표 각도",
+      "mode": "presentation",
+      "passed": true,
+      "elapsed": 26.4,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": false,
+      "hypothesis": [
+        {
+          "h1": "H1: 이란 연계 민병대(헤즈볼라, 후티)의 월별 드론 공격 건수 및 사이버 인프라 공격 보고서 건수가 증가할 때, 러시아 연계 해커 그룹(Sandworm)의 우크라이나 에너지 인프라 대상 사이버-물리 공격 건수가 통계적으로 유의미하게 증가한다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        },
+        {
+          "h1": "H1: 프런티어 AI 모델(OpenAI o3·GPT-5, Claude Opus 4.1·Sonnet 3.7, Gemini 2.5 Pro)의 사이버 공격 '온보딩 업리프트'(초보자 완료율 변화, %p) 지수가 증가할 때, 이란 연계 해커 그룹 및 러시아 연계 Sandworm의 '복합 사이버-드론 공격'의 평균 성공률(%)이 통계적으로 유의미하게 상승한다.",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 1,
+        "SPECULATIVE": 1,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 2,
+        "MEDIUM_chain": 3,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 50
+    },
+    {
+      "id": "mearsheimer_vs_liberal_taiwan",
+      "name": "Mearsheimer 공격적 현실주의 vs 자유주의 상호의존 — 대만 분쟁 예측 비교",
+      "mode": "verify",
+      "passed": true,
+      "elapsed": 37.7,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "현 데이터로 검증 가능한 정량 가설 없음.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": null
+        },
+        {
+          "h1": "'중국의 연간 국방비 지출(USD bn)이 증가할 때, 대만해협 ACLED 분쟁 이벤트 월별 건수는 통계적으로 유의미하게 증가한다.'",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        },
+        {
+          "h1": "'대만해협 ACLED 분쟁 이벤트 발생 시 반도체 ETF(SOXX) 주가(USD)의 하락폭이 커질수록, 이후 30일간 대만해협 ACLED 분쟁 이벤트 월별 건수는 통계적으로 유의미하게 감소한다.'",
+          "status": "PENDING",
+          "var_type": "Type_B",
+          "p_value": null
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 4,
+        "SPECULATIVE": 2,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 0,
+        "MEDIUM_chain": 4,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "quantitative_comparison": false
+      },
+      "expected_min_score": 60
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n\n### 반복 누락 섹션 (빈도순)\n- `[문헌공백]`: 2/20 케이스에서 누락\n- `[단계 1]`: 1/20 케이스에서 누락\n- `[단계 2]`: 1/20 케이스에서 누락\n- `[단계 3]`: 1/20 케이스에서 누락\n- `[단계 4]`: 1/20 케이스에서 누락\n- `[단계 5]`: 1/20 케이스에서 누락\n- `[단계 6]`: 1/20 케이스에서 누락\n- `[근거]`: 1/20 케이스에서 누락\n- `[한계]`: 1/20 케이스에서 누락\n- `[경쟁설명]`: 1/20 케이스에서 누락\n- `[검증포인트]`: 1/20 케이스에서 누락\n\n### 신뢰도 분포\n- 최고: 100, 최저: 0, 평균: 69\n- 60 미만(PROVISIONAL): 1/19\n\n### H1 가설 추출률\n- 11/12 케이스에서 H1 추출 성공\n  ✅ [ukraine_russia_energy]\n  ✅ [taiwan_semiconductor]\n  ✅ [korean_peninsula_alliance]\n  ✅ [japan_korea_techno]\n  ✅ [hormuz_oil_verify]\n  ❌ [arctic_lawfare_verify]\n  ✅ [hormuz_iran_blockade]\n  ✅ [pla_taiwan_a2ad]\n  ✅ [houthi_red_sea_sloc]\n  ✅ [salt_typhoon_cyber_deterrence]\n  ✅ [china_ai_export_ban]\n  ✅ [mearsheimer_vs_liberal_taiwan]\n\n### 경쟁이론 수치 비교 충족률 (Cycle 7-B 평가)\n- 예측+실측 레이블 모두 포함: 0/11 (0%)\n- '예측:' 레이블: 0/11\n- '실측:' 레이블: 0/11\n- '편차/우세/판정:' 레이블: 0/11\n- 목표(50%+): ❌ 미달\n\n### Granger 검증 현황 (32개 가설)\n- PENDING: 23개\n- PARTIAL: 9개"
+}

@@ -1,0 +1,50 @@
+{
+  "timestamp": "20260606_0026",
+  "server": "http://localhost:8000",
+  "total": 1,
+  "passed": 0,
+  "results": [
+    {
+      "id": "salt_typhoon_cyber_deterrence",
+      "name": "솔트 타이푼 → Libicki 사이버 억지 검증",
+      "mode": "verify",
+      "passed": false,
+      "elapsed": 8.4,
+      "confidence": 40,
+      "provisional": true,
+      "completeness_pct": 0,
+      "missing_sections": [
+        "[단계 1]",
+        "[단계 2]",
+        "[단계 3]",
+        "[단계 4]",
+        "[단계 5]",
+        "[단계 6]"
+      ],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [],
+      "labels": {
+        "UNVERIFIED": 0,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 0,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 0,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "has_numbers_in_rival": false,
+        "quantitative_comparison": false,
+        "comparative_comparison": false
+      },
+      "expected_min_score": 50
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n\n### 반복 누락 섹션 (빈도순)\n- `[단계 1]`: 1/1 케이스에서 누락\n- `[단계 2]`: 1/1 케이스에서 누락\n- `[단계 3]`: 1/1 케이스에서 누락\n- `[단계 4]`: 1/1 케이스에서 누락\n- `[단계 5]`: 1/1 케이스에서 누락\n- `[단계 6]`: 1/1 케이스에서 누락\n\n### 신뢰도 분포\n- 최고: 40, 최저: 40, 평균: 40\n- 60 미만(PROVISIONAL): 1/1\n\n### H1 가설 추출률\n- 1/1 케이스에서 H1 추출 성공\n  ✅ [salt_typhoon_cyber_deterrence]"
+}

@@ -20,8 +20,9 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-_LIB_DB  = Path(__file__).resolve().parent.parent / "db" / "library.db"
-_MAIN_DB = Path(__file__).resolve().parent.parent / "db" / "geomap.db"
+_LIB_DB   = Path(__file__).resolve().parent.parent / "db" / "library.db"
+_MAIN_DB  = Path(__file__).resolve().parent.parent / "db" / "geomap.db"
+_INTEL_DB = Path(__file__).resolve().parent.parent / "db" / "intel.db"
 
 
 @contextmanager
@@ -66,7 +67,7 @@ def _get_sipri_milex_for_theories(actors: list[str]) -> dict[str, float]:
         return {}
     result = {}
     try:
-        with _db(_MAIN_DB) as con:
+        with _db(_INTEL_DB) as con:
             for iso3 in actors[:4]:
                 row = con.execute(
                     "SELECT country_iso3, gdp_pct, year FROM sipri_milex "
@@ -85,7 +86,7 @@ def _get_sipri_arms_hhi(actors: list[str]) -> dict:
     if not actors:
         return {}
     try:
-        with _db(_MAIN_DB) as con:
+        with _db(_INTEL_DB) as con:
             rows = con.execute(
                 "SELECT recipient, supplier, tiv_2023 FROM sipri_arms_transfers "
                 "WHERE recipient IN ({}) OR supplier IN ({}) "
@@ -129,7 +130,7 @@ def _get_eia_chokepoint(regions: list[str]) -> dict:
     if not target:
         return {}
     try:
-        with _db(_MAIN_DB) as con:
+        with _db(_INTEL_DB) as con:
             row = con.execute(
                 "SELECT chokepoint, flow_mbpd, year FROM eia_energy "
                 "WHERE chokepoint=? ORDER BY year DESC LIMIT 1",
@@ -145,6 +146,87 @@ def _get_eia_chokepoint(regions: list[str]) -> dict:
     except Exception as e:
         logger.debug("[theory_cmp] eia_chokepoint 조회 실패: %s", e)
     return {}
+
+
+def _get_fred_for_theories(regions: list[str]) -> dict:
+    """FRED 유가·환율 최신값 + 변화율 — Resource Weaponization 실측 강화.
+
+    무기화 이론의 핵심 예측은 '긴장 → 가격 상승'이므로, 유가의 최근 추세를
+    실측값으로 제공해 예측 방향(상승)과 대조 가능하게 한다.
+    """
+    # 에너지 무기화가 의미있는 지역만
+    _REGION_FRED = {
+        "hormuz":         ["DCOILWTICO", "DCOILBRENTEU"],
+        "bab_el_mandeb":  ["DCOILBRENTEU"],
+        "eastern_europe": ["PNGASEUUSDM", "DCOILBRENTEU"],
+        "taiwan_strait":  ["EXCHUS"],
+        "korean_peninsula": ["KOREUS"],
+    }
+    series_ids: list[str] = []
+    for r in regions:
+        series_ids.extend(_REGION_FRED.get(r, []))
+    if not series_ids:
+        return {}
+    result: dict = {}
+    try:
+        with _db(_INTEL_DB) as con:
+            for sid in dict.fromkeys(series_ids):  # 중복 제거, 순서 유지
+                rows = con.execute(
+                    "SELECT series_name, date, value, unit FROM fred_indicators "
+                    "WHERE series_id=? ORDER BY date DESC LIMIT 12",
+                    (sid,),
+                ).fetchall()
+                if not rows:
+                    continue
+                latest = rows[0]
+                oldest = rows[-1]
+                pct = None
+                if oldest["value"] and latest["value"]:
+                    try:
+                        pct = round((latest["value"] - oldest["value"]) / oldest["value"] * 100, 1)
+                    except ZeroDivisionError:
+                        pct = None
+                result[sid] = {
+                    "name": latest["series_name"],
+                    "latest_value": latest["value"],
+                    "latest_date": latest["date"],
+                    "unit": latest["unit"],
+                    "pct_change": pct,  # 최근 12개 데이터 구간 변화율
+                }
+    except Exception as e:
+        logger.debug("[theory_cmp] fred 조회 실패: %s", e)
+    return result
+
+
+def _get_wbk_governance(actors: list[str]) -> dict:
+    """World Bank WGI 거버넌스 지수 — Gray Zone 이론 취약국 실측값.
+
+    Gray Zone 전략은 '거버넌스 공백을 비국가 행위자가 침투'하는 메커니즘이므로,
+    정치안정성(PV)·법치(RL) 지수가 핵심 IV 실측값이다.
+    """
+    if not actors:
+        return {}
+    result: dict = {}
+    try:
+        with _db(_INTEL_DB) as con:
+            for iso3 in actors[:4]:
+                row = con.execute(
+                    "SELECT iso3, country_name, year, pv_score, rl_score, ge_score, cc_score "
+                    "FROM world_bank_wgi WHERE iso3=? ORDER BY year DESC LIMIT 1",
+                    (iso3,),
+                ).fetchone()
+                if row:
+                    result[iso3] = {
+                        "country": row["country_name"],
+                        "year": row["year"],
+                        "pv": row["pv_score"],   # 정치안정성·폭력부재
+                        "rl": row["rl_score"],   # 법치
+                        "ge": row["ge_score"],   # 정부효과성
+                        "cc": row["cc_score"],   # 부패통제
+                    }
+    except Exception as e:
+        logger.debug("[theory_cmp] wbk 조회 실패: %s", e)
+    return result
 
 
 def _get_acled_event_count(regions: list[str]) -> dict:
@@ -163,7 +245,7 @@ def _get_acled_event_count(regions: list[str]) -> dict:
     if not target_countries:
         return {}
     try:
-        with _db(_MAIN_DB) as con:
+        with _db(_INTEL_DB) as con:
             placeholders = ",".join("?" * len(target_countries))
             row = con.execute(
                 f"SELECT COUNT(*) as cnt FROM event_archive "
@@ -188,7 +270,7 @@ def _get_vdem_scores(actors: list[str]) -> dict:
         return {}
     result = {}
     try:
-        with _db(_MAIN_DB) as con:
+        with _db(_INTEL_DB) as con:
             for iso3 in actors[:4]:
                 row = con.execute(
                     "SELECT country_iso3, v2x_libdem, regime_type, year FROM vdem_index "
@@ -203,6 +285,63 @@ def _get_vdem_scores(actors: list[str]) -> dict:
                     }
     except Exception as e:
         logger.debug("[theory_cmp] vdem 조회 실패: %s", e)
+    return result
+
+
+def _get_semi_market_for_theories(sectors: list[str], regions: list[str]) -> dict:
+    """반도체·기술 시장 핵심 수치 — techno/weaponized_interdependence 이론 실측값."""
+    is_techno = "techno" in sectors or "cyber" in sectors or "taiwan_strait" in regions
+    if not is_techno:
+        return {}
+    result: dict = {}
+    try:
+        with _db(_INTEL_DB) as con:
+            # 파운드리 HHI 및 TSMC 점유율
+            rows = con.execute(
+                "SELECT metric, value, unit, year FROM semi_market_data "
+                "WHERE category='foundry_share' ORDER BY year DESC"
+            ).fetchall()
+            for r in rows:
+                if "HHI" in r["metric"]:
+                    result["foundry_hhi"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+                if "TSMC global" in r["metric"]:
+                    result["tsmc_share"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+                if "SMIC market share" in r["metric"]:
+                    result["smic_share"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+
+            # 중국 자급률 핵심 지표
+            rows2 = con.execute(
+                "SELECT metric, value, unit, year FROM semi_market_data "
+                "WHERE category='china_self_sufficiency' ORDER BY year DESC"
+            ).fetchall()
+            for r in rows2:
+                if "import dependency" in r["metric"]:
+                    result["china_import_dep"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+                if "node gap" in r["metric"]:
+                    result["tsmc_smic_gap"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+                if "yield rate" in r["metric"]:
+                    result["smic_yield"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+
+            # 선단 노드 집중도
+            rows3 = con.execute(
+                "SELECT metric, value, unit, year FROM semi_market_data "
+                "WHERE category='advanced_nodes' ORDER BY year DESC"
+            ).fetchall()
+            for r in rows3:
+                if "3nm" in r["metric"]:
+                    result["node3nm_tsmc"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+
+            # 핵심 광물 집중도 (gallium 대표값)
+            rows4 = con.execute(
+                "SELECT metric, value, unit, year FROM semi_market_data "
+                "WHERE category='critical_mineral' AND metric LIKE '%gallium%' LIMIT 1"
+            ).fetchall()
+            if rows4:
+                r = rows4[0]
+                result["china_gallium"] = {"value": r["value"], "unit": r["unit"], "year": r["year"]}
+
+    except Exception as e:
+        logger.debug("[theory_cmp] semi_market 조회 실패: %s", e)
     return result
 
 
@@ -275,6 +414,9 @@ def build_theory_comparison_context(
     eia     = _get_eia_chokepoint(regions)
     acled   = _get_acled_event_count(regions)
     vdem    = _get_vdem_scores(actors)
+    semi    = _get_semi_market_for_theories(sectors, regions)
+    fred    = _get_fred_for_theories(regions)
+    wbk     = _get_wbk_governance(actors)
 
     # 3. 비교 텍스트 생성
     lines: list[str] = ["## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)"]
@@ -323,6 +465,29 @@ def build_theory_comparison_context(
                     f"TIV {arms.get('dominant_tiv', '?')} / 전체 {arms.get('total_tiv', '?')} "
                     f"(집중도 proxy {arms.get('hhi_proxy_pct', '?')}%)"
                 )
+            # FRED 유가·가스 가격 추세 — 무기화 예측('긴장→상승')과 직접 대조용
+            if fred:
+                for sid, d in fred.items():
+                    pct = d.get("pct_change")
+                    pct_str = f"{pct:+.1f}%" if pct is not None else "?"
+                    empirical_lines.append(
+                        f"실측 — {d['name']}: {d['latest_value']} {d.get('unit', '')} "
+                        f"({d['latest_date']}, 최근 추세 {pct_str}) [FRED]"
+                    )
+            # techno 섹터: 반도체 공급망 집중도를 weaponized_interdependence의 핵심 IV로 추가
+            if semi:
+                if semi.get("foundry_hhi"):
+                    empirical_lines.append(
+                        f"실측 — 파운드리 HHI: {semi['foundry_hhi']['value']} "
+                        f"({semi['foundry_hhi']['year']}, 기준 >2500=독과점) "
+                        f"| TSMC: {semi.get('tsmc_share', {}).get('value', '?')}% "
+                        f"| SMIC: {semi.get('smic_share', {}).get('value', '?')}%"
+                    )
+                if semi.get("china_import_dep"):
+                    empirical_lines.append(
+                        f"실측 — 중국 첨단 반도체 수입 의존도: {semi['china_import_dep']['value']}% "
+                        f"({semi['china_import_dep']['year']}) — 비대칭 의존 수치"
+                    )
 
         if "mearsheimer" in tid or "waltz" in tid:
             if milex:
@@ -348,11 +513,40 @@ def build_theory_comparison_context(
                 empirical_lines.append(
                     f"실측 — ACLED 분쟁 이벤트 24개월: {acled.get('event_count_24m', '?')}건"
                 )
+            # WB WGI 거버넌스 — Gray Zone '거버넌스 공백 침투' 메커니즘의 핵심 IV
+            if wbk:
+                wbk_str = " | ".join(
+                    f"{v['country']}: 정치안정 {v['pv']:+.2f}/법치 {v['rl']:+.2f} ({v['year']})"
+                    for v in wbk.values() if v.get("pv") is not None
+                )
+                if wbk_str:
+                    empirical_lines.append(
+                        f"실측 — WB 거버넌스(WGI, -2.5~+2.5 척도): {wbk_str}"
+                    )
 
         if "libicki" in tid or "digital_iron_curtain" in tid:
             empirical_lines.append(
                 "실측 — CSIS Significant Cyber Incidents DB 참조 (context §CSIS 사이버 섹션)"
             )
+            # digital_iron_curtain: 기술 분리 속도를 semi_market으로 수치화
+            if semi:
+                parts = []
+                if semi.get("node3nm_tsmc"):
+                    parts.append(f"3nm 이하 TSMC 독점 {semi['node3nm_tsmc']['value']}%")
+                if semi.get("tsmc_smic_gap"):
+                    parts.append(f"TSMC-SMIC 격차 {semi['tsmc_smic_gap']['value']}세대")
+                if semi.get("china_gallium"):
+                    parts.append(f"중국 갈륨 독점 {semi['china_gallium']['value']}%")
+                if parts:
+                    empirical_lines.append(f"실측 — 기술 분리 지표: {' | '.join(parts)}")
+
+        if "techno_nationalism" in tid:
+            if semi:
+                if semi.get("china_import_dep"):
+                    empirical_lines.append(
+                        f"실측 — 중국 자립화 현황: 첨단 반도체 수입의존 {semi['china_import_dep']['value']}% "
+                        f"| SMIC 7nm yield {semi.get('smic_yield', {}).get('value', '?')}% (TSMC 95%+ 대비)"
+                    )
 
         if empirical_lines:
             lines.append("**실측 데이터**:")
@@ -378,8 +572,9 @@ def build_theory_comparison_context(
             f"### 비교 판정 요청\n"
             f"위 실측 데이터를 근거로 '{t1}'과 '{t2}' 중 "
             f"어느 이론이 현재 상황을 더 잘 설명하는지 [경쟁설명] 섹션에서 "
-            f"수치 편차와 함께 판정하라. "
-            f"판정 형식: '예측: [이론 예측 방향] / 실측: [데이터 수치] / 편차: [차이] / 우세 이론: [이름]'"
+            f"수치 편차와 함께 판정하라.\n"
+            f"각 이론은 '예측:/실측:/판정:' 3줄, 마지막에 '▶ 종합 판정:'으로 "
+            f"두 이론의 편차를 직접 비교해 우세 이론을 수치로 결론지어라."
         )
 
     return "\n".join(lines)

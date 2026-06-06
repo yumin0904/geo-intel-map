@@ -452,18 +452,18 @@ def _get_csis_incidents(actors: list[str], regions: list[str],
                     WHERE actor_iso3 IN ({placeholders})
                        OR victim_iso3 IN ({placeholders})
                     ORDER BY incident_date DESC
-                    LIMIT 10
+                    LIMIT 15
                     """,
                     (*iso3_set, *iso3_set),
                 ).fetchall()
             elif is_cyber:
-                # cyber 섹터 쿼리지만 특정 행위자 없으면 최신 10건
+                # cyber 섹터 쿼리지만 특정 행위자 없으면 최신 15건
                 rows = con.execute(
                     """
                     SELECT incident_id, incident_date, actor_iso3, actor_group,
                            victim_iso3, victim_sector, incident_type, title, description
                     FROM csis_cyber_incidents
-                    ORDER BY incident_date DESC LIMIT 10
+                    ORDER BY incident_date DESC LIMIT 15
                     """,
                 ).fetchall()
             else:
@@ -797,7 +797,7 @@ def _get_semi_market(sectors: list[str], regions: list[str]) -> list[dict]:
                 """SELECT category, metric, value, unit, year, source, region_hint, notes
                    FROM semi_market_data
                    ORDER BY category, year DESC
-                   LIMIT 20""",
+                   LIMIT 60""",
             ).fetchall()
         return [
             {"category": r[0], "metric": r[1], "value": r[2], "unit": r[3],
@@ -1125,7 +1125,7 @@ def _build_context(
     # ── CSIS 사이버 사건 (IA-Engine-B2) ──────────────────────────────────────
     if csis_incidents:
         lines.append("## 주요 사이버 사건 (CSIS Significant Cyber Incidents DB)")
-        for inc in csis_incidents[:6]:
+        for inc in csis_incidents[:8]:
             actor = inc.get("actor_group") or inc.get("actor_iso3") or "미귀속"
             victim = inc.get("victim_iso3", "?")
             sector = inc.get("victim_sector", "")
@@ -1268,19 +1268,34 @@ def _build_context(
     # ── 반도체·기술 시장 데이터 (Cycle 7-D-7) ────────────────────────────────
     if semi_data:
         lines.append("## 반도체·기술 시장 데이터 (SIA/TechInsights 2023-2024)")
-        # 카테고리별 그룹핑
+        # 경쟁이론 비교에 직결되는 카테고리 우선 노출
+        _PRIORITY_CATS = [
+            "china_self_sufficiency",  # Weaponized Interdependence DV 직결
+            "foundry_share",
+            "advanced_nodes",
+            "critical_mineral",
+            "equipment_dominance",
+            "export_control",
+            "memory_market",
+            "defense_tech",
+            "market_size",
+        ]
         by_cat: dict[str, list] = {}
         for d in semi_data:
             by_cat.setdefault(d.get("category", "misc"), []).append(d)
-        for cat, items in list(by_cat.items())[:4]:
+        # 우선순위 카테고리 먼저, 나머지 뒤에
+        ordered_cats = [c for c in _PRIORITY_CATS if c in by_cat] + \
+                       [c for c in by_cat if c not in _PRIORITY_CATS]
+        for cat in ordered_cats[:7]:  # 최대 7개 카테고리
+            items = by_cat[cat]
             lines.append(f"**{cat}**")
-            for d in items[:4]:
+            for d in items[:5]:  # 카테고리당 최대 5건
                 val_str = f"{d['value']}" if d.get("value") is not None else "?"
                 unit_str = d.get("unit", "")
                 lines.append(f"  - {d['metric']}: {val_str} {unit_str} ({d.get('year', '?')})")
                 if d.get("notes"):
                     lines.append(f"    {d['notes'][:100]}")
-        lines.append("  출처: SIA, TechInsights, USGS, ASML Annual Report")
+        lines.append("  출처: SIA, TechInsights, USGS, ASML Annual Report, BIS")
         lines.append("")
 
     # ── OWID 군사비·핵탄두 (Cycle 7-D-3) ──────────────────────────────────────

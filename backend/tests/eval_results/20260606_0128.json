@@ -1,0 +1,50 @@
+{
+  "timestamp": "20260606_0128",
+  "server": "http://localhost:8000",
+  "total": 1,
+  "passed": 1,
+  "results": [
+    {
+      "id": "hormuz_oil_verify",
+      "name": "호르무즈 봉쇄 → 유가 인과 검증",
+      "mode": "verify",
+      "passed": true,
+      "elapsed": 18.1,
+      "confidence": 75,
+      "provisional": false,
+      "completeness_pct": 100,
+      "missing_sections": [],
+      "missing_tags": [],
+      "has_h1": true,
+      "h1_expected": true,
+      "hypothesis": [
+        {
+          "h1": "호르무즈 해협에서 발생하는 ACLED 분쟁 이벤트 월별 건수가 증가할 때, WTI 유가(USD/배럴)가 통계적으로 유의미하게 상승한다.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.6068
+        }
+      ],
+      "labels": {
+        "UNVERIFIED": 2,
+        "SPECULATIVE": 0,
+        "PROVISIONAL": 1,
+        "TEMPORAL_REVERSAL": 0,
+        "HIGH_chain": 5,
+        "MEDIUM_chain": 0,
+        "LOW_chain": 0
+      },
+      "rival_check": {
+        "has_prediction_label": false,
+        "has_measured_label": false,
+        "has_verdict_label": false,
+        "theory_mentions": 0,
+        "has_numbers_in_rival": false,
+        "quantitative_comparison": false,
+        "comparative_comparison": false
+      },
+      "expected_min_score": 55
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n\n\n### 신뢰도 분포\n- 최고: 75, 최저: 75, 평균: 75\n- 60 미만(PROVISIONAL): 0/1\n\n### H1 가설 추출률\n- 1/1 케이스에서 H1 추출 성공\n  ✅ [hormuz_oil_verify]\n\n### Granger 검증 현황 (1개 가설)\n- PENDING: 1개"
+}

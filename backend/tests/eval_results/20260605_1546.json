@@ -1,0 +1,15 @@
+{
+  "timestamp": "20260605_1546",
+  "server": "http://localhost:8000",
+  "total": 1,
+  "passed": 0,
+  "results": [
+    {
+      "id": "arctic_lawfare_verify",
+      "name": "러-중 북극 법전쟁 → NSR 주권·그림자 선단 교차 분석",
+      "error": "⚠️ Gemini API 오류 (503)",
+      "elapsed": 17.8
+    }
+  ],
+  "diagnosis": "## 자동화 테스트 진단\n"
+}
