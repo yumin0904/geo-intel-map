@@ -45,7 +45,7 @@ from services.confidence_scorer import (
     score_output,
     apply_data_void_penalty, validate_insight_completeness,
 )
-from services.hypothesis_extractor import extract_hypotheses
+from services.hypothesis_extractor import extract_hypotheses, build_measurable_menu
 from services.hypothesis_verifier import verify_hypotheses
 
 logger = logging.getLogger(__name__)
@@ -186,6 +186,13 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
         "지역·집계 출처가 없는 행동 변수는 검증 불가(PENDING)하므로 지양한다.\n\n"
         "카드당 H1은 최대 **1개**만 작성하라. 측정 가능한 정량 H1이 없다면 "
 "'[가설] 현 데이터로 검증 가능한 정량 가설 없음'으로 표기하고 [검증포인트]에 대안 서술하라.\n\n"
+
+        "★ [8-A 측정가능성 강제 — 필수] H1의 **종속변수 Y는 반드시 아래 [측정 가능 변수 메뉴]에서 "
+        "선택**하라. 메뉴 밖 변수(도발 빈도·억지 의지·역량·신뢰성·취약성 등 추상/행동 변수)를 "
+        "Y로 쓰면 통계 검정이 불가능하다. 적합한 측정가능 Y가 없으면 **억지로 무관한 시장지표를 "
+        "갖다 붙이지 말고** 솔직히 '[가설] 현 데이터로 검증 가능한 정량 가설 없음'으로 표기하라 "
+        "(정직성 > 검정율 — 무관 변수 끼워맞추기는 환각이다).\n"
+        f"[측정 가능 변수 메뉴]\n{build_measurable_menu()}\n\n"
 
         "## [L4-b] 쿼리 키워드 반영\n"
         f"사용자 쿼리: \"{pq.raw_query}\"\n"

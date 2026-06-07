@@ -12,7 +12,13 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 from typing import Literal
+
+import yaml
+
+_MEASURABLE_YAML = Path(__file__).resolve().parents[1] / "config" / "measurable_variables.yaml"
 
 # ── 데이터 모델 ───────────────────────────────────────────────────────────────
 
@@ -76,6 +82,37 @@ _TYPE_C_PROXY_MAP: list[tuple[str, list[str]]] = [
 _TYPE_C_DEFAULT_PROXY = ["ACLED 이벤트 건수", "SIPRI 국방비", "COW 동맹 데이터"]
 
 
+# ── [8-A] 측정 가능 변수 카탈로그 (measurable_variables.yaml) ─────────────────
+
+@lru_cache(maxsize=1)
+def _load_measurable() -> dict:
+    """measurable_variables.yaml 로드 (1회 캐시). 실패 시 빈 구조."""
+    try:
+        with open(_MEASURABLE_YAML, encoding="utf-8") as f:
+            return yaml.safe_load(f) or {}
+    except Exception:
+        return {"market_indicators": [], "conflict_series": {}}
+
+
+def build_measurable_menu() -> str:
+    """
+    [8-A] yaml → Gemini 프롬프트용 측정가능 변수 메뉴 텍스트 생성.
+    intel_query._build_prompt가 H1 규칙에 주입해 종속변수 강제 선택에 사용.
+    """
+    data = _load_measurable()
+    lines: list[str] = ["■ 시장·지표 (종속변수로 즉시 검정 가능):"]
+    for v in data.get("market_indicators", []):
+        aliases = ", ".join(v.get("aliases", [])[:4])
+        lines.append(f"  - {v['name']} ({v.get('unit', '')}) — 키워드: {aliases}")
+    cs = data.get("conflict_series", {})
+    if cs:
+        lines.append(
+            "■ ACLED 지역 분쟁 건수 (독립변수 권장 / 종속이면 '다른 지역'을 명시해야 검정 가능):"
+        )
+        lines.append("  - " + ", ".join(cs.get("regions", [])))
+    return "\n".join(lines)
+
+
 def _classify_variable_type(dependent_var: str) -> tuple[VariableType, list[str]]:
     """
     종속변수 텍스트를 결정론적으로 Type_A / Type_B / Type_C로 분류한다.
@@ -85,6 +122,13 @@ def _classify_variable_type(dependent_var: str) -> tuple[VariableType, list[str]
         proxy_suggestions는 Type_C일 때만 비어있지 않음.
     """
     text = dependent_var.lower()
+
+    # [8-A] 측정 가능 우선: 종속변수가 시장 지표 ticker로 매핑되면 Type_A.
+    #   Type_C/B 키워드가 섞여 있어도(예: '유가 의존도'의 '유가') 검정 가능하므로 구제.
+    #   _match_ticker 실패 시에만 기존 Type_C → Type_B → Type_A 순으로 판별
+    #   (측정 불가 변수를 억지 Type_A로 만들지 않음 — 정직성 가드).
+    if _match_ticker(text):
+        return "Type_A", []
 
     # Type_C 우선 판별 (추상 변수는 ticker도 ACLED도 직접 매핑 불가)
     for kw in _TYPE_C_KEYWORDS:

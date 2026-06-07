@@ -1,0 +1,75 @@
+# 측정 가능 변수 카탈로그 (Phase 8 Cycle 8-A)
+#
+# H1 종속변수(Y)는 반드시 이 메뉴에서 선택 → Type_B(검정 불가) 발생 억제.
+# hypothesis_extractor(_TICKER_MAP)·hypothesis_verifier(_REGION_DEFAULT_TICKER)와
+# 내용 정합. intel_query 프롬프트와 extractor 분류가 공유하는 단일 소스.
+#
+# market_indicators : Type_A — ticker 직결, 종속변수로 즉시 Granger 검정 가능
+# conflict_series   : ACLED 지역 분쟁 건수 — 독립변수(X)로 권장 (종속이면 사건→사건 경로 필요)
+
+market_indicators:
+  - name: "WTI 유가"
+    unit: "USD/배럴"
+    ticker: "CL=F"
+    aliases: [wti, 원유, 유가, crude, oil]
+  - name: "Brent 유가"
+    unit: "USD/배럴"
+    ticker: "BZ=F"
+    aliases: [brent, 브렌트]
+  - name: "천연가스"
+    unit: "USD/MMBtu"
+    ticker: "NG=F"
+    aliases: [천연가스, "natural gas", 가스, lng]
+  - name: "TSMC 주가"
+    unit: "USD"
+    ticker: "TSM"
+    aliases: [tsmc, tsm, 반도체, semiconductor, 파운드리]
+  - name: "반도체 ETF (SOXX)"
+    unit: "USD"
+    ticker: "SOXX"
+    aliases: [soxx, 반도체etf, chips, "semiconductor etf"]
+  - name: "방산 ETF (ITA)"
+    unit: "USD"
+    ticker: "ITA"
+    aliases: [방산, defense, 무기, ita, 군비]
+  - name: "금 (안전자산)"
+    unit: "USD"
+    ticker: "GLD"
+    aliases: [금, gold, gld, 귀금속]
+  - name: "원/달러 환율"
+    unit: "KRW/USD"
+    ticker: "KRW=X"
+    aliases: [원달러, "usd/krw", krw, 원화, 환율, 달러원]
+  - name: "대만 달러 환율"
+    unit: "TWD/USD"
+    ticker: "TWD=X"
+    aliases: ["대만 달러", 대만달러, "타이완 달러", twd, "usd/twd", 신타이완달러]
+  - name: "위안/달러 환율"
+    unit: "CNY/USD"
+    ticker: "CNY=X"
+    aliases: [위안, 위안화, cny, rmb, 런민비, 인민폐]
+  - name: "엔/달러 환율"
+    unit: "JPY/USD"
+    ticker: "JPY=X"
+    aliases: [엔화, "엔/달러", jpy, 달러엔, 엔달러]
+  - name: "밀 선물"
+    unit: "USD/부셸"
+    ticker: "ZW=F"
+    aliases: [밀, wheat, 소맥, 곡물, grain]
+
+conflict_series:
+  note: >
+    ACLED 분쟁 이벤트 월별 건수. 독립변수(X)로 권장.
+    종속변수(Y)로 쓸 때는 반드시 다른 지역을 명시해야 사건→사건 경로로 검정 가능
+    (단일 지역 자기참조·지역 미명시 '건수'는 검정 불가 → Type_B 사망).
+  regions:
+    - eastern_europe
+    - taiwan_strait
+    - hormuz
+    - korean_peninsula
+    - east_china_sea
+    - bab_el_mandeb
+    - suez
+    - middle_east
+    - malacca
+    - sahel
