@@ -594,6 +594,122 @@ def _fetch_theory_profiles(theory_ids: list[str]) -> list[dict]:
         return []
 
 
+# ── [8-C] 경쟁이론 정량 앵커 ──────────────────────────────────────────────────
+# 각 이론이 '적용 가능'하려면 실측 IV가 넘어야 할 임계값(학술 표준 기준).
+# direction "+": 실측>임계일수록 전제 성립 / "-": 실측<임계일수록 성립.
+# ⚠️ 임계는 표준 기준만 사용(자의적 임계 금지 — 정직성). DV 직접측정이 아닌
+#    IV 전제조건 충족도이므로 '전제 충족/미충족'으로만 판정(이론 입증 아님).
+
+_THEORY_ANCHORS: dict[str, dict] = {
+    "energy_weaponized_interdependence": {
+        "metric": "trade_hhi", "threshold": 2500, "direction": "+", "unit": "",
+        "anchor_label": "공급망 HHI 독과점 임계(美 DOJ 2500)",
+        "interpret": "초과 → 비대칭 의존 구조 성립, Farrell&Newman 레버리지 예측 적용 가능",
+    },
+    "energy_resource_weaponization": {
+        "metric": "eia_flow_mbpd", "threshold": 15.0, "direction": "+", "unit": "Mbpd",
+        "anchor_label": "초크포인트 통과량 임계(글로벌 원유 약 15%≈15Mbpd)",
+        "interpret": "초과 → 차단 시 글로벌 충격 큼, 자원무기화 지렛대 성립",
+    },
+    "maritime_mahan_sea_power": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "해군력(국방비%GDP) 우위 격차",
+        "interpret": "양(+) → SLOC 통제 우위, Mahan 예측 부합",
+    },
+    "indo_pacific_a2ad_strategy": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "군사력(국방비%GDP) 격차",
+        "interpret": "격차 클수록 반접근 거부 투자 여력 — A2AD 부합",
+    },
+    "indo_pacific_mearsheimer_offensive_realism": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "권력(국방비%GDP) 격차",
+        "interpret": "격차 클수록 패권 추구 압력 — Mearsheimer 부합",
+    },
+    "indo_pacific_waltz_defensive_realism": {
+        "metric": "polity_min", "threshold": 6, "direction": "+", "unit": "점",
+        "anchor_label": "민주 임계(Polity +6, 민주평화론 경계)",
+        "interpret": "행위자 모두 +6↑ → 현상유지 경향(Waltz), 미만이면 반례",
+    },
+    "gray_zone_gray_zone_strategy": {
+        "metric": "wgi_pv_min", "threshold": 0.0, "direction": "-", "unit": "",
+        "anchor_label": "정치안정 WGI 중립선(0)",
+        "interpret": "음(-) → 거버넌스 공백, 회색지대 침투 전제 성립",
+    },
+    "gray_zone_hybrid_warfare": {
+        "metric": "hiik_max", "threshold": 3, "direction": "+", "unit": "강도",
+        "anchor_label": "HIIK 폭력위기 임계(3)",
+        "interpret": "3↑ → 하이브리드전 활성, Hoffman 예측 부합",
+    },
+    "cyber_libicki_cyber_deterrence": {
+        "metric": "itu_idi_min", "threshold": 70, "direction": "+", "unit": "IDI",
+        "anchor_label": "ITU IDI 고역량 임계(70, 간접 proxy)",
+        "interpret": "70↑ → 귀속·대응 역량 추정, Libicki 억지 성립 (※ IDI는 간접 proxy, 방어력 직접값 아님)",
+    },
+    "techno_digital_iron_curtain": {
+        "metric": "semi_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "TSMC↔SMIC 점유율 격차",
+        "interpret": "격차 클수록 기술 분리·종속 심화 — 디지털 철의장막 부합",
+    },
+}
+
+
+def _collect_anchor_metrics(milex, trade_hhi, eia, wbk, polity5, hiik, itu, semi) -> dict:
+    """실측 dict들에서 앵커 metric 단일 수치를 추출 (Token-Zero, 모두 결정론적)."""
+    m: dict[str, float] = {}
+    if trade_hhi:
+        vals = [d.get("hhi_proxy") for d in trade_hhi.values() if d.get("hhi_proxy") is not None]
+        if vals:
+            m["trade_hhi"] = max(vals)   # 가장 집중된 품목
+    if eia and eia.get("flow_mbpd") is not None:
+        m["eia_flow_mbpd"] = eia["flow_mbpd"]
+    mvals = [v.get("gdp_pct") for v in (milex or {}).values() if v.get("gdp_pct") is not None]
+    if len(mvals) >= 2:
+        m["milex_gap_pp"] = A.pct_point_gap(max(mvals), min(mvals))
+    pv = [v.get("polity") for v in (polity5 or {}).values() if v.get("polity") is not None]
+    if pv:
+        m["polity_min"] = min(pv)      # Waltz: '모두' 민주 임계 넘어야 → 최저값
+    wv = [v.get("pv") for v in (wbk or {}).values() if v.get("pv") is not None]
+    if wv:
+        m["wgi_pv_min"] = min(wv)      # 최저 정치안정 = 거버넌스 공백
+    iv = [d.get("intensity") for d in (hiik or {}).values() if d.get("intensity") is not None]
+    if iv:
+        m["hiik_max"] = max(iv)        # 최고 분쟁 강도
+    idi = [v.get("idi") for v in (itu or {}).values() if v.get("idi") is not None]
+    if idi:
+        m["itu_idi_min"] = min(idi)    # 관련 행위자 중 최저 역량
+    if semi:
+        g = A.pct_point_gap(
+            semi.get("tsmc_share", {}).get("value"),
+            semi.get("smic_share", {}).get("value"),
+        )
+        if g is not None:
+            m["semi_gap_pp"] = g
+    return m
+
+
+def _anchor_verdict(theory_id: str, metrics: dict):
+    """이론 앵커 임계 vs 실측 편차 → (판정 라인, gap, 충족여부, 단위). 실측 없으면 None.
+    IV 전제조건 충족도 (DV 직접측정 아님 — 라벨에 명시, 억지 판정 금지)."""
+    anchor = _THEORY_ANCHORS.get(theory_id)
+    if not anchor:
+        return None
+    val = metrics.get(anchor["metric"])
+    if val is None:
+        return None   # 실측 없으면 판정 생략 (빈칸 억지 채우기 금지)
+    gap = A.delta(val, anchor["threshold"])
+    if gap is None:
+        return None
+    met = (gap > 0) if anchor["direction"] == "+" else (gap < 0)
+    verdict = "전제 충족" if met else "전제 미충족"
+    line = (
+        f"앵커(IV 전제조건) — {anchor['anchor_label']}: 실측 {val}{anchor['unit']} vs "
+        f"임계 {anchor['threshold']}{anchor['unit']} (편차 {A.fmt_signed(gap, anchor['unit'])}, 사전계산) "
+        f"→ {verdict}: {anchor['interpret']}"
+    )
+    return line, gap, met, anchor["unit"]
+
+
 # ── 비교 컨텍스트 생성 ───────────────────────────────────────────────────────
 
 def build_theory_comparison_context(
@@ -645,6 +761,10 @@ def build_theory_comparison_context(
     itu        = _get_itu_ict_for_theories(actors)
     owid       = _get_owid_military(actors, regions)
     trade_hhi  = _get_trade_hhi(actors, regions)  # AR-1b: Comtrade 의존도 HHI
+
+    # [8-C] 정량 앵커 metric 1회 추출 (이론별 전제조건 충족 판정용)
+    anchor_metrics = _collect_anchor_metrics(milex, trade_hhi, eia, wbk, polity5, hiik, itu, semi)
+    anchor_summary: list[tuple] = []   # (이론명, 충족여부, 편차, 단위) — 종합 판정용
 
     # 3. 비교 텍스트 생성
     lines: list[str] = ["## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)"]
@@ -873,6 +993,12 @@ def build_theory_comparison_context(
                         f"| SMIC 7nm yield {semi.get('smic_yield', {}).get('value', '?')}% (TSMC 95%+ 대비)"
                     )
 
+        # [8-C] 정량 앵커 판정 추가 (실측 IV vs 임계 편차 — 결정론적)
+        av = _anchor_verdict(tid, anchor_metrics)
+        if av:
+            empirical_lines.append(av[0])
+            anchor_summary.append((p.get("title", tid), av[2], av[1], av[3]))
+
         if empirical_lines:
             lines.append("**실측 데이터**:")
             for el in empirical_lines:
@@ -900,6 +1026,21 @@ def build_theory_comparison_context(
             f"수치 편차와 함께 판정하라.\n"
             f"각 이론은 '예측:/실측:/판정:' 3줄, 마지막에 '▶ 종합 판정:'으로 "
             f"두 이론의 편차를 직접 비교해 우세 이론을 수치로 결론지어라."
+        )
+
+    # [8-C] 앵커 종합 (사전계산) — 각 이론 전제 충족 여부 결정론적 비교.
+    #   ※ metric 스케일이 이론마다 달라(HHI 수천 vs Polity 한자리) 편차 '크기'
+    #     직접 비교는 무의미·환각 위험 → '충족/미충족' 여부로만 비교 (정직성).
+    if len(anchor_summary) >= 2:
+        parts = [
+            f"{name} {'전제충족' if met else '전제미충족'}(편차 {A.fmt_signed(gap, unit)})"
+            for name, met, gap, unit in anchor_summary
+        ]
+        lines.append(
+            "▶ 앵커 종합 (사전계산, IV 전제조건 충족도): " + " | ".join(parts) + "\n"
+            "  → 전제 충족 이론이 현 상황에 적용 가능성 높음. "
+            "단 metric 스케일 상이로 편차 크기 직접 비교 불가, DV 직접 입증 아님 "
+            "(전제조건 판정에 한함). [경쟁설명] '▶ 종합 판정:'에 이 충족 여부를 인용하라."
         )
 
     return "\n".join(lines)
