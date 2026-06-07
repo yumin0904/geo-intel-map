@@ -18,11 +18,31 @@ v6.3.0 추가:
 from __future__ import annotations
 
 import logging
+import time
 from datetime import date, timedelta
+from typing import Any
 
 from services.hypothesis_extractor import HypothesisSpec
 
 logger = logging.getLogger(__name__)
+
+# PERF-2: Granger 결과 TTL 캐시 (region·ticker·기간이 같으면 재계산 불필요)
+_GrangerCache = dict[tuple, tuple[Any, float]]
+_granger_spec_cache: _GrangerCache = {}
+_GRANGER_SPEC_TTL = 3600   # 1시간
+
+def _gcache_get(key: tuple) -> Any:
+    entry = _granger_spec_cache.get(key)
+    if entry is None:
+        return None
+    value, expire_at = entry
+    if time.monotonic() > expire_at:
+        del _granger_spec_cache[key]
+        return None
+    return value
+
+def _gcache_set(key: tuple, value: Any) -> None:
+    _granger_spec_cache[key] = (value, time.monotonic() + _GRANGER_SPEC_TTL)
 
 # [P2] 지역 기본 ticker — Type C 및 Type A 실패 시 대리 종속변수로 사용
 # 각 지역의 지정학적 충격이 가장 직접 전이되는 금융 지표
@@ -151,6 +171,16 @@ async def _run_granger_for_spec(
          불가 시 양변량 fallback (교란 미통제 단서 유지).
     proxy_label: Type C 대리변수 사용 시 에러 필드에 기재.
     """
+    # PERF-2: 동일 지역·티커·기간 조합은 Granger 재계산 생략
+    _cache_key = (spec.region_code, spec.ticker, start.isoformat(), end.isoformat())
+    _cached = _gcache_get(_cache_key)
+    if _cached is not None:
+        logger.debug("[hypothesis] Granger cache HIT %s/%s", spec.region_code, spec.ticker)
+        # 캐시된 수치 필드만 덮어쓰고 나머지(h1·h0·var 등)는 현재 spec 유지
+        for _k, _v in _cached.items():
+            setattr(spec, _k, _v)
+        return spec
+
     try:
         event_series = load_event_series(spec.region_code, start, end)
         if event_series is None or len(event_series) < 20:
@@ -230,6 +260,21 @@ async def _run_granger_for_spec(
             spec.inference_grade,
             f" [{proxy_label}]" if proxy_label else "",
         )
+
+        # PERF-2: 결과를 캐시에 저장 (수치 필드만)
+        _gcache_set(_cache_key, {
+            "granger_p": spec.granger_p,
+            "f_statistic": spec.f_statistic,
+            "best_lag": spec.best_lag,
+            "n_obs": spec.n_obs,
+            "differenced": spec.differenced,
+            "controlled": spec.controlled,
+            "control_name": spec.control_name,
+            "theory_grounded": spec.theory_grounded,
+            "inference_grade": spec.inference_grade,
+            "inference_caveat": spec.inference_caveat,
+            "verification_status": spec.verification_status,
+        })
     except Exception as exc:
         spec.error = str(exc)
         logger.warning("[hypothesis] 검정 오류: %s — %s", spec.h1[:50], exc)

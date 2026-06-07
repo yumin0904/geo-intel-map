@@ -44,6 +44,42 @@ _LIB_DB   = Path(__file__).resolve().parent.parent / "db" / "library.db"
 _BODY_MAX_CHARS = 3000
 # Gemini 컨텍스트 총 상한 (글자 기준 — 약 30,000 tokens)
 _CONTEXT_MAX_CHARS = 20000
+# _build_context 섹션 추가 전 예산 검사용 헬퍼
+def _over_budget(lines: list[str]) -> bool:
+    """현재까지 누적된 컨텍스트가 상한을 초과했는지 확인."""
+    return sum(len(l) + 1 for l in lines) >= _CONTEXT_MAX_CHARS
+
+
+# PERF-3: 정적 소스 모듈 레벨 TTL 캐시
+# Polity5·HIIK·ITU·semi_market·EIA·SIPRI milex 등은 CSV 재적재 전까지 불변.
+# 5분 TTL로 개발 중 DB 갱신도 반영하면서 중복 SQLite I/O를 방지한다.
+import time as _time
+
+_STATIC_CACHE: dict[tuple, tuple[object, float]] = {}
+_STATIC_TTL = 300  # 5분
+
+
+def _scache_key(*args) -> tuple:
+    """list를 tuple로 재귀 변환해 hashable 키 생성."""
+    return tuple(
+        tuple(sorted(a)) if isinstance(a, list) else a
+        for a in args
+    )
+
+
+def _scache_get(key: tuple):
+    entry = _STATIC_CACHE.get(key)
+    if entry is None:
+        return None
+    value, exp = entry
+    if _time.monotonic() > exp:
+        del _STATIC_CACHE[key]
+        return None
+    return value
+
+
+def _scache_set(key: tuple, value) -> None:
+    _STATIC_CACHE[key] = (value, _time.monotonic() + _STATIC_TTL)
 
 
 @contextmanager
@@ -616,7 +652,9 @@ def _get_fred_data(regions: list[str], sectors: list[str]) -> list[dict]:
     if "gray_zone" in sectors:
         series_ids.update(_REGION_FRED_SERIES["gray_zone"])
     if not series_ids:
-        series_ids = {"DCOILWTICO", "GOLDAMGBD228NLBM"}  # 기본값
+        # 지역·섹터 미매칭 시 무관한 유가·금 데이터를 주입하지 않는다.
+        # (사이버·기술 쿼리에 유가가 섞이면 Gemini가 근거 없는 상관 주장을 만들 수 있음)
+        return []
 
     try:
         placeholders = ",".join("?" * len(series_ids))
@@ -698,6 +736,10 @@ def _get_polity5(actors: list[str]) -> list[dict]:
     """Polity5 — 행위자 국가 체제 분류 강화 (V-DEM 보완)."""
     if not actors:
         return []
+    _ck = _scache_key("polity5", actors)
+    _cv = _scache_get(_ck)
+    if _cv is not None:
+        return _cv
     try:
         placeholders = ",".join("?" * len(actors))
         with _db(_INTEL_DB) as con:
@@ -717,6 +759,7 @@ def _get_polity5(actors: list[str]) -> list[dict]:
                     "iso3": r[0], "country": r[1] or r[0], "year": r[2],
                     "polity_score": r[3], "polity2": r[4], "regime_type": r[5],
                 })
+        _scache_set(_ck, result)
         return result
     except Exception as e:
         logger.warning("[intel] polity5 실패: %s", e)
@@ -730,13 +773,16 @@ def _get_itu_ict(actors: list[str], sectors: list[str]) -> list[dict]:
     if not actors and "cyber" not in sectors and "techno" not in sectors:
         return []
     target_actors = list(actors)
-    # cyber/techno 쿼리면 핵심 행위자 자동 추가
     if "cyber" in sectors or "techno" in sectors:
         for iso3 in ["USA", "CHN", "RUS", "PRK", "IRN"]:
             if iso3 not in target_actors:
                 target_actors.append(iso3)
     if not target_actors:
         return []
+    _ck = _scache_key("itu", target_actors)
+    _cv = _scache_get(_ck)
+    if _cv is not None:
+        return _cv
     try:
         placeholders = ",".join("?" * len(target_actors))
         with _db(_INTEL_DB) as con:
@@ -747,11 +793,13 @@ def _get_itu_ict(actors: list[str], sectors: list[str]) -> list[dict]:
                     ORDER BY idi_score DESC""",
                 target_actors,
             ).fetchall()
-        return [
+        result = [
             {"iso3": r[0], "country": r[1] or r[0], "year": r[2],
              "idi_score": r[3], "rank": r[4], "tier": r[5]}
             for r in rows
         ]
+        _scache_set(_ck, result)
+        return result
     except Exception as e:
         logger.warning("[intel] itu_ict 실패: %s", e)
         return []
@@ -763,6 +811,10 @@ def _get_hiik_conflict(regions: list[str]) -> list[dict]:
     """HIIK — 지역별 최신 분쟁 강도 (ACLED 보완, 분쟁 수치화)."""
     if not regions:
         return []
+    _ck = _scache_key("hiik", regions)
+    _cv = _scache_get(_ck)
+    if _cv is not None:
+        return _cv
     try:
         placeholders = ",".join("?" * len(regions))
         with _db(_INTEL_DB) as con:
@@ -775,11 +827,13 @@ def _get_hiik_conflict(regions: list[str]) -> list[dict]:
                     LIMIT 8""",
                 regions,
             ).fetchall()
-        return [
+        result = [
             {"id": r[0], "name": r[1], "country": r[2], "region": r[3],
              "year": r[4], "intensity": r[5], "label": r[6], "actors": r[7]}
             for r in rows
         ]
+        _scache_set(_ck, result)
+        return result
     except Exception as e:
         logger.warning("[intel] hiik_conflict 실패: %s", e)
         return []
@@ -791,6 +845,10 @@ def _get_semi_market(sectors: list[str], regions: list[str]) -> list[dict]:
     """SIA 반도체 시장 데이터 — techno/cyber 섹터 HHI·점유율 수치화."""
     if "techno" not in sectors and "cyber" not in sectors and "taiwan_strait" not in regions:
         return []
+    _ck = _scache_key("semi", sectors, regions)
+    _cv = _scache_get(_ck)
+    if _cv is not None:
+        return _cv
     try:
         with _db(_INTEL_DB) as con:
             rows = con.execute(
@@ -799,11 +857,13 @@ def _get_semi_market(sectors: list[str], regions: list[str]) -> list[dict]:
                    ORDER BY category, year DESC
                    LIMIT 60""",
             ).fetchall()
-        return [
+        result = [
             {"category": r[0], "metric": r[1], "value": r[2], "unit": r[3],
              "year": r[4], "source": r[5], "region_hint": r[6], "notes": r[7]}
             for r in rows
         ]
+        _scache_set(_ck, result)
+        return result
     except Exception as e:
         logger.warning("[intel] semi_market 실패: %s", e)
         return []
@@ -857,6 +917,77 @@ def _get_owid_data(actors: list[str], regions: list[str], sectors: list[str]) ->
         return []
 
 
+# ── 23. UN Comtrade 무역 의존도 (AR-1b) ──────────────────────────────────────
+# Weaponized Interdependence(Farrell & Newman) 독립변수 직접 수치화.
+# HS 8542(반도체)·27(에너지)·26(희토류) 양자 dependency_ratio → 비대칭 의존 구조 포착.
+
+_HS_LABEL = {"8542": "반도체", "27": "에너지(원유·가스)", "26": "희토류·광물"}
+
+# 지역 → 핵심 행위자 매핑 (Comtrade 전용 — 무역쌍 구성용)
+_REGION_TRADE_ACTORS: dict[str, list[str]] = {
+    "taiwan_strait":    ["TWN", "CHN", "USA", "JPN", "KOR"],
+    "korean_peninsula": ["KOR", "PRK", "CHN", "USA", "JPN"],
+    "hormuz":           ["IRN", "SAU", "ARE", "CHN", "USA"],
+    "eastern_europe":   ["RUS", "DEU", "NLD", "UKR", "CHN"],
+    "south_china_sea":  ["CHN", "USA", "VNM", "PHL", "JPN"],
+    "east_china_sea":   ["CHN", "JPN", "USA", "KOR"],
+    "bab_el_mandeb":    ["SAU", "ARE", "CHN", "IND", "ETH"],
+    "indo_pacific":     ["CHN", "USA", "JPN", "KOR", "IND", "AUS"],
+}
+
+
+def _get_trade_dependency(actors: list[str], regions: list[str]) -> list[dict]:
+    """
+    UN Comtrade 무역 의존도 조회 — Weaponized Interdependence IV 수치화.
+    dependency_ratio 0.1(10%) 이상 쌍만 반환 (의미있는 비대칭 의존 구조).
+    """
+    # 조회 대상 ISO3 수집
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_TRADE_ACTORS.get(r, []))
+    if not iso3_set:
+        return []
+
+    try:
+        placeholders = ",".join("?" * len(iso3_set))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""
+                SELECT period, reporter_iso, partner_iso, hs_code, trade_flow,
+                       trade_value_usd, dependency_ratio
+                FROM historical_trade_matrix
+                WHERE reporter_iso IN ({placeholders})
+                  AND partner_iso  IN ({placeholders})
+                  AND partner_iso  != 'WLD'
+                  AND dependency_ratio >= 0.1
+                ORDER BY dependency_ratio DESC, period DESC
+                """,
+                (*list(iso3_set), *list(iso3_set)),
+            ).fetchall()
+
+        # reporter·partner·hs_code 조합별 최신연도만 유지 (중복 제거)
+        seen: set[tuple] = set()
+        result: list[dict] = []
+        for r in rows:
+            key = (r[0], r[1], r[2], r[3], r[4])
+            if key not in seen:
+                seen.add(key)
+                result.append({
+                    "period": r[0],
+                    "reporter": r[1],
+                    "partner": r[2],
+                    "hs_code": r[3],
+                    "hs_label": _HS_LABEL.get(r[3], r[3]),
+                    "flow": "수입" if r[4] == "M" else "수출",
+                    "value_usd": r[5],
+                    "dependency_ratio": r[6],
+                })
+        return result[:20]   # 상위 20쌍으로 제한
+    except Exception as e:
+        logger.warning("[intel] trade_dependency 실패: %s", e)
+        return []
+
+
 # ── 7. 국가 프로파일 ──────────────────────────────────────────────────────────
 
 def _get_country_profiles(actors: list[str]) -> dict:
@@ -898,6 +1029,7 @@ def _build_context(
     hiik_data:        list[dict] | None = None,
     semi_data:        list[dict] | None = None,
     owid_data:        list[dict] | None = None,
+    trade_dep_data:   list[dict] | None = None,
 ) -> str:
     lines: list[str] = []
     total_chars = 0
@@ -1001,7 +1133,7 @@ def _build_context(
         for lnk in cascade_links[:5]:
             lines.append(
                 f"- {lnk['rule_name']} "
-                f"(룰 발화 점수 {lnk['correlation_score']}, {lnk.get('depth', 1)}단계)"
+                f"(룰매칭강도 {lnk['correlation_score']}, {lnk.get('depth', 1)}단계)"
             )
         lines.append(
             "  ⚠️ '룰 발화 점수'는 cascade_rules.yaml 규칙이 매칭된 강도(0~1)이며, "
@@ -1146,7 +1278,7 @@ def _build_context(
         lines.append("")
 
     # ── SIPRI 무기 이전 (Cycle 6-A) ──────────────────────────────────────────
-    if sipri_arms:
+    if sipri_arms and not _over_budget(lines):
         lines.append("## 무기 공급망 (SIPRI Arms Transfers Database)")
         for arm in sipri_arms[:6]:
             lines.append(
@@ -1159,7 +1291,7 @@ def _build_context(
         lines.append("")
 
     # ── V-DEM 민주주의 지수 (Cycle 6-A) ─────────────────────────────────────
-    if vdem_data:
+    if vdem_data and not _over_budget(lines):
         lines.append("## 행위자 체제 유형 (V-Dem Democracy Index v14)")
         for v in vdem_data:
             libdem = f"{v['libdem']:.2f}" if v.get("libdem") is not None else "?"
@@ -1174,7 +1306,7 @@ def _build_context(
         lines.append("")
 
     # ── COW 전쟁 선례 (Cycle 6-A) ───────────────────────────────────────────
-    if cow_wars:
+    if cow_wars and not _over_budget(lines):
         lines.append("## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)")
         for w in cow_wars[:5]:
             deaths = f"{w['battle_deaths']:,}" if w.get("battle_deaths") else "미집계"
@@ -1186,7 +1318,7 @@ def _build_context(
         lines.append("")
 
     # ── 외교부 IFANS 발간자료 (Cycle 6-A) ────────────────────────────────────
-    if ifans_pubs:
+    if ifans_pubs and not _over_budget(lines):
         lines.append("## 한국 외교부 IFANS 발간자료 (국립외교원 학술 분석)")
         for pub in ifans_pubs[:4]:
             date = str(pub.get("date", ""))
@@ -1199,7 +1331,7 @@ def _build_context(
         lines.append("")
 
     # ── FRED 경제 시계열 (Cycle 7-D-1) ───────────────────────────────────────
-    if fred_data:
+    if fred_data and not _over_budget(lines):
         lines.append("## 주요 경제 지표 시계열 (FRED — Federal Reserve Economic Data)")
         by_series: dict[str, list] = {}
         for d in fred_data:
@@ -1216,7 +1348,7 @@ def _build_context(
         lines.append("")
 
     # ── World Bank WGI 거버넌스 지수 (Cycle 7-D-2) ──────────────────────────
-    if wbk_data:
+    if wbk_data and not _over_budget(lines):
         lines.append("## 국가 거버넌스 지수 (World Bank WGI 2022)")
         lines.append("점수 범위: -2.5(최하) ~ +2.5(최상)")
         for d in wbk_data[:8]:
@@ -1231,7 +1363,7 @@ def _build_context(
         lines.append("")
 
     # ── Polity5 정치체제 지수 (Cycle 7-D-4) ─────────────────────────────────
-    if polity5_data:
+    if polity5_data and not _over_budget(lines):
         lines.append("## 정치체제 지수 (Polity5 2022)")
         lines.append("점수: -10(완전권위) ~ +10(완전민주)")
         for d in polity5_data[:8]:
@@ -1244,9 +1376,18 @@ def _build_context(
         lines.append("")
 
     # ── ITU ICT 개발 지수 (Cycle 7-D-5) ─────────────────────────────────────
-    if itu_data:
-        lines.append("## ICT 발전 지수 (ITU ICT Development Index 2023)")
-        lines.append("IDI 점수: 0-100 (ICT 인프라 보급·접근성·이용 종합)")
+    if itu_data and not _over_budget(lines):
+        # IDI = ICT 보급·접근성 지표. 사이버 방어력의 직접 측정값이 아님을 헤더에 명시해
+        # Gemini가 이 수치를 사이버 역량의 근거로 오용하지 않도록 선제 경고한다.
+        lines.append(
+            "## ICT 발전 지수 (ITU IDI 2023) "
+            "⚠️ 보급·접근성 지표 — 사이버 방어력과 직접 동치 금지"
+        )
+        lines.append(
+            "IDI 점수: 0-100 (인터넷 보급·접근성·이용 종합). "
+            "사이버 역량 주장 시 반드시 '간접 proxy'임을 명시할 것. "
+            "방어력 직접 근거로는 GCI·NCSI가 더 타당함."
+        )
         for d in itu_data[:8]:
             score = d.get("idi_score")
             rank = d.get("rank")
@@ -1254,16 +1395,11 @@ def _build_context(
             lines.append(
                 f"- **{d['country']}** ({d['iso3']}): IDI {score} (전세계 {rank}위, {tier}티어)"
             )
-        lines.append(
-            "  ⚠️ IDI는 ICT **보급·접근성** 지표이며 사이버 **방어력**의 직접 측정값이 아니다. "
-            "사이버 억지·방어 역량 주장의 근거로 쓸 때는 간접 proxy임을 명시하고, "
-            "직접 근거로는 GCI(Global Cybersecurity Index)·NCSI가 더 타당하다고 한정하라."
-        )
         lines.append("  출처: ITU ICT Development Index 2023")
         lines.append("")
 
     # ── HIIK 분쟁 강도 바로미터 (Cycle 7-D-6) ──────────────────────────────
-    if hiik_data:
+    if hiik_data and not _over_budget(lines):
         lines.append("## 분쟁 강도 바로미터 (HIIK Conflict Barometer 2024)")
         lines.append("강도: 1=분쟁 / 2=비폭력위기 / 3=폭력위기 / 4=제한전 / 5=전쟁")
         for d in hiik_data[:6]:
@@ -1275,7 +1411,7 @@ def _build_context(
         lines.append("")
 
     # ── 반도체·기술 시장 데이터 (Cycle 7-D-7) ────────────────────────────────
-    if semi_data:
+    if semi_data and not _over_budget(lines):
         lines.append("## 반도체·기술 시장 데이터 (SIA/TechInsights 2023-2024)")
         # 경쟁이론 비교에 직결되는 카테고리 우선 노출
         _PRIORITY_CATS = [
@@ -1308,7 +1444,7 @@ def _build_context(
         lines.append("")
 
     # ── OWID 군사비·핵탄두 (Cycle 7-D-3) ──────────────────────────────────────
-    if owid_data:
+    if owid_data and not _over_budget(lines):
         milex = [d for d in owid_data if d.get("dataset") == "military_exp_gdp"]
         nukes = [d for d in owid_data if d.get("dataset") == "nuclear_warheads"]
         lines.append("## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)")
@@ -1325,7 +1461,43 @@ def _build_context(
         lines.append("  출처: Our World in Data (ourworldindata.org)")
         lines.append("")
 
-    return "\n".join(lines)
+    # ── UN Comtrade 무역 의존도 (AR-1b) ──────────────────────────────────────
+    # Weaponized Interdependence 독립변수(공급망 집중도) 직접 수치화.
+    # dependency_ratio: 해당 쌍의 무역액 / 보고국 전체 무역액 (0~1).
+    if trade_dep_data and not _over_budget(lines):
+        lines.append(
+            "## 무역 의존도 (UN Comtrade — Weaponized Interdependence IV)"
+        )
+        lines.append(
+            "dependency_ratio: 해당 양자 무역액 ÷ 보고국 전체 무역액 (0~1). "
+            "0.1 이상 = 10%+ 의존 → 비대칭 구조. "
+            "이 수치가 높을수록 Farrell & Newman의 '공급망 집중 → 레버리지' 예측 지지."
+        )
+        # HS 코드별로 그룹화하여 출력
+        by_hs: dict[str, list] = {}
+        for d in trade_dep_data:
+            by_hs.setdefault(d["hs_code"], []).append(d)
+        for hs_code, items in by_hs.items():
+            label = _HS_LABEL.get(hs_code, hs_code)
+            lines.append(f"**{label} (HS {hs_code})**")
+            for d in items[:6]:
+                ratio_pct = f"{d['dependency_ratio']*100:.1f}%"
+                lines.append(
+                    f"- {d['reporter']} {d['flow']} ← {d['partner']}: "
+                    f"의존도 {ratio_pct} ({d['period']})"
+                )
+        lines.append("  출처: UN Comtrade Database (2020-2025, HS 8542·27·26)")
+        lines.append("")
+
+    result = "\n".join(lines)
+    # 혹시 예산을 초과한 경우 마지막 완전 섹션 경계에서 절단
+    if len(result) > _CONTEXT_MAX_CHARS:
+        cut = result[:_CONTEXT_MAX_CHARS]
+        boundary = cut.rfind("\n## ")
+        if boundary > _CONTEXT_MAX_CHARS // 2:
+            cut = cut[:boundary]
+        result = cut + "\n\n[컨텍스트 예산 초과 — 이후 섹션 생략]"
+    return result
 
 
 # ── 메인 진입점 ───────────────────────────────────────────────────────────────
@@ -1346,10 +1518,13 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_eia_data, pq.actors, pq.regions),
         loop.run_in_executor(None, _get_csis_incidents, pq.actors, pq.regions, pq.sectors),
         # Cycle 6-A 신규 소스
-        # Arms: techno/cyber 섹터 전용 쿼리에는 미주입 (무관한 주장 유발 방지)
+        # Arms: 섹터가 techno·cyber 전용일 때만 미주입 (무관한 주장 유발 방지)
+        # 빈 섹터(일반 쿼리)는 포함, 멀티섹터(techno+energy 등)는 포함
         loop.run_in_executor(None, _get_sipri_arms,
-                             pq.actors if not {"techno","cyber"}.issubset(set(pq.sectors or [])) and
-                             not all(s in {"techno","cyber"} for s in (pq.sectors or [])) else [],
+                             pq.actors if not (
+                                 bool(pq.sectors) and
+                                 all(s in {"techno", "cyber"} for s in pq.sectors)
+                             ) else [],
                              pq.regions),
         loop.run_in_executor(None, _get_vdem, pq.actors),
         loop.run_in_executor(None, _get_cow_wars, pq.regions, pq.actors),
@@ -1365,6 +1540,8 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_hiik_conflict, pq.regions),
         loop.run_in_executor(None, _get_semi_market, pq.sectors, pq.regions),
         loop.run_in_executor(None, _get_owid_data, pq.actors, pq.regions, pq.sectors),
+        # AR-1b: Comtrade 무역 의존도 (Weaponized Interdependence IV)
+        loop.run_in_executor(None, _get_trade_dependency, pq.actors, pq.regions),
         return_exceptions=True,
     )
 
@@ -1393,22 +1570,25 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
     hiik_data         = _safe(results[19], [])
     semi_data         = _safe(results[20], [])
     owid_data         = _safe(results[21], [])
+    trade_dep_data    = _safe(results[22], [])
 
     context_text = _build_context(
         pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
         sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
         sipri_arms, vdem_data, cow_wars, ifans_pubs,
         fred_data, wbk_data, polity5_data, itu_data, hiik_data, semi_data,
-        owid_data,
+        owid_data, trade_dep_data,
     )
-    # Cycle 7-B: 경쟁 이론 비교 컨텍스트 추가 (공백 없으면 스킵)
+    # Cycle 7-B: 경쟁 이론 비교 컨텍스트 추가 — 예산 잔량 내에서만 추가
     if theory_cmp_ctx:
-        context_text = context_text + "\n\n" + theory_cmp_ctx
+        remaining = _CONTEXT_MAX_CHARS - len(context_text)
+        if remaining > 500:
+            context_text = context_text + "\n\n" + theory_cmp_ctx[:remaining]
 
     logger.debug(
         "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d "
         "EIA=%d CSIS=%d Arms=%d VDEM=%d Wars=%d IFANS=%d Theory=%d "
-        "FRED=%d WBK=%d P5=%d ITU=%d HIIK=%d SEMI=%d 총%d자",
+        "FRED=%d WBK=%d P5=%d ITU=%d HIIK=%d SEMI=%d Trade=%d 총%d자",
         len(like_items), len(sector_items),
         len(sipri_data), len(cow_alliances), len(kiel_data),
         len(eia_data), len(csis_incidents),
@@ -1416,6 +1596,7 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         len(theory_cmp_ctx),
         len(fred_data), len(wbk_data), len(polity5_data),
         len(itu_data), len(hiik_data), len(semi_data),
+        len(trade_dep_data),
         len(context_text),
     )
 

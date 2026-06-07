@@ -497,6 +497,80 @@ def _get_semi_market_for_theories(sectors: list[str], regions: list[str]) -> dic
     return result
 
 
+# ── UN Comtrade 무역 의존도 HHI (AR-1b) ─────────────────────────────────────
+# Weaponized Interdependence IV 직접 수치화: 공급망 집중도 → HHI proxy.
+# dependency_ratio 0.1+ 쌍을 수집해 주요 공급자 집중도를 계산.
+
+_HS_LABEL_TC = {"8542": "반도체", "27": "에너지", "26": "희토류·광물"}
+
+# 지역 → 무역쌍 핵심 행위자
+_REGION_TRADE_ACTORS_TC: dict[str, list[str]] = {
+    "taiwan_strait":    ["TWN", "CHN", "USA", "JPN", "KOR"],
+    "korean_peninsula": ["KOR", "PRK", "CHN", "USA", "JPN"],
+    "hormuz":           ["IRN", "SAU", "ARE", "CHN", "USA"],
+    "eastern_europe":   ["RUS", "DEU", "NLD", "UKR"],
+    "south_china_sea":  ["CHN", "USA", "VNM", "PHL"],
+    "east_china_sea":   ["CHN", "JPN", "USA", "KOR"],
+    "bab_el_mandeb":    ["SAU", "ARE", "CHN", "IND"],
+    "indo_pacific":     ["CHN", "USA", "JPN", "KOR", "IND"],
+}
+
+
+def _get_trade_hhi(actors: list[str], regions: list[str]) -> dict:
+    """
+    UN Comtrade → 공급망 HHI proxy 계산 (Weaponized Interdependence IV).
+
+    반환 구조:
+        {hs_code: {"hhi_proxy": float, "top_pair": str, "top_ratio": float,
+                   "label": str, "period": str}}
+    """
+    iso3_set = set(actors)
+    for r in regions:
+        iso3_set.update(_REGION_TRADE_ACTORS_TC.get(r, []))
+    if not iso3_set:
+        return {}
+
+    try:
+        placeholders = ",".join("?" * len(iso3_set))
+        with _db(_INTEL_DB) as con:
+            rows = con.execute(
+                f"""
+                SELECT hs_code, reporter_iso, partner_iso, trade_flow,
+                       dependency_ratio, period
+                FROM historical_trade_matrix
+                WHERE reporter_iso IN ({placeholders})
+                  AND partner_iso  IN ({placeholders})
+                  AND partner_iso  != 'WLD'
+                  AND dependency_ratio >= 0.1
+                ORDER BY hs_code, dependency_ratio DESC
+                """,
+                (*list(iso3_set), *list(iso3_set)),
+            ).fetchall()
+
+        # HS 코드별 최고 의존도 쌍 + HHI proxy (상위 3쌍 제곱합)
+        from collections import defaultdict
+        by_hs: dict[str, list] = defaultdict(list)
+        for r in rows:
+            by_hs[r["hs_code"]].append(r)
+
+        result: dict[str, dict] = {}
+        for hs, items in by_hs.items():
+            top = items[0]
+            # HHI proxy = 상위 3쌍의 dependency_ratio² 합산
+            hhi = sum(i["dependency_ratio"] ** 2 for i in items[:3]) * 10000
+            result[hs] = {
+                "hhi_proxy": round(hhi, 0),
+                "top_pair": f"{top['reporter_iso']} {('수입' if top['trade_flow']=='M' else '수출')}←{top['partner_iso']}",
+                "top_ratio": round(top["dependency_ratio"] * 100, 1),
+                "label": _HS_LABEL_TC.get(hs, hs),
+                "period": top["period"],
+            }
+        return result
+    except Exception as e:
+        logger.debug("[theory_cmp] trade_hhi 조회 실패: %s", e)
+        return {}
+
+
 # ── 이론 프로파일 DB 조회 ────────────────────────────────────────────────────
 
 def _fetch_theory_profiles(theory_ids: list[str]) -> list[dict]:
@@ -561,18 +635,19 @@ def build_theory_comparison_context(
         return ""
 
     # 2. 이론별 실측값 조회
-    milex   = _get_sipri_milex_for_theories(actors)
-    arms    = _get_sipri_arms_hhi(actors)
-    eia     = _get_eia_chokepoint(regions)
-    acled   = _get_acled_event_count(regions)
-    vdem    = _get_vdem_scores(actors)
-    semi    = _get_semi_market_for_theories(sectors, regions)
-    fred    = _get_fred_for_theories(regions)
-    wbk     = _get_wbk_governance(actors)
-    polity5 = _get_polity5(actors)
-    hiik    = _get_hiik_conflict(regions)
-    itu     = _get_itu_ict_for_theories(actors)
-    owid    = _get_owid_military(actors, regions)
+    milex      = _get_sipri_milex_for_theories(actors)
+    arms       = _get_sipri_arms_hhi(actors)
+    eia        = _get_eia_chokepoint(regions)
+    acled      = _get_acled_event_count(regions)
+    vdem       = _get_vdem_scores(actors)
+    semi       = _get_semi_market_for_theories(sectors, regions)
+    fred       = _get_fred_for_theories(regions)
+    wbk        = _get_wbk_governance(actors)
+    polity5    = _get_polity5(actors)
+    hiik       = _get_hiik_conflict(regions)
+    itu        = _get_itu_ict_for_theories(actors)
+    owid       = _get_owid_military(actors, regions)
+    trade_hhi  = _get_trade_hhi(actors, regions)  # AR-1b: Comtrade 의존도 HHI
 
     # 3. 비교 텍스트 생성
     lines: list[str] = ["## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)"]
@@ -655,6 +730,17 @@ def build_theory_comparison_context(
                     empirical_lines.append(
                         f"실측 — 중국 첨단 반도체 수입 의존도: {semi['china_import_dep']['value']}% "
                         f"({semi['china_import_dep']['year']}) — 비대칭 의존 수치"
+                    )
+            # AR-1b: Comtrade 무역 의존도 HHI — Weaponized Interdependence IV 직접 측정값
+            # HHI proxy: 상위 3쌍 dependency_ratio² 합산 × 10000 (>2500=독과점)
+            if trade_hhi:
+                for hs, data in trade_hhi.items():
+                    hhi = data.get("hhi_proxy", 0)
+                    concentration = "독과점" if hhi > 2500 else ("집중" if hhi > 1500 else "분산")
+                    empirical_lines.append(
+                        f"실측 — {data['label']}(HS {hs}) 공급망 HHI: {hhi:.0f} ({concentration}, "
+                        f"최고의존쌍 {data['top_pair']} {data['top_ratio']}%, {data['period']}) "
+                        f"[UN Comtrade]"
                     )
 
         if "mearsheimer" in tid or "waltz" in tid:

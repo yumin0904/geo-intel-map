@@ -10,6 +10,7 @@
 cases:
   # ── Insight 모드 (6개) ────────────────────────────────────────────────
   - id: ukraine_russia_energy
+    gold: true   # energy 섹터 대표 — FRED·EIA 수치 연결 검증
     name: "러-우 에너지 인프라 공격 → 유럽 시장 연쇄"
     query: "러시아의 우크라이나 에너지 인프라 공격이 유럽 에너지 시장에 미치는 연쇄 효과를 분석해줘"
     mode: insight
@@ -19,6 +20,7 @@ cases:
       h1: true
 
   - id: taiwan_semiconductor
+    gold: true   # techno 섹터 대표 — semi_market + Comtrade HHI 연결
     name: "대만해협 긴장 → 반도체 공급망"
     query: "대만해협 군사긴장이 글로벌 반도체 공급망에 미치는 충격을 교차 분석해줘"
     mode: insight
@@ -28,6 +30,7 @@ cases:
       h1: true
 
   - id: korean_peninsula_alliance
+    gold: true   # indo_pacific 섹터 — Granger VERIFIED 쌍(KRW) 포함
     name: "이란전 → 한미동맹 자율성"
     query: "이란전이 한미동맹 신뢰도와 한국의 전략적 자율성에 미치는 영향을 분석해줘"
     mode: insight
@@ -37,6 +40,7 @@ cases:
       h1: true
 
   - id: china_cyber_us
+    gold: true   # cyber 섹터 — CSIS·ITU 데이터 연결 검증
     name: "솔트 타이푼 → 미국 사이버 방어 공백"
     query: "솔트 타이푼 이후 중국의 사이버 공세와 미국 방어 역량 공백을 교차 분석해줘"
     mode: insight
@@ -55,7 +59,7 @@ cases:
       h1: true
 
   - id: sahel_jihadist_expansion
-    name: "서방 철수 → 사헬 지하디스트 확산"
+    name: "서방 철수 → 사헬 지하디스트 확산"  # 비골드 — sahel_governance_gray_zone으로 대체
     query: "서방의 사헬 지역 철수 이후 지하디스트 조직의 수도권 위협 확산 패턴을 분석해줘"
     mode: insight
     expect:
@@ -65,6 +69,7 @@ cases:
 
   # ── Verify 모드 (2개) ─────────────────────────────────────────────────
   - id: hormuz_oil_verify
+    gold: true   # verify 모드 대표 — EIA + Granger 검증
     name: "호르무즈 봉쇄 → 유가 인과 검증"
     query: "호르무즈 봉쇄 위협이 실제로 유가 급등을 유발하는지 통계적으로 검증해줘"
     mode: verify
@@ -105,6 +110,7 @@ cases:
   # ── 추가 케이스 (Cycle 7-C, 총 20개) ────────────────────────────────────
 
   - id: hormuz_iran_blockade
+    gold: true   # energy·maritime 교차 — Weaponized Interdependence + EIA
     name: "이란전 호르무즈 봉쇄 → 에너지 무기화 연쇄 분석"
     query: "이란전 호르무즈 봉쇄가 글로벌 에너지 시장과 동맹 결속에 미치는 연쇄 효과를 자원무기화·상호의존 이론으로 교차 분석해줘"
     mode: insight
@@ -114,6 +120,7 @@ cases:
       h1: true
 
   - id: russia_china_arctic_control
+    gold: true   # gray_zone 대표 — HIIK·Polity5 연결
     name: "러-중 북극 법전쟁 → 회색지대 전략 분석"
     query: "러시아와 중국의 북극항로 주권 통제 전략을 회색지대 이론과 하이브리드 전쟁 이론으로 비교 분석해줘"
     mode: insight
@@ -123,6 +130,7 @@ cases:
       h1: true
 
   - id: pla_taiwan_a2ad
+    gold: true   # maritime·indo_pacific 교차 — 경쟁이론 수치비교 핵심
     name: "PLA A2/AD → Mahan vs Mearsheimer 비교"
     query: "중국 PLA의 대만해협 A2/AD 전략을 마한 해양력 이론과 미어샤이머 공격적 현실주의로 비교 분석해줘"
     mode: insight
@@ -132,6 +140,7 @@ cases:
       h1: true
 
   - id: houthi_red_sea_sloc
+    gold: true   # maritime 섹터 독립 — ACLED + EIA 연결
     name: "후티 홍해 공격 → SLOC 취약성"
     query: "후티의 홍해 상선 공격이 글로벌 해상 교통로(SLOC) 취약성에 미치는 영향을 분석해줘"
     mode: insight
@@ -141,6 +150,7 @@ cases:
       h1: true
 
   - id: salt_typhoon_cyber_deterrence
+    gold: true   # cyber verify — 이론 반증가능성 집중 테스트
     name: "솔트 타이푼 → Libicki 사이버 억지 검증"
     query: "솔트 타이푼 사건에서 Libicki 사이버 억지 이론의 귀속 명확성 가설이 실제로 억지에 실패한 이유를 분석해줘"
     mode: verify
@@ -170,6 +180,7 @@ cases:
       h1: false
 
   - id: india_indo_pacific_balancing
+    gold: true   # indo_pacific — Snyder 동맹 딜레마 이론 실측 연결
     name: "인도 전략적 자율성 → 동맹 딜레마 분석"
     query: "인도의 전략적 자율성이 미-중 경쟁 속에서 Snyder 동맹 딜레마를 어떻게 회피하는지 분석해줘"
     mode: insight
@@ -188,6 +199,7 @@ cases:
       h1: false
 
   - id: mearsheimer_vs_liberal_taiwan
+    gold: true   # 경쟁이론 수치비교 핵심 — theory_comparator 연결 직접 측정
     name: "Mearsheimer 공격적 현실주의 vs 자유주의 상호의존 — 대만 분쟁 예측 비교"
     query: "대만 분쟁 가능성에서 미어샤이머의 공격적 현실주의와 케오헤인-나이의 자유주의 상호의존 이론 중 어느 쪽이 더 설명력이 높은지 검증해줘"
     mode: verify
@@ -239,6 +251,7 @@ cases:
       h1: true
 
   - id: china_rareearth_techno
+    gold: true   # AR-1b Comtrade HHI 직접 검증 — HS26 의존도 수치 확인
     name: "중국 희토류 통제 → 반도체 공급망 HHI"
     query: "중국의 희토류·갈륨 수출통제가 반도체 공급망 집중도(HHI)에 미치는 구조적 영향을 SIA 시장 데이터로 분석해줘"
     mode: insight
@@ -248,6 +261,7 @@ cases:
       h1: true
 
   - id: sahel_governance_gray_zone
+    gold: true   # gray_zone 수치 근거 — WB WGI·HIIK 데이터 연결
     name: "사헬 거버넌스 붕괴 → 지하디스트 확산"
     query: "사헬 국가들의 거버넌스 지수(WB WGI) 악화가 분쟁 강도(HIIK)에 미치는 영향을 회색지대 이론으로 분석해줘"
     mode: insight
@@ -285,6 +299,7 @@ cases:
       h1: false
 
   - id: taiwan_liberal_vs_realist
+    gold: true   # 경쟁이론+Comtrade 무역의존도 수치 — Phase 8 게이트 측정 핵심
     name: "대만 — 자유주의 상호의존 vs 공격적 현실주의 (수치 비교)"
     query: "대만해협에서 양안 무역 의존도(자유주의)와 군사력 격차(현실주의) 중 어느 변수가 분쟁 억제를 더 잘 설명하는지 수치로 검증해줘"
     mode: verify

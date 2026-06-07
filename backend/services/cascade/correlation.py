@@ -30,15 +30,43 @@ from __future__ import annotations
 import asyncio
 import logging
 import sqlite3
+import time
 import warnings
 from dataclasses import dataclass, asdict
 from datetime import date, timedelta
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
+
+# ── PERF-1/2: 모듈 레벨 TTL 캐시 ─────────────────────────────────────────────
+# 동일 쿼리가 반복될 때 yfinance 네트워크 I/O와 statsmodels 재계산을 건너뛴다.
+
+_CacheEntry = tuple[Any, float]   # (value, expire_at)
+_market_cache:  dict[tuple, _CacheEntry] = {}   # PERF-1: ticker 시계열 캐시
+_granger_cache: dict[tuple, _CacheEntry] = {}   # PERF-2: Granger 결과 캐시
+
+_MARKET_TTL  = 6 * 3600   # 6시간 — 과거 시장 데이터는 변하지 않음
+_GRANGER_TTL = 1 * 3600   # 1시간 — 같은 지역·티커 쌍 재계산 방지
+
+
+def _cache_get(store: dict, key: tuple) -> Any:
+    """TTL 캐시에서 값 조회. 만료 시 None 반환."""
+    entry = store.get(key)
+    if entry is None:
+        return None
+    value, expire_at = entry
+    if time.monotonic() > expire_at:
+        del store[key]
+        return None
+    return value
+
+
+def _cache_set(store: dict, key: tuple, value: Any, ttl: float) -> None:
+    store[key] = (value, time.monotonic() + ttl)
 
 _DB_PATH = Path(__file__).resolve().parents[2] / "db" / "intel.db"
 
@@ -325,13 +353,24 @@ async def _download_yfinance(ticker: str, start: date, end: date) -> pd.Series |
 
 
 async def _get_market_series(ticker: str, start: date, end: date) -> pd.Series | None:
-    """FRED DB 우선 → yfinance 폴백으로 시장 시계열을 반환한다."""
+    """FRED DB 우선 → yfinance 폴백으로 시장 시계열을 반환한다. (PERF-1: 6h TTL 캐시)"""
+    cache_key = (ticker, start.isoformat(), end.isoformat())
+    cached = _cache_get(_market_cache, cache_key)
+    if cached is not None:
+        logger.debug("[correlation] market_cache HIT %s", ticker)
+        return cached
+
     fred_id = _TICKER_TO_FRED.get(ticker)
     if fred_id:
         series = _load_fred_series(fred_id, start, end)
         if series is not None and len(series) >= 30:
+            _cache_set(_market_cache, cache_key, series, _MARKET_TTL)
             return series
-    return await _download_yfinance(ticker, start, end)
+
+    series = await _download_yfinance(ticker, start, end)
+    if series is not None:
+        _cache_set(_market_cache, cache_key, series, _MARKET_TTL)
+    return series
 
 
 # ── Granger 검정 ──────────────────────────────────────────────────────────────

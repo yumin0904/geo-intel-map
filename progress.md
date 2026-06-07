@@ -44,9 +44,82 @@
 [1] AR-1a 데이터 연결   ✅ v7.8.5 → 경쟁이론엄밀 +0.15
 [2] AR-2 추론 사다리    ✅ v7.8.6 → 대만달러 선행성 역량 추가(p=0.0005)
 [병행] AR-3 가드레일    ✅ v7.8.7 (심판 절단버그+앵커, 다음 eval부터 적용)
-[3] AR-1b Comtrade      ⬜ 다음
-[최후] PERF             ⬜
+[3] AR-1b Comtrade      ✅ v7.8.8 → Weaponized Interdependence IV 수치화 (HHI proxy)
+[최후] PERF             ✅ v7.8.9 → 3종 TTL 캐시 (yfinance 6h·Granger 1h·정적 5m)
+[eval] 골드셋 측정      ✅ v7.8.9 기준 — 종합 3.68/5 (석사 중반), Phase 8 게이트 충족
 ```
+
+### v7.8.9 eval 결과 (2026-06-07, 골드셋 15케이스 --judge)
+
+| 지표 | v7.8.6 | v7.8.9 | Δ |
+|------|--------|--------|---|
+| PASS 비율 | 14/17 (82%) | 12/15 (80%) | 동급 |
+| 평균 신뢰도 | 70/100 | **93/100** | **+23** |
+| 경쟁이론 수치비교 [엄격] | ~50% | **100%** | **+50%p** |
+| LLM 심판 종합 | 2.75/5 | **3.68/5** | **+0.93** |
+| — 비자명성 | 2.77 | 3.57 | +0.80 |
+| — 추론정직성 | 2.68 | 3.86 | +1.18 |
+| — 경쟁이론엄밀 | 2.36 | 3.43 | +1.07 |
+| — 반증가능성 | 3.18 | 3.86 | +0.68 |
+
+**Phase 8 게이트 판정**: 신뢰도 93(≥85) ✅ + 경쟁이론 수치비교 100%(≥50%) ✅ → **Phase 8 착수 가능**
+
+**학술 레벨**: 학부 우수(v7.8.0) → **석사 중반(v7.8.9)**
+
+**남은 취약점**
+- Granger 전원 PENDING (17개, p=0.54~0.98): Type_B 41% (측정불가 변수) + 평균 분쟁 강도→시장 비선형 구조
+- 경쟁이론엄밀 3.43: 레이블 형식은 충족, 수치 편차 계산 깊이 부족
+- 비자명성 3.57: 조합적 통찰 수준, 독창적 문헌 공백 식별 미흡
+- 503 오류 5건 (Gemini 과부하 — 재시도로 대부분 복구)
+
+**박사 수준(4.5/5) 도달 조건**
+- Granger 유의 2건+ (현재 0건) → Type_B→Type_A 전환 + GTD 데이터 필요
+- 경쟁이론 수치 편차 계산 심화 (예측값 vs 실측값 오차 명시)
+- 비자명성: 기존 문헌이 다루지 않은 패턴 식별
+
+**eval 비용 절감 (이번 세션 구현)**
+- `--gold` 플래그: 30→15 케이스 (~50% 시간 절감)
+- `--fast` 플래그: 대기 5s→2s, 재시도 15/40s→5/15s
+- `eval_cases.yaml` 골드셋 15개 태깅 완료
+
+### v7.8.8 구현 내역 (AR-1b Comtrade + 데이터 파이프라인 버그 5종 수정)
+
+**AR-1b: UN Comtrade 무역 의존도 → Weaponized Interdependence IV 수치화**
+- `_get_trade_dependency()` 신규 (intel_analyzer.py #23번 소스)
+  - historical_trade_matrix 6,607건 활용 (HS 8542·27·26, 2020~2025)
+  - dependency_ratio ≥ 0.1(10%) 쌍만 반환 — 비대칭 의존 구조 포착
+  - 지역→핵심행위자 매핑 8개 지역 커버
+- `_get_trade_hhi()` 신규 (theory_comparator.py)
+  - HHI proxy = 상위 3쌍 dependency_ratio² 합산 × 10000 (>2500=독과점)
+  - weaponized_interdependence·resource_weaponization 이론쌍에 자동 연결
+- 검증 결과 (taiwan_strait, CHN·USA·KOR):
+  - HS26 희토류 HHI=25449 (독과점, KOR←CHN 92.9%)
+  - HS8542 반도체 HHI=17797 (독과점, KOR←CHN 79.9%)
+  - [경쟁설명]에 "실측 — 반도체(HS 8542) 공급망 HHI: 17797 [UN Comtrade]" 자동 삽입
+
+**할루시네이션·병목 5종 수정 (별도 세션)**
+- Fix A: ITU IDI 경고 섹션 헤더로 이동 (사이버 방어력 동치 금지 선제 명시)
+- Fix B: cascade `correlation_score` → `룰매칭강도` 라벨 변경
+- Fix C: FRED 기본값(유가·금) 무조건 주입 제거 (`return []`)
+- Fix D: `_over_budget()` 헬퍼 + Cycle 6-A/7-D 섹션 10개 가드 + 하드 절단 + theory_cmp_ctx 예산 가드
+- Fix E: SIPRI arms 조건 단순화 (`bool(sectors) and all(s in {"techno","cyber"}...)`)
+
+**이론 연결**: Farrell & Newman Weaponized Interdependence — 공급망 집중도(IV)가 정치적 레버리지로 전환되는 메커니즘을 Comtrade HHI로 직접 수치화.
+
+### v7.8.9 구현 내역 (PERF — 레이턴시 개선)
+
+**3종 TTL 캐시로 반복 쿼리 레이턴시 단축**
+
+| 캐시 | 위치 | TTL | 효과 |
+|------|------|-----|------|
+| PERF-1: yfinance 시장 시계열 | `correlation.py` `_market_cache` | 6h | 동일 ticker 재다운로드 방지 (~10-20s 절약) |
+| PERF-2: Granger 결과 | `hypothesis_verifier.py` `_granger_spec_cache` | 1h | 동일 지역·ticker 쌍 재계산 방지 (~5-10s 절약) |
+| PERF-3: 정적 소스 5종 | `intel_analyzer.py` `_STATIC_CACHE` | 5m | Polity5·HIIK·ITU·semi_market SQLite 중복 I/O 방지 |
+
+- `_cache_get/_cache_set`: `correlation.py` 모듈 레벨 TTL 딕셔너리 헬퍼
+- `_gcache_get/_gcache_set`: `hypothesis_verifier.py` Granger 전용 캐시 헬퍼
+- `_scache_key/_scache_get/_scache_set`: `intel_analyzer.py` 정적 소스 캐시 헬퍼 (list→tuple 변환)
+- 5분 TTL → 개발 중 DB 재적재 즉시 반영 가능, 프로덕션에서 불필요한 재조회 차단
 
 ### v7.8.6 측정 결과 (AR-1a+AR-2 누적, 옛 루브릭 — v7.8.0과 비교가능)
 | 심판 축 | v7.8.0 | v7.8.6 | Δ |

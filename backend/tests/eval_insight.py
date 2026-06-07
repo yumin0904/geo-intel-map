@@ -130,7 +130,7 @@ _DEFAULT_SECTIONS = {
 
 # ── SSE 스트림 수집 ───────────────────────────────────────────────────────
 
-def _collect_sse(query: str, mode: str, timeout: int = 120) -> dict:
+def _collect_sse(query: str, mode: str, timeout: int = 120) -> dict:  # noqa: E501 — timeout 파라미터 전달용
     """백엔드 /api/intel/query SSE를 수집하고 이벤트별로 분류해 반환."""
     payload = {"query": query}
     # 모드 키워드를 쿼리에 자동 삽입 (entity_parser가 감지)
@@ -314,7 +314,11 @@ def _is_retryable(sse: dict, required: list[str]) -> tuple[bool, str]:
     return False, ""
 
 
-def evaluate_case(case: dict) -> dict:
+def evaluate_case(
+    case: dict,
+    retry_waits: tuple[int, int] = (15, 40),
+    timeout: int = 120,
+) -> dict:
     """단일 케이스 실행 및 평가."""
     name    = case["name"]
     cid     = case["id"]
@@ -331,17 +335,16 @@ def evaluate_case(case: dict) -> dict:
     print(f"  쿼리: {query[:60]}...")
     print(f"  실행 중...", end="", flush=True)
 
-    sse = _collect_sse(query, mode)
+    sse = _collect_sse(query, mode, timeout=timeout)
     # API 오류(503/빈응답/타임아웃) 또는 응답 잘림 시 최대 2회 재시도
-    # (잘림은 일시적 Gemini 현상 — 200이지만 후반 섹션이 누락됨)
     retries = 0
-    for wait in (15, 40):
+    for wait in retry_waits:
         retryable, reason = _is_retryable(sse, req_sec)
         if not retryable:
             break
         print(f" {reason} → {wait}초 후 재시도...", end="", flush=True)
         time.sleep(wait)
-        sse = _collect_sse(query, mode)
+        sse = _collect_sse(query, mode, timeout=timeout)
         retries += 1
     print(f" {sse['elapsed']}s" + (f" (재시도 {retries}회)" if retries else ""))
 
@@ -587,10 +590,19 @@ def main() -> None:
     parser.add_argument("--no-save-text", action="store_true", help="결과 JSON에 full_text 제외")
     parser.add_argument("--judge", action="store_true",
                         help="[C1] LLM 심판 질적 평가 활성화 (Gemini 추가 호출)")
+    parser.add_argument("--gold", action="store_true",
+                        help="골드셋(gold: true) 케이스만 실행 — 30→15개, 시간·비용 절반")
+    parser.add_argument("--fast", action="store_true",
+                        help="대기 시간 단축 — 케이스간격 5s→2s, 재시도 15/40s→5/15s")
     args = parser.parse_args()
 
     global _JUDGE_ENABLED
     _JUDGE_ENABLED = args.judge
+
+    # --fast: 대기 시간 단축 (전역 조정)
+    case_interval   = 2  if args.fast else 5
+    retry_waits     = (5, 15) if args.fast else (15, 40)
+    query_timeout   = 60 if args.fast else 120
 
     # --summary: 저장된 결과만 출력
     if args.summary:
@@ -606,22 +618,31 @@ def main() -> None:
     # 케이스 로드
     cases_data = yaml.safe_load(_CASES.read_text(encoding="utf-8"))
     cases = cases_data["cases"]
+    if args.gold:
+        cases = [c for c in cases if c.get("gold")]
+        if not cases:
+            print("gold: true 케이스가 없습니다. eval_cases.yaml을 확인하세요.")
+            sys.exit(1)
     if args.case:
         cases = [c for c in cases if args.case.lower() in c["id"].lower()]
         if not cases:
             print(f"케이스 '{args.case}' 없음. 사용 가능: {[c['id'] for c in cases_data['cases']]}")
             sys.exit(1)
 
-    print(f"🧪 인사이트 분석실 테스트 — {len(cases)}개 케이스")
+    gold_label = " [골드셋]" if args.gold else ""
+    fast_label = " [빠른모드]" if args.fast else ""
+    print(f"🧪 인사이트 분석실 테스트{gold_label}{fast_label} — {len(cases)}개 케이스")
     print(f"📡 서버: {BASE_URL}")
     print(f"🕐 시작: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    est_min = round(len(cases) * (33 + case_interval) / 60)
+    print(f"⏱️  예상 소요: ~{est_min}분 (재시도 없을 때)")
 
     results = []
     for i, case in enumerate(cases):
         if i > 0:
-            # Gemini 60 RPM 제한 대응 — 케이스 사이 5초 간격
-            time.sleep(5)
-        res = evaluate_case(case)
+            time.sleep(case_interval)
+        # --fast 모드: 재시도 대기 단축을 evaluate_case에 전달
+        res = evaluate_case(case, retry_waits=retry_waits, timeout=query_timeout)
         if args.no_save_text:
             res.pop("full_text", None)
         results.append(res)
