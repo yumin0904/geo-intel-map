@@ -17,6 +17,8 @@ import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
+from services import arithmetic_layer as A
+
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -101,13 +103,13 @@ def _get_sipri_arms_hhi(actors: list[str]) -> dict:
             return {}
         total = sum(r["tiv_2023"] for r in rows if r["tiv_2023"])
         dominant = rows[0]
-        hhi_proxy = (dominant["tiv_2023"] / total * 100) if total > 0 else 0
+        hhi_proxy = A.share_of(dominant["tiv_2023"], total) or 0
         return {
             "dominant_supplier": dominant["supplier"],
             "dominant_recipient": dominant["recipient"],
             "dominant_tiv": dominant["tiv_2023"],
             "total_tiv": total,
-            "hhi_proxy_pct": round(hhi_proxy, 1),
+            "hhi_proxy_pct": hhi_proxy,
             "source": "SIPRI Arms Transfers 2023",
         }
     except Exception as e:
@@ -182,12 +184,7 @@ def _get_fred_for_theories(regions: list[str]) -> dict:
                     continue
                 latest = rows[0]
                 oldest = rows[-1]
-                pct = None
-                if oldest["value"] and latest["value"]:
-                    try:
-                        pct = round((latest["value"] - oldest["value"]) / oldest["value"] * 100, 1)
-                    except ZeroDivisionError:
-                        pct = None
+                pct = A.pct_change(oldest["value"], latest["value"])
                 result[sid] = {
                     "name": latest["series_name"],
                     "latest_value": latest["value"],
@@ -556,10 +553,10 @@ def _get_trade_hhi(actors: list[str], regions: list[str]) -> dict:
         result: dict[str, dict] = {}
         for hs, items in by_hs.items():
             top = items[0]
-            # HHI proxy = 상위 3쌍의 dependency_ratio² 합산
-            hhi = sum(i["dependency_ratio"] ** 2 for i in items[:3]) * 10000
+            # HHI proxy = 상위 3쌍의 dependency_ratio² 합산 (arithmetic_layer 통일)
+            hhi_val = A.hhi([i["dependency_ratio"] for i in items[:3]], scale_0_1=True) or 0
             result[hs] = {
-                "hhi_proxy": round(hhi, 0),
+                "hhi_proxy": hhi_val,
                 "top_pair": f"{top['reporter_iso']} {('수입' if top['trade_flow']=='M' else '수출')}←{top['partner_iso']}",
                 "top_ratio": round(top["dependency_ratio"] * 100, 1),
                 "label": _HS_LABEL_TC.get(hs, hs),
@@ -677,6 +674,15 @@ def build_theory_comparison_context(
                     for iso3, v in milex.items()
                 )
                 empirical_lines.append(f"실측 — SIPRI 국방비: {milex_str}")
+                # 행위자가 2개 이상이면 GDP% 격차 사전계산 주입
+                vals = [(iso3, v.get("gdp_pct")) for iso3, v in milex.items() if v.get("gdp_pct") is not None]
+                if len(vals) >= 2:
+                    vals.sort(key=lambda x: -x[1])
+                    gap = A.pct_point_gap(vals[0][1], vals[-1][1])
+                    empirical_lines.append(
+                        f"실측 — SIPRI 국방비 격차: {vals[0][0]} {vals[0][1]}% ↔ "
+                        f"{vals[-1][0]} {vals[-1][1]}% (격차 {A.fmt_signed(gap, '%p')}, 사전계산)"
+                    )
             if acled:
                 empirical_lines.append(
                     f"실측 — ACLED 분쟁 이벤트 24개월: {acled.get('event_count_24m', '?')}건 "
@@ -711,20 +717,22 @@ def build_theory_comparison_context(
             # FRED 유가·가스 가격 추세 — 무기화 예측('긴장→상승')과 직접 대조용
             if fred:
                 for sid, d in fred.items():
-                    pct = d.get("pct_change")
-                    pct_str = f"{pct:+.1f}%" if pct is not None else "?"
+                    pct_str = A.fmt_signed(d.get("pct_change"), "%")
                     empirical_lines.append(
                         f"실측 — {d['name']}: {d['latest_value']} {d.get('unit', '')} "
-                        f"({d['latest_date']}, 최근 추세 {pct_str}) [FRED]"
+                        f"({d['latest_date']}, 최근 추세 {pct_str}, 사전계산) [FRED]"
                     )
             # techno 섹터: 반도체 공급망 집중도를 weaponized_interdependence의 핵심 IV로 추가
             if semi:
                 if semi.get("foundry_hhi"):
+                    tsmc_val = semi.get('tsmc_share', {}).get('value')
+                    smic_val = semi.get('smic_share', {}).get('value')
+                    ts_gap   = A.pct_point_gap(tsmc_val, smic_val)
                     empirical_lines.append(
                         f"실측 — 파운드리 HHI: {semi['foundry_hhi']['value']} "
                         f"({semi['foundry_hhi']['year']}, 기준 >2500=독과점) "
-                        f"| TSMC: {semi.get('tsmc_share', {}).get('value', '?')}% "
-                        f"| SMIC: {semi.get('smic_share', {}).get('value', '?')}%"
+                        f"| TSMC: {tsmc_val or '?'}% | SMIC: {smic_val or '?'}%"
+                        + (f" (TSMC↔SMIC 격차 {A.fmt_signed(ts_gap, '%p')}, 사전계산)" if ts_gap is not None else "")
                     )
                 if semi.get("china_import_dep"):
                     empirical_lines.append(
@@ -735,10 +743,10 @@ def build_theory_comparison_context(
             # HHI proxy: 상위 3쌍 dependency_ratio² 합산 × 10000 (>2500=독과점)
             if trade_hhi:
                 for hs, data in trade_hhi.items():
-                    hhi = data.get("hhi_proxy", 0)
-                    concentration = "독과점" if hhi > 2500 else ("집중" if hhi > 1500 else "분산")
+                    hhi_val = data.get("hhi_proxy", 0)
+                    concentration = A.concentration_label(hhi_val)
                     empirical_lines.append(
-                        f"실측 — {data['label']}(HS {hs}) 공급망 HHI: {hhi:.0f} ({concentration}, "
+                        f"실측 — {data['label']}(HS {hs}) 공급망 HHI: {hhi_val:.0f} ({concentration}, 사전계산, "
                         f"최고의존쌍 {data['top_pair']} {data['top_ratio']}%, {data['period']}) "
                         f"[UN Comtrade]"
                     )
@@ -750,6 +758,14 @@ def build_theory_comparison_context(
                     for iso3, v in milex.items()
                 )
                 empirical_lines.append(f"실측 — SIPRI 권력 proxy(국방비): {milex_str}")
+                vals = [(iso3, v.get("gdp_pct")) for iso3, v in milex.items() if v.get("gdp_pct") is not None]
+                if len(vals) >= 2:
+                    vals.sort(key=lambda x: -x[1])
+                    gap = A.pct_point_gap(vals[0][1], vals[-1][1])
+                    empirical_lines.append(
+                        f"실측 — 권력 격차(국방비): {vals[0][0]} {vals[0][1]}% ↔ "
+                        f"{vals[-1][0]} {vals[-1][1]}% (격차 {A.fmt_signed(gap, '%p')}, 사전계산)"
+                    )
             if vdem:
                 vdem_str = " | ".join(
                     f"{iso3}: libdem={v.get('libdem', '?')} ({v.get('regime', '?')})"
@@ -840,6 +856,12 @@ def build_theory_comparison_context(
                     parts.append(f"TSMC-SMIC 격차 {semi['tsmc_smic_gap']['value']}세대")
                 if semi.get("china_gallium"):
                     parts.append(f"중국 갈륨 독점 {semi['china_gallium']['value']}%")
+                # TSMC vs SMIC 점유율 격차 사전계산
+                tsmc_v = semi.get("tsmc_share", {}).get("value")
+                smic_v = semi.get("smic_share", {}).get("value")
+                ts_gap = A.pct_point_gap(tsmc_v, smic_v)
+                if ts_gap is not None:
+                    parts.append(f"TSMC↔SMIC 점유율 격차 {A.fmt_signed(ts_gap, '%p')} (사전계산)")
                 if parts:
                     empirical_lines.append(f"실측 — 기술 분리 지표: {' | '.join(parts)}")
 

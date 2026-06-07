@@ -1005,6 +1005,452 @@ def _get_country_profiles(actors: list[str]) -> dict:
 
 # ── 컨텍스트 조립 ─────────────────────────────────────────────────────────────
 
+# ── 융합1: 관련성 게이트 (Phase 8) ────────────────────────────────────────────
+# 섹터 친화도: key=소스 식별자, sectors=주 관련 섹터(비어있으면 범용)
+_SOURCE_SPECS: dict[str, dict] = {
+    "sipri_milex":   {"sectors": {"indo_pacific", "alliance"}},
+    "cow_alliances": {"sectors": {"indo_pacific", "alliance"}},
+    "kiel":          {"sectors": {"alliance"}},
+    "eia":           {"sectors": {"energy", "maritime"}},
+    "csis":          {"sectors": {"cyber"}},
+    "sipri_arms":    {"sectors": {"indo_pacific", "alliance", "techno"}},
+    "vdem":          {"sectors": {"gray_zone"}},
+    "cow_wars":      {"sectors": set()},   # 범용(역사 선례)
+    "ifans":         {"sectors": set()},   # 범용(한국 시각)
+    "fred":          {"sectors": {"energy"}},
+    "wbk":           {"sectors": {"gray_zone"}},
+    "polity5":       {"sectors": {"gray_zone"}},
+    "itu":           {"sectors": {"cyber", "techno"}},
+    "hiik":          {"sectors": {"gray_zone"}},
+    "semi":          {"sectors": {"techno"}},
+    "owid":          {"sectors": set()},   # 범용(다지표)
+    "trade":         {"sectors": {"techno", "energy"}},
+}
+
+
+def _coverage_bonus(records, regions: list[str], actors: list[str]) -> float:
+    """레코드가 쿼리 지역·행위자 토큰을 실제 포함하면 보너스. 순위용 상대값."""
+    if not records:
+        return 0.0
+    text = str(records).lower()
+    bonus = 0.0
+    for r in regions:
+        if r.lower() in text:
+            bonus += 0.5
+    for a in actors:
+        if a.lower() in text:
+            bonus += 0.3
+    return min(bonus, 2.0)
+
+
+def _score_source(spec: dict, records, pq: "ParsedQuery") -> float:
+    """data 소스 블록의 관련성 점수.
+    주제 적합성(섹터·지역·행위자 밀도)만 사용 — 가설 지지 여부 금지(정직성 가드).
+    """
+    if not records:
+        return -1.0
+    score = 1.0
+    src_sectors = spec.get("sectors", set())
+    if src_sectors and pq.sectors:
+        if src_sectors & set(pq.sectors):
+            score += 2.0   # 섹터 적중
+        else:
+            score -= 1.0   # off-domain 페널티
+    score += _coverage_bonus(records, pq.regions, pq.actors)
+    return score
+
+
+# ── emitter 함수: 각 data 소스 → list[str] (포맷 1글자도 변경 금지) ──────────
+
+def _emit_sipri_milex(sipri_data) -> list[str]:
+    if not sipri_data:
+        return []
+    out = ["## 국방비 추이 (SIPRI 2023, % of GDP / USD billion)"]
+    for iso3, records in sipri_data.items():
+        if not records:
+            continue
+        latest = records[0]
+        name   = latest.get("country", iso3)
+        gdp    = latest.get("gdp_pct")
+        usd    = latest.get("usd_mn")
+        year   = latest.get("year")
+        trend  = " → ".join(
+            f"{r['year']}:{r['gdp_pct']}%"
+            for r in reversed(records) if r.get("gdp_pct")
+        )
+        usd_bn = f"${usd/1000:.1f}bn" if usd else ""
+        out.append(f"- **{name}** ({iso3}): {year}년 GDP {gdp}% {usd_bn}")
+        if len(records) > 1:
+            out.append(f"  5년 추이: {trend}")
+    out.append("  출처: SIPRI Military Expenditure Database 2024")
+    out.append("")
+    return out
+
+
+def _emit_cow_alliances(cow_alliances) -> list[str]:
+    if not cow_alliances:
+        return []
+    defense = [a for a in cow_alliances if a.get("alliance_type") == "defense"]
+    others  = [a for a in cow_alliances if a.get("alliance_type") != "defense"]
+    out = ["## 공식 동맹 관계 (COW Formal Alliances v4.1)"]
+    if defense:
+        out.append("**방위조약 (Defense Pact)**")
+        for a in defense[:10]:
+            end_str = f"~{a['end_year']}" if a.get("end_year") else "~현재"
+            out.append(
+                f"- {a.get('name_a') or a['iso3_a']} ↔ "
+                f"{a.get('name_b') or a['iso3_b']} "
+                f"({a.get('start_year', '?')}{end_str})"
+            )
+    by_type: dict[str, list] = {}
+    for a in others:
+        by_type.setdefault(a.get("alliance_type", "other"), []).append(a)
+    for t, alist in by_type.items():
+        pairs = [
+            f"{a.get('name_a') or a['iso3_a']}↔{a.get('name_b') or a['iso3_b']}"
+            for a in alist
+        ]
+        out.append(f"**{t}**: {', '.join(pairs[:5])}")
+    out.append("  출처: Correlates of War Formal Alliances v4.1")
+    out.append("")
+    return out
+
+
+def _emit_kiel(kiel_data) -> list[str]:
+    if not kiel_data:
+        return []
+    out = [
+        "## 우크라이나 지원 현황 (Kiel Ukraine Support Tracker 2024)",
+        "단위: EUR 십억 (군사/재정/인도적/합계)",
+    ]
+    for d in kiel_data[:8]:
+        mil  = d.get("military_eur_bn", 0) or 0
+        fin  = d.get("financial_eur_bn", 0) or 0
+        hum  = d.get("humanitarian_eur_bn", 0) or 0
+        tot  = d.get("total_eur_bn", 0) or 0
+        out.append(
+            f"- **{d['donor_name']}**: 군사 {mil:.1f} / 재정 {fin:.1f} / "
+            f"인도적 {hum:.1f} / **합계 {tot:.1f}bn€**"
+        )
+    period = kiel_data[0].get("data_period", "") if kiel_data else ""
+    out.append(f"  기간: {period} | 출처: Kiel Institute Ukraine Support Tracker")
+    out.append("")
+    return out
+
+
+def _emit_eia(eia_data) -> list[str]:
+    if not eia_data:
+        return []
+    chokepoints = {k: v for k, v in eia_data.items() if len(k) > 3}
+    producers   = {k: v for k, v in eia_data.items() if len(k) == 3}
+    out = ["## 에너지 생산·수출 현황 (EIA International Energy Statistics 2023)"]
+    if chokepoints:
+        out.append("**전략 초크포인트 통과량 (백만 배럴/일)**")
+        for key, d in chokepoints.items():
+            out.append(f"- {d['country_name']}: {d.get('crude_prod_mbpd', '?')} Mbpd")
+    if producers:
+        out.append("**주요 산유국 생산량 / 수출량 (Mbpd)**")
+        for iso3, d in producers.items():
+            prod = d.get("crude_prod_mbpd", "?")
+            exp  = d.get("oil_export_mbpd")
+            gas  = d.get("natgas_prod_bcfd")
+            row  = f"- **{d.get('country_name', iso3)}** ({iso3}): 원유 {prod}"
+            if exp:
+                row += f" / 수출 {exp}"
+            if gas:
+                row += f" / 천연가스 {gas} Bcfd"
+            out.append(row)
+    out.append("  출처: EIA International Energy Statistics 2024")
+    out.append("")
+    return out
+
+
+def _emit_csis(csis_incidents) -> list[str]:
+    if not csis_incidents:
+        return []
+    out = ["## 주요 사이버 사건 (CSIS Significant Cyber Incidents DB)"]
+    for inc in csis_incidents[:8]:
+        actor  = inc.get("actor_group") or inc.get("actor_iso3") or "미귀속"
+        victim = inc.get("victim_iso3", "?")
+        sector = inc.get("victim_sector", "")
+        itype  = inc.get("incident_type", "")
+        date   = (inc.get("incident_date") or "")[:7]
+        out.append(
+            f"- [{date}] **{inc.get('title', '')}**"
+            f" | 행위자: {actor} → 피해: {victim}({sector}) | 유형: {itype}"
+        )
+        desc = (inc.get("description") or "")[:120]
+        if desc:
+            out.append(f"  {desc}")
+    out.append("  출처: CSIS Strategic Technologies Program 2024")
+    out.append("")
+    return out
+
+
+def _emit_sipri_arms(sipri_arms) -> list[str]:
+    if not sipri_arms:
+        return []
+    out = ["## 무기 공급망 (SIPRI Arms Transfers Database)"]
+    for arm in sipri_arms[:6]:
+        out.append(
+            f"- {arm.get('year')} | {arm.get('supplier')} → {arm.get('recipient')}"
+            f" | {arm.get('category', '')} | TIV {arm.get('tiv_mn', '?')}mn"
+        )
+        if arm.get("notes"):
+            out.append(f"  {arm['notes'][:100]}")
+    out.append("  출처: SIPRI Arms Transfers Database 2020-2024")
+    out.append("")
+    return out
+
+
+def _emit_vdem(vdem_data) -> list[str]:
+    if not vdem_data:
+        return []
+    out = ["## 행위자 체제 유형 (V-Dem Democracy Index v14)"]
+    for v in vdem_data:
+        libdem = f"{v['libdem']:.2f}" if v.get("libdem") is not None else "?"
+        corr   = f"{v['corruption']:.2f}" if v.get("corruption") is not None else "?"
+        out.append(
+            f"- **{v.get('country')}** ({v.get('iso3')}, {v.get('year')}): "
+            f"{v.get('regime_type')} | 자유민주주의 지수: {libdem} | 부패지수: {corr}"
+        )
+        if v.get("notes"):
+            out.append(f"  {v['notes'][:80]}")
+    out.append("  출처: V-Dem Institute, University of Gothenburg 2024")
+    out.append("")
+    return out
+
+
+def _emit_cow_wars(cow_wars) -> list[str]:
+    if not cow_wars:
+        return []
+    out = ["## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)"]
+    for w in cow_wars[:5]:
+        deaths = f"{w['battle_deaths']:,}" if w.get("battle_deaths") else "미집계"
+        out.append(
+            f"- **{w.get('name')}** ({w.get('period')}) | "
+            f"{w.get('sides')} | 사망: {deaths} | 결과: {w.get('outcome')}"
+        )
+    out.append("  출처: Correlates of War Project v4.0")
+    out.append("")
+    return out
+
+
+def _emit_ifans(ifans_pubs) -> list[str]:
+    if not ifans_pubs:
+        return []
+    out = ["## 한국 외교부 IFANS 발간자료 (국립외교원 학술 분석)"]
+    for pub in ifans_pubs[:4]:
+        date = str(pub.get("date", ""))
+        date_fmt = f"{date[:4]}-{date[4:6]}-{date[6:8]}" if len(date) == 8 else date
+        out.append(f"- [{date_fmt}] **{pub.get('title', '')}**")
+        abstract = (pub.get("abstract") or "")[:300]
+        if abstract:
+            out.append(f"  {abstract}")
+        out.append(f"  출처: {pub.get('source', '외교부 IFANS')}")
+    out.append("")
+    return out
+
+
+def _emit_fred(fred_data) -> list[str]:
+    if not fred_data:
+        return []
+    out = ["## 주요 경제 지표 시계열 (FRED — Federal Reserve Economic Data)"]
+    by_series: dict[str, list] = {}
+    for d in fred_data:
+        sid = d.get("series_id", "?")
+        by_series.setdefault(sid, []).append(d)
+    for sid, records in list(by_series.items())[:6]:
+        name = records[0].get("series_name", sid)
+        unit = records[0].get("unit", "")
+        trend = " → ".join(
+            f"{r['date'][:4]}:{r['value']}" for r in reversed(records) if r.get("value") is not None
+        )
+        out.append(f"- **{name}** ({sid}): {trend} [{unit}]")
+    out.append("  출처: FRED St. Louis Federal Reserve (fred.stlouisfed.org)")
+    out.append("")
+    return out
+
+
+def _emit_wbk(wbk_data) -> list[str]:
+    if not wbk_data:
+        return []
+    out = [
+        "## 국가 거버넌스 지수 (World Bank WGI 2022)",
+        "점수 범위: -2.5(최하) ~ +2.5(최상)",
+    ]
+    for d in wbk_data[:8]:
+        pv = f"{d['political_stability']:.2f}" if d.get("political_stability") is not None else "?"
+        cc = f"{d['corruption_control']:.2f}" if d.get("corruption_control") is not None else "?"
+        rl = f"{d['rule_of_law']:.2f}" if d.get("rule_of_law") is not None else "?"
+        out.append(
+            f"- **{d['country']}** ({d['iso3']}): "
+            f"정치안정={pv} | 부패통제={cc} | 법치={rl}"
+        )
+    out.append("  출처: World Bank Worldwide Governance Indicators 2023")
+    out.append("")
+    return out
+
+
+def _emit_polity5(polity5_data) -> list[str]:
+    if not polity5_data:
+        return []
+    out = [
+        "## 정치체제 지수 (Polity5 2022)",
+        "점수: -10(완전권위) ~ +10(완전민주)",
+    ]
+    for d in polity5_data[:8]:
+        score  = d.get("polity_score")
+        regime = d.get("regime_type", "?")
+        out.append(f"- **{d['country']}** ({d['iso3']}): {score}점 ({regime})")
+    out.append("  출처: Center for Systemic Peace, Polity5 Dataset")
+    out.append("")
+    return out
+
+
+def _emit_itu(itu_data) -> list[str]:
+    if not itu_data:
+        return []
+    # IDI = 보급·접근성 지표. 사이버 방어력 직접 동치 금지 선제 경고.
+    out = [
+        "## ICT 발전 지수 (ITU IDI 2023) "
+        "⚠️ 보급·접근성 지표 — 사이버 방어력과 직접 동치 금지",
+        "IDI 점수: 0-100 (인터넷 보급·접근성·이용 종합). "
+        "사이버 역량 주장 시 반드시 '간접 proxy'임을 명시할 것. "
+        "방어력 직접 근거로는 GCI·NCSI가 더 타당함.",
+    ]
+    for d in itu_data[:8]:
+        score = d.get("idi_score")
+        rank  = d.get("rank")
+        tier  = d.get("tier", "?")
+        out.append(
+            f"- **{d['country']}** ({d['iso3']}): IDI {score} (전세계 {rank}위, {tier}티어)"
+        )
+    out.append("  출처: ITU ICT Development Index 2023")
+    out.append("")
+    return out
+
+
+def _emit_hiik(hiik_data) -> list[str]:
+    if not hiik_data:
+        return []
+    out = [
+        "## 분쟁 강도 바로미터 (HIIK Conflict Barometer 2024)",
+        "강도: 1=분쟁 / 2=비폭력위기 / 3=폭력위기 / 4=제한전 / 5=전쟁",
+    ]
+    for d in hiik_data[:6]:
+        out.append(
+            f"- **{d['name']}** ({d['year']}): 강도 {d['intensity']} [{d['label']}]"
+            f" | 행위자: {d.get('actors', '?')}"
+        )
+    out.append("  출처: HIIK Heidelberg Institute for International Conflict Research")
+    out.append("")
+    return out
+
+
+def _emit_semi(semi_data) -> list[str]:
+    if not semi_data:
+        return []
+    _PRIORITY_CATS = [
+        "china_self_sufficiency",
+        "foundry_share",
+        "advanced_nodes",
+        "critical_mineral",
+        "equipment_dominance",
+        "export_control",
+        "memory_market",
+        "defense_tech",
+        "market_size",
+    ]
+    by_cat: dict[str, list] = {}
+    for d in semi_data:
+        by_cat.setdefault(d.get("category", "misc"), []).append(d)
+    ordered_cats = [c for c in _PRIORITY_CATS if c in by_cat] + \
+                   [c for c in by_cat if c not in _PRIORITY_CATS]
+    out = ["## 반도체·기술 시장 데이터 (SIA/TechInsights 2023-2024)"]
+    for cat in ordered_cats[:7]:
+        items = by_cat[cat]
+        out.append(f"**{cat}**")
+        for d in items[:5]:
+            val_str  = f"{d['value']}" if d.get("value") is not None else "?"
+            unit_str = d.get("unit", "")
+            out.append(f"  - {d['metric']}: {val_str} {unit_str} ({d.get('year', '?')})")
+            if d.get("notes"):
+                out.append(f"    {d['notes'][:100]}")
+    out.append("  출처: SIA, TechInsights, USGS, ASML Annual Report, BIS")
+    out.append("")
+    return out
+
+
+def _emit_owid(owid_data) -> list[str]:
+    if not owid_data:
+        return []
+    milex = [d for d in owid_data if d.get("dataset") == "military_exp_gdp"]
+    nukes = [d for d in owid_data if d.get("dataset") == "nuclear_warheads"]
+    out = ["## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)"]
+    if milex:
+        out.append("**국방비 (% of GDP, 최신연도)**")
+        for d in sorted(milex, key=lambda x: -(x.get("value") or 0))[:8]:
+            v = f"{d['value']:.2f}" if d.get("value") is not None else "?"
+            out.append(f"- {d['country']} ({d['iso3']}): {v}% ({d.get('year')})")
+    if nukes:
+        out.append("**핵탄두 보유량 (최신연도)**")
+        for d in sorted(nukes, key=lambda x: -(x.get("value") or 0))[:6]:
+            v = int(d['value']) if d.get("value") is not None else "?"
+            out.append(f"- {d['country']} ({d['iso3']}): {v}기 ({d.get('year')})")
+    out.append("  출처: Our World in Data (ourworldindata.org)")
+    out.append("")
+    return out
+
+
+def _emit_trade(trade_dep_data) -> list[str]:
+    if not trade_dep_data:
+        return []
+    out = [
+        "## 무역 의존도 (UN Comtrade — Weaponized Interdependence IV)",
+        "dependency_ratio: 해당 양자 무역액 ÷ 보고국 전체 무역액 (0~1). "
+        "0.1 이상 = 10%+ 의존 → 비대칭 구조. "
+        "이 수치가 높을수록 Farrell & Newman의 '공급망 집중 → 레버리지' 예측 지지.",
+    ]
+    by_hs: dict[str, list] = {}
+    for d in trade_dep_data:
+        by_hs.setdefault(d["hs_code"], []).append(d)
+    for hs_code, items in by_hs.items():
+        label = _HS_LABEL.get(hs_code, hs_code)
+        out.append(f"**{label} (HS {hs_code})**")
+        for d in items[:6]:
+            ratio_pct = f"{d['dependency_ratio']*100:.1f}%"
+            out.append(
+                f"- {d['reporter']} {d['flow']} ← {d['partner']}: "
+                f"의존도 {ratio_pct} ({d['period']})"
+            )
+    out.append("  출처: UN Comtrade Database (2020-2025, HS 8542·27·26)")
+    out.append("")
+    return out
+
+
+# emitter 매핑 테이블 (키 → 함수)
+_SOURCE_EMITTERS = {
+    "sipri_milex":   _emit_sipri_milex,
+    "cow_alliances": _emit_cow_alliances,
+    "kiel":          _emit_kiel,
+    "eia":           _emit_eia,
+    "csis":          _emit_csis,
+    "sipri_arms":    _emit_sipri_arms,
+    "vdem":          _emit_vdem,
+    "cow_wars":      _emit_cow_wars,
+    "ifans":         _emit_ifans,
+    "fred":          _emit_fred,
+    "wbk":           _emit_wbk,
+    "polity5":       _emit_polity5,
+    "itu":           _emit_itu,
+    "hiik":          _emit_hiik,
+    "semi":          _emit_semi,
+    "owid":          _emit_owid,
+    "trade":         _emit_trade,
+}
+
+
 def _build_context(
     pq:               ParsedQuery,
     like_items:       list[dict],
@@ -1030,6 +1476,8 @@ def _build_context(
     semi_data:        list[dict] | None = None,
     owid_data:        list[dict] | None = None,
     trade_dep_data:   list[dict] | None = None,
+    # Phase 8 융합1: 경쟁이론 비교 컨텍스트 (priority tier)
+    theory_cmp_ctx:   str = "",
 ) -> str:
     lines: list[str] = []
     total_chars = 0
@@ -1167,328 +1615,61 @@ def _build_context(
                 lines.append(f"  주요위험: {', '.join(str(r) for r in risks[:3])}")
         lines.append("")
 
-    # ── SIPRI 국방비 (IA-Engine-B1) ───────────────────────────────────────────
-    if sipri_data:
-        lines.append("## 국방비 추이 (SIPRI 2023, % of GDP / USD billion)")
-        for iso3, records in sipri_data.items():
-            if not records:
-                continue
-            latest = records[0]
-            name   = latest.get("country", iso3)
-            gdp    = latest.get("gdp_pct")
-            usd    = latest.get("usd_mn")
-            year   = latest.get("year")
-            trend  = " → ".join(
-                f"{r['year']}:{r['gdp_pct']}%"
-                for r in reversed(records) if r.get("gdp_pct")
-            )
-            usd_bn = f"${usd/1000:.1f}bn" if usd else ""
-            lines.append(f"- **{name}** ({iso3}): {year}년 GDP {gdp}% {usd_bn}")
-            if len(records) > 1:
-                lines.append(f"  5년 추이: {trend}")
-        lines.append("  출처: SIPRI Military Expenditure Database 2024")
-        lines.append("")
+    # ── Phase 8 융합1: priority tier — theory_cmp_ctx 우선 확보 ─────────────────
+    # backbone 직후 경쟁이론 수치비교 블록을 먼저 넣어 잔량 누락 방지.
+    if theory_cmp_ctx:
+        block_chars = len(theory_cmp_ctx) + 2
+        used = sum(len(l) + 1 for l in lines)
+        if used + block_chars <= _CONTEXT_MAX_CHARS:
+            lines.append("")
+            lines.append(theory_cmp_ctx)
+        elif _CONTEXT_MAX_CHARS - used > 500:
+            lines.append("")
+            lines.append(theory_cmp_ctx[:_CONTEXT_MAX_CHARS - used - 1])
 
-    # ── COW 동맹 관계 (IA-Engine-B1) ─────────────────────────────────────────
-    if cow_alliances:
-        defense = [a for a in cow_alliances if a.get("alliance_type") == "defense"]
-        others  = [a for a in cow_alliances if a.get("alliance_type") != "defense"]
-        lines.append("## 공식 동맹 관계 (COW Formal Alliances v4.1)")
-        if defense:
-            lines.append("**방위조약 (Defense Pact)**")
-            for a in defense[:10]:
-                end_str = f"~{a['end_year']}" if a.get("end_year") else "~현재"
-                lines.append(
-                    f"- {a.get('name_a') or a['iso3_a']} ↔ "
-                    f"{a.get('name_b') or a['iso3_b']} "
-                    f"({a.get('start_year', '?')}{end_str})"
-                )
-        if others:
-            types: dict[str, list[str]] = {}
-            for a in others:
-                t = a.get("alliance_type", "기타")
-                types.setdefault(t, []).append(
-                    f"{a.get('name_a') or a['iso3_a']}-{a.get('name_b') or a['iso3_b']}"
-                )
-            for t, pairs in types.items():
-                lines.append(f"**{t}**: {', '.join(pairs[:5])}")
-        lines.append("  출처: Correlates of War Formal Alliances v4.1")
-        lines.append("")
+    # ── Phase 8 융합1: data tier — 관련성 점수순 조립 ───────────────────────────
+    # ⚠️ 정직성 가드: 점수는 '이 소스가 이 쿼리 주제에 관한가'만 판단한다.
+    #   '이 데이터가 가설을 지지하는가'는 절대 점수에 넣지 않는다 (체리피킹=환각).
+    _source_records = {
+        "sipri_milex":   sipri_data,
+        "cow_alliances": cow_alliances,
+        "kiel":          kiel_data,
+        "eia":           eia_data,
+        "csis":          csis_incidents,
+        "sipri_arms":    sipri_arms,
+        "vdem":          vdem_data,
+        "cow_wars":      cow_wars,
+        "ifans":         ifans_pubs,
+        "fred":          fred_data,
+        "wbk":           wbk_data,
+        "polity5":       polity5_data,
+        "itu":           itu_data,
+        "hiik":          hiik_data,
+        "semi":          semi_data,
+        "owid":          owid_data,
+        "trade":         trade_dep_data,
+    }
 
-    # ── Kiel Ukraine Support Tracker (IA-Engine-B1) ───────────────────────────
-    if kiel_data:
-        lines.append("## 우크라이나 지원 현황 (Kiel Ukraine Support Tracker 2024)")
-        lines.append("단위: EUR 십억 (군사/재정/인도적/합계)")
-        for d in kiel_data[:8]:
-            mil  = d.get("military_eur_bn", 0) or 0
-            fin  = d.get("financial_eur_bn", 0) or 0
-            hum  = d.get("humanitarian_eur_bn", 0) or 0
-            tot  = d.get("total_eur_bn", 0) or 0
-            lines.append(
-                f"- **{d['donor_name']}**: 군사 {mil:.1f} / 재정 {fin:.1f} / "
-                f"인도적 {hum:.1f} / **합계 {tot:.1f}bn€**"
-            )
-        period = kiel_data[0].get("data_period", "") if kiel_data else ""
-        lines.append(f"  기간: {period} | 출처: Kiel Institute Ukraine Support Tracker")
-        lines.append("")
+    scored: list[tuple[float, str]] = []
+    for key, spec in _SOURCE_SPECS.items():
+        records = _source_records.get(key)
+        s = _score_source(spec, records, pq)
+        if s >= 0:
+            scored.append((s, key))
+        logger.debug("[fusion1] key=%s score=%.2f", key, s)
+    scored.sort(key=lambda x: -x[0])
 
+    for _, key in scored:
+        block = _SOURCE_EMITTERS[key](_source_records[key])
+        if not block:
+            continue
+        block_chars = sum(len(l) + 1 for l in block)
+        used = sum(len(l) + 1 for l in lines)
+        if used + block_chars > _CONTEXT_MAX_CHARS:
+            continue   # 이 블록이 초과하면 건너뜀 — 더 작은 다음 블록은 들어갈 수 있음
+        lines.extend(block)
 
-    # ── EIA 에너지 통계 (IA-Engine-B2) ──────────────────────────────────────
-    if eia_data:
-        lines.append("## 에너지 생산·수출 현황 (EIA International Energy Statistics 2023)")
-        # 초크포인트 먼저 표시
-        chokepoints = {k: v for k, v in eia_data.items() if len(k) > 3}
-        producers   = {k: v for k, v in eia_data.items() if len(k) == 3}
-        if chokepoints:
-            lines.append("**전략 초크포인트 통과량 (백만 배럴/일)**")
-            for key, d in chokepoints.items():
-                lines.append(f"- {d['country_name']}: {d.get('crude_prod_mbpd', '?')} Mbpd")
-        if producers:
-            lines.append("**주요 산유국 생산량 / 수출량 (Mbpd)**")
-            for iso3, d in producers.items():
-                prod = d.get("crude_prod_mbpd", "?")
-                exp  = d.get("oil_export_mbpd")
-                gas  = d.get("natgas_prod_bcfd")
-                row  = f"- **{d.get('country_name', iso3)}** ({iso3}): 원유 {prod}"
-                if exp:
-                    row += f" / 수출 {exp}"
-                if gas:
-                    row += f" / 천연가스 {gas} Bcfd"
-                lines.append(row)
-        lines.append("  출처: EIA International Energy Statistics 2024")
-        lines.append("")
-
-    # ── CSIS 사이버 사건 (IA-Engine-B2) ──────────────────────────────────────
-    if csis_incidents:
-        lines.append("## 주요 사이버 사건 (CSIS Significant Cyber Incidents DB)")
-        for inc in csis_incidents[:8]:
-            actor = inc.get("actor_group") or inc.get("actor_iso3") or "미귀속"
-            victim = inc.get("victim_iso3", "?")
-            sector = inc.get("victim_sector", "")
-            itype  = inc.get("incident_type", "")
-            date   = (inc.get("incident_date") or "")[:7]
-            lines.append(
-                f"- [{date}] **{inc.get('title', '')}**"
-                f" | 행위자: {actor} → 피해: {victim}({sector}) | 유형: {itype}"
-            )
-            desc = (inc.get("description") or "")[:120]
-            if desc:
-                lines.append(f"  {desc}")
-        lines.append("  출처: CSIS Strategic Technologies Program 2024")
-        lines.append("")
-
-    # ── SIPRI 무기 이전 (Cycle 6-A) ──────────────────────────────────────────
-    if sipri_arms and not _over_budget(lines):
-        lines.append("## 무기 공급망 (SIPRI Arms Transfers Database)")
-        for arm in sipri_arms[:6]:
-            lines.append(
-                f"- {arm.get('year')} | {arm.get('supplier')} → {arm.get('recipient')}"
-                f" | {arm.get('category', '')} | TIV {arm.get('tiv_mn', '?')}mn"
-            )
-            if arm.get("notes"):
-                lines.append(f"  {arm['notes'][:100]}")
-        lines.append("  출처: SIPRI Arms Transfers Database 2020-2024")
-        lines.append("")
-
-    # ── V-DEM 민주주의 지수 (Cycle 6-A) ─────────────────────────────────────
-    if vdem_data and not _over_budget(lines):
-        lines.append("## 행위자 체제 유형 (V-Dem Democracy Index v14)")
-        for v in vdem_data:
-            libdem = f"{v['libdem']:.2f}" if v.get("libdem") is not None else "?"
-            corr   = f"{v['corruption']:.2f}" if v.get("corruption") is not None else "?"
-            lines.append(
-                f"- **{v.get('country')}** ({v.get('iso3')}, {v.get('year')}): "
-                f"{v.get('regime_type')} | 자유민주주의 지수: {libdem} | 부패지수: {corr}"
-            )
-            if v.get("notes"):
-                lines.append(f"  {v['notes'][:80]}")
-        lines.append("  출처: V-Dem Institute, University of Gothenburg 2024")
-        lines.append("")
-
-    # ── COW 전쟁 선례 (Cycle 6-A) ───────────────────────────────────────────
-    if cow_wars and not _over_budget(lines):
-        lines.append("## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)")
-        for w in cow_wars[:5]:
-            deaths = f"{w['battle_deaths']:,}" if w.get("battle_deaths") else "미집계"
-            lines.append(
-                f"- **{w.get('name')}** ({w.get('period')}) | "
-                f"{w.get('sides')} | 사망: {deaths} | 결과: {w.get('outcome')}"
-            )
-        lines.append("  출처: Correlates of War Project v4.0")
-        lines.append("")
-
-    # ── 외교부 IFANS 발간자료 (Cycle 6-A) ────────────────────────────────────
-    if ifans_pubs and not _over_budget(lines):
-        lines.append("## 한국 외교부 IFANS 발간자료 (국립외교원 학술 분석)")
-        for pub in ifans_pubs[:4]:
-            date = str(pub.get("date", ""))
-            date_fmt = f"{date[:4]}-{date[4:6]}-{date[6:8]}" if len(date) == 8 else date
-            lines.append(f"- [{date_fmt}] **{pub.get('title', '')}**")
-            abstract = (pub.get("abstract") or "")[:300]
-            if abstract:
-                lines.append(f"  {abstract}")
-            lines.append(f"  출처: {pub.get('source', '외교부 IFANS')}")
-        lines.append("")
-
-    # ── FRED 경제 시계열 (Cycle 7-D-1) ───────────────────────────────────────
-    if fred_data and not _over_budget(lines):
-        lines.append("## 주요 경제 지표 시계열 (FRED — Federal Reserve Economic Data)")
-        by_series: dict[str, list] = {}
-        for d in fred_data:
-            sid = d.get("series_id", "?")
-            by_series.setdefault(sid, []).append(d)
-        for sid, records in list(by_series.items())[:6]:
-            name = records[0].get("series_name", sid)
-            unit = records[0].get("unit", "")
-            trend = " → ".join(
-                f"{r['date'][:4]}:{r['value']}" for r in reversed(records) if r.get("value") is not None
-            )
-            lines.append(f"- **{name}** ({sid}): {trend} [{unit}]")
-        lines.append("  출처: FRED St. Louis Federal Reserve (fred.stlouisfed.org)")
-        lines.append("")
-
-    # ── World Bank WGI 거버넌스 지수 (Cycle 7-D-2) ──────────────────────────
-    if wbk_data and not _over_budget(lines):
-        lines.append("## 국가 거버넌스 지수 (World Bank WGI 2022)")
-        lines.append("점수 범위: -2.5(최하) ~ +2.5(최상)")
-        for d in wbk_data[:8]:
-            pv = f"{d['political_stability']:.2f}" if d.get("political_stability") is not None else "?"
-            cc = f"{d['corruption_control']:.2f}" if d.get("corruption_control") is not None else "?"
-            rl = f"{d['rule_of_law']:.2f}" if d.get("rule_of_law") is not None else "?"
-            lines.append(
-                f"- **{d['country']}** ({d['iso3']}): "
-                f"정치안정={pv} | 부패통제={cc} | 법치={rl}"
-            )
-        lines.append("  출처: World Bank Worldwide Governance Indicators 2023")
-        lines.append("")
-
-    # ── Polity5 정치체제 지수 (Cycle 7-D-4) ─────────────────────────────────
-    if polity5_data and not _over_budget(lines):
-        lines.append("## 정치체제 지수 (Polity5 2022)")
-        lines.append("점수: -10(완전권위) ~ +10(완전민주)")
-        for d in polity5_data[:8]:
-            score = d.get("polity_score")
-            regime = d.get("regime_type", "?")
-            lines.append(
-                f"- **{d['country']}** ({d['iso3']}): {score}점 ({regime})"
-            )
-        lines.append("  출처: Center for Systemic Peace, Polity5 Dataset")
-        lines.append("")
-
-    # ── ITU ICT 개발 지수 (Cycle 7-D-5) ─────────────────────────────────────
-    if itu_data and not _over_budget(lines):
-        # IDI = ICT 보급·접근성 지표. 사이버 방어력의 직접 측정값이 아님을 헤더에 명시해
-        # Gemini가 이 수치를 사이버 역량의 근거로 오용하지 않도록 선제 경고한다.
-        lines.append(
-            "## ICT 발전 지수 (ITU IDI 2023) "
-            "⚠️ 보급·접근성 지표 — 사이버 방어력과 직접 동치 금지"
-        )
-        lines.append(
-            "IDI 점수: 0-100 (인터넷 보급·접근성·이용 종합). "
-            "사이버 역량 주장 시 반드시 '간접 proxy'임을 명시할 것. "
-            "방어력 직접 근거로는 GCI·NCSI가 더 타당함."
-        )
-        for d in itu_data[:8]:
-            score = d.get("idi_score")
-            rank = d.get("rank")
-            tier = d.get("tier", "?")
-            lines.append(
-                f"- **{d['country']}** ({d['iso3']}): IDI {score} (전세계 {rank}위, {tier}티어)"
-            )
-        lines.append("  출처: ITU ICT Development Index 2023")
-        lines.append("")
-
-    # ── HIIK 분쟁 강도 바로미터 (Cycle 7-D-6) ──────────────────────────────
-    if hiik_data and not _over_budget(lines):
-        lines.append("## 분쟁 강도 바로미터 (HIIK Conflict Barometer 2024)")
-        lines.append("강도: 1=분쟁 / 2=비폭력위기 / 3=폭력위기 / 4=제한전 / 5=전쟁")
-        for d in hiik_data[:6]:
-            lines.append(
-                f"- **{d['name']}** ({d['year']}): 강도 {d['intensity']} [{d['label']}]"
-                f" | 행위자: {d.get('actors', '?')}"
-            )
-        lines.append("  출처: HIIK Heidelberg Institute for International Conflict Research")
-        lines.append("")
-
-    # ── 반도체·기술 시장 데이터 (Cycle 7-D-7) ────────────────────────────────
-    if semi_data and not _over_budget(lines):
-        lines.append("## 반도체·기술 시장 데이터 (SIA/TechInsights 2023-2024)")
-        # 경쟁이론 비교에 직결되는 카테고리 우선 노출
-        _PRIORITY_CATS = [
-            "china_self_sufficiency",  # Weaponized Interdependence DV 직결
-            "foundry_share",
-            "advanced_nodes",
-            "critical_mineral",
-            "equipment_dominance",
-            "export_control",
-            "memory_market",
-            "defense_tech",
-            "market_size",
-        ]
-        by_cat: dict[str, list] = {}
-        for d in semi_data:
-            by_cat.setdefault(d.get("category", "misc"), []).append(d)
-        # 우선순위 카테고리 먼저, 나머지 뒤에
-        ordered_cats = [c for c in _PRIORITY_CATS if c in by_cat] + \
-                       [c for c in by_cat if c not in _PRIORITY_CATS]
-        for cat in ordered_cats[:7]:  # 최대 7개 카테고리
-            items = by_cat[cat]
-            lines.append(f"**{cat}**")
-            for d in items[:5]:  # 카테고리당 최대 5건
-                val_str = f"{d['value']}" if d.get("value") is not None else "?"
-                unit_str = d.get("unit", "")
-                lines.append(f"  - {d['metric']}: {val_str} {unit_str} ({d.get('year', '?')})")
-                if d.get("notes"):
-                    lines.append(f"    {d['notes'][:100]}")
-        lines.append("  출처: SIA, TechInsights, USGS, ASML Annual Report, BIS")
-        lines.append("")
-
-    # ── OWID 군사비·핵탄두 (Cycle 7-D-3) ──────────────────────────────────────
-    if owid_data and not _over_budget(lines):
-        milex = [d for d in owid_data if d.get("dataset") == "military_exp_gdp"]
-        nukes = [d for d in owid_data if d.get("dataset") == "nuclear_warheads"]
-        lines.append("## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)")
-        if milex:
-            lines.append("**국방비 (% of GDP, 최신연도)**")
-            for d in sorted(milex, key=lambda x: -(x.get("value") or 0))[:8]:
-                v = f"{d['value']:.2f}" if d.get("value") is not None else "?"
-                lines.append(f"- {d['country']} ({d['iso3']}): {v}% ({d.get('year')})")
-        if nukes:
-            lines.append("**핵탄두 보유량 (최신연도)**")
-            for d in sorted(nukes, key=lambda x: -(x.get("value") or 0))[:6]:
-                v = int(d['value']) if d.get("value") is not None else "?"
-                lines.append(f"- {d['country']} ({d['iso3']}): {v}기 ({d.get('year')})")
-        lines.append("  출처: Our World in Data (ourworldindata.org)")
-        lines.append("")
-
-    # ── UN Comtrade 무역 의존도 (AR-1b) ──────────────────────────────────────
-    # Weaponized Interdependence 독립변수(공급망 집중도) 직접 수치화.
-    # dependency_ratio: 해당 쌍의 무역액 / 보고국 전체 무역액 (0~1).
-    if trade_dep_data and not _over_budget(lines):
-        lines.append(
-            "## 무역 의존도 (UN Comtrade — Weaponized Interdependence IV)"
-        )
-        lines.append(
-            "dependency_ratio: 해당 양자 무역액 ÷ 보고국 전체 무역액 (0~1). "
-            "0.1 이상 = 10%+ 의존 → 비대칭 구조. "
-            "이 수치가 높을수록 Farrell & Newman의 '공급망 집중 → 레버리지' 예측 지지."
-        )
-        # HS 코드별로 그룹화하여 출력
-        by_hs: dict[str, list] = {}
-        for d in trade_dep_data:
-            by_hs.setdefault(d["hs_code"], []).append(d)
-        for hs_code, items in by_hs.items():
-            label = _HS_LABEL.get(hs_code, hs_code)
-            lines.append(f"**{label} (HS {hs_code})**")
-            for d in items[:6]:
-                ratio_pct = f"{d['dependency_ratio']*100:.1f}%"
-                lines.append(
-                    f"- {d['reporter']} {d['flow']} ← {d['partner']}: "
-                    f"의존도 {ratio_pct} ({d['period']})"
-                )
-        lines.append("  출처: UN Comtrade Database (2020-2025, HS 8542·27·26)")
-        lines.append("")
-
+    result = "\n".join(lines)
     result = "\n".join(lines)
     # 혹시 예산을 초과한 경우 마지막 완전 섹션 경계에서 절단
     if len(result) > _CONTEXT_MAX_CHARS:
@@ -1578,12 +1759,8 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         sipri_arms, vdem_data, cow_wars, ifans_pubs,
         fred_data, wbk_data, polity5_data, itu_data, hiik_data, semi_data,
         owid_data, trade_dep_data,
+        theory_cmp_ctx=theory_cmp_ctx,  # Phase 8 융합1: priority tier로 이동
     )
-    # Cycle 7-B: 경쟁 이론 비교 컨텍스트 추가 — 예산 잔량 내에서만 추가
-    if theory_cmp_ctx:
-        remaining = _CONTEXT_MAX_CHARS - len(context_text)
-        if remaining > 500:
-            context_text = context_text + "\n\n" + theory_cmp_ctx[:remaining]
 
     logger.debug(
         "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d "

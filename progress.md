@@ -41,13 +41,63 @@
 
 ### 진행 현황 (Phase 8)
 ```
-[융합1] 관련성 게이트   ⬜ 다음
-[융합2] 산술 레이어     ⬜
-[8-A] H1 측정가능성     ⬜
+[융합1] 관련성 게이트   ✅ v7.9.0
+[융합2] 산술 레이어     ✅ v7.10.0
+[8-A] H1 측정가능성     ⬜ 다음
 [8-C] 경쟁이론 편차     ⬜
 [8-B] Granger 강화      ⬜
 [8-D] 문헌 공백         ⬜
 ```
+
+### v7.9.0 구현 내역 (융합1 — 관련성 게이트, 2026-06-07)
+
+**intel_analyzer.py 단일 파일 작업**
+
+| 추가 | 내용 |
+|------|------|
+| `_SOURCE_SPECS` | 17개 data 소스 섹터 친화도 테이블 |
+| `_coverage_bonus()` / `_score_source()` | Token-Zero 관련성 점수 함수 (섹터 적중 +2.0, off-domain -1.0, 지역·행위자 coverage +0.5/+0.3) |
+| `_emit_*()` × 17개 | 각 data 소스를 `list[str]` 블록으로 반환하는 순수 emitter 함수 |
+| `_SOURCE_EMITTERS` | key → emitter 매핑 dict |
+
+**`_build_context` 변경**
+- `theory_cmp_ctx` 파라미터 추가
+- backbone 직후 `theory_cmp_ctx` **priority tier** 우선 주입 (구 "잔량 append" 폐지)
+- 17개 인라인 data 섹션 → 관련성 점수 정렬 후 budget 한도까지 emit
+- 정직성 가드: 점수는 주제 적합성만, 가설 지지 여부 금지
+
+**`build_intel_context` 변경**
+- `theory_cmp_ctx=theory_cmp_ctx` 키워드 인자 전달
+- 구 "잔량 append" 블록 제거
+
+**효과**: cyber 쿼리 → CSIS·ITU 상위 배치 / energy 쿼리 → EIA·FRED 상위 배치 / theory_cmp 누락 0
+
+### v7.10.0 구현 내역 (융합2 — Token-Zero 산술 레이어, 2026-06-07)
+
+**신규: `services/arithmetic_layer.py`**
+- `pct_change`, `delta`, `pct_point_gap`, `ratio`, `share_of`, `hhi`, `concentration_label`, `fmt_signed`
+- 전부 None-safe · 0분모-safe · 예외 없이 None 반환 · 부작용 0
+
+**`theory_comparator.py` 수정**
+
+인라인 산술 3곳 → arithmetic_layer 통일 (수치 불변):
+- `_get_sipri_arms_hhi`: `(dominant/total*100)` → `share_of()`
+- `_get_fred_for_theories`: `(latest-oldest)/oldest*100` → `pct_change()`
+- `_get_trade_hhi`: `sum(r²)*10000` → `hhi()`
+
+격차 사전계산 주입 (`(사전계산)` 꼬리표):
+- mahan·a2ad 블록: SIPRI 국방비 GDP% 격차
+- mearsheimer·waltz 블록: 권력 격차(국방비)
+- weaponized_interdependence 블록: FRED 추세 부호 강제(`fmt_signed`) + trade HHI `concentration_label`
+- digital_iron_curtain 블록: TSMC↔SMIC 점유율 격차
+
+**`intel_query.py` 수정**
+- `system_role`에 **Token-Zero 산술 규율** 블록 추가 (암산 금지, context 값 인용 강제)
+- [경쟁설명] 예시 교체 → `(사전계산)` 꼬리표 인용 패턴 (`-37.0%p, 사전계산`)
+
+**설계 문서**
+- `docs/fusion1_design.md` — Opus 설계 핸드오프
+- `docs/fusion2_design.md` — Opus 설계 핸드오프
 
 ---
 
