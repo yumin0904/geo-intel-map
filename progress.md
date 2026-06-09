@@ -51,6 +51,113 @@
 [8-D+] 이론 라이브러리 보강 ◐ v8.4.0 (빈 껍데기 9개 완비, 비자명 3.56→3.70, 종합 3.58)
 ```
 
+### v8.7.0 구현 내역 (이론 대량 적재 12개 — 8-D 후속 4차, 51개 달성, 2026-06-09)
+
+**목표**: 50개+ 이론 적재 — 방법론·사이버·기술·인도태평양 핵심 이론 완비
+
+| 파일 | 이론 | 폴더 |
+|------|------|------|
+| `apt_attribution_theory.md` | APT 귀속 이론 (Rid & Buchanan 2015) | `06_cyber/` |
+| `cyber_sovereignty.md` | 사이버 주권론 (Deibert 2013) | `06_cyber/` |
+| `dual_use_technology.md` | 이중용도 기술 통제론 (Feigenbaum/Bauer) | `03_techno/` |
+| `nuclear_taboo_theory.md` | 핵 금기 이론 (Tannenwald 1999) | `04_indo_pacific/` |
+| `burden_sharing_theory.md` | 동맹 비용분담 이론 (Olson & Zeckhauser 1966) | `04_indo_pacific/` |
+| `nuclear_nonproliferation_theory.md` | 핵 비확산 이론 (Waltz vs Sagan 1981) | `04_indo_pacific/` |
+| `constructivism.md` | 구성주의 (Wendt 1992) | `00_methods/` |
+| `prospect_theory_ir.md` | 전망 이론 (Levy 1992, Mercer) | `00_methods/` |
+| `escalation_theory.md` | 에스컬레이션 이론 (Kahn 1962) | `05_gray_zone/` |
+| `economic_sanctions_theory.md` | 경제 제재 이론 (Hufbauer/Drezner) | `05_gray_zone/` |
+| `ai_strategic_competition.md` | AI 전략 경쟁론 (Allen/NSCAI 2021) | `03_techno/` |
+| `critical_minerals_security.md` | 핵심 광물 안보론 (Overland 2019) | `03_techno/` |
+
+**인덱싱 결과**: 124개 upsert, 오류 0
+
+**섹터별 이론 수 (v8.7.0 기준)**
+
+| 섹터 | 이전 | 현재 |
+|------|------|------|
+| indo_pacific | 15개 | 20개 |
+| gray_zone | 6개 | 8개 |
+| techno | 4개 | 7개 |
+| maritime | 6개 | 6개 |
+| energy | 5개 | 5개 |
+| cyber | 3개 | 5개 |
+| **합계** | **39개** | **51개** |
+
+**claim_ledger 기대 효과**: 방법론(구성주의·전망이론)·핵 이론(금기·비확산) 추가로
+비자명성 탐지 커버리지 확장 + APT 귀속·사이버 주권으로 사이버 섹터 원장 신호 강화
+
+---
+
+### v8.6.0 구현 내역 (이론 대량 적재 12개 — 8-D 후속 3차, 2026-06-09)
+
+**목표**: 피인용 rival_theories 우선 + 취약 섹터(gray_zone·energy·maritime) 강화
+
+**피인용 분석 기반 우선 추가 (3회/2회 피인용)**
+
+| 파일 | 이론 | 폴더 | 피인용 |
+|------|------|------|-------|
+| `liberal_institutionalism.md` | 자유주의 제도론 (Keohane & Nye 1977) | `04_indo_pacific/` | 3회 |
+| `hegemonic_stability_theory.md` | 패권 안정론 (Kindleberger 1973) | `04_indo_pacific/` | 2회 |
+| `conventional_deterrence.md` | 재래식 억지론 (Mearsheimer 1983) | `04_indo_pacific/` | 2회 |
+| `coercive_diplomacy.md` | 강압 외교 (Schelling 1966) | `04_indo_pacific/` | 2회 |
+
+**섹터별 강화**
+
+| 파일 | 이론 | 섹터 |
+|------|------|------|
+| `power_transition_theory.md` | 세력전이론 (Organski 1958) | indo_pacific |
+| `democratic_peace_theory.md` | 민주 평화론 (Doyle 1983) | indo_pacific |
+| `proxy_war_theory.md` | 대리전 이론 (Mumford 2013) | gray_zone |
+| `salami_slicing.md` | 살라미 전술 (Mastro/Fravel 2014) | gray_zone |
+| `lawfare.md` | 법전쟁 (Dunlap 2001) | gray_zone |
+| `rentier_state_theory.md` | 렌티어 국가론 (Beblawi 1987) | energy |
+| `energy_security_theory.md` | 에너지 안보론 (Yergin 1991) | energy |
+| `corbett_sea_control.md` | 코르벳 제한적 제해권 (Corbett 1911) | maritime |
+| `command_of_the_commons.md` | 공유지 지배권 (Posen 2003) | maritime |
+| `techno_globalism.md` | 기술 세계주의 (Rosecrance 1996) | techno |
+| `cognitive_warfare.md` | 인지전 이론 (du Cluzel 2020) | cyber |
+
+**인덱싱 결과**: 112개 upsert, 오류 0
+
+**섹터별 이론 수 (v8.6.0 기준)**
+
+| 섹터 | 이전 | 현재 |
+|------|------|------|
+| indo_pacific | 6개 | 15개 |
+| gray_zone | 3개 | 6개 |
+| maritime | 4개 | 6개 |
+| energy | 3개 | 5개 |
+| techno | 3개 | 4개 |
+| cyber | 2개 | 3개 |
+| **합계** | **21개** | **39개** |
+
+**claim_ledger 기대 효과**: rival_theories 피인용 이론들이 실제 문서로 존재하게 됨
+→ 원장 신호 ②(경쟁이론 미해결 쌍)의 재료 대폭 확충 → 경쟁이론엄밀 상승 예상
+
+---
+
+### v8.5.0 구현 내역 (이론 신규 3개 추가 — 8-D 후속 2차, 2026-06-09)
+
+**목표**: 원장 신호 ①②의 재료 확충 — 안보딜레마·역외균형·사이버 공세-방어 균형 신규 추가
+
+| 파일 | 이론 | 폴더 |
+|------|------|------|
+| `security_dilemma.md` | 안보 딜레마 (Jervis 1978) | `04_indo_pacific/` |
+| `offshore_balancing.md` | 역외균형 전략 (Mearsheimer & Walt 2016) | `04_indo_pacific/` |
+| `cyber_offense_defense_balance.md` | 사이버 공세-방어 균형 (Lynn 2010, Buchanan 2017) | `06_cyber/` |
+
+**7-A 필드 완비**: 모든 이론에 IV·DV·conditions·falsifiable_prediction·known_counterexample·rival_theories 포함.
+
+**결과**: 총 이론 97개 (전 24개 → 이론 파일만 이전 21+3=24개 concept 이론). claim_ledger `_fetch_theory_claims` 확인 — 3개 모두 정상 노출.
+
+**경쟁이론 커버리지 확장 (신규 이론의 rival_theories)**:
+- 안보딜레마 ↔ Balance of Threat (Walt), Deterrence Theory, Offensive Realism
+- 역외균형 ↔ Liberal Hegemony (Ikenberry), Primacy Theory, Alliance Entrapment
+- 사이버 공세-방어 ↔ Cyber Deterrence (Libicki), Digital Iron Curtain, Security Dilemma in Cyberspace
+
+---
+
 ### v8.4.0 구현 내역 (이론 라이브러리 보강 — 8-D 후속, 2026-06-09)
 
 **진단**: 8-D 원장 메커니즘은 완성됐으나 신호 ①②(반례·경쟁이론)의 재료인 **이론 문서가
