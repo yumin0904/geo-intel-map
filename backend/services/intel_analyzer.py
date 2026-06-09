@@ -33,6 +33,7 @@ from typing import Iterator
 
 from services.entity_parser import ParsedQuery
 from services.theory_comparator import build_theory_comparison_context
+from services.claim_ledger import build_claim_ledger
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +144,8 @@ def _search_library_like(query: str, regions: list[str],
                        source_org, geopol_region, asset_type,
                        published_date, body,
                        independent_var, dependent_var, conditions,
-                       falsifiable_prediction, known_counterexample, rival_theories
+                       falsifiable_prediction, known_counterexample, rival_theories,
+                       contested_by
                 FROM theories
                 WHERE {conditions}
                 ORDER BY published_date DESC NULLS LAST
@@ -172,7 +174,8 @@ def _search_library_by_sector(sectors: list[str], limit: int = 6) -> list[dict]:
                        source_org, geopol_region, asset_type,
                        published_date, body,
                        independent_var, dependent_var, conditions,
-                       falsifiable_prediction, known_counterexample, rival_theories
+                       falsifiable_prediction, known_counterexample, rival_theories,
+                       contested_by
                 FROM theories
                 WHERE sector_tag IN ({placeholders})
                 ORDER BY published_date DESC NULLS LAST
@@ -1632,6 +1635,17 @@ def _build_context(
         elif _CONTEXT_MAX_CHARS - used > 500:
             lines.append("")
             lines.append(theory_cmp_ctx[:_CONTEXT_MAX_CHARS - used - 1])
+
+    # ── Phase 8 Cycle 8-D: priority tier — 문헌 공백 원장 ───────────────────────
+    # 라이브러리 주장에서 결정론적으로 추출한 공백 신호(반례·경쟁이론·밀도).
+    # [문헌공백] 섹션이 추측이 아니라 실측 주장 지도에 근거하도록 만든다.
+    ledger_block = build_claim_ledger(pq, all_items)
+    if ledger_block:
+        block_chars = len(ledger_block) + 2
+        used = sum(len(l) + 1 for l in lines)
+        if used + block_chars <= _CONTEXT_MAX_CHARS:
+            lines.append("")
+            lines.append(ledger_block)
 
     # ── Phase 8 융합1: data tier — 관련성 점수순 조립 ───────────────────────────
     # ⚠️ 정직성 가드: 점수는 '이 소스가 이 쿼리 주제에 관한가'만 판단한다.

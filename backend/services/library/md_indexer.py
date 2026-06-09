@@ -78,7 +78,9 @@ CREATE TABLE IF NOT EXISTS theories (
     conditions         TEXT,            -- 적용 조건 (JSON 배열)
     falsifiable_prediction TEXT,        -- 반증 가능 예측 명제
     known_counterexample   TEXT,        -- 알려진 반례
-    rival_theories     TEXT             -- 경쟁 이론 목록 (JSON 배열)
+    rival_theories     TEXT,            -- 경쟁 이론 목록 (JSON 배열)
+    -- Phase 8 Cycle 8-D 확장 훅 (선택적, 미래 대비) ──────────────────────
+    contested_by       TEXT             -- 이 주장을 반박하는 문서 theory_id (JSON 배열)
 );
 
 -- FTS5 가상 테이블: theories 테이블을 content source로 사용
@@ -121,6 +123,7 @@ def _get_conn() -> sqlite3.Connection:
         ("falsifiable_prediction", "NULL"),
         ("known_counterexample","NULL"),
         ("rival_theories",      "NULL"),
+        ("contested_by",        "NULL"),   # 8-D 확장 훅
     ]
     for col, default in _new_cols:
         try:
@@ -222,7 +225,9 @@ def parse_front_matter(path: Path) -> dict:
     meta["dependent_var"]          = meta.get("dependent_var") or None
     meta["falsifiable_prediction"] = meta.get("falsifiable_prediction") or None
     meta["known_counterexample"]   = meta.get("known_counterexample") or None
-    for field in ("conditions", "rival_theories"):
+    # contested_by: 8-D 확장 훅 — 오늘은 대부분 비어 있고(None), 미래에 문서가
+    # 채우면 claim_ledger가 자동으로 직접 모순 연결을 그린다 (코드 수정 불필요).
+    for field in ("conditions", "rival_theories", "contested_by"):
         val = meta.get(field, [])
         if isinstance(val, list):
             meta[field] = json.dumps(val, ensure_ascii=False) if val else None
@@ -296,8 +301,9 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                      instrument_of_power, strategic_posture,
                      source_org, published_date, source_url, event_refs,
                      independent_var, dependent_var, conditions,
-                     falsifiable_prediction, known_counterexample, rival_theories)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     falsifiable_prediction, known_counterexample, rival_theories,
+                     contested_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     meta["theory_id"],
@@ -328,6 +334,7 @@ def build_fts_index(library_dir: Path = LIBRARY_DIR) -> dict:
                     meta["falsifiable_prediction"],
                     meta["known_counterexample"],
                     meta["rival_theories"],
+                    meta.get("contested_by"),
                 ),
             )
             upserted += 1
