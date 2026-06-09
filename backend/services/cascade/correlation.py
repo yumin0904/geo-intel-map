@@ -258,6 +258,50 @@ def _load_event_series(region: str, start: date, end: date) -> pd.Series:
     return series
 
 
+def _load_extreme_event_series(
+    region: str,
+    start: date,
+    end: date,
+    p_quantile: float = 0.90,
+) -> pd.Series | None:
+    """
+    [B8] P90 극단 이벤트 시계열.
+
+    이론적 근거 (Farrell & Newman 2019 임계 효과):
+    평균 분쟁 강도는 시장에 신호를 주지 않는다. 임계값을 넘는 극단 사건만
+    공급망·투자 심리를 통해 시장으로 전이된다. 따라서 Granger 독립변수를
+    전체 severity 대신 P90 초과분(excess severity)으로 대체하면 비선형 신호를
+    선형 검정에서 포착할 수 있다.
+
+    반환: 임계값 초과분 시계열 (기본값 미달 시 None).
+    반환 시리즈가 일별이므로 시장 시계열도 일별 유지 가능 (고빈도 종속변수).
+    """
+    base = _load_event_series(region, start, end)
+    if base is None or len(base) == 0:
+        return None
+
+    # weekly로 집계된 sparse 시리즈는 극단 검정 대상 아님 (관측 부족)
+    if "weekly" in str(base.name):
+        return None
+
+    nonzero = base[base > 0]
+    if len(nonzero) < 20:  # 비제로 이벤트 최소 20일 필요
+        return None
+
+    threshold = float(nonzero.quantile(p_quantile))
+    if threshold <= 0:
+        return None
+
+    # 임계값 초과분: 일상 이벤트 노이즈 제거, 극단 신호만 보존
+    extreme = (base - threshold).clip(lower=0)
+    extreme.name = "event_severity_p90"
+
+    if (extreme > 0).sum() < 10:
+        return None
+
+    return extreme
+
+
 def _load_global_conflict_series(
     start: date, end: date, exclude: list[str] | None = None,
 ) -> pd.Series:

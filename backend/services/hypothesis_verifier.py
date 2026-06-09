@@ -163,12 +163,15 @@ async def _run_granger_for_spec(
     proxy_label: str | None = None,
     get_control_series=None,
     run_conditional_granger=None,
+    load_extreme_event_series=None,  # [B8] P90 극단 시리즈 로더 (선택)
 ) -> HypothesisSpec:
     """
     HypothesisSpec에 대해 Granger 선행성 검정을 실행한다.
 
     [B3] 통제변수(VIX) 로드 가능 시 **조건부 Granger** 우선 — 공통 교란 완화.
          불가 시 양변량 fallback (교란 미통제 단서 유지).
+    [B8] 정규 Granger p > 0.15 시 P90 극단 시리즈로 재검정 (비선형 임계 전이 탐색).
+         이론 근거: 지정학 충격의 시장 전이는 극단 이벤트에서만 발생 (Farrell & Newman 2019).
     proxy_label: Type C 대리변수 사용 시 에러 필드에 기재.
     """
     # PERF-2: 동일 지역·티커·기간 조합은 Granger 재계산 생략
@@ -246,6 +249,56 @@ async def _run_granger_for_spec(
         else:
             spec.verification_status = "PENDING"
 
+        # ── [B8] P90 극단 시리즈 보조 검정 ──────────────────────────────────
+        # 정규 Granger 유의하지 않을 때(p > 0.15) 비선형 임계 전이 탐색.
+        # P90 초과분 시리즈는 일상 이벤트 노이즈 제거 후 극단 신호만 포착 (고빈도 일별 유지).
+        # 이 검정이 유의하면 "비선형 임계 전이" 구조로 inference_grade 승격.
+        if (
+            load_extreme_event_series is not None
+            and spec.region_code
+            and spec.granger_p is not None
+            and spec.granger_p > 0.15
+        ):
+            try:
+                ext_series = load_extreme_event_series(spec.region_code, start, end)
+                if ext_series is not None:
+                    mkt = await get_market_series(spec.ticker, start, end)
+                    if mkt is not None and len(mkt) >= 20:
+                        ep, elag, en, ef, _ = run_granger(ext_series, mkt)
+                        if ep is not None:
+                            spec.extreme_granger_p = round(ep, 4)
+                            spec.extreme_granger_f = round(ef, 3) if ef is not None else None
+                            logger.info(
+                                "[hypothesis] [B8-P90] %s | region=%s p_extreme=%.4f F=%.3f lag=%d",
+                                spec.h1[:50], spec.region_code, ep, ef or 0, elag or 0,
+                            )
+                            if ep < 0.05:
+                                # 극단 이벤트에서만 시장 전이 확인 → 비선형 임계 전이
+                                spec.inference_grade = _LADDER_CORRELATIONAL  # 상관 단계 승격
+                                spec.inference_caveat = (
+                                    f"[비선형 임계 전이] P90 극단 이벤트 시계열에서 선행성 유의 "
+                                    f"(p_extreme={ep:.4f}, F={ef:.3f}). "
+                                    "일상 이벤트는 시장에 신호 없고 임계값 초과 사건만 전이. "
+                                    "선형 Granger 유의하지 않음 → 비선형·임계 모델 필요. "
+                                    "(Farrell & Newman 2019 임계 효과 실증)"
+                                )
+                                spec.verification_status = "PARTIAL"
+            except Exception as _ext_exc:
+                logger.debug("[hypothesis] [B8-P90] 극단 검정 실패: %s", _ext_exc)
+
+        # 두 검정 모두 유의하지 않으면 비선형 구조 설명 승격
+        if (
+            spec.verification_status == "PENDING"
+            and spec.granger_p is not None
+            and spec.extreme_granger_p is not None
+            and spec.extreme_granger_p > 0.10
+        ):
+            spec.inference_caveat += (
+                f" | [구조적 설명] 정규(p={spec.granger_p}) · 극단P90(p={spec.extreme_granger_p}) "
+                "모두 유의하지 않음. 지정학 이벤트→시장 전이가 선형·임계 모두 포착 불가 — "
+                "불연속적 체제 전환(regime shift) 또는 시차 가변(time-varying lag) 구조 가능성."
+            )
+
         if proxy_label:
             spec.error = (
                 f"[대리변수 사용] {proxy_label} → {spec.ticker} "
@@ -274,6 +327,8 @@ async def _run_granger_for_spec(
             "inference_grade": spec.inference_grade,
             "inference_caveat": spec.inference_caveat,
             "verification_status": spec.verification_status,
+            "extreme_granger_p": spec.extreme_granger_p,
+            "extreme_granger_f": spec.extreme_granger_f,
         })
     except Exception as exc:
         spec.error = str(exc)
@@ -293,6 +348,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     """
     from services.cascade.correlation import (
         _load_event_series,
+        _load_extreme_event_series,  # [B8] P90 극단 이벤트 시계열
         _get_market_series,
         _run_granger,
         _get_control_series,        # [B3] 통제변수 로더
@@ -408,6 +464,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     _load_event_series, _get_market_series, _run_granger,
                     get_control_series=_cached_control,
                     run_conditional_granger=_run_conditional_granger,
+                    load_extreme_event_series=_load_extreme_event_series,
                     proxy_label=proxy_label,
                 )
             else:
@@ -463,6 +520,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     _load_event_series, _get_market_series, _run_granger,
                     get_control_series=_cached_control,
                     run_conditional_granger=_run_conditional_granger,
+                    load_extreme_event_series=_load_extreme_event_series,
                     proxy_label=f"섹터 proxy: {proxy_label}",
                 )
                 # 지역을 추정 폴백한 경우 결과가 쿼리 지역과 다를 수 있음을 명시
@@ -496,6 +554,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             _load_event_series, _get_market_series, _run_granger,
             get_control_series=_cached_control,
             run_conditional_granger=_run_conditional_granger,
+            load_extreme_event_series=_load_extreme_event_series,
         )
         results.append(spec)
 

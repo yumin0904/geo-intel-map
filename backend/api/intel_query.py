@@ -13,6 +13,7 @@ POST /api/intel/query  — 인사이트 분석실 SSE 엔드포인트.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -123,9 +124,12 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
         "   '판정:'은 예측과 실측의 **수치 편차**를 적시하라 (예: '예측 +5% vs 실측 -37%p → 이론 A 열세'). "
         "편차 수치 없이 '한계가 있다 / 약화된다'로 끝내면 수사적 기각으로 간주한다.\n"
         "   '▶ 종합 판정:'은 두 이론의 편차를 직접 비교하여 어느 이론이 실측에 더 가까운지 수치로 결론지어라.\n"
-        "   ★ [8-C 앵커 인용] context에 '앵커(IV 전제조건) — ... (편차 X, 사전계산)' 또는 "
-        "'▶ 앵커 종합 (사전계산)'이 있으면 그 편차·충족여부를 '판정:'·'▶ 종합 판정:'에 **그대로 인용**하라. "
-        "단 앵커는 IV 전제조건 충족도이지 DV 직접 입증이 아니므로 '전제 충족/미충족' 표현을 유지하고 "
+        "   ★ [8-C 앵커 인용 — 필수 규칙] context에 '앵커(IV 전제조건) — ... (편차 X, 사전계산)' 또는 "
+        "'▶ 앵커 종합 (사전계산)'이 **존재하면**:\n"
+        "   (1) 해당 앵커 값을 [경쟁설명]의 '판정:' 줄에 반드시 포함해야 한다 — 형식: '(앵커: [값], 전제 충족/미충족, 사전계산)'\n"
+        "   (2) 앵커 값을 인용하지 않고 '판정:' 줄을 끝내면 **규칙 위반**이다. 앵커가 있는데 생략하는 것은 허용되지 않는다.\n"
+        "   (3) context에 앵커 데이터가 없을 때만 '(앵커: [앵커 미제공])'으로 표기하라.\n"
+        "   단 앵커는 IV 전제조건 충족도이지 DV 직접 입증이 아니므로 '전제 충족/미충족' 표현을 유지하고 "
         "'이론이 입증됐다'로 과장하지 말라.\n\n"
         "5. 결과를 즉시 의도로 귀속하지 말라('강경 정권 온존 = 미국 실패' 형태 금지).\n"
         "6. [비자명성 강제 — 최우선] 인사이트는 통념(뉴스·교과서 수준의 예상 답)을 넘어서야 한다. 절차:\n"
@@ -373,23 +377,45 @@ async def _stream_gemini(
         # 1024로 제한: 8192는 출력 시작까지 15~20초 지연 발생
         body["generationConfig"]["thinkingConfig"] = {"thinkingBudget": 1024}
 
-    async def _do_stream(request_body: dict) -> AsyncGenerator[str, None]:
+    # 503 재시도 대기 시간 (초): 최대 3회, 지수 백오프
+    _503_DELAYS = [5, 15, 30]
+
+    async def _do_stream(request_body: dict, _attempt: int = 0) -> AsyncGenerator[str, None]:
         full_text = ""
         try:
             async with httpx.AsyncClient(timeout=120) as client:
                 async with client.stream("POST", url, json=request_body) as resp:
-                    if resp.status_code == 503 and thinking:
-                        # thinking 모드 503 → fast 모드로 자동 fallback
-                        logger.warning("[intel] Gemini 503 — thinking 비활성화 후 재시도")
-                        yield _sse({"text": "", "done": False, "fallback": True,
-                                    "note": "thinking 모드 일시 불가 → 일반 모드로 전환"})
-                        fallback_body = {k: v for k, v in request_body.items()}
-                        fallback_body["generationConfig"] = {
-                            k: v for k, v in request_body["generationConfig"].items()
-                            if k != "thinkingConfig"
-                        }
-                        async for chunk in _do_stream(fallback_body):
-                            yield chunk
+                    if resp.status_code == 503:
+                        if thinking and _attempt == 0:
+                            # thinking 모드 첫 503 → fast 모드로 즉시 fallback
+                            logger.warning("[intel] Gemini 503 — thinking 비활성화 후 재시도")
+                            yield _sse({"text": "", "done": False, "fallback": True,
+                                        "note": "thinking 모드 일시 불가 → 일반 모드로 전환"})
+                            fallback_body = {k: v for k, v in request_body.items()}
+                            fallback_body["generationConfig"] = {
+                                k: v for k, v in request_body["generationConfig"].items()
+                                if k != "thinkingConfig"
+                            }
+                            async for chunk in _do_stream(fallback_body, _attempt + 1):
+                                yield chunk
+                            return
+                        if _attempt < len(_503_DELAYS):
+                            # 과부하 재시도: 지수 백오프
+                            delay = _503_DELAYS[_attempt]
+                            logger.warning(
+                                "[intel] Gemini 503 과부하 — %ds 후 재시도 (%d/%d)",
+                                delay, _attempt + 1, len(_503_DELAYS),
+                            )
+                            yield _sse({"text": "", "done": False,
+                                        "note": f"⏳ Gemini 일시 과부하 — {delay}초 후 재시도 ({_attempt+1}/{len(_503_DELAYS)})..."})
+                            await asyncio.sleep(delay)
+                            async for chunk in _do_stream(request_body, _attempt + 1):
+                                yield chunk
+                            return
+                        # 재시도 초과 → 오류 메시지 반환
+                        logger.error("[intel] Gemini 503 재시도 초과 (%d회)", len(_503_DELAYS))
+                        yield _sse({"text": "⚠️ Gemini API가 현재 과부하 상태입니다. 잠시 후 다시 시도해주세요.", "done": False})
+                        yield _sse({"done": True})
                         return
 
                     if resp.status_code != 200:

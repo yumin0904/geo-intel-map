@@ -52,6 +52,9 @@ class HypothesisSpec:
     differenced: bool = False            # 정상성 보정(1차 차분) 적용 여부
     controlled: bool = False             # B3 통제변수(VIX) 조건부 Granger 적용 여부
     control_name: str | None = None      # 사용된 통제변수명
+    # ── [B8] P90 극단 이벤트 보조 검정 ──────────────────────────────────────
+    extreme_granger_p: float | None = None   # P90 극단 시리즈 Granger p값 (보조)
+    extreme_granger_f: float | None = None   # P90 극단 시리즈 F-통계량 (보조)
 
 
 # ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────
