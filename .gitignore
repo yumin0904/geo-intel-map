@@ -49,3 +49,8 @@ docs/private/
 .claude/
 *.db-shm
 *.db-wal
+
+# eval 실행 스냅샷 — 생성물 (정본 기록은 latest.json + progress.md 표)
+backend/tests/eval_results/*.json
+!backend/tests/eval_results/latest.json
+backend/tests/eval_results/*.log
