@@ -97,7 +97,20 @@
 
 **다음 (8-D):**
 - 문헌 공백 탐지 — 라이브러리 주장 구조화 + 교차 모순 탐지
-- `nato_burden_sharing` 데이터 공백 해결 (SIPRI·OWID NATO 지출 직접 연결)
+
+### v8.2.1 핫픽스 — nato_burden_sharing 데이터 공백 해결 (2026-06-09)
+
+**문제**: `nato_burden_sharing` 케이스 1.0/5 (전체 평균 끌어내림)
+- entity_parser가 "NATO·자유편승·방위비" 키워드에서 actors/sectors 미추출
+- SIPRI milex 조회에 USA 하나만 전달 → 회원국 비교 불가
+
+**수정:**
+| 파일 | 내용 |
+|------|------|
+| `services/entity_parser.py` | NATO 키워드 감지 시 actors에 USA·DEU·FRA·GBR·POL 자동 추가 + `indo_pacific` 섹터 추가 |
+| `services/intel_analyzer.py` | NATO core 4개국 감지 시 TUR 추가 확장 (DB 확인된 회원국만) |
+
+**결과**: 1.0/5 → **3.75/5** (비자명 3·정직 4·경쟁 4·반증 4)
 
 ### v8.1.0 구현 내역 (8-C — 경쟁이론 정량 앵커, 2026-06-07)
 

@@ -193,11 +193,25 @@ def parse_query(query: str) -> ParsedQuery:
         if any(alias in q_lower for alias in aliases):
             actors.append(iso3)
 
+    # ── 3-b. NATO 컨텍스트 감지 — 핵심 회원국 자동 확장 ──────────────────
+    # "NATO 방위비 분담", "자유편승" 등은 특정 행위자 없이 동맹 전체를 다루므로
+    # entity_parser 단계에서 주요 회원국을 actors에 추가해 SIPRI 조회 커버리지 확보.
+    _NATO_KEYWORDS = ["nato", "나토", "방위비 분담", "자유편승", "free-riding",
+                      "burden sharing", "burden-sharing", "방위비"]
+    if any(kw in q_lower for kw in _NATO_KEYWORDS):
+        for iso3 in ["USA", "DEU", "FRA", "GBR", "POL"]:
+            if iso3 not in actors:
+                actors.append(iso3)
+
     # ── 4. 섹터 감지 (복수 허용) ─────────────────────────────────────────
     sectors: list[str] = []
     for sector, keywords in _SECTOR_KEYWORDS.items():
         if any(kw in q_lower for kw in keywords):
             sectors.append(sector)
+
+    # NATO 컨텍스트 → indo_pacific 섹터 추가 (sipri_milex·cow_alliances 소스 활성화)
+    if any(kw in q_lower for kw in _NATO_KEYWORDS) and "indo_pacific" not in sectors:
+        sectors.append("indo_pacific")
 
     # 지역에서 섹터 보완 (지역만 언급해도 관련 섹터 자동 추가)
     _REGION_TO_SECTOR: dict[str, list[str]] = {

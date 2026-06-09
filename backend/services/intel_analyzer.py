@@ -322,6 +322,12 @@ def _get_sipri_data(actors: list[str], regions: list[str]) -> dict[str, list[dic
     for r in regions:
         iso3_set.update(_REGION_ACTORS.get(r, []))
 
+    # NATO 핵심 회원국 감지 — 방위비 분담 분석 시 비교 기준 확보
+    # USA+DEU+FRA+GBR 중 2개 이상이면 NATO 분담 맥락 → DB에 실제 있는 회원국 보완
+    _NATO_CORE = {"USA", "DEU", "FRA", "GBR"}
+    if len(iso3_set & _NATO_CORE) >= 2:
+        iso3_set.update(["TUR"])  # DB 확인된 추가 NATO 회원국
+
     if not iso3_set:
         return {}
 
