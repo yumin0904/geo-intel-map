@@ -268,35 +268,26 @@ def _get_hiik_conflict(regions: list[str]) -> dict:
     Gray Zone 이론 예측: 강도 1~3(비전통) 지속 → 실측과 비교해 우세/열세 판정.
     Hybrid Warfare 예측: 강도 3~4(위기~제한전) — 단순 ACLED 건수보다 정밀.
     """
-    _REGION_MAP = {
-        "sahel":          ["Mali", "Niger", "Burkina Faso", "Sahel"],
-        "eastern_europe": ["Ukraine", "Russia"],
-        "hormuz":         ["Iran"],
-        "bab_el_mandeb":  ["Yemen"],
-        "korean_peninsula": ["North Korea", "South Korea"],
-        "east_china_sea": ["China", "Japan"],
-        "middle_east":    ["Israel", "Lebanon", "Syria"],
-    }
-    regions_lower = [r.lower() for r in regions]
+    # DB schema: region 컬럼 = region_code ("hormuz", "middle_east" 등)
+    # 이전 버그: WHERE region LIKE '%Iran%' → region='hormuz'라 항상 빈 결과
+    # 수정: region=? 로 직접 매핑 (country명이 아닌 region_code 기준)
     result: dict = {}
     try:
         with _db(_INTEL_DB) as con:
             for region in regions:
-                targets = _REGION_MAP.get(region, [])
-                for target in targets:
-                    rows = con.execute(
-                        "SELECT conflict_name, intensity, year "
-                        "FROM hiik_conflict WHERE region LIKE ? ORDER BY year DESC LIMIT 1",
-                        (f"%{target}%",),
-                    ).fetchall()
-                    for row in rows:
-                        key = f"{target}_{row['year']}"
-                        result[key] = {
-                            "conflict": row["conflict_name"],
-                            "intensity": row["intensity"],
-                            "year": row["year"],
-                            "region": region,
-                        }
+                rows = con.execute(
+                    "SELECT conflict_name, intensity, year "
+                    "FROM hiik_conflict WHERE region=? ORDER BY intensity DESC, year DESC LIMIT 3",
+                    (region,),
+                ).fetchall()
+                for row in rows:
+                    key = f"{region}_{row[2]}_{row[0][:12]}"
+                    result[key] = {
+                        "conflict": row[0],
+                        "intensity": row[1],
+                        "year": row[2],
+                        "region": region,
+                    }
     except Exception as e:
         logger.debug("[theory_cmp] hiik 조회 실패: %s", e)
     return result

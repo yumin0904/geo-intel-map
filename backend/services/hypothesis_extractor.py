@@ -244,6 +244,9 @@ def _match_region(text: str) -> str | None:
 _EVENT_DEP_KEYWORDS: list[str] = [
     "분쟁", "사건", "충돌", "교전", "도발", "공격", "테러", "건수", "발생",
     "conflict", "incident", "clash", "attack", "event",
+    # 자원배분·지원 연계 — "우크라이나 지원 규모" 등 사건→사건 경로 활성화
+    "지원", "원조", "지원액", "군사지원", "지원량", "지원 규모",
+    "aid", "support", "assistance", "transfer",
 ]
 
 
