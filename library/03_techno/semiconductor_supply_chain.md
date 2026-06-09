@@ -19,6 +19,18 @@ theorists:
 theory_id: techno_semiconductor_supply_chain
 title: 반도체 공급망 집중 리스크 (TSMC 딜레마)
 year: 2022
+independent_var: "첨단 파운드리 생산 집중도 (대만·TSMC의 5nm 이하 점유율 HHI)"
+dependent_var: "공급망 충격 시 글로벌 기술·경제 전이 강도 (반도체 의존 산업 생산 차질 %)"
+conditions:
+  - "대체 파운드리 부재 (3nm급 양산은 TSMC·삼성 2개사 과점)"
+  - "팹 재건의 비탄력성 (신규 팹 가동까지 3~5년 + 숙련 인력 병목)"
+  - "수요 측 비대칭 의존 (미·중 모두 첨단 칩 자급 불가)"
+falsifiable_prediction: "생산 집중도(HHI) 증가 시 대만해협 위기의 시장 전이 강도 증가 (통제: 재고 수준·대체 공급선 확보 여부)"
+known_counterexample: "미국 CHIPS법·일본 라피더스·중국 SMIC의 자국 팹 투자로 집중도가 분산되면 전이 강도 하락 — 단 성숙 노드(28nm+)에 한정되고 첨단 노드 집중은 2030년까지 지속 전망 (Miller 2022)"
+rival_theories:
+  - "Liberal Interdependence (상호의존이 충돌 억지 — 양안 무역이 침공 비용 상승)"
+  - "Techno-Nationalism (자급 추구가 집중 리스크를 정책적으로 해소)"
+  - "Weaponized Interdependence (집중이 무기가 아니라 미국의 대중 초크포인트 레버리지)"
 ---
 
 ## 핵심 주장

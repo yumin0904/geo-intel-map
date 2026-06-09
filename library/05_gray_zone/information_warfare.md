@@ -20,6 +20,18 @@ theorists:
 theory_id: gray_zone_information_warfare
 title: 정보전·인지전 (Information & Cognitive Warfare)
 year: 2018
+independent_var: "정보작전 강도 (허위정보 캠페인 건수·봇 네트워크 활동·도달률)"
+dependent_var: "표적 사회 분열·정책 변화 (여론 양극화 지수, 선거 결과 변동, 제도 신뢰도)"
+conditions:
+  - "개방적 미디어 환경 (정보 유입 차단 불가)"
+  - "기존 사회 균열 존재 (증폭할 분열선)"
+  - "귀속의 어려움 (공격자 부인 가능성)"
+falsifiable_prediction: "정보작전 강도 증가 시 표적국 여론 양극화·제도 신뢰 하락 (통제: 기존 사회 균열 수준)"
+known_counterexample: "핀란드·에스토니아 — 높은 미디어 리터러시·사회 회복력으로 러시아 정보전 효과가 무력화됨. 정보작전이 자동으로 분열을 낳지 않으며 '수용자 회복력'이 매개변수 (EU StratCom 2023)"
+rival_theories:
+  - "Cyberwar 회의론 (Rid — 정보전은 새 전쟁이 아니라 첩보·전복의 디지털 연장)"
+  - "Propaganda Theory (전통 선전과 본질적 차이 없음 — 매체만 변화)"
+  - "Resilience Theory (효과는 공격 강도가 아니라 표적 사회 회복력이 결정)"
 ---
 
 ## 핵심 주장

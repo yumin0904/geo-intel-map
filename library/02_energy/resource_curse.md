@@ -19,6 +19,18 @@ theorists:
 theory_id: energy_resource_curse
 title: 자원의 저주 (Resource Curse)
 year: 1993
+independent_var: "자원 의존도 (자원 지대/GDP 또는 자원 수출 비중 %)"
+dependent_var: "거버넌스 질·정치 안정 (V-Dem 민주주의 지수, 내전·분쟁 발생 빈도)"
+conditions:
+  - "약한 초기 제도 (자원 발견 이전 거버넌스 취약)"
+  - "지대 추구 구조 (자원 수입이 국가 세입 독점)"
+  - "단일 자원 의존 (경제 다각화 부재)"
+falsifiable_prediction: "자원 의존도 증가 시 민주주의 지수 하락·내전 위험 증가 (통제: 초기 제도 질)"
+known_counterexample: "노르웨이·보츠와나 — 강한 제도(국부펀드·투명성) 하에서 자원이 저주가 아닌 축복으로 작동. 자원 자체가 아니라 '제도 질'이 매개변수임을 보여줌 (Mehlum·Moene·Torvik 2006)"
+rival_theories:
+  - "Institutional Quality Theory (저주의 진짜 원인은 자원이 아니라 제도)"
+  - "Rentier State Theory (조세 없는 통치가 권위주의를 강화하는 메커니즘 보완)"
+  - "Prebisch-Singer (1차산품 교역조건 장기 악화가 원인)"
 ---
 
 ## 핵심 주장

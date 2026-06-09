@@ -17,6 +17,18 @@ regions:
 - korean_peninsula
 - east_china_sea
 - taiwan_strait
+independent_var: "지정학 리스크 강도 (북한 도발 건수·한반도 긴장 지수) + 주주환원율"
+dependent_var: "KOSPI 밸류에이션 (PBR), KRW 환율"
+conditions:
+  - "높은 외국인 자본 비중 (리스크 민감 자본)"
+  - "북한 리스크 상시화 (테일 리스크 가격화)"
+  - "재벌 지배구조 미개혁 (소액주주 할인)"
+falsifiable_prediction: "지정학 리스크 강도 증가 시 KOSPI PBR 하락·KRW 약세 (통제: 글로벌 위험선호 VIX)"
+known_counterexample: "2024 밸류업 프로그램(거버넌스 개선) 이후에도 디스카운트 지속 → 거버넌스만으론 해소 안 됨. 반대로 북핵 위기 중에도 반도체 수출 호조 시 KOSPI 상승 → 산업 펀더멘털이 지정학을 압도할 때 디스카운트 약화. 단일 원인이 아님"
+rival_theories:
+  - "Efficient Market (디스카운트는 합리적 리스크 반영 — 비효율 아님)"
+  - "Corporate Governance Theory (지정학보다 지배구조가 주원인)"
+  - "Sectoral Composition (저PBR 산업 구성 효과 — 지정학과 무관)"
 ---
 
 ## 핵심 주장

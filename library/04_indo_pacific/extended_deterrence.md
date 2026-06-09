@@ -18,6 +18,18 @@ regions:
 - korean_peninsula
 - taiwan_strait
 - east_china_sea
+independent_var: "확장억제 신뢰성 (전진배치 전력 규모, 핵우산 공약 강도, 연합훈련 빈도)"
+dependent_var: "동맹국 독자 핵무장 추구 정도 / 적성국 도발 빈도"
+conditions:
+  - "후원국의 보복 의지 신뢰 (공약의 신빙성)"
+  - "동맹국의 안보 의존 (독자 역량 부재)"
+  - "적성국의 합리적 비용 계산"
+falsifiable_prediction: "확장억제 신뢰성 하락 시 동맹국 독자 핵 옵션 논의 증가 + 적성국 도발 빈도 증가 (통제: 적성국 역량 변화)"
+known_counterexample: "미국 핵우산 하에서도 한국 독자 핵무장 여론 70%대(2023~) — 공약에도 '방기 우려'가 자체 핵 추구를 막지 못함. 반면 NATO는 핵공유로 안심 달성. 핵우산만으로 reassurance가 자동 보장되지 않음을 보여줌"
+rival_theories:
+  - "Proliferation Optimism (Waltz — 동맹국 자체 핵이 오히려 안정적)"
+  - "Alliance Reassurance Theory (공약보다 제도화·핵공유가 안심을 결정)"
+  - "Security Dilemma (억제 강화가 오히려 군비경쟁·긴장 유발)"
 ---
 
 ## 핵심 주장

@@ -19,6 +19,18 @@ regions:
 - hormuz
 - indian_ocean
 - bab_el_mandeb
+independent_var: "중국 해외 항구·기지 거점 수 (인도양 연안 투자·운영 항구)"
+dependent_var: "중국 SLOC 자율성 / 인도의 대항 균형 행동 (해군 증강·Quad 참여)"
+conditions:
+  - "말라카 딜레마 (단일 초크포인트 의존)"
+  - "에너지 수송 해상 의존"
+  - "군민겸용(dual-use) 인프라 가능성"
+falsifiable_prediction: "중국 거점 증가 시 인도의 대항 동맹·해군 증강 가속 (통제: 중·인 국경 분쟁 강도)"
+known_counterexample: "다수 '진주'(함반토타·과다르)가 군사기지화 못하고 부채·상업 문제로 정체 — 상업 항구가 자동으로 군사 거점이 되지 않음(군민겸용 가정의 한계). 실제 해외 기지화는 지부티 1곳뿐"
+rival_theories:
+  - "Debt-Trap Diplomacy (목적은 군사 거점이 아니라 경제적 영향력)"
+  - "Commercial Logic (순수 무역 인프라 — 안보 해석은 과잉 위협 인식)"
+  - "Place-not-Base (거점은 '기지'가 아닌 '기항지'에 그침)"
 ---
 
 ## 핵심 주장

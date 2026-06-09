@@ -21,6 +21,18 @@ theorists:
 theory_id: maritime_chokepoint_sloc
 title: SLOC 통제 이론 (Chokepoint & Sea Lines of Communication)
 year: 1944
+independent_var: "초크포인트 통과 위협 강도 (도발·나포·기뢰 부설 건수, ACLED/해상 인시던트)"
+dependent_var: "글로벌 무역·에너지 흐름 교란 (해상 운임·보험료·유가 변동 %)"
+conditions:
+  - "우회로 부재 또는 고비용 (희망봉 우회 = 수에즈 대비 +10~14일)"
+  - "통과 물동량 집중 (호르무즈 = 글로벌 원유 해상수송 약 20%)"
+  - "통제 주체의 봉쇄 의지·역량 (해군 투사력 또는 비대칭 거부 수단)"
+falsifiable_prediction: "초크포인트 위협 강도 증가 시 운임·유가 단기 급등 (통제: 비축유 방출·대체 운송로·완충 재고)"
+known_counterexample: "후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025 — 미국 전략비축유 방출·OPEC+ 여유 생산능력·우회 항로 흡수로 전이 차단. 초크포인트 위협이 자동으로 가격 충격이 되지 않음 (위협 인식 ≠ 실제 봉쇄)"
+rival_theories:
+  - "Resource Weaponization (초크포인트는 물리 통제가 아니라 자원 무기화 수단)"
+  - "Command of the Commons (미 해군의 압도적 제해권이 초크포인트 봉쇄를 무력화)"
+  - "Self-deterrence / Insurance Markets (실제 봉쇄보다 보험·자기억지 인식이 교란을 결정)"
 ---
 
 ## 핵심 주장

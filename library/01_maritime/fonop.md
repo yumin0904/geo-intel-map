@@ -18,6 +18,18 @@ regions:
 - south_china_sea
 - taiwan_strait
 - east_china_sea
+independent_var: "FONOP 빈도·강도 (미 해군 자유항행 작전 횟수)"
+dependent_var: "중국 회색지대 활동 변화 (인공섬 군사화 속도, 해경 충돌 건수)"
+conditions:
+  - "UNCLOS 규범 경쟁 (법 해석 충돌)"
+  - "미 해군 투사력 (작전 지속 역량)"
+  - "중국 반접근(A2/AD) 역량"
+falsifiable_prediction: "FONOP 빈도 증가가 중국 영유권 주장 활동을 억제하는가 (통제: 미중 관계 전반)"
+known_counterexample: "2015~ FONOP 정례화에도 중국 남중국해 인공섬 군사화 지속·가속 — 항행작전이 회색지대 기정사실화를 억제하지 못함. 규범의 '선언적 확인'이 상대 행동 변화로 이어지지 않는 한계"
+rival_theories:
+  - "Gray Zone Strategy (FONOP은 무력충돌 임계 이하라 억지 효과 없음)"
+  - "Lawfare (실제 통제는 항행이 아니라 법적 주장 경쟁이 결정)"
+  - "Sea Control (실효 지배가 통항 시위보다 우선)"
 ---
 
 ## 핵심 주장

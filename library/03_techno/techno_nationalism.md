@@ -19,6 +19,18 @@ theorists:
 theory_id: techno_techno_nationalism
 title: 기술 민족주의 (Techno-Nationalism)
 year: 1995
+independent_var: "기술 보호주의 강도 (수출통제 건수, 자국 기술 보조금 규모)"
+dependent_var: "기술 공급망 분절화 정도 / 경쟁국 기술 자립도"
+conditions:
+  - "기술 패권 경쟁 (전략 기술 우위 추구)"
+  - "이중용도(dual-use) 기술 (군민 겸용)"
+  - "공급망 비대칭 (초크포인트 존재)"
+falsifiable_prediction: "기술 보호주의 강도 증가 시 글로벌 기술 표준 분절·블록화 가속 (통제: 시장 통합도)"
+known_counterexample: "미국 대중 반도체 수출통제 강화에도 중국 SMIC 7nm 달성(2023)·화웨이 부활 — 기술 봉쇄가 오히려 경쟁국 자립을 가속하는 역효과. 보호주의가 의도와 반대로 토착화를 촉진할 수 있음"
+rival_theories:
+  - "Techno-Globalism (기술은 본질적으로 초국경 — 봉쇄 불가능)"
+  - "Weaponized Interdependence (자립이 아니라 초크포인트 활용이 핵심 레버)"
+  - "Digital Iron Curtain (분절은 기술이 아니라 정치 진영화의 결과)"
 ---
 
 ## 핵심 주장
