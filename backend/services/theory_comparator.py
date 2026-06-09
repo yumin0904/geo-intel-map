@@ -41,22 +41,26 @@ def _db(path: Path):
 # 각 섹터/지역에서 비교할 메인 이론 쌍 (기본 + 경쟁)
 # theory_id 기준 (DB의 theory_id 컬럼)
 
+# [8-C-2] 선택 풀 확장 — 라이브러리 51개 중 비교 등판 이론을 11→확대.
+#   핵심 원칙: 한 쌍 안에 '서로 다른 앵커 metric'을 가진 이론을 배치 →
+#   같은 숫자 인용 회피, 실측값이 우열을 판정하게 만든다(차별화 쌍).
+#   예) 현실주의(milex_gap) vs 자유주의 상호의존(trade_hhi) vs 민주평화(polity).
 _SECTOR_THEORY_PAIRS: dict[str, list[str]] = {
-    "energy":      ["energy_weaponized_interdependence", "energy_resource_weaponization"],
-    "maritime":    ["maritime_mahan_sea_power", "indo_pacific_a2ad_strategy"],
-    "techno":      ["techno_digital_iron_curtain", "energy_weaponized_interdependence"],
-    "indo_pacific":["indo_pacific_mearsheimer_offensive_realism", "indo_pacific_waltz_defensive_realism"],
-    "gray_zone":   ["gray_zone_gray_zone_strategy", "gray_zone_hybrid_warfare"],
+    "energy":      ["energy_weaponized_interdependence", "energy_resource_weaponization", "energy_energy_security_theory"],
+    "maritime":    ["maritime_mahan_sea_power", "indo_pacific_a2ad_strategy", "maritime_chokepoint_sloc"],
+    "techno":      ["techno_digital_iron_curtain", "energy_weaponized_interdependence", "techno_critical_minerals_security"],
+    "indo_pacific":["indo_pacific_mearsheimer_offensive_realism", "indo_pacific_liberal_institutionalism", "indo_pacific_democratic_peace_theory"],
+    "gray_zone":   ["gray_zone_gray_zone_strategy", "gray_zone_hybrid_warfare", "gray_zone_escalation_theory"],
     "cyber":       ["cyber_libicki_cyber_deterrence", "techno_digital_iron_curtain"],
 }
 
 _REGION_THEORY_PAIRS: dict[str, list[str]] = {
-    "taiwan_strait":    ["indo_pacific_mearsheimer_offensive_realism", "maritime_mahan_sea_power"],
+    "taiwan_strait":    ["indo_pacific_mearsheimer_offensive_realism", "indo_pacific_liberal_institutionalism", "indo_pacific_democratic_peace_theory"],
     "hormuz":           ["energy_resource_weaponization", "energy_weaponized_interdependence"],
-    "eastern_europe":   ["indo_pacific_waltz_defensive_realism", "gray_zone_hybrid_warfare"],
-    "korean_peninsula": ["indo_pacific_alliance_theory", "indo_pacific_mearsheimer_offensive_realism"],
+    "eastern_europe":   ["indo_pacific_waltz_defensive_realism", "gray_zone_hybrid_warfare", "indo_burden_sharing_theory"],
+    "korean_peninsula": ["indo_pacific_alliance_theory", "indo_pacific_mearsheimer_offensive_realism", "indo_burden_sharing_theory"],
     "bab_el_mandeb":    ["energy_resource_weaponization", "gray_zone_gray_zone_strategy"],
-    "south_china_sea":  ["maritime_mahan_sea_power", "indo_pacific_a2ad_strategy"],
+    "south_china_sea":  ["maritime_mahan_sea_power", "indo_pacific_a2ad_strategy", "maritime_chokepoint_sloc"],
     "east_china_sea":   ["maritime_mahan_sea_power", "indo_pacific_mearsheimer_offensive_realism"],
     "sahel":            ["gray_zone_gray_zone_strategy", "gray_zone_hybrid_warfare"],
 }
@@ -73,8 +77,8 @@ def _get_sipri_milex_for_theories(actors: list[str]) -> dict[str, float]:
         with _db(_INTEL_DB) as con:
             for iso3 in actors[:4]:
                 row = con.execute(
-                    "SELECT country_iso3, gdp_pct, year FROM sipri_milex "
-                    "WHERE country_iso3=? ORDER BY year DESC LIMIT 1",
+                    "SELECT iso3, gdp_pct, year FROM sipri_milex "
+                    "WHERE iso3=? ORDER BY year DESC LIMIT 1",
                     (iso3,),
                 ).fetchone()
                 if row:
@@ -651,6 +655,109 @@ _THEORY_ANCHORS: dict[str, dict] = {
         "anchor_label": "TSMC↔SMIC 점유율 격차",
         "interpret": "격차 클수록 기술 분리·종속 심화 — 디지털 철의장막 부합",
     },
+
+    # ── [8-C-2] 확장 앵커 — 기존 실측 metric에 정직 매핑 (DV 직접측정 아님, IV 전제조건) ──
+    # 차별화 핵심: 같은 사안에 서로 다른 metric을 쓰는 이론을 한 쌍으로 → 실측값이 우열 판정.
+    "indo_pacific_democratic_peace_theory": {
+        "metric": "polity_min", "threshold": 6, "direction": "+", "unit": "점",
+        "anchor_label": "민주 임계(Polity +6, 민주평화론 경계)",
+        "interpret": "양국 모두 +6↑ → 민주평화 억제 예측 성립 / 미만이면 이 이론 적용 불가(현실주의 영역)",
+    },
+    "indo_pacific_liberal_institutionalism": {
+        "metric": "trade_hhi", "threshold": 2500, "direction": "+", "unit": "",
+        "anchor_label": "무역 상호의존 집중도(HHI, 의존 강도 proxy)",
+        "interpret": "의존 높을수록 자유주의는 분쟁 억제 예측 — 단 비대칭이면 무기화로 역전(Farrell&Newman과 정면 경쟁점)",
+    },
+    "indo_burden_sharing_theory": {
+        "metric": "milex_min", "threshold": 2.0, "direction": "-", "unit": "%",
+        "anchor_label": "동맹 최저 방위비(NATO 2% GDP 가이드라인)",
+        "interpret": "최저 동맹이 2% 미만 → 무임승차 징후, Olson-Zeckhauser 예측 부합 / 2%↑면 반례",
+    },
+    "indo_pacific_conventional_deterrence": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "재래식 전력 격차(국방비%GDP)",
+        "interpret": "방어자 우위(+)일수록 침략 억지 성립 — Mearsheimer 재래식 억지 부합",
+    },
+    "indo_pacific_coercive_diplomacy": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "강압자 군사 우위(국방비%GDP 격차)",
+        "interpret": "군사 우위(+)일수록 위협 신뢰성↑ — Schelling 강압외교 전제 성립",
+    },
+    "indo_pacific_hegemonic_stability_theory": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "패권국 능력 우위(국방비%GDP 격차)",
+        "interpret": "패권국 압도적 우위(+)일수록 질서 안정 공급 가능 — Kindleberger 부합",
+    },
+    "indo_pacific_power_transition_theory": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "패권-도전국 능력 격차(국방비%GDP, 추월 근접 proxy)",
+        "interpret": "격차 축소(0 접근)일수록 추월 임박 → 분쟁 위험↑ — Organski 세력전이 부합",
+    },
+    "indo_pacific_security_dilemma": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "군비 비대칭(국방비%GDP 격차)",
+        "interpret": "격차 존재 → 상호 군비 증강 악순환 가능 — Jervis 안보딜레마 전제",
+    },
+    "indo_pacific_offshore_balancing": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "역내 도전국 능력(국방비%GDP 격차)",
+        "interpret": "역내 패권 도전 강할수록 역외균형자 개입 필요 — Mearsheimer&Walt 부합",
+    },
+    "maritime_corbett_sea_control": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "해군력 우위(국방비%GDP 격차, 함대 보존 proxy)",
+        "interpret": "우위(+)일수록 제한적 제해권 확보 가능 — Corbett 부합",
+    },
+    "maritime_command_of_the_commons": {
+        "metric": "milex_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "공유지 지배력(국방비%GDP 격차 proxy)",
+        "interpret": "압도적 우위(+)일수록 해·공·우주 공유지 지배 — Posen 부합",
+    },
+    "maritime_chokepoint_sloc": {
+        "metric": "eia_flow_mbpd", "threshold": 15.0, "direction": "+", "unit": "Mbpd",
+        "anchor_label": "초크포인트 통과량 임계(글로벌 원유 약 15%≈15Mbpd)",
+        "interpret": "통과량 클수록 SLOC 취약성·차단 충격 큼 — 초크포인트 통제 가치 성립",
+    },
+    "gray_zone_escalation_theory": {
+        "metric": "hiik_max", "threshold": 3, "direction": "+", "unit": "강도",
+        "anchor_label": "HIIK 분쟁 강도(에스컬레이션 단계 proxy)",
+        "interpret": "강도 3↑ → 사다리 상단 진입, 에스컬레이션 동역학 활성 — Kahn 부합",
+    },
+    "gray_zone_proxy_war_theory": {
+        "metric": "hiik_max", "threshold": 3, "direction": "+", "unit": "강도",
+        "anchor_label": "HIIK 분쟁 강도(대리전 활성 proxy)",
+        "interpret": "강도 3↑ → 후원국 개입 대리전 격화 — Mumford 부합",
+    },
+    "gray_zone_salami_slicing": {
+        "metric": "hiik_max", "threshold": 3, "direction": "-", "unit": "강도",
+        "anchor_label": "HIIK 분쟁 강도(살라미는 임계 이하 유지가 특징)",
+        "interpret": "강도 3 미만 유지 → 임계 회피 점진 잠식 성립 — Mastro/Fravel 부합 / 3↑면 노골화로 이론 이탈",
+    },
+    "energy_energy_security_theory": {
+        "metric": "trade_hhi", "threshold": 2500, "direction": "+", "unit": "",
+        "anchor_label": "에너지 공급원 집중도(HHI 독과점 임계 2500)",
+        "interpret": "집중도 초과 → 공급 충격 취약, 에너지 안보 위협 성립 — Yergin 부합",
+    },
+    "techno_critical_minerals_security": {
+        "metric": "trade_hhi", "threshold": 2500, "direction": "+", "unit": "",
+        "anchor_label": "핵심 광물 공급 집중도(HHI 독과점 임계 2500)",
+        "interpret": "집중도 초과 → 광물 무기화 지렛대 성립 — Overland 부합",
+    },
+    "techno_ai_strategic_competition": {
+        "metric": "semi_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "AI 칩 역량 격차(TSMC↔SMIC proxy)",
+        "interpret": "칩 역량 격차 클수록 AI 우위 누적 — NSCAI 예측 부합 (단 알고리즘 효율로 역전 가능)",
+    },
+    "techno_semiconductor_supply_chain": {
+        "metric": "semi_gap_pp", "threshold": 0.0, "direction": "+", "unit": "%p",
+        "anchor_label": "파운드리 생산 집중(TSMC↔SMIC 격차)",
+        "interpret": "격차 클수록 공급망 단일 의존 심화 — 반도체 공급망 취약성 성립",
+    },
+    "techno_globalism": {
+        "metric": "trade_hhi", "threshold": 2500, "direction": "-", "unit": "",
+        "anchor_label": "기술 공급망 통합도(HHI 낮을수록 통합)",
+        "interpret": "HHI 낮음(분산) → 글로벌 통합·시장 자정 예측 성립 / 높으면 분절화로 이론 이탈 — Rosecrance",
+    },
 }
 
 
@@ -666,6 +773,8 @@ def _collect_anchor_metrics(milex, trade_hhi, eia, wbk, polity5, hiik, itu, semi
     mvals = [v.get("gdp_pct") for v in (milex or {}).values() if v.get("gdp_pct") is not None]
     if len(mvals) >= 2:
         m["milex_gap_pp"] = A.pct_point_gap(max(mvals), min(mvals))
+    if mvals:
+        m["milex_min"] = min(mvals)    # 동맹 최저 방위비 — 무임승차(burden sharing) 판정용
     pv = [v.get("polity") for v in (polity5 or {}).values() if v.get("polity") is not None]
     if pv:
         m["polity_min"] = min(pv)      # Waltz: '모두' 민주 임계 넘어야 → 최저값
