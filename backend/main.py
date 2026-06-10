@@ -156,8 +156,11 @@ async def health_check():
     프론트엔드가 백엔드가 살아있는지 주기적으로 확인할 때 사용한다.
     모니터링 도구나 배포 플랫폼도 이 경로를 기준으로 상태를 판단한다.
     """
+    import json as _json
+    from pathlib import Path as _Path
+    _ver = _json.loads((_Path(__file__).parent / "config" / "version.json").read_text()).get("version", "?")
     return {
         "status": "ok",
         "service": "geo-intel-map",
-        "version": "0.0.1",
+        "version": _ver,
     }

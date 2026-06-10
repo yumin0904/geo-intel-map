@@ -186,7 +186,14 @@ def _collect_sse(query: str, mode: str, timeout: int = 120) -> dict:  # noqa: E5
 
     # Gemini API 오류 메시지를 error로 분류 (FAIL이 아닌 SKIP 처리)
     ft = result["full_text"]
-    if ft and ("⚠️ Gemini API 오류" in ft or "GEMINI_API_KEY가 설정되지 않았습니다" in ft):
+    _api_error_markers = (
+        "⚠️ Gemini API 오류",
+        "GEMINI_API_KEY가 설정되지 않았습니다",
+        "과부하 상태",
+        "Gemini API가 현재",
+        "503",
+    )
+    if ft and any(m in ft for m in _api_error_markers):
         result["error"] = ft.strip()
         result["full_text"] = ""
     # 응답 시간 < 2초 & 텍스트 없음 → API 오류로 간주

@@ -902,16 +902,15 @@ def build_theory_comparison_context(
     # 3. 비교 텍스트 생성
     lines: list[str] = ["## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)"]
     lines.append(
-        "⚠️ [경쟁설명] 작성 지침 — **DV(종속변수) 방향 비교 필수**:\n"
-        "  (1) 각 이론의 '**DV 예측 방향**' 줄에서 DV가 어느 방향으로 변해야 하는지 읽어라.\n"
-        "  (2) 아래 '실측 데이터'(ACLED 분쟁건수·FRED 가격·SIPRI 군비·OWID 지수 등)에서 "
-        "그 DV의 **실제 관측 방향**을 찾아라.\n"
-        "  (3) 판정: 'DV 예측 방향' vs 'DV 실측 방향'이 **일치하면 우세, 반대면 열세**.\n"
-        "  ⚠️ IV 전제조건 충족('HHI > 임계' 등) 확인만으로 '우세' 판정하는 것은 **금지**.\n"
-        "     DV 방향 비교 없이 '전제 충족 → 우세'로 끝내면 수사적 기각으로 간주한다.\n"
-        "  판정 형식 예시:\n"
-        "     판정: 우세 — DV 예측 '분쟁건수 증가' vs DV 실측 '1170건(+trend)' → 방향 일치\n"
-        "     판정: 열세 — DV 예측 '유가 급등' vs DV 실측 '추세 +3.2% (완만)' → 예측 과대\n"
+        "⚠️ [경쟁설명] 판정 지침 — 2단계 구조:\n"
+        "  ① IV 전제조건: 아래 '앵커 종합'의 충족/미충족 + 편차를 '판정:' 줄에 반드시 인용한다.\n"
+        "  ② DV 방향 비교: **실측 데이터에 종속변수(DV)의 관측값·방향이 존재할 때만** 수행한다.\n"
+        "     - DV 실측 있음 → '예측 부호 ▲/▼ vs DV 실측 방향·값'을 비교해 우세/열세 결론.\n"
+        "       형식: 판정: 우세 — DV 예측 '분쟁건수 증가' vs DV 실측 '1170건(+trend)' → 방향 일치\n"
+        "     - DV 실측 없음 → '실측: [UNVERIFIED] DV 정량값 부재'로 명시하고,\n"
+        "       판정은 ①의 IV 전제충족도까지만 내린다. '전제 충족(DV 미검증)'으로 표기하라.\n"
+        "  ⚠️ DV 실측이 없는데 방향 일치를 '추정'으로 적는 것은 환각 — 금지.\n"
+        "     정직한 '[UNVERIFIED] DV 부재' 표기가 추정 판정보다 높은 평가를 받는다.\n"
     )
 
     for p in profiles:
@@ -920,12 +919,18 @@ def build_theory_comparison_context(
             lines.append(f"**독립변수(IV)**: {p['independent_var']}")
         if p.get("dependent_var"):
             lines.append(f"**종속변수(DV)**: {p['dependent_var']}")
-        if p.get("falsifiable_prediction"):
-            lines.append(f"**반증 가능 예측**: {p['falsifiable_prediction']}")
-        # DV 예측 방향 — falsifiable_prediction에서 방향 추출 (Gemini가 판정 시 DV 방향 비교용)
+        # DV 예측 방향 부호를 fp 줄 끝에 인라인 병합 — 독립 라벨로 두면 Gemini가 예측: 줄에 복붙함
         _dv_dir = _extract_dv_direction(p.get("falsifiable_prediction", ""), p.get("dependent_var", ""))
-        if _dv_dir:
-            lines.append(f"**DV 예측 방향**: {_dv_dir}  ← 판정 시 실측 DV와 이 방향을 비교하라")
+        fp_text = p.get("falsifiable_prediction", "")
+        if fp_text:
+            # 부호 토큰(▲/▼/↔)만 괄호로 덧붙여 출력 오염 방지
+            _dir_token = ""
+            if _dv_dir:
+                for token in ("▲", "▼", "↔"):
+                    if token in _dv_dir:
+                        _dir_token = f" (예측 부호: {token})"
+                        break
+            lines.append(f"**반증 가능 예측**: {fp_text}{_dir_token}")
 
         # 이론별 실측값 연결
         empirical_lines: list[str] = []
@@ -1185,9 +1190,9 @@ def build_theory_comparison_context(
         lines.append(
             "▶ 앵커 종합 (사전계산, IV 전제조건 충족도): " + " | ".join(parts) + "\n"
             "  ⚠️ 이 앵커는 IV 전제조건 충족 여부만 판정 — DV 직접 입증 아님.\n"
-            "  [경쟁설명] '▶ 종합 판정:'은 반드시 두 단계로 구성하라:\n"
-            "    ① IV 전제조건: 이 앵커 충족 여부 인용\n"
-            "    ② DV 방향 비교: 각 이론의 'DV 예측 방향' vs 위 실측 데이터에서 DV 실제 방향 — 이게 핵심 판정 근거"
+            "  [경쟁설명] '▶ 종합 판정:'은 두 단계로 구성하라:\n"
+            "    ① IV 전제조건: 이 앵커 충족 여부 인용 (필수)\n"
+            "    ② DV 방향 비교: DV 실측값이 context에 있으면 수행, 없으면 '[UNVERIFIED] DV 부재'로 종결"
         )
 
     return "\n".join(lines)
