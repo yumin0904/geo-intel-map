@@ -283,7 +283,7 @@ def _score_completeness(section_results: dict) -> float:
 
 # ── 응답 잘림 탐지 (일시적 Gemini 잘림 재시도용) ─────────────────────────────
 
-_TRUNCATION_THRESHOLD = 0.6  # 필수 섹션 충족률이 이 미만이면 잘림으로 간주
+_TRUNCATION_THRESHOLD = 0.9  # 필수 섹션 충족률이 이 미만이면 잘림으로 간주 (2개 이상 누락 시 재시도)
 
 
 def _section_fill(text: str, required: list[str]) -> float:

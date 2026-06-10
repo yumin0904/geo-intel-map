@@ -563,6 +563,36 @@ def _get_trade_hhi(actors: list[str], regions: list[str]) -> dict:
         return {}
 
 
+# ── DV 방향 추출 헬퍼 ────────────────────────────────────────────────────────
+
+def _extract_dv_direction(fp: str, dv: str) -> str:
+    """
+    falsifiable_prediction 텍스트에서 DV 예측 방향을 한 줄로 추출한다.
+
+    판정 시 "DV 예측 방향 vs DV 실측 방향" 비교를 Gemini에게 명시적으로 안내하기 위함.
+    단순 키워드 매칭으로 방향만 추출 — 복잡한 파싱 불필요.
+    """
+    if not fp and not dv:
+        return ""
+    text = (fp + " " + dv).lower()
+    # 증가/상승 방향
+    up_keys = ["증가", "상승", "높아", "올라", "증대", "확대", "강화", "커진"]
+    down_keys = ["감소", "하락", "낮아", "떨어", "축소", "약화", "줄어"]
+    stable_keys = ["억제", "안정", "유지", "방지", "억", "낮은"]
+    up_count   = sum(1 for k in up_keys   if k in text)
+    down_count = sum(1 for k in down_keys if k in text)
+    stbl_count = sum(1 for k in stable_keys if k in text)
+    # DV 키워드 (종속변수 표현) — 무엇이 변하는지
+    dv_short = (dv or "").split("(")[0].strip()[:30] if dv else "DV"
+    if up_count > down_count and up_count > stbl_count:
+        return f"[{dv_short}] ▲ 증가/상승 예측"
+    if down_count > up_count and down_count >= stbl_count:
+        return f"[{dv_short}] ▼ 감소/하락 예측"
+    if stbl_count > 0:
+        return f"[{dv_short}] ↔ 억제/안정 예측"
+    return f"[{dv_short}] 방향: 반증 가능 예측 텍스트 참조"
+
+
 # ── 이론 프로파일 DB 조회 ────────────────────────────────────────────────────
 
 def _fetch_theory_profiles(theory_ids: list[str]) -> list[dict]:
@@ -872,9 +902,16 @@ def build_theory_comparison_context(
     # 3. 비교 텍스트 생성
     lines: list[str] = ["## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)"]
     lines.append(
-        "⚠️ [경쟁설명] 작성 지침: 아래 각 이론의 '반증 가능 예측'과 "
-        "'실측 데이터'를 비교하여 어느 이론이 현재 상황을 더 잘 설명하는지 "
-        "수치 편차와 함께 판정하라. 수사적 기각 금지 — 예측값 vs 실측값 형태로 작성.\n"
+        "⚠️ [경쟁설명] 작성 지침 — **DV(종속변수) 방향 비교 필수**:\n"
+        "  (1) 각 이론의 '**DV 예측 방향**' 줄에서 DV가 어느 방향으로 변해야 하는지 읽어라.\n"
+        "  (2) 아래 '실측 데이터'(ACLED 분쟁건수·FRED 가격·SIPRI 군비·OWID 지수 등)에서 "
+        "그 DV의 **실제 관측 방향**을 찾아라.\n"
+        "  (3) 판정: 'DV 예측 방향' vs 'DV 실측 방향'이 **일치하면 우세, 반대면 열세**.\n"
+        "  ⚠️ IV 전제조건 충족('HHI > 임계' 등) 확인만으로 '우세' 판정하는 것은 **금지**.\n"
+        "     DV 방향 비교 없이 '전제 충족 → 우세'로 끝내면 수사적 기각으로 간주한다.\n"
+        "  판정 형식 예시:\n"
+        "     판정: 우세 — DV 예측 '분쟁건수 증가' vs DV 실측 '1170건(+trend)' → 방향 일치\n"
+        "     판정: 열세 — DV 예측 '유가 급등' vs DV 실측 '추세 +3.2% (완만)' → 예측 과대\n"
     )
 
     for p in profiles:
@@ -885,6 +922,10 @@ def build_theory_comparison_context(
             lines.append(f"**종속변수(DV)**: {p['dependent_var']}")
         if p.get("falsifiable_prediction"):
             lines.append(f"**반증 가능 예측**: {p['falsifiable_prediction']}")
+        # DV 예측 방향 — falsifiable_prediction에서 방향 추출 (Gemini가 판정 시 DV 방향 비교용)
+        _dv_dir = _extract_dv_direction(p.get("falsifiable_prediction", ""), p.get("dependent_var", ""))
+        if _dv_dir:
+            lines.append(f"**DV 예측 방향**: {_dv_dir}  ← 판정 시 실측 DV와 이 방향을 비교하라")
 
         # 이론별 실측값 연결
         empirical_lines: list[str] = []
@@ -1143,9 +1184,10 @@ def build_theory_comparison_context(
         ]
         lines.append(
             "▶ 앵커 종합 (사전계산, IV 전제조건 충족도): " + " | ".join(parts) + "\n"
-            "  → 전제 충족 이론이 현 상황에 적용 가능성 높음. "
-            "단 metric 스케일 상이로 편차 크기 직접 비교 불가, DV 직접 입증 아님 "
-            "(전제조건 판정에 한함). [경쟁설명] '▶ 종합 판정:'에 이 충족 여부를 인용하라."
+            "  ⚠️ 이 앵커는 IV 전제조건 충족 여부만 판정 — DV 직접 입증 아님.\n"
+            "  [경쟁설명] '▶ 종합 판정:'은 반드시 두 단계로 구성하라:\n"
+            "    ① IV 전제조건: 이 앵커 충족 여부 인용\n"
+            "    ② DV 방향 비교: 각 이론의 'DV 예측 방향' vs 위 실측 데이터에서 DV 실제 방향 — 이게 핵심 판정 근거"
         )
 
     return "\n".join(lines)

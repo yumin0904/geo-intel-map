@@ -122,6 +122,59 @@ def _fetch_theory_claims(sectors: list[str], limit: int = 8) -> list[dict]:
         return []
 
 
+def build_nob_hints(pq: "ParsedQuery") -> str:
+    """
+    [비자명기여] 힌트 블록 — 이론의 반례 경계를 카드 템플릿 안에 직접 주입한다.
+
+    claim_ledger의 ① 반례 클러스터 재료 중 falsifiable_prediction이 있는 항목을
+    골라 "[비자명기여] 작성 시점"에 바로 볼 수 있는 형태로 반환한다.
+
+    설계 의도
+    ----------
+    기존: claim_ledger → context 말미에 주입 → Gemini가 [문헌공백]만 활용
+    신규: nob_hints  → _card_fmt [비자명기여] 라인 바로 아래 삽입
+          → Gemini가 해당 필드를 쓸 때 반례 경계 데이터를 직접 참조
+
+    반환 형식 (최대 3항목, ~250자):
+        ↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 범위조건으로 활용하라]
+          • 〈이론명〉 예측 임계: X → 반례: Y (이 경계가 통념이 못 짚는 조건)
+    """
+    rows = _fetch_theory_claims(pq.sectors, limit=5)
+    if not rows:
+        return ""
+
+    hints: list[str] = []
+    seen: set[str] = set()
+    for row in rows:
+        fp = (row.get("falsifiable_prediction") or "").strip()
+        ce = (row.get("known_counterexample") or "").strip()
+        if not fp and not ce:
+            continue
+        title = row.get("title") or row.get("theory_id") or "?"
+        key = title[:20]
+        if key in seen:
+            continue
+        seen.add(key)
+        line = f"  • 〈{_short(title, 38)}〉"
+        if fp:
+            line += f" 예측 임계: {_short(fp, 90)}"
+        if ce:
+            line += f" → 반례: {_short(ce, 70)}"
+        hints.append(line)
+        if len(hints) >= 3:
+            break
+
+    if not hints:
+        return ""
+
+    block = (
+        "     ↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 범위조건으로 쓰라]\n"
+        + "\n".join(hints)
+        + "\n       (예측 임계값을 그대로 인용하고 그 경계에서 통념이 깨짐을 보여라)"
+    )
+    return block
+
+
 def build_claim_ledger(pq: "ParsedQuery", items: list[dict]) -> str:
     """
     라이브러리 검색 결과(items)에서 3종 공백 신호를 결정론적으로 추출해
