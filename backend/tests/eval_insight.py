@@ -216,7 +216,10 @@ def _check_rival_comparison(text: str) -> dict:
     - comparative (완화): 이론명 2개+ + 수치(%) + 판정 키워드 존재
     """
     rival_section = ""
+    # insight 모드: [경쟁설명], verify 모드: ### [단계 4] 경쟁 이론
     m = re.search(r"\[경쟁설명\](.*?)(?=\[검증포인트\]|\[문헌공백\]|\Z)", text, re.DOTALL)
+    if not m:
+        m = re.search(r"###\s*\[단계\s*4\]\s*경쟁\s*이론(.*?)(?=###\s*\[단계\s*5\]|\Z)", text, re.DOTALL)
     if m:
         rival_section = m.group(1)
 

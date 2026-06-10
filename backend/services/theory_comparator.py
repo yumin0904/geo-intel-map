@@ -824,16 +824,19 @@ def build_theory_comparison_context(
     반환된 텍스트는 intel_analyzer._build_context()에 삽입되어
     Gemini가 [경쟁설명] 섹션에서 수치 편차 비교를 수행하도록 안내한다.
     """
-    # 1. 관련 이론 ID 수집 (섹터 우선, 지역 보완, 중복 제거)
+    # 1. 관련 이론 ID 수집 — 지역(region) 우선, 섹터 보완, 중복 제거.
+    #    지역 매핑이 섹터 매핑보다 구체적이므로 지역을 먼저 채워 슬롯 선점.
+    #    예: taiwan_strait 쿼리에서 maritime 섹터가 A2/AD·SLOC을 먼저 채워
+    #    자유주의·현실주의 이론이 잘리는 버그 방지.
     candidate_ids: list[str] = []
     seen: set[str] = set()
-    for s in sectors:
-        for tid in _SECTOR_THEORY_PAIRS.get(s, []):
+    for r in regions:
+        for tid in _REGION_THEORY_PAIRS.get(r, []):
             if tid not in seen:
                 seen.add(tid)
                 candidate_ids.append(tid)
-    for r in regions:
-        for tid in _REGION_THEORY_PAIRS.get(r, []):
+    for s in sectors:
+        for tid in _SECTOR_THEORY_PAIRS.get(s, []):
             if tid not in seen:
                 seen.add(tid)
                 candidate_ids.append(tid)
@@ -1115,15 +1118,17 @@ def build_theory_comparison_context(
                 pass
         lines.append("")
 
-    # 4. 비교 지시문 추가
+    # 4. 비교 지시문 추가 — 쌍을 하드코딩하지 않고 목록 전체를 제시하여
+    #    Gemini가 쿼리 주제에 맞는 이론을 직접 선택하도록 한다.
     if len(profiles) >= 2:
-        t1 = profiles[0].get("title", profiles[0]["theory_id"])
-        t2 = profiles[1].get("title", profiles[1]["theory_id"])
+        theory_list = " / ".join(
+            f"'{p.get('title', p['theory_id'])}'" for p in profiles
+        )
         lines.append(
             f"### 비교 판정 요청\n"
-            f"위 실측 데이터를 근거로 '{t1}'과 '{t2}' 중 "
-            f"어느 이론이 현재 상황을 더 잘 설명하는지 [경쟁설명] 섹션에서 "
-            f"수치 편차와 함께 판정하라.\n"
+            f"위 이론 목록 [{theory_list}] 중 **사용자 쿼리 주제에 가장 직접 대응하는 2개**를 선택하여 "
+            f"[경쟁설명] 섹션에서 수치 편차와 함께 판정하라.\n"
+            f"(예: 쿼리가 '자유주의 vs 현실주의'라면 자유주의 계열 1개 + 현실주의 계열 1개 선택)\n"
             f"각 이론은 '예측:/실측:/판정:' 3줄, 마지막에 '▶ 종합 판정:'으로 "
             f"두 이론의 편차를 직접 비교해 우세 이론을 수치로 결론지어라."
         )

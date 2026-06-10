@@ -47,8 +47,8 @@ logger = logging.getLogger(__name__)
 # 라이브러리 DB (intel_analyzer와 동일 경로)
 _LIB_DB = Path(__file__).resolve().parent.parent / "db" / "library.db"
 
-# 원장 블록의 최대 길이 (priority tier 예산 보호 — 증류된 지도이므로 작게)
-_LEDGER_MAX_CHARS = 1800
+# 원장 블록의 최대 길이 (임계값 라인 추가로 2400으로 확대)
+_LEDGER_MAX_CHARS = 2400
 
 # 각 신호별 표시 상한 (컨텍스트 비대 방지)
 _MAX_COUNTEREXAMPLES = 5
@@ -101,7 +101,8 @@ def _fetch_theory_claims(sectors: list[str], limit: int = 8) -> list[dict]:
         con.row_factory = sqlite3.Row
         base = """
             SELECT theory_id, title, sector_tag,
-                   known_counterexample, rival_theories, contested_by
+                   known_counterexample, rival_theories, contested_by,
+                   falsifiable_prediction, conditions
             FROM theories
             WHERE asset_type = 'theory'
               AND (known_counterexample IS NOT NULL OR rival_theories IS NOT NULL)
@@ -145,14 +146,15 @@ def build_claim_ledger(pq: "ParsedQuery", items: list[dict]) -> str:
     # ── 신호 ① 반례 클러스터 ─────────────────────────────────────────────
     # 이론이 스스로 인정한 '알려진 반례'를 모은다. 반례가 존재한다는 것 자체가
     # 그 이론이 무조건 성립하지 않는 경계가 있다는 뜻 → 비자명한 [문헌공백]의 출발점.
-    counterexamples: list[tuple[str, str]] = []
+    counterexamples: list[tuple[str, str, str]] = []  # (title, counterexample, falsifiable_prediction)
     seen_ce: set[str] = set()
     for it in theory_claims:
         ce = (it.get("known_counterexample") or "").strip()
         if ce and ce not in seen_ce:
             seen_ce.add(ce)
             title = it.get("title") or it.get("theory_id") or "?"
-            counterexamples.append((title, ce))
+            fp    = (it.get("falsifiable_prediction") or "").strip()
+            counterexamples.append((title, ce, fp))
 
     # ── 신호 ② 경쟁이론 미해결 ───────────────────────────────────────────
     # rival_theories가 명시된 이론들. 라이브러리는 "A vs B 경쟁"이라고 적었지만
@@ -203,8 +205,13 @@ def build_claim_ledger(pq: "ParsedQuery", items: list[dict]) -> str:
     if counterexamples:
         has_signal = True
         lines.append("\n### ① 반례 클러스터 (이론이 깨지는 경계 — 논쟁 지점)")
-        for title, ce in counterexamples[:_MAX_COUNTEREXAMPLES]:
-            lines.append(f"- 〈{_short(title, 50)}〉 반례: {_short(ce)}")
+        for title, ce, fp in counterexamples[:_MAX_COUNTEREXAMPLES]:
+            line = f"- 〈{_short(title, 50)}〉"
+            if fp:
+                # 예측 임계값을 앞에 붙여 "어느 조건에서 깨지는가"를 명시
+                line += f" 예측 임계: {_short(fp, 100)}"
+            line += f" | 반례: {_short(ce, 120)}"
+            lines.append(line)
 
     if rival_pairs:
         has_signal = True
