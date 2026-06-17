@@ -233,8 +233,13 @@ _TICKER_MAP: list[tuple[list[str], str, str]] = [
 # 예2: [가설]\nH1: "X가 증가할 때..."             (insight 모드, 다음 줄)
 # 예3: [단계 3] ... **H1 (주장 지지)**: ...       (verify 모드)
 # 예4: H1: "..."  (헤더 없이 단독)
+# [9-P-1] \[가설\]\n 다음 줄에 H1: 이 오는 경우 H1: 접두사도 소비 (IV에 H1: " 잔류 방지)
 _RE_H1 = re.compile(
-    r'(?:\[가설\]\s*(?:\n\s*)?|\*\*H1[^*]*\*\*\s*[:：]\s*|(?<!\w)H1\s*[:：]\s*)'
+    r'(?:'
+    r'\[가설\]\s*(?:\n\s*)?(?:H1\s*[:：]\s*)?'  # [가설](다음줄) + 선택적 H1: 소비
+    r'|\*\*H1[^*]*\*\*\s*[:：]\s*'
+    r'|(?<!\w)H1\s*[:：]\s*'
+    r')'
     r'[""""]?(.+?)[""""]?\s*$',
     re.MULTILINE | re.IGNORECASE,
 )
@@ -246,10 +251,43 @@ _RE_CONTROL = re.compile(
 )
 
 # "X가 증가할 때 Y가" 구조에서 독립/종속변수 추출
+# [9-P-1] 확장: 될/되면/될수록 어미 + 높아지·심화·격화 등 복합 어간 추가
 _RE_WHEN_THEN = re.compile(
-    r'(.+?)\s*(?:가|이|이\s*)?(?:증가|상승|강화|확대|악화|발생|감소|하락)'
-    r'(?:할\s*때|\s*시|하면|할\s*수록|\s*때)'
-    r'.{0,10}?(.+?)\s*(?:가|이|이\s*)?(?:통계적|유의|증가|감소|상승|하락)',
+    r'(.+?)\s*(?:가|이)?\s*'
+    r'(?:증가|상승|강화|확대|악화|발생|감소|하락|심화|격화|확산|축소|개선|증대|약화'
+    r'|높아지|낮아지|강해지|약해지|커지|작아지|늘어나|줄어들)'
+    r'(?:할\s*때|될\s*때|\s*시|하면|되면|할\s*수록|될\s*수록'
+    r'|함에\s*따라|됨에\s*따라|\s*때)'
+    r'\s*[,，]?\s*'
+    r'(.+?)\s*(?:가|이)?\s*'
+    r'(?:통계적|유의|증가|감소|상승|하락|변화|높아|낮아|커지|작아|늘어|줄어|나타)',
+    re.IGNORECASE,
+)
+
+# 경계 마커 기반 폴백 — 정규식 실패 시 조건절 경계로 IV·DV 분리
+# 질/을 때: 높아질 때, 작아질 때 (ㄹ 받침 복합 동사)
+_RE_CONDITION_BOUNDARY = re.compile(
+    r'(?:할\s*때|될\s*때|질\s*때|을\s*때'
+    r'|할\s*수록|될\s*수록|질\s*수록'
+    r'|하면|되면|함에\s*따라|됨에\s*따라)'
+    r'\s*[,，]?\s*',
+    re.IGNORECASE,
+)
+# IV 끝에 붙는 조사+동사 어간 제거용 (경계 마커 폴백 전용)
+# 경계 분리 후 before에 잔여 어간(높아, 강해 등)이 남을 수 있어 추가
+_RE_IV_VERB_TAIL = re.compile(
+    r'\s*(?:이|가)?\s*'
+    r'(?:증가|상승|강화|확대|악화|발생|감소|하락|심화|격화|확산|축소|개선|증대|약화'
+    r'|높아지|낮아지|강해지|약해지|커지|작아지|늘어나|줄어들'
+    r'|높아|낮아|강해|약해|커|작아|늘어|줄어)'  # 질\s*때 분리 후 잔여 어간
+    r'(?:[하되][^,，때시면수록]*)?$',
+    re.IGNORECASE,
+)
+# DV 서술어 시작 위치 탐지 (결과절에서 명사구 이후 부분)
+_RE_DV_PRED = re.compile(
+    r'\s*(?:이|가|은|는)\s*'
+    r'(?:통계적으로\s*유의하게\s*|통계적\s*)?'
+    r'(?:증가|감소|상승|하락|변화|높아|낮아|커지|작아|늘어|줄어|나타|확대|악화|강화|심화|상실|발생)',
     re.IGNORECASE,
 )
 
@@ -356,15 +394,27 @@ def extract_hypotheses(
         else:
             h1_clean = h1_raw
 
-        # 독립/종속변수 추출 시도
+        # 독립/종속변수 추출 — 정규식 → 경계 마커 폴백 2단계 파싱 [9-P-1]
         wt_m = _RE_WHEN_THEN.search(h1_clean)
         if wt_m:
             independent_var = wt_m.group(1).strip()
             dependent_var = wt_m.group(2).strip()
         else:
-            # 구조 파싱 실패 시 전체 H1을 독립변수로 사용
-            independent_var = h1_clean
-            dependent_var = ""
+            # 폴백: 조건절 경계 마커(때/하면/되면/수록)로 IV·DV 분리
+            boundary_m = _RE_CONDITION_BOUNDARY.search(h1_clean)
+            if boundary_m:
+                before = h1_clean[:boundary_m.start()].strip()
+                after = h1_clean[boundary_m.end():].strip()
+                # IV: before에서 동사 어간+어미 꼬리 제거
+                iv_tail = _RE_IV_VERB_TAIL.search(before)
+                independent_var = before[:iv_tail.start()].strip() if iv_tail else before
+                # DV: after에서 서술어 이전 명사구
+                dv_pred = _RE_DV_PRED.search(after)
+                dependent_var = after[:dv_pred.start()].strip() if dv_pred else after[:100].strip()
+            else:
+                # 완전 파싱 실패 시 전체 H1을 독립변수로 유지
+                independent_var = h1_clean
+                dependent_var = ""
 
         # region/ticker 매핑 — 독립 지역은 독립변수 우선, 종속은 종속변수에서
         combined_text = f"{h1_clean} {independent_var} {dependent_var}"

@@ -425,6 +425,12 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         )
         return spec
 
+    # [9-P-1] 동일 (region_code, ticker) 쌍 중복 표지
+    # IV/DV 추출 실패로 두 H1이 같은 폴백 대리쌍에 매핑될 때 두 번째부터
+    # [동일 대리변수쌍] 레이블 → 사용자가 추출 버그임을 인식할 수 있도록.
+    # 데이터는 동일하므로 캐시 히트 후 수치만 복사 (재계산 불필요).
+    _seen_pairs: set[tuple[str | None, str | None]] = set()
+
     for spec in specs:
         # ── [8-gate] 선형검정 부적합 변수 단락 — Granger 트랙 진입 차단 ────────
         # 체제·임계 변수는 선형 Granger에 넣지 않고 '구조적 논증'으로 명시한다.
@@ -569,6 +575,16 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             continue
 
         # Type_A 정상 경로: region + ticker 모두 있음
+        # [9-P-1] 이미 처리한 대리쌍이면 [동일 대리변수쌍] 레이블 추가
+        _pair_key = (spec.region_code, spec.ticker)
+        if _pair_key in _seen_pairs:
+            spec.inference_caveat = (
+                "[동일 대리변수쌍 — IV/DV 추출 공유] "
+                f"region={spec.region_code}, ticker={spec.ticker}로 앞선 가설과 동일한 "
+                "시계열 데이터쌍 사용. IV/DV 텍스트는 다르나 Granger 수치는 동일."
+                + (f" | {spec.inference_caveat}" if spec.inference_caveat else "")
+            )
+        _seen_pairs.add(_pair_key)
         spec = await _run_granger_for_spec(
             spec, start, end,
             _load_event_series, _get_market_series, _run_granger,
