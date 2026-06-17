@@ -20,9 +20,24 @@ from __future__ import annotations
 import logging
 import time
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Any
 
+import yaml
+
 from services.hypothesis_extractor import HypothesisSpec
+
+# [9-P-2] 매직넘버 단일 진실 공급원 — config/granger_thresholds.yaml
+_THRESHOLDS_PATH = Path(__file__).parent.parent / "config" / "granger_thresholds.yaml"
+_THR: dict = yaml.safe_load(_THRESHOLDS_PATH.read_text(encoding="utf-8"))
+
+_MIN_EVENT_OBS: int      = _THR["min_event_obs"]
+_MIN_MARKET_OBS: int     = _THR["min_market_obs"]
+_MIN_EVENT_EVENT_OBS: int = _THR["min_event_event_obs"]
+_MIN_EXTREME_OBS: int    = _THR["min_extreme_obs"]
+_P_VERIFIED: float       = _THR["p_verified"]
+_P_PARTIAL: float        = _THR["p_partial"]
+_P_EXTREME_VERIFIED: float = _THR["p_extreme_verified"]
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +85,8 @@ _SECTOR_DEFAULT_TICKER: dict[str, str] = {
     "gray_zone":   "GLD",    # 회색지대 → 금 (불확실성 안전자산 도피)
 }
 
-# 분석 기간: 최근 18개월 (이벤트 데이터 충분성 확보)
-_LOOKBACK_MONTHS = 24  # 18→24: 2년 데이터로 Granger 통계력 강화 (Korean p=0.048 VERIFIED 확인)
+# 분석 기간: granger_thresholds.yaml lookback_months 에서 로드
+_LOOKBACK_MONTHS: int = _THR["lookback_months"]  # 18→24: 2년 데이터로 Granger 통계력 강화
 
 # ── 인과추론 사다리 (학술 정합성 재설계) ──────────────────────────────────────
 # Granger는 '선행성(precedence)'까지만 주장 가능. 인과 아님.
@@ -134,22 +149,123 @@ def _classify_inference_grade(
     """
     if p_value is None:
         return _LADDER_DESCRIPTIVE, "Granger 검정 미실행/불가 — 인과 추론 근거 없음"
-    if p_value < 0.05:
+    if p_value < _P_VERIFIED:
         if theory_grounded and controlled:
             return _LADDER_PRECEDENCE, _GRANGER_CAVEAT_CONTROLLED
         if theory_grounded and not controlled:
             # 교란 미통제 → 선행성 주장 불가, 상관 상한
             return _LADDER_CORRELATIONAL, _GRANGER_CAVEAT + " · 교란 미통제로 선행성 주장 불가"
-        return _LADDER_CORRELATIONAL, _WEAK_PAIR_CAVEAT  # A3: 근거 약하면 상한
-    if p_value < 0.15:
-        return _LADDER_CORRELATIONAL, _GRANGER_CAVEAT + " · 경향성 수준(p<0.15)"
-    return _LADDER_DESCRIPTIVE, "Granger 비유의(p≥0.15) — 선행성 근거 없음"
+        # theory_grounded=False: 화이트리스트 밖 쌍 → 등급 상한(상관).
+        # D3(대리변수 오류) 진단은 spec.is_proxy_pair 필드로 분리 (8-F에서 처리).
+        return _LADDER_CORRELATIONAL, _WEAK_PAIR_CAVEAT
+    if p_value < _P_PARTIAL:
+        return _LADDER_CORRELATIONAL, _GRANGER_CAVEAT + f" · 경향성 수준(p<{_P_PARTIAL})"
+    return _LADDER_DESCRIPTIVE, f"Granger 비유의(p≥{_P_PARTIAL}) — 선행성 근거 없음"
 
 
 def _get_date_range() -> tuple[date, date]:
     end = date.today()
     start = end - timedelta(days=_LOOKBACK_MONTHS * 30)
     return start, end
+
+
+# [9-P-3] 라우팅 방법 ID 상수
+_ROUTE_STRUCTURAL    = "structural_arg"          # 8-gate: 비선형 체제 변수 → 구조적 논증
+_ROUTE_EVENT_EVENT   = "event_to_event"          # B4: 사건→사건 Granger
+_ROUTE_PENDING_B     = "pending_typeB"           # Type_B: 행동 변수, 검정 불가
+_ROUTE_GRANGER_C     = "granger_typeC_proxy"     # Type_C: 대리변수 Granger
+_ROUTE_GRANGER_A_DG  = "granger_typeA_downgrade" # Type_A → C 강등 후 Granger
+_ROUTE_SECTOR_PROXY  = "granger_sector_proxy"    # 섹터 proxy fallback
+_ROUTE_PENDING_A     = "pending_typeA_no_mapping" # Type_A 매핑 실패
+_ROUTE_GRANGER_A     = "granger_typeA"           # Type_A 정상: 금융 ticker Granger
+
+
+def _build_surface(spec: "HypothesisSpec") -> None:
+    """
+    [9-P-4] 표면 2계층 — 비전공자가 읽는 한 줄 결론 + 신뢰 한 단어.
+
+    routing_method + verification_status + routing_confidence 조합으로
+    결정론적으로 생성. LLM 호출 0 (Token-Zero).
+    """
+    iv  = spec.independent_var or "X"
+    dv  = spec.dependent_var   or "Y"
+    p   = f"p={spec.granger_p:.3f}" if spec.granger_p is not None else ""
+    rgn = spec.region_code or ""
+    tkr = spec.ticker or ""
+
+    m = spec.routing_method
+
+    if m == _ROUTE_STRUCTURAL:
+        spec.surface_summary  = f"[구조적 논증] {iv} → {dv} — 체제·임계 변수, 선형검정 제외"
+        spec.confidence_word  = "검정불가"
+    elif m == _ROUTE_EVENT_EVENT:
+        dep = spec.dependent_region or "?"
+        if spec.verification_status == "VERIFIED":
+            spec.surface_summary = f"[사건→사건] {rgn}→{dep} 전이 선행성 유의 ({p})"
+            spec.confidence_word = "높음"
+        elif spec.verification_status == "PARTIAL":
+            spec.surface_summary = f"[사건→사건] {rgn}→{dep} 경향성 ({p})"
+            spec.confidence_word = "보통"
+        else:
+            spec.surface_summary = f"[사건→사건] {rgn}→{dep} — 통계 비유의"
+            spec.confidence_word = "낮음"
+    elif m == _ROUTE_PENDING_B:
+        spec.surface_summary  = f"[행동변수] {dv} — 이벤트스터디 미구현, 검정 불가"
+        spec.confidence_word  = "검정불가"
+    elif m in (_ROUTE_GRANGER_C, _ROUTE_GRANGER_A_DG):
+        proxy_note = "(대리쌍)" if spec.is_proxy_pair else ""
+        if spec.verification_status == "VERIFIED":
+            spec.surface_summary = f"[Granger{proxy_note}] {rgn}→{tkr} 선행성 유의 ({p})"
+            spec.confidence_word = "보통" if spec.is_proxy_pair else "높음"
+        elif spec.verification_status == "PARTIAL":
+            spec.surface_summary = f"[Granger{proxy_note}] {rgn}→{tkr} 경향성 ({p})"
+            spec.confidence_word = "낮음" if spec.is_proxy_pair else "보통"
+        else:
+            spec.surface_summary = f"[Granger{proxy_note}] {rgn}→{tkr} — 비유의"
+            spec.confidence_word = "낮음"
+    elif m == _ROUTE_SECTOR_PROXY:
+        spec.surface_summary  = f"[섹터proxy] {tkr} — 지역 추정 폴백, 신뢰도 낮음"
+        spec.confidence_word  = "낮음"
+    elif m == _ROUTE_GRANGER_A:
+        if spec.verification_status == "VERIFIED":
+            spec.surface_summary = f"[Granger] {iv} → {dv} 선행성 유의 ({p})"
+            spec.confidence_word = "높음"
+        elif spec.verification_status == "PARTIAL":
+            spec.surface_summary = f"[Granger] {iv} → {dv} 경향성 ({p})"
+            spec.confidence_word = "보통"
+        else:
+            spec.surface_summary = f"[Granger] {iv} → {dv} — 비유의"
+            spec.confidence_word = "낮음"
+    else:
+        # _ROUTE_PENDING_A 또는 미분류
+        spec.surface_summary  = f"[검정불가] {iv} → {dv} — 데이터 매핑 실패"
+        spec.confidence_word  = "검정불가"
+
+    # routing_confidence=LOW 이면 confidence_word 하향 보정
+    if spec.routing_confidence == "LOW" and spec.confidence_word not in ("검정불가", "낮음"):
+        spec.confidence_word = "낮음"
+
+
+def _check_method_fit(spec: "HypothesisSpec") -> None:
+    """
+    [9-P-3] 사후 점검 훅 — "성공해도 틀린 방법" 플래그.
+
+    Granger 유의 결과가 나왔더라도 방법 선택 자체가 부적절할 수 있다.
+    이 훅은 결과를 바꾸지 않고 routing_confidence를 낮추고 caveat을 보강한다.
+    9-0 Method Router가 구현되면 이 훅의 진단을 라우터 로직에 흡수한다.
+    """
+    if spec.routing_method in (_ROUTE_GRANGER_C, _ROUTE_GRANGER_A_DG, _ROUTE_SECTOR_PROXY):
+        if spec.is_proxy_pair and spec.verification_status in ("VERIFIED", "PARTIAL"):
+            # 대리쌍으로 유의 결과: 화이트리스트 밖이므로 허위상관 가능성
+            spec.routing_confidence = "LOW"
+            spec.inference_caveat = (
+                "[방법점검-P3] 화이트리스트 밖 대리쌍(is_proxy_pair=True)에서 유의 결과. "
+                "허위상관 가능성 있음. 직접 DV 시계열 확보 또는 9-A 이벤트스터디 고려. "
+            ) + spec.inference_caveat
+
+    if spec.routing_method == _ROUTE_SECTOR_PROXY and spec.routing_confidence != "LOW":
+        # 섹터 proxy는 지역 추정 포함 — 유의하지 않아도 MEDIUM 이하
+        spec.routing_confidence = "MEDIUM"
 
 
 async def _run_granger_for_spec(
@@ -186,14 +302,14 @@ async def _run_granger_for_spec(
 
     try:
         event_series = load_event_series(spec.region_code, start, end)
-        if event_series is None or len(event_series) < 20:
+        if event_series is None or len(event_series) < _MIN_EVENT_OBS:
             spec.error = (
                 f"이벤트 데이터 부족 ({len(event_series) if event_series is not None else 0}건)"
             )
             return spec
 
         market_series = await get_market_series(spec.ticker, start, end)
-        if market_series is None or len(market_series) < 20:
+        if market_series is None or len(market_series) < _MIN_MARKET_OBS:
             spec.error = f"시장 데이터 부족 (ticker={spec.ticker})"
             return spec
 
@@ -263,7 +379,7 @@ async def _run_granger_for_spec(
                 ext_series = load_extreme_event_series(spec.region_code, start, end)
                 if ext_series is not None:
                     mkt = await get_market_series(spec.ticker, start, end)
-                    if mkt is not None and len(mkt) >= 20:
+                    if mkt is not None and len(mkt) >= _MIN_EXTREME_OBS:
                         ep, elag, en, ef, _ = run_granger(ext_series, mkt)
                         if ep is not None:
                             spec.extreme_granger_p = round(ep, 4)
@@ -272,7 +388,7 @@ async def _run_granger_for_spec(
                                 "[hypothesis] [B8-P90] %s | region=%s p_extreme=%.4f F=%.3f lag=%d",
                                 spec.h1[:50], spec.region_code, ep, ef or 0, elag or 0,
                             )
-                            if ep < 0.05:
+                            if ep < _P_EXTREME_VERIFIED:
                                 # 극단 이벤트에서만 시장 전이 확인 → 비선형 임계 전이
                                 spec.inference_grade = _LADDER_CORRELATIONAL  # 상관 단계 승격
                                 spec.inference_caveat = (
@@ -377,7 +493,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     async def _run_event_to_event(spec: HypothesisSpec) -> HypothesisSpec:
         x = _load_event_series(spec.region_code, start, end)       # 독립 지역 A
         y = _load_event_series(spec.dependent_region, start, end)  # 종속 지역 B
-        if x is None or y is None or len(x) < 30 or len(y) < 30:
+        if x is None or y is None or len(x) < _MIN_EVENT_EVENT_OBS or len(y) < _MIN_EVENT_EVENT_OBS:
             spec.error = (
                 f"사건→사건 데이터 부족 (A={spec.region_code}:{len(x) if x is not None else 0} "
                 f"B={spec.dependent_region}:{len(y) if y is not None else 0})"
@@ -445,6 +561,10 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 "체제전환 모델 등 적극적 비선형 검정이 필요(검증포인트)."
             )
             spec.error = "선형검정 부적합(비선형 체제 변수) — Granger 미실행"
+            # [9-P-3] 라우팅 마킹
+            spec.routing_method = _ROUTE_STRUCTURAL
+            spec.routing_confidence = "HIGH"   # 8-gate 판정이 명확 → 방법 선택 신뢰도 高
+            spec.routing_alternatives = ["9-C 비선형검정(TAR·체제전환) — 적극적 양성 증거 필요"]
             logger.info("[hypothesis] [8-gate] 선형검정 제외: %s", spec.h1[:60])
             results.append(spec)
             continue
@@ -452,6 +572,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         # [B4] 사건→사건 전이 가설이 최우선 — 시장 경로 대신 지역B 이벤트로 검정
         if spec.dependent_region and spec.region_code:
             spec = await _run_event_to_event(spec)
+            # [9-P-3] 라우팅 마킹
+            spec.routing_method = _ROUTE_EVENT_EVENT
+            spec.routing_confidence = "HIGH"
+            spec.routing_alternatives = ["9-A 이벤트스터디 (사건 전후 비정상변동 포착)"]
+            _check_method_fit(spec)
             results.append(spec)
             continue
 
@@ -472,6 +597,10 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     f"검정 불가 — 종속변수가 행동 변수(건수)로 {spec.region_code} ACLED 시계열은 있으나 "
                     f"actor_filter 기반 event study 미구현. 현재는 서술·이론 근거만 가능."
                 )
+            # [9-P-3] 라우팅 마킹
+            spec.routing_method = _ROUTE_PENDING_B
+            spec.routing_confidence = "HIGH"   # Type_B 판정 자체는 명확
+            spec.routing_alternatives = ["9-A 이벤트스터디 (actor_filter 기반 event study 구현 후)"]
             logger.info("[hypothesis] Type_B PENDING: %s", spec.h1[:60])
             results.append(spec)
             continue
@@ -481,6 +610,8 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             default_ticker = _REGION_DEFAULT_TICKER.get(spec.region_code or "")
             if spec.region_code and default_ticker:
                 spec.ticker = default_ticker
+                # [9-P-2] D3 마킹: 화이트리스트 밖 대리쌍 → is_proxy_pair=True
+                spec.is_proxy_pair = (spec.region_code, default_ticker) not in _THEORY_GROUNDED_PAIRS
                 proxy_label = (
                     f"ACLED {spec.region_code} 이벤트 건수"
                     f" → {default_ticker} (지역 기본 지표)"
@@ -493,6 +624,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     load_extreme_event_series=_load_extreme_event_series,
                     proxy_label=proxy_label,
                 )
+                # [9-P-3] 라우팅 마킹
+                spec.routing_method = _ROUTE_GRANGER_C
+                spec.routing_confidence = "HIGH" if not spec.is_proxy_pair else "MEDIUM"
+                spec.routing_alternatives = ["9-A 이벤트스터디 (SINGLE_SHOCK 시그니처)"]
+                _check_method_fit(spec)
             else:
                 proxy_str = ", ".join(spec.proxy_suggestions[:3]) if spec.proxy_suggestions else "대체 지표 필요"
                 spec.error = f"Type C (추상 변수): region 미식별 → 권장 대리변수: {proxy_str}"
@@ -501,6 +637,9 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     f"시계열·ticker 없음. 권장 대리변수: {proxy_str}. "
                     f"이 대리변수의 실측 시계열이 확보돼야 Granger 검정 가능."
                 )
+                spec.routing_method = _ROUTE_PENDING_A
+                spec.routing_confidence = "LOW"
+                spec.routing_alternatives = ["직접 DV 시계열 확보 후 재검정"]
             logger.info("[hypothesis] Type_C %s: %s", spec.verification_status, spec.h1[:60])
             results.append(spec)
             continue
@@ -513,6 +652,8 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 if default_ticker:
                     spec.var_type = "Type_C"
                     spec.ticker = default_ticker
+                    # [9-P-2] D3 마킹: Type A 강등 경로도 화이트리스트 밖이면 대리쌍
+                    spec.is_proxy_pair = (spec.region_code, default_ticker) not in _THEORY_GROUNDED_PAIRS
                     proxy_label = (
                         f"Type A 강등 → ACLED {spec.region_code} + {default_ticker} 대리변수"
                     )
@@ -523,6 +664,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                         run_conditional_granger=_run_conditional_granger,
                         proxy_label=proxy_label,
                     )
+                    # [9-P-3] 라우팅 마킹 — 강등 경로는 원래 방법 신뢰도 MEDIUM
+                    spec.routing_method = _ROUTE_GRANGER_A_DG
+                    spec.routing_confidence = "MEDIUM"
+                    spec.routing_alternatives = ["ticker 재정의 후 Type_A 정상경로 재시도"]
+                    _check_method_fit(spec)
                     logger.info("[hypothesis] Type_A→C 자동강등 %s: %s", spec.verification_status, spec.h1[:60])
                     results.append(spec)
                     continue
@@ -541,6 +687,8 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 if not spec.region_code:
                     spec.region_code = "middle_east"
                     region_fallback = True
+                # [9-P-2] 섹터 proxy 경로는 항상 화이트리스트 밖 대리쌍
+                spec.is_proxy_pair = True
                 spec = await _run_granger_for_spec(
                     spec, start, end,
                     _load_event_series, _get_market_series, _run_granger,
@@ -555,6 +703,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                         f"[지역 미식별 — {spec.region_code} 추정 폴백] " +
                         (spec.inference_caveat or "")
                     )
+                # [9-P-3] 라우팅 마킹 — 섹터 proxy는 지역 추정 포함이라 LOW
+                spec.routing_method = _ROUTE_SECTOR_PROXY
+                spec.routing_confidence = "LOW"
+                spec.routing_alternatives = ["H1에 지역 명시 후 Type_C/A 경로 재시도"]
+                _check_method_fit(spec)
                 logger.info("[hypothesis] 섹터proxy %s: %s", spec.verification_status, spec.h1[:60])
                 results.append(spec)
                 continue
@@ -570,6 +723,10 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 f"종속변수를 환율·유가·주가·ETF 등 측정 가능한 시장 지표로 재정의하거나, "
                 f"H1에 분석 지역을 명시하면 검정 가능."
             )
+            # [9-P-3] 라우팅 마킹
+            spec.routing_method = _ROUTE_PENDING_A
+            spec.routing_confidence = "LOW"
+            spec.routing_alternatives = ["H1 재작성(지역·ticker 명시)", "Type_B(ACLED) 경로 고려"]
             logger.info("[hypothesis] Type_A PENDING (매핑 실패): %s", spec.h1[:60])
             results.append(spec)
             continue
@@ -592,6 +749,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             run_conditional_granger=_run_conditional_granger,
             load_extreme_event_series=_load_extreme_event_series,
         )
+        # [9-P-3] 라우팅 마킹 — Type_A 정상: theory_grounded 여부로 신뢰도 결정
+        spec.routing_method = _ROUTE_GRANGER_A
+        spec.routing_confidence = "HIGH" if spec.theory_grounded else "MEDIUM"
+        spec.routing_alternatives = ["9-B 패널회귀 (CROSS_SECTION 시그니처)", "9-A 이벤트스터디 (단일 충격)"]
+        _check_method_fit(spec)
         results.append(spec)
 
     # ── [B2] 다중검정 보정 (Benjamini-Hochberg FDR) ──────────────────────────
@@ -618,6 +780,89 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     )
         except Exception as exc:
             logger.warning("[hypothesis] FDR 보정 실패: %s", exc)
+
+    # [9-P-4] 표면 2계층 일괄 생성 (FDR 보정 후 최종 등급 기준)
+    for s in results:
+        _build_surface(s)
+
+    # [9-0/9-A] Method Router 연결 — 시그니처 분류 + MethodResult 변환 + 삼각측량
+    try:
+        from services.methods.router import classify_signature, select_method_set, filter_implemented
+        from services.methods.granger_adapter import from_spec as _granger_adapt
+        from services.methods.event_study import from_spec as _event_study_adapt
+        from services.methods.panel_regression import from_spec as _panel_reg_adapt
+        from services.methods.grader import grade as triangulate
+
+        for s in results:
+            # 시그니처 결정 (쿼리 텍스트 = h1 + h0 결합)
+            query_text = f"{s.h1} {s.h0}"
+            lt = getattr(s, "linear_testable", True)
+            has_ts = s.granger_p is not None or s.verification_status != "PENDING"
+            sig = classify_signature(query_text, linear_testable=lt, has_paired_timeseries=has_ts)
+            s.data_signature = sig
+
+            # 방법집합 선언 (시그니처 기반 사전 선언 — 결과 주도 선택 금지)
+            methods = select_method_set(sig)
+            implemented, stubs = filter_implemented(methods)
+
+            # 방법 무관 루프 — 각 구현 어댑터 호출
+            method_results = []
+            for method in implemented:
+                try:
+                    if method == "granger":
+                        mr = _granger_adapt(s)
+                        method_results.append(mr)
+                    elif method == "event_study":
+                        # 동기 어댑터 (yfinance.download는 동기)
+                        mr = _event_study_adapt(s)
+                        method_results.append(mr)
+                    elif method == "panel_regression":
+                        # 동기 어댑터 (SQLite 쿼리)
+                        mr = _panel_reg_adapt(s)
+                        method_results.append(mr)
+                    # structural_arg: MethodResult 불필요 (등급 기여 없음)
+                    elif method == "structural_arg":
+                        pass
+                except Exception as _m_exc:
+                    logger.warning("[9-A] 어댑터 실패 method=%s: %s", method, _m_exc)
+
+            # 삼각측량 (단일 방법이면 convergence=None)
+            tri = triangulate(method_results)
+
+            # 결과를 spec에 저장 (SSE에서 사용)
+            s.method_result = {
+                "headline_rung":    tri.headline_rung,
+                "headline_method":  tri.headline_method,
+                "convergence":      tri.convergence,
+                "convergence_note": tri.convergence_note,
+                "stub_methods":     stubs,
+                "all_results": [
+                    {
+                        "method":                 r.method,
+                        "signature":              r.signature,
+                        "effect_estimate":        r.effect_estimate,
+                        "effect_size_label":      r.effect_size_label,
+                        "significance":           r.significance,
+                        "ci_low":                 r.ci_low,
+                        "ci_high":                r.ci_high,
+                        "assumptions_met":        r.assumptions_met,
+                        "assumption_caveat":      r.assumption_caveat,
+                        "reachable_rung":         r.reachable_rung,
+                        "actual_rung":            r.actual_rung,
+                        "confidence_within_rung": r.confidence_within_rung,
+                        "robustness":             r.robustness,
+                        "native_stats":           r.native_stats,
+                        "exploratory":            r.exploratory,
+                    }
+                    for r in tri.all_results
+                ],
+            }
+            logger.debug(
+                "[9-A] sig=%s headline=%s/%s stubs=%s",
+                sig, tri.headline_rung, tri.headline_method, stubs,
+            )
+    except Exception as exc:
+        logger.warning("[9-A] Method Router 연결 실패 (무시, Granger 결과 유지): %s", exc)
 
     return results
 

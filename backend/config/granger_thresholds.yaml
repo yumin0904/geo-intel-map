@@ -1,0 +1,17 @@
+# Granger 검정 임계값 설정 (9-P-2: 매직넘버 단일 진실 공급원)
+# 변경 시 이 파일만 수정 — 코드 내 하드코딩 금지
+
+# 최소 관측값 임계 (D4_INSUFFICIENT 진단 기준)
+min_event_obs: 20          # 이벤트 시계열 최소 관측값
+min_market_obs: 20         # 시장 시계열 최소 관측값
+min_event_event_obs: 30    # 사건→사건 검정 최소 관측값 (양쪽 지역 모두)
+min_extreme_obs: 20        # P90 극단 시리즈 최소 관측값
+d4_insufficient_threshold: 40  # 이 미만이면 D4(데이터 부족) 진단 — 8-F 전용
+
+# 유의성 임계 (p-value)
+p_verified: 0.05    # VERIFIED (선행성) 판정 상한
+p_partial: 0.15     # PARTIAL (상관·경향성) 판정 상한
+p_extreme_verified: 0.05   # 극단(P90) 검정 유의 임계
+
+# 분석 기간
+lookback_months: 24        # Granger 이벤트 시계열 조회 기간 (개월)

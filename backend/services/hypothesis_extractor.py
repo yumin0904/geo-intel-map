@@ -60,6 +60,30 @@ class HypothesisSpec:
     # 체제·임계 변수를 선형검정에 강제 투입하던 범주오류 + null→비선형 승격 방지.
     linear_testable: bool = True             # 선형 Granger 적합 여부
     testability_reason: str = ""             # 부적합 사유 (감사용 — 출력 노출)
+    # ── [9-P-2] D3·등급 분리 — theory_grounded는 등급 판정 전용 ──────────────
+    # theory_grounded=False가 D3(대리변수 오류)와 등급(상관 상한)을 동시에 결정하던
+    # 단일실패점 해소. is_proxy_pair는 D3 진단 전용 (8-F negative_result_triage에서 사용).
+    # theory_grounded: 이론 문헌상 인과 메커니즘 화이트리스트 일치 여부 (등급 판정 유지)
+    # is_proxy_pair:   화이트리스트 밖 대리변수 쌍 사용 여부 (D3 진단 전용, 등급과 무관)
+    is_proxy_pair: bool = False              # D3 진단 전용 — 대리쌍 오류 가능성 마커
+    # ── [9-P-3] 라우팅 판정 근거 — "성공해도 틀린 방법" 사후 점검 기반 ──────
+    # 9-0 Method Router 착수 전 현재 분기 구조의 판정 근거를 남겨둔다.
+    # routing_method: 실제 선택된 분석 경로 ID
+    # routing_confidence: 방법 적합성 신뢰도 (HIGH/MEDIUM/LOW)
+    # routing_alternatives: 데이터 시그니처상 적용 가능한 대안 방법 (9-0 라우터 힌트)
+    routing_method: str = ""                 # 선택 방법 ID (감사용)
+    routing_confidence: str = ""            # HIGH / MEDIUM / LOW
+    routing_alternatives: list[str] = field(default_factory=list)  # 대안 방법 힌트
+    # ── [9-0] Method Router — 데이터 시그니처 + MethodResult ────────────────
+    # data_signature: router가 채우는 데이터 모양 분류
+    # method_result:  granger_adapter 등이 채우는 공통 스키마 결과 (JSON 직렬화용 dict)
+    data_signature: str = ""             # DataSignature 값 (router 결정)
+    method_result: dict = field(default_factory=dict)  # MethodResult 직렬화
+    # ── [9-P-4] 출력 2계층화 — 표면(비전공자 판독) / 펼침(전체 진단) ──────────
+    # surface_summary: 한 줄 결론 — 라우팅 방법·검정 결과를 자연어로 요약
+    # confidence_word: 신뢰 한 단어 — "높음"/"보통"/"낮음"/"검정불가"
+    surface_summary: str = ""               # 표면 — 한 줄 결론
+    confidence_word: str = ""              # 표면 — 신뢰 한 단어
 
 
 # ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────

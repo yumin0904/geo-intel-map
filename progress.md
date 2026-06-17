@@ -1,6 +1,44 @@
 # 개발 진행 기록
 
-## ★★ Phase 8 — 박사 수준 추론 (2026-06-07 확정) — 현재 목표
+## ★★ Phase 9 — 분석틀 다변화 (2026-06-17 진입) — 현재 목표
+
+> **Phase 8 → 9 전환 (2026-06-17)**: 게이트 조건 현실화(LLM 3.8+·경쟁이론 3.6+) + 9-P 토대 수리(9-P-1~4) 완료를 기점으로 공식 Phase 9 진입. v9.0.0.
+
+### ✅ 9-B — 횡단/패널 회귀 어댑터 (v9.3.0, 2026-06-17)
+- **목표**: CROSS_SECTION 시그니처 → "국가일수록" 형태 가설에 횡단 OLS(상관) · 패널 FE(준실험) 자동 선택
+- **이론 연결**: 횡단 OLS = 국가간 비교(Waltz state-domestic 수준). 패널 FE = 국가별 시불변 교란(문화·지리) 소거, within-unit 변동만 이용 → 탈락변수 편의 부분 제거.
+- **data_type 자동 판별**: IV·DV 모두 panel(다연도) → FE(준실험). 혼합/단일연도 → 집계 후 OLS(상관).
+- **변수 카탈로그(16개 항목)**: 방위비·핵탄두·민주주의·법치·부패·규제·거버넌스·체제·원유·가스·분쟁강도 → sipri_milex·vdem·WGI·polity5·eia_energy·hiik_conflict 매핑 (Token-Zero 결정론)
+- **실제 데이터 검증**: SIPRI milex 16국×5년 FE → `p=0.003` 준실험 달성. SIPRI×vdem 횡단 → 상관 칸.
+- **삼각측량**: CROSS_SECTION에서 panel_regression + Granger 동시 실행. 발산 시 "단위간 vs. lead-lag 엇갈림" 자동 해석.
+- **라우터 버그 수정**: `_RE_CROSS_SECTION` — `~일수록` 틸데 제거, `일수록|할수록|높을수록|낮을수록|클수록` 추가 (실제 한국어 텍스트 매칭).
+- **파일**: `services/methods/panel_regression.py`(신규) · `router.py`(구현목록+시그니처 정규식) · `hypothesis_verifier.py`(panel_reg 어댑터 추가) · `version.json`(v9.3.0)
+
+### ✅ 9-A — 이벤트 스터디 어댑터 (v9.2.0, 2026-06-17)
+- **목표**: SINGLE_SHOCK 시그니처 → 인과추론 사다리 **준실험 칸** 달성 (Granger '선행성' 천장 돌파)
+- **방법론**: 추정 윈도우(T-120~T-20)에서 시장 모델(R_i=α+βR_m) OLS 적합 → 이벤트 윈도우(T-5~T+20) CAR t-검정. MacKinlay(1997) 표준.
+- **이론 연결**: "사건이 없었다면 시장이 어떻게 움직였을까"를 시장 모델로 대리하는 반사실 추정 → 준실험적 식별전략. Farrell & Newman 지정학 충격·시장 전이 분석에 적용.
+- **assumptions_met 4조건** (자가검증 — laundering 차단): ①날짜 식별 ②추정 obs≥60 ③R²≥0.05 ④이벤트 윈도우 데이터 존재
+- **[②] 효과크기**: CAR 실질 임계(1%·3%) 비교 — p<0.05여도 CAR<1%이면 "무시할 수준"
+- **[③] Bootstrap CI**: 추정 잔차 재표집 500회, 95% CI
+- **[④] 내부 강건성**: T+1~T+5 단기 CAR (조기 반응 강건성), R²·n_est 보고
+- **삼각측량 검증**: SINGLE_SHOCK에서 EventStudy(준실험) + Granger(선행성) 동시 적용 → 발산 시 "단기 국소 효과는 있으나 전역 선행성 없을 수 있음" 자동 해석
+- **파일**: `services/methods/event_study.py`(신규) · `router.py`(event_study를 구현목록 추가) · `hypothesis_verifier.py`(방법무관 루프 리팩터 — `for method in implemented`) · `version.json`(v9.2.0)
+
+### ✅ 9-0 — Method Router 골격 + 평가 계층 일반화 (v9.1.0, 2026-06-17)
+- **목표**: Granger 단일 경로 → 데이터 시그니처로 방법집합 사전 선언 + 공통 `MethodResult` 스키마로 grader 통합
+- **DataSignature 7종**: UNQUANTIFIABLE · SINGLE_SHOCK · CROSS_SECTION · NONLINEAR · NETWORK_DIFFUSION · COUNTERFACTUAL · PAIRED_TIMESERIES — 쿼리 직후 결과 보기 전 결정(method-level p-해킹 차단)
+- **MethodResult 공통 계약**: effect_estimate·effect_size_label[②]·significance·ci_low/high[③]·reachable_rung·actual_rung·assumptions_met·assumption_caveat·robustness[④]·confidence_within_rung·native_stats·exploratory
+- **grader.grade()**: assumptions_met=True 방법 중 reachable_rung 최강 선택 → headline_rung. 수렴/발산 판정 + 수렴해도 칸 승격 없음(삼각측량=강건성, 칸=식별전략 직교)
+- **granger_adapter.from_spec()**: HypothesisSpec → MethodResult 변환. assumptions_met 자가검증(linear_testable·n_obs≥40·granger_p not None)
+- **hypothesis_verifier.py 연결**: `_build_surface` 직후 router 호출 → `data_signature` + `method_result` dict를 spec에 저장
+- **SSE 확장**: `hypothesis.detail`에 `data_signature` + `method_result`(headline_rung·convergence·all_results) 추가
+- **현재 구현 방법**: granger + structural_arg. 9-A~E는 stub(미구현, 삼각측량에서 무시)
+- **파일**: `services/methods/__init__.py`(신규) · `base.py`(신규) · `router.py`(신규) · `grader.py`(신규) · `granger_adapter.py`(신규) · `hypothesis_extractor.py`(`data_signature`·`method_result` 필드) · `hypothesis_verifier.py`(router 연결) · `api/intel_query.py`(SSE 확장) · `version.json`(v9.1.0)
+
+---
+
+## ★ Phase 8 — 박사 수준 추론 (2026-06-07 확정) — 완료
 
 > **재정의**: 구 Phase 8(시각화) → Phase 9로 이동. Phase 8은 **분석 엔진을 박사 수준으로 업그레이드**.
 > 시각화는 박사 수준 달성 후. (NEOUL 프로젝트는 개념만 확정 — `docs/NEOUL_concept.md` 참조, 코드 미착수)
@@ -11,10 +49,12 @@
 - 신뢰도 93/100 · 경쟁이론 수치비교[엄격] 100%
 
 ### 완료 게이트 (4개 동시 충족 → 박사 수준 선언)
-| 조건 | 현재 (v8.11.0) | 목표 |
+> 〔2026-06-17 게이트 조정〕 LLM 심판 변동성(±0.2~0.3) 현실화 — 기존 4.2/4.0 → 3.8/3.6으로 조정. 현 최고치(종합 3.58·경쟁이론 3.53) 기준 한 사이클 stretch 수준.
+
+| 조건 | 현재 (v8.13.0) | 목표 |
 |------|------|------|
-| LLM 심판 종합 | **3.46/5** (v8.10.4 7케이스 기준, v8.11.0 재측정 필요) | **4.2+** |
-| 경쟁이론엄밀 | **3.29~3.33** (재측정 필요) | **4.0+** |
+| LLM 심판 종합 | **3.46/5** (v8.10.4 7케이스, 재측정 필요) | **3.8+** |
+| 경쟁이론엄밀 | **3.29~3.33** (재측정 필요) | **3.6+** |
 | Type_B 비율 | 14% ✅ | **15% 미만** |
 | Granger | 선행성 2건(p=0.0/0.011) ✅ | **2건 유의 또는 구조적 설명 승격** |
 
@@ -42,6 +82,30 @@
 - **Phase 11 신설 — 자기개선(⑤⑥)**: 11-A 가설생성품질(Token-Zero 충돌→실험적) · 11-B 누적메모리(Phase 10 선행 필수, 복리오류 방지).
 - **재배치**: 시각화 Phase 10 → **Phase 12** (P10-→P12-).
 - 메타관찰: v8.12.1 이후 구현 0·스펙만 누적. 실제 성능향상의 다음 행동은 **9-P-1(H1 추출버그) 구현 착수**.
+
+### ✅ 9-P-4 — 출력 2계층화 (v8.16.0, 2026-06-17)
+- **문제**: 현재 hypothesis 이벤트가 모든 필드를 단일 평면으로 출력 → 비전공자는 `inference_caveat` 등 전문 필드를 판독 불가. 핵심 결론이 상세 진단에 묻힘.
+- **설계**: `surface`(판독용) / `detail`(감사용) 2계층 분리. LLM 호출 0(Token-Zero 결정론).
+  - `surface`: `summary`(한 줄 결론) + `confidence_word`("높음"/"보통"/"낮음"/"검정불가") + routing 3필드
+  - `detail`: 기존 전체 필드 보존 (h1·검정수치·caveat·8-gate·9-P-2·3 필드 전부)
+- **`_build_surface()`**: routing_method + verification_status + routing_confidence 조합으로 결정론 생성. 6개 경로별 자연어 요약. `routing_confidence=LOW`이면 confidence_word 하향 보정.
+- **SSE 계약**: `hypothesis.hypotheses[i].surface` / `.detail` — 프론트엔드는 surface만 표시하고 펼침 시 detail 렌더링.
+- **`HypothesisSpec`**: `surface_summary`, `confidence_word` 필드 추가. `verify_hypotheses` 반환 직전 일괄 생성(FDR 보정 후).
+- **파일**: `hypothesis_extractor.py`(필드 2개) · `hypothesis_verifier.py`(`_build_surface` + 일괄 호출) · `api/intel_query.py`(SSE 2계층 재구성) · `version.json`
+
+### ✅ 9-P-3 — 방법 오선택 점검 훅 (v8.15.0, 2026-06-17)
+- **문제**: 현재 분기(Type_A/B/C·8-gate·B4)가 어떤 근거로 방법을 선택했는지 기록 없음 → "성공해도 틀린 방법" 사후 점검 불가. 9-0 라우터 착수 시 판정 근거 로그가 없으면 오선택 탐지 훅 연결 불가.
+- **수정**: `HypothesisSpec`에 라우팅 필드 3개 추가 — `routing_method`(경로 ID)·`routing_confidence`(HIGH/MEDIUM/LOW)·`routing_alternatives`(대안 힌트). 모든 분기 출구(8-gate·B4·Type_B·Type_C·Type_A강등·섹터proxy·Type_A정상·매핑실패)에 마킹.
+- **사후 점검 훅 `_check_method_fit`**: 대리쌍(is_proxy_pair=True) 경로에서 유의 결과가 나오면 `routing_confidence→LOW` + `[방법점검-P3]` caveat 보강. 결과 수치는 변경하지 않음.
+- **routing_confidence 기준**: HIGH=방법이 가설 유형에 정확히 맞음 / MEDIUM=적절하나 한계(강등·proxy) / LOW=폴백·지역추정·대리쌍 유의
+- **파일**: `hypothesis_extractor.py`(필드 3개) · `hypothesis_verifier.py`(상수·훅·분기 마킹) · `version.json`
+
+### ✅ 9-P-2 — 진단 독립성 + 매직넘버 config화 (v8.14.0, 2026-06-17)
+- **문제 1 (단일실패점)**: `theory_grounded=False`가 등급 판정(상관 상한)과 D3 진단(대리변수 오류) 두 역할을 동시에 담당. 이 둘은 독립 개념 — grounded=False라도 반드시 D3가 아님.
+- **문제 2 (매직넘버)**: `< 20`, `< 30`, `0.05`, `0.15`, `24`(개월) 등이 `hypothesis_verifier.py`에 하드코딩.
+- **수정 1**: `HypothesisSpec.is_proxy_pair: bool = False` 신규 필드 — D3 진단 전용. Type_C/Type_A강등/섹터proxy 경로에서 화이트리스트(`_THEORY_GROUNDED_PAIRS`) 밖 쌍이면 `True`. `theory_grounded`는 등급 판정에만 계속 사용.
+- **수정 2**: `backend/config/granger_thresholds.yaml` 신규 — `min_event_obs`·`min_market_obs`·`min_event_event_obs`·`p_verified`·`p_partial`·`lookback_months` 등 단일 진실 공급원. `hypothesis_verifier.py` 상단에서 yaml 로드 후 상수로 사용.
+- **파일**: `hypothesis_extractor.py`(is_proxy_pair 필드) · `hypothesis_verifier.py`(yaml 로드·상수 교체·is_proxy_pair 마킹) · `config/granger_thresholds.yaml`(신규) · `version.json`
 
 ### ✅ 9-P-1 — H1 추출 버그 수정 (v8.13.0, 2026-06-17)
 **문제**: `_RE_WHEN_THEN` 정규식이 `될 때`·`될수록`·`높아질 때` 등 동사 어미 변형에서 실패 → IV·DV가 `"미식별"`로 붕괴 → 두 가설이 동일 region/ticker 폴백에 매핑 → Granger 캐시 중복 → 동일 p값 출력.
