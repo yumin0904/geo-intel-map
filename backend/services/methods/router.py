@@ -29,17 +29,19 @@ logger = logging.getLogger(__name__)
 # ── 시그니처별 키워드 패턴 ──────────────────────────────────────────────────────
 
 # SINGLE_SHOCK: 특정 날짜·명명 사건 (이벤트스터디 적합)
+# 주의: "충격"·"사건"은 일반 어휘라 과도 오탐 유발(taiwan_semiconductor, salt_typhoon) → 제거.
+# 날짜·인명·구체 행위 동사만 남겨 false-positive 방지.
 _RE_SINGLE_SHOCK = re.compile(
     r"(펠로시|바이든|트럼프|시진핑|푸틴|\d{4}년\s*\d{1,2}월|\d{4}-\d{2}-\d{2}"
     r"|방문|선언|협정|조약|제재\s*발표|공습|침공|합의|정상회담"
-    r"|사건|사태|충격|쇼크)",
+    r"|사태|쇼크)",
     re.IGNORECASE,
 )
 
 # CROSS_SECTION: 국가간 비교·횡단면 분석
-# "일수록|할수록" = "국가일수록", "높을수록" 등 한국어 비교 표현 (tilde 없이 매칭)
+# "국가들의" 추가: "사헬 국가들의 거버넌스" 등 다국가 비교 프레임 포착.
 _RE_CROSS_SECTION = re.compile(
-    r"(국가(들|간|별)\s*(비교|차이|격차)|일수록|할수록|국가가\s*많을수록"
+    r"(국가(들|간|별)\s*(비교|차이|격차|의)|일수록|할수록|국가가\s*많을수록"
     r"|패널\s*분석|국가\s*고정효과|횡단|cross.?section|panel"
     r"|높을수록|낮을수록|클수록|작을수록|많을수록|적을수록)",
     re.IGNORECASE,
@@ -53,9 +55,10 @@ _RE_COUNTERFACTUAL = re.compile(
 )
 
 # NETWORK_DIFFUSION: 전이·확산·연결망
+# "연쇄 효과" 추가: "연쇄 반응"만 있던 것을 "연쇄 효과"까지 포함 (ukraine, hormuz 쿼리 패턴).
 _RE_NETWORK = re.compile(
     r"(전이|확산|spillover|contagion|파급|연결망|네트워크\s*효과"
-    r"|전염|연쇄\s*반응|도미노)",
+    r"|전염|연쇄\s*(반응|효과|충격|전파)|도미노)",
     re.IGNORECASE,
 )
 

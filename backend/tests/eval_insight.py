@@ -259,6 +259,92 @@ def _check_rival_comparison(text: str) -> dict:
     }
 
 
+def _check_methodological_integrity(hyp_summary: list[dict], expected_signature: str = "") -> dict:
+    """[9-G] 방법론적 정직성 4항목 체크 — Token-Zero 결정론.
+
+    항목:
+      routing_ok        — routing_confidence가 HIGH 또는 MEDIUM (LOW=폴백)
+      no_laundering     — assumptions_met=False인데 칸이 상관+ 인 케이스 0건
+      triangulation_ok  — 복수 방법 적용 시 convergence 필드 존재
+      no_exploratory_leak — exploratory=True인데 인과추론 등급이 상관/선행성/준실험인 케이스 0건
+    """
+    if not hyp_summary:
+        return {
+            "routing_ok": None,
+            "no_laundering": None,
+            "triangulation_ok": None,
+            "no_exploratory_leak": None,
+            "routing_low_cases": [],
+            "laundering_cases": [],
+            "exploratory_leak_cases": [],
+            "n_triangulated": 0,
+            "n_hypotheses": 0,
+            # [9-G] 시그니처 라우팅 정확도
+            "expected_signature": expected_signature,
+            "routing_match": None,
+            "actual_signatures": [],
+        }
+
+    _CAUSAL_RUNGS = {"상관", "선행성", "준실험"}
+    routing_low = []
+    laundering  = []
+    expl_leak   = []
+    n_triangulated = 0
+
+    for h in hyp_summary:
+        rc = h.get("routing_confidence", "")
+        mr = h.get("method_result", {}) or {}
+
+        # (1) routing_ok: LOW는 폴백·대리쌍 경로 = 오선택 의심
+        if rc == "LOW":
+            routing_low.append(h.get("h1", "")[:50])
+
+        # (2) laundering: assumptions_met=False인데 상관+ 칸 배정
+        for r in mr.get("all_results", []):
+            if not r.get("assumptions_met", True) and r.get("actual_rung", "") in _CAUSAL_RUNGS:
+                laundering.append({
+                    "h1": h.get("h1", "")[:50],
+                    "method": r.get("method", ""),
+                    "rung": r.get("actual_rung", ""),
+                })
+
+        # (3) triangulation: 복수 방법이면 convergence 존재 여부
+        if len(mr.get("all_results", [])) >= 2:
+            n_triangulated += 1
+
+        # (4) exploratory_leak: 탐색형인데 확증 등급 누출
+        if h.get("any_exploratory") and h.get("headline_rung", "") in _CAUSAL_RUNGS:
+            expl_leak.append(h.get("h1", "")[:50])
+
+    routing_ok = len(routing_low) == 0
+    no_laundering = len(laundering) == 0
+    no_expl_leak = len(expl_leak) == 0
+    triangulation_ok = True  # 복수 방법이 있을 때만 의미있음 (없으면 N/A)
+
+    # [9-G] 시그니처 라우팅 정확도 — expected vs actual 비교
+    actual_sigs = [h.get("data_signature", "") for h in hyp_summary if h.get("data_signature")]
+    if expected_signature and actual_sigs:
+        routing_match = expected_signature in actual_sigs
+    else:
+        routing_match = None  # 레이블 없거나 가설 없음 → N/A
+
+    return {
+        "routing_ok":           routing_ok,
+        "no_laundering":        no_laundering,
+        "triangulation_ok":     triangulation_ok,
+        "no_exploratory_leak":  no_expl_leak,
+        "routing_low_cases":    routing_low,
+        "laundering_cases":     laundering,
+        "exploratory_leak_cases": expl_leak,
+        "n_triangulated":       n_triangulated,
+        "n_hypotheses":         len(hyp_summary),
+        # 라우팅 정확도
+        "expected_signature":   expected_signature,
+        "routing_match":        routing_match,
+        "actual_signatures":    list(dict.fromkeys(actual_sigs)),  # 중복 제거 순서 보존
+    }
+
+
 def _check_labels(text: str) -> dict[str, int]:
     """품질 레이블 카운트."""
     return {
@@ -379,18 +465,43 @@ def evaluate_case(
     hyp_summary = []
     for ev in hyp_events:
         for h in ev.get("hypotheses", [ev]):  # hypotheses 키 없으면 이벤트 자체로 fallback
+            # [9-P-4] SSE가 surface/detail 2계층 구조로 변경됨 — detail 우선, flat fallback
+            detail = h.get("detail", h)
+            surface = h.get("surface", {})
+            mr = detail.get("method_result", {}) or {}
             hyp_summary.append({
-                "h1": h.get("h1", ""),
-                "status": h.get("verification_status", "PENDING"),
-                "var_type": h.get("var_type", ""),
-                "p_value": h.get("granger_p"),
-                "granger_q": h.get("granger_q"),
-                "inference_grade": h.get("inference_grade", "기술적"),
-                "theory_grounded": h.get("theory_grounded", False),
-                "differenced": h.get("differenced", False),
+                "h1": detail.get("h1", h.get("h1", "")),
+                "status": detail.get("verification_status", h.get("verification_status", "PENDING")),
+                "var_type": detail.get("var_type", h.get("var_type", "")),
+                "p_value": detail.get("granger_p", h.get("granger_p")),
+                "granger_q": detail.get("granger_q", h.get("granger_q")),
+                "inference_grade": detail.get("inference_grade", h.get("inference_grade", "기술적")),
+                "theory_grounded": detail.get("theory_grounded", h.get("theory_grounded", False)),
+                "differenced": detail.get("differenced", h.get("differenced", False)),
+                # [9-G] 방법론 정직성 필드 (detail 또는 surface에서 추출)
+                "data_signature":    detail.get("data_signature", ""),
+                "routing_method":    surface.get("routing_method", detail.get("routing_method", "")),
+                "routing_confidence": surface.get("routing_confidence", detail.get("routing_confidence", "")),
+                "is_proxy_pair":     detail.get("is_proxy_pair", False),
+                "method_result": mr,
+                # method_result 핵심 필드 평탄화 (편의)
+                "headline_rung":     mr.get("headline_rung", ""),
+                "headline_method":   mr.get("headline_method", ""),
+                "convergence":       mr.get("convergence"),
+                "all_methods_met": all(
+                    r.get("assumptions_met", False)
+                    for r in mr.get("all_results", [])
+                ) if mr.get("all_results") else None,
+                "any_exploratory":   any(
+                    r.get("exploratory", False)
+                    for r in mr.get("all_results", [])
+                ),
             })
 
     completeness = _score_completeness(section_check)
+    method_integrity = _check_methodological_integrity(
+        hyp_summary, expected_signature=case.get("expected_signature", "")
+    )
     missing_sections = [s for s, ok in section_check.items() if not ok]
     missing_tags     = [t for t, ok in tag_check.items() if not ok]
 
@@ -417,11 +528,44 @@ def evaluate_case(
             ig = h.get("inference_grade", "기술적")
             mark = "🟢" if ig == "선행성" else "🟡" if ig == "상관" else "⚪"
             q = f" q={h['granger_q']}" if h.get("granger_q") is not None else ""
+            sig = h.get("data_signature", "")
+            hr  = h.get("headline_rung", "")
+            rc  = h.get("routing_confidence", "")
             print(f"  {mark} 추론[{ig}] type={h['var_type']} p={h['p_value']}{q}"
                   f" grounded={h.get('theory_grounded')}")
+            if sig or hr:
+                rung_mark = "🔬" if hr == "준실험" else "📊" if hr in ("선행성","상관") else "📋"
+                print(f"     {rung_mark} sig={sig} rung={hr} rc={rc}")
     elif exp_h1:
         print(f"  ⚠ H1 가설 미추출 (기대: True)")
     print(f"  📐 증거 등급 {confidence} / 추론 등급 [{inference_grade}]")
+
+    # [9-G] 라우팅 정확도 출력 (expected_signature 있을 때만)
+    exp_sig = case.get("expected_signature", "")
+    if exp_sig and hyp_summary:
+        rm = method_integrity.get("routing_match")
+        actual_sigs = method_integrity.get("actual_signatures", [])
+        match_mark = "✅" if rm else "❌" if rm is False else "⚪"
+        print(f"  {match_mark} 라우팅 기대={exp_sig} 실제={actual_sigs}")
+
+    # [9-G] 방법론 정직성 요약 출력
+    mi = method_integrity
+    if mi["n_hypotheses"] > 0:
+        items = [
+            ("라우팅",   mi["routing_ok"],          mi["routing_low_cases"]),
+            ("laundering", mi["no_laundering"],     mi["laundering_cases"]),
+            ("탐색누출", mi["no_exploratory_leak"], mi["exploratory_leak_cases"]),
+        ]
+        parts = []
+        for label, ok, bad in items:
+            if ok is None:
+                continue
+            parts.append(f"{label}={'✅' if ok else '❌'}")
+            if not ok and bad:
+                print(f"  ⚠ {label} 위반: {bad[0]}")
+        if parts:
+            tcount = mi["n_triangulated"]
+            print(f"  🔍 방법론 정직성: {' · '.join(parts)} · 삼각측량={tcount}건")
 
     # [C1] 질적 평가 (LLM 심판) — 형식이 아닌 내용 채점
     quality = None
@@ -455,6 +599,7 @@ def evaluate_case(
         "expected_min_score": exp_score,
         "retries": retries,
         "quality": quality,  # [C1] LLM 심판 4축 (없으면 None)
+        "method_integrity": method_integrity,  # [9-G] 방법론 정직성 체크
     }
 
 
@@ -518,6 +663,48 @@ def _print_summary(results: list[dict]) -> None:
             overall += avg
             print(f"     {labels[ax]}: {avg:.2f}/5")
         print(f"     종합: {overall/4:.2f}/5  ← '박사 수준' 진짜 척도 (형식 무관)")
+
+    # ── [9-G] 방법론 정직성 집계 ────────────────────────────────────────────
+    mi_list = [r.get("method_integrity", {}) for r in valid if r.get("method_integrity")]
+    mi_with_hyp = [m for m in mi_list if m.get("n_hypotheses", 0) > 0]
+    if mi_with_hyp:
+        n = len(mi_with_hyp)
+        def _pct(key: str) -> str:
+            cnt = sum(1 for m in mi_with_hyp if m.get(key))
+            return f"{cnt}/{n} ({round(cnt/n*100)}%)"
+
+        total_laundering = sum(len(m.get("laundering_cases", [])) for m in mi_with_hyp)
+        total_leak = sum(len(m.get("exploratory_leak_cases", [])) for m in mi_with_hyp)
+        total_tria = sum(m.get("n_triangulated", 0) for m in mi_with_hyp)
+        routing_low_all = [c for m in mi_with_hyp for c in m.get("routing_low_cases", [])]
+
+        print(f"\n🔍 [9-G] 방법론 정직성 지표 ({n}케이스 기준)")
+
+        # 시그니처 라우팅 정확도 (expected_signature 있는 케이스만)
+        sig_labeled = [m for m in mi_with_hyp if m.get("expected_signature")]
+        if sig_labeled:
+            sig_match = [m for m in sig_labeled if m.get("routing_match") is True]
+            sig_rate = len(sig_match) / len(sig_labeled)
+            sig_mark = "✅" if sig_rate >= 0.80 else "❌"
+            print(f"   {sig_mark} 시그니처 라우팅 정확도: {len(sig_match)}/{len(sig_labeled)} ({round(sig_rate*100)}%)  [목표 80%+]")
+            # 불일치 케이스 표시
+            mismatch = [m for m in sig_labeled if m.get("routing_match") is False]
+            if mismatch:
+                for m in mismatch[:3]:
+                    print(f"      ❌ 기대={m['expected_signature']} 실제={m.get('actual_signatures', [])}")
+
+        print(f"   라우팅 정상(HIGH/MED): {_pct('routing_ok')}")
+        print(f"   laundering 0건:        {_pct('no_laundering')}  (총 {total_laundering}건 위반)")
+        print(f"   탐색→확증 누출 0건:    {_pct('no_exploratory_leak')}  (총 {total_leak}건 누출)")
+        print(f"   삼각측량 적용 케이스:  {total_tria}건")
+        if routing_low_all:
+            print(f"   ⚠ LOW 라우팅 케이스 ({len(routing_low_all)}개): {routing_low_all[:3]}")
+        # 목표 기준 (라우팅 정확도 포함)
+        sig_rate_ok = (len(sig_match) / len(sig_labeled) >= 0.80) if sig_labeled else True
+        routing_rate = sum(1 for m in mi_with_hyp if m.get("routing_ok")) / n
+        target_ok = sig_rate_ok and routing_rate >= 0.80 and total_laundering == 0 and total_leak == 0
+        status_str = "✅ 9-G 목표 충족" if target_ok else "❌ 9-G 목표 미충족"
+        print(f"   {status_str} (시그니처정확도 80%+ · 라우팅 80%+ · laundering 0 · 누출 0)")
 
     # 잘림·API오류 재시도 통계 (일시적 Gemini 현상 모니터링)
     retried = [r for r in results if r.get("retries", 0) > 0]
@@ -587,6 +774,68 @@ def _diagnosis(results: list[dict]) -> str:
         status_dist = C2(h["status"] for h in all_hyp)
         for status, cnt in status_dist.most_common():
             lines.append(f"- {status}: {cnt}개")
+
+    # ── [9-G] 방법론 정직성 진단 ──────────────────────────────────────────────
+    mi_list = [r.get("method_integrity", {}) for r in results if r.get("method_integrity")]
+    mi_with_hyp = [m for m in mi_list if m.get("n_hypotheses", 0) > 0]
+    if mi_with_hyp:
+        lines.append(f"\n### [9-G] 방법론 정직성 진단 ({len(mi_with_hyp)}케이스)")
+
+        # 데이터 시그니처 분포
+        sig_dist: dict[str, int] = {}
+        rung_dist: dict[str, int] = {}
+        for r in results:
+            for h in r.get("hypothesis", []):
+                sig = h.get("data_signature", "")
+                if sig:
+                    sig_dist[sig] = sig_dist.get(sig, 0) + 1
+                hr = h.get("headline_rung", "")
+                if hr:
+                    rung_dist[hr] = rung_dist.get(hr, 0) + 1
+        if sig_dist:
+            lines.append("#### 데이터 시그니처 분포")
+            for sig, cnt in sorted(sig_dist.items(), key=lambda x: -x[1]):
+                lines.append(f"- {sig}: {cnt}개")
+        if rung_dist:
+            lines.append("#### Method Router 달성 칸 분포")
+            for rung, cnt in sorted(rung_dist.items(), key=lambda x: -x[1]):
+                lines.append(f"- {rung}: {cnt}개")
+
+        # 시그니처 라우팅 정확도 상세
+        sig_labeled = [m for m in mi_with_hyp if m.get("expected_signature")]
+        if sig_labeled:
+            sig_match_cnt = sum(1 for m in sig_labeled if m.get("routing_match") is True)
+            sig_rate = sig_match_cnt / len(sig_labeled)
+            lines.append(f"\n#### 시그니처 라우팅 정확도: {sig_match_cnt}/{len(sig_labeled)} ({round(sig_rate*100)}%)")
+            for m in sig_labeled:
+                rm = m.get("routing_match")
+                mark = "✅" if rm else "❌" if rm is False else "⚪"
+                lines.append(f"- {mark} 기대={m['expected_signature']} 실제={m.get('actual_signatures', [])}")
+
+        # laundering 위반 상세
+        all_laundering = [c for m in mi_with_hyp for c in m.get("laundering_cases", [])]
+        if all_laundering:
+            lines.append(f"\n⚠️  laundering 위반 {len(all_laundering)}건 (assumptions_met=False인데 칸 배정):")
+            for c in all_laundering[:5]:
+                lines.append(f"  - {c}")
+        else:
+            lines.append("- laundering 0건 ✅")
+
+        # 탐색→확증 누출 상세
+        all_leaks = [c for m in mi_with_hyp for c in m.get("exploratory_leak_cases", [])]
+        if all_leaks:
+            lines.append(f"\n⚠️  탐색→확증 누출 {len(all_leaks)}건:")
+            for c in all_leaks[:5]:
+                lines.append(f"  - {c}")
+        else:
+            lines.append("- 탐색→확증 누출 0건 ✅")
+
+        # LOW 라우팅 케이스
+        all_low = [c for m in mi_with_hyp for c in m.get("routing_low_cases", [])]
+        if all_low:
+            lines.append(f"\n⚠️  LOW 라우팅 {len(all_low)}건 (폴백·대리쌍 경로 오선택 의심):")
+            for c in all_low[:5]:
+                lines.append(f"  - {c}")
 
     return "\n".join(lines)
 

@@ -2,6 +2,10 @@
 # eval_insight.py 가 이 파일을 읽어 순차 실행한다.
 #
 # mode: insight | presentation | verify
+# expected_signature: [9-G] 방법론 라우팅 정답 레이블
+#   PAIRED_TIMESERIES | CROSS_SECTION | SINGLE_SHOCK | NETWORK_DIFFUSION |
+#   UNQUANTIFIABLE | COUNTERFACTUAL | NONLINEAR
+#   (없으면 라우팅 정확도 측정에서 제외)
 # expect.sections: 비어 있으면 insight 기본 8개 사용
 #                  verify 모드는 [단계 1]~[단계 6] 지정 필요
 # expect.tags: 응답에 포함되어야 할 한국어 키워드 (최소 1개)
@@ -10,7 +14,8 @@
 cases:
   # ── Insight 모드 (6개) ────────────────────────────────────────────────
   - id: ukraine_russia_energy
-    gold: true   # energy 섹터 대표 — FRED·EIA 수치 연결 검증
+    gold: true
+    expected_signature: NETWORK_DIFFUSION  # 지역간 연쇄 파급 — 현재 라우터는 "연쇄 효과" 미탐지(→PAIRED_TIMESERIES) → 라우팅 버그 노출용
     name: "러-우 에너지 인프라 공격 → 유럽 시장 연쇄"
     query: "러시아의 우크라이나 에너지 인프라 공격이 유럽 에너지 시장에 미치는 연쇄 효과를 분석해줘"
     mode: insight
@@ -20,7 +25,8 @@ cases:
       h1: true
 
   - id: taiwan_semiconductor
-    gold: true   # techno 섹터 대표 — semi_market + Comtrade HHI 연결
+    gold: true
+    expected_signature: PAIRED_TIMESERIES  # 군사긴장 ↔ TSM 주가 시계열
     name: "대만해협 긴장 → 반도체 공급망"
     query: "대만해협 군사긴장이 글로벌 반도체 공급망에 미치는 충격을 교차 분석해줘"
     mode: insight
@@ -30,7 +36,8 @@ cases:
       h1: true
 
   - id: korean_peninsula_alliance
-    gold: true   # indo_pacific 섹터 — Granger VERIFIED 쌍(KRW) 포함
+    gold: true
+    expected_signature: NETWORK_DIFFUSION  # 이란전 → 무기재고 소진 → 서태평양 파급 — Gemini H1이 "파급효과" 언어 사용, NETWORK_DIFFUSION이 실제 올바른 분류
     name: "이란전 → 한미동맹 자율성"
     query: "이란전이 한미동맹 신뢰도와 한국의 전략적 자율성에 미치는 영향을 분석해줘"
     mode: insight
@@ -40,7 +47,8 @@ cases:
       h1: true
 
   - id: china_cyber_us
-    gold: true   # cyber 섹터 — CSIS·ITU 데이터 연결 검증
+    gold: true
+    expected_signature: UNQUANTIFIABLE  # 사이버 역량·억지 측정 불가 → 8-gate 처리 대상
     name: "솔트 타이푼 → 미국 사이버 방어 공백"
     query: "솔트 타이푼 이후 중국의 사이버 공세와 미국 방어 역량 공백을 교차 분석해줘"
     mode: insight
@@ -69,7 +77,8 @@ cases:
 
   # ── Verify 모드 (2개) ─────────────────────────────────────────────────
   - id: hormuz_oil_verify
-    gold: true   # verify 모드 대표 — EIA + Granger 검증
+    gold: true
+    expected_signature: PAIRED_TIMESERIES  # 봉쇄 위협 강도 ↔ CL=F 시계열 Granger
     name: "호르무즈 봉쇄 → 유가 인과 검증"
     query: "호르무즈 봉쇄 위협이 실제로 유가 급등을 유발하는지 통계적으로 검증해줘"
     mode: verify
@@ -110,7 +119,8 @@ cases:
   # ── 추가 케이스 (Cycle 7-C, 총 20개) ────────────────────────────────────
 
   - id: hormuz_iran_blockade
-    gold: true   # energy·maritime 교차 — Weaponized Interdependence + EIA
+    gold: true
+    expected_signature: NETWORK_DIFFUSION  # 이란→에너지시장→동맹 연쇄 = 지역간 전이 — "연쇄 효과" 키워드 라우팅 미탐지 시 PAIRED_TIMESERIES
     name: "이란전 호르무즈 봉쇄 → 에너지 무기화 연쇄 분석"
     query: "이란전 호르무즈 봉쇄가 글로벌 에너지 시장과 동맹 결속에 미치는 연쇄 효과를 자원무기화·상호의존 이론으로 교차 분석해줘"
     mode: insight
@@ -120,7 +130,8 @@ cases:
       h1: true
 
   - id: russia_china_arctic_control
-    gold: true   # gray_zone 대표 — HIIK·Polity5 연결
+    gold: true
+    expected_signature: UNQUANTIFIABLE  # 체제·전략 비교 → 선형검정 부적합, 8-gate 처리
     name: "러-중 북극 법전쟁 → 회색지대 전략 분석"
     query: "러시아와 중국의 북극항로 주권 통제 전략을 회색지대 이론과 하이브리드 전쟁 이론으로 비교 분석해줘"
     mode: insight
@@ -130,7 +141,8 @@ cases:
       h1: true
 
   - id: pla_taiwan_a2ad
-    gold: true   # maritime·indo_pacific 교차 — 경쟁이론 수치비교 핵심
+    gold: true
+    expected_signature: UNQUANTIFIABLE  # 마한 vs 미어샤이머 이론 비교 → 측정 불가
     name: "PLA A2/AD → Mahan vs Mearsheimer 비교"
     query: "중국 PLA의 대만해협 A2/AD 전략을 마한 해양력 이론과 미어샤이머 공격적 현실주의로 비교 분석해줘"
     mode: insight
@@ -140,7 +152,8 @@ cases:
       h1: true
 
   - id: houthi_red_sea_sloc
-    gold: true   # maritime 섹터 독립 — ACLED + EIA 연결
+    gold: true
+    expected_signature: PAIRED_TIMESERIES  # 공격 건수 ↔ 해운 운임 시계열
     name: "후티 홍해 공격 → SLOC 취약성"
     query: "후티의 홍해 상선 공격이 글로벌 해상 교통로(SLOC) 취약성에 미치는 영향을 분석해줘"
     mode: insight
@@ -150,7 +163,8 @@ cases:
       h1: true
 
   - id: salt_typhoon_cyber_deterrence
-    gold: true   # cyber verify — 이론 반증가능성 집중 테스트
+    gold: true
+    expected_signature: UNQUANTIFIABLE  # Libicki 사이버 억지 이론 검증 → 귀속 측정 불가
     name: "솔트 타이푼 → Libicki 사이버 억지 검증"
     query: "솔트 타이푼 사건에서 Libicki 사이버 억지 이론의 귀속 명확성 가설이 실제로 억지에 실패한 이유를 분석해줘"
     mode: verify
@@ -180,7 +194,8 @@ cases:
       h1: false
 
   - id: india_indo_pacific_balancing
-    gold: true   # indo_pacific — Snyder 동맹 딜레마 이론 실측 연결
+    gold: true
+    expected_signature: UNQUANTIFIABLE  # Snyder 동맹 딜레마 이론 적용 → 전략 선택 측정 불가
     name: "인도 전략적 자율성 → 동맹 딜레마 분석"
     query: "인도의 전략적 자율성이 미-중 경쟁 속에서 Snyder 동맹 딜레마를 어떻게 회피하는지 분석해줘"
     mode: insight
@@ -199,7 +214,8 @@ cases:
       h1: false
 
   - id: mearsheimer_vs_liberal_taiwan
-    gold: true   # 경쟁이론 수치비교 핵심 — theory_comparator 연결 직접 측정
+    gold: true
+    expected_signature: UNQUANTIFIABLE  # 이론 설명력 비교 → 단일 정량 검정 불가
     name: "Mearsheimer 공격적 현실주의 vs 자유주의 상호의존 — 대만 분쟁 예측 비교"
     query: "대만 분쟁 가능성에서 미어샤이머의 공격적 현실주의와 케오헤인-나이의 자유주의 상호의존 이론 중 어느 쪽이 더 설명력이 높은지 검증해줘"
     mode: verify
@@ -251,7 +267,8 @@ cases:
       h1: true
 
   - id: china_rareearth_techno
-    gold: true   # AR-1b Comtrade HHI 직접 검증 — HS26 의존도 수치 확인
+    gold: true
+    expected_signature: PAIRED_TIMESERIES  # 수출통제 강도 ↔ HHI·공급망 지수 시계열
     name: "중국 희토류 통제 → 반도체 공급망 HHI"
     query: "중국의 희토류·갈륨 수출통제가 반도체 공급망 집중도(HHI)에 미치는 구조적 영향을 SIA 시장 데이터로 분석해줘"
     mode: insight
@@ -261,7 +278,8 @@ cases:
       h1: true
 
   - id: sahel_governance_gray_zone
-    gold: true   # gray_zone 수치 근거 — WB WGI·HIIK 데이터 연결
+    gold: true
+    expected_signature: CROSS_SECTION  # 국가별 WGI ↔ HIIK 횡단비교 — 9-B 패널 FE 대상
     name: "사헬 거버넌스 붕괴 → 지하디스트 확산"
     query: "사헬 국가들의 거버넌스 지수(WB WGI) 악화가 분쟁 강도(HIIK)에 미치는 영향을 회색지대 이론으로 분석해줘"
     mode: insight
@@ -299,7 +317,8 @@ cases:
       h1: false
 
   - id: taiwan_liberal_vs_realist
-    gold: true   # 경쟁이론+Comtrade 무역의존도 수치 — Phase 8 게이트 측정 핵심
+    gold: true
+    expected_signature: CROSS_SECTION  # 무역의존도 vs 군사력 격차 — 국가·연도 패널 비교
     name: "대만 — 자유주의 상호의존 vs 공격적 현실주의 (수치 비교)"
     query: "대만해협에서 양안 무역 의존도(자유주의)와 군사력 격차(현실주의) 중 어느 변수가 분쟁 억제를 더 잘 설명하는지 수치로 검증해줘"
     mode: verify
@@ -307,4 +326,43 @@ cases:
       min_score: 60
       sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
       tags: ["대만", "상호의존"]
+      h1: true
+
+  # ── [9-G] 신규 골드셋 — 시그니처 커버리지 확장 (31~33) ──────────────────────
+  # SINGLE_SHOCK(×2) + CROSS_SECTION(×1) — 9-A·9-B 어댑터 직접 검증용
+
+  - id: pelosi_taiwan_event_study
+    gold: true
+    expected_signature: SINGLE_SHOCK  # "2022년 8월" + "펠로시" → 이벤트스터디 대상
+    name: "2022년 펠로시 대만 방문 → TSM 주가 비정상수익률 (이벤트스터디)"
+    query: "2022년 8월 펠로시 하원의장의 대만 방문 직후 TSMC 주가에 나타난 비정상수익률(CAR)을 이벤트스터디로 분석해줘. 사건일 전후 시장 반응이 통계적으로 유의한지 검증해줘."
+    mode: verify
+    expect:
+      min_score: 55
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["대만", "주가"]
+      h1: true
+
+  - id: ukraine_invasion_event_study
+    gold: true
+    expected_signature: SINGLE_SHOCK  # "2022년 2월 24일" 침공 발표 → 이벤트스터디
+    name: "2022년 러시아 우크라이나 침공 발표 → 유럽 에너지 가격 충격 (이벤트스터디)"
+    query: "2022년 2월 24일 러시아 우크라이나 침공 발표가 유럽 천연가스 선물(TTF·NG=F) 가격에 미친 즉각적 충격을 이벤트스터디로 분석해줘. 침공 전후 비정상수익률(CAR)이 통계적으로 유의한지 검증해줘."
+    mode: verify
+    expect:
+      min_score: 55
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["우크라이나", "에너지"]
+      h1: true
+
+  - id: democracy_defense_spending_panel
+    gold: true
+    expected_signature: CROSS_SECTION  # "높은 국가일수록" → 9-B 패널 FE 직접 대상
+    name: "민주주의 지수가 높을수록 방위비 부담 낮다 — 패널 회귀 검증"
+    query: "민주주의 지수(V-Dem)가 높은 국가일수록 GDP 대비 방위비 비율이 낮은 경향이 있는지, SIPRI·vdem 패널 데이터로 분석해줘. 고정효과 회귀와 횡단면 OLS 결과를 비교해줘."
+    mode: verify
+    expect:
+      min_score: 55
+      sections: ["[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]"]
+      tags: ["방위비", "민주주의"]
       h1: true

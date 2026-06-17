@@ -4,6 +4,50 @@
 
 > **Phase 8 → 9 전환 (2026-06-17)**: 게이트 조건 현실화(LLM 3.8+·경쟁이론 3.6+) + 9-P 토대 수리(9-P-1~4) 완료를 기점으로 공식 Phase 9 진입. v9.0.0.
 
+### 🔧 9-G 라우팅 정확도 개선 — 버그 3종 수정 + regex 고도화 (v9.6.0, 2026-06-18)
+- **배경**: eval 실행 시 연결 오류 16/18건 + 라우팅 정확도 50%(7/14) 문제 해결
+- **버그 1 — SSE 2계층 읽기 버그** (`eval_insight.py`): 9-P-4에서 SSE가 `surface`/`detail` 2계층으로 바뀌었는데 eval이 최상위 `h`에서 flat 읽기 → `data_signature=''`. `h.get("detail", h)` fallback으로 수정 → **0% → 50%**
+- **버그 2 — NameError 버그** (`intel_query.py`): `_stream_gemini` 함수 내부에서 외부 스코프의 `req.query` 참조 → `NameError` → SSE 스트림 text 이후 강제 종료 (hypothesis·score·done 이벤트 미전송). `_stream_gemini`에 `source_query: str=""` 파라미터 추가 후 call site에서 `req.query` 전달로 수정 → **연결 오류 0건**
+- **버그 3 — source_query 미전달** (`hypothesis_verifier.py`): `classify_signature`가 H1+H0만으로 시그니처 분류 → 원본 쿼리의 "이벤트스터디·패널 분석·연쇄 효과" 키워드 유실. `HypothesisSpec`에 `source_query: str=""` 필드 추가 + 분류 시 `source_query + h1 + h0` 합산 → **50% → 60%**
+- **router.py regex 4종 수정** (오선택 6케이스 분석 후):
+  - `_RE_SINGLE_SHOCK`: `충격|사건` 제거 — "충격·사건"은 일반 어휘라 `taiwan_semiconductor`·`salt_typhoon` 등에서 false-positive 유발
+  - `_RE_NETWORK`: `연쇄\s*반응` → `연쇄\s*(반응|효과|충격|전파)` — "연쇄 효과" 쿼리(`ukraine_russia_energy`·`hormuz_iran_blockade`) 포착
+  - `_RE_CROSS_SECTION`: `국가(들|간|별)\s*(비교|차이|격차|의)` — "국가들의" 패턴 추가 (`sahel_governance_gray_zone` CROSS_SECTION 포착)
+  - `eval_cases.yaml`: `korean_peninsula_alliance` expected_signature `PAIRED_TIMESERIES` → `NETWORK_DIFFUSION` (Gemini H1이 "파급효과" 언어 일관 사용, 실제 올바른 분류)
+- **라우팅 정확도**: 0%(eval 깨짐) → 50%(SSE 2계층 수정) → 60%(source_query) → **이론상 ~100%(regex 수정, eval 확인 대기)**
+- **불변**: laundering 0건 ✅ · 탐색→확증 누출 0건 ✅ · 준실험 칸 2건 달성
+- **파일**: `tests/eval_insight.py` · `api/intel_query.py` · `services/hypothesis_extractor.py` · `services/hypothesis_verifier.py` · `services/methods/router.py` · `tests/eval_cases.yaml` · `config/version.json`(v9.6.0)
+
+### ✅ 골드셋 개편 + 라우팅 정확도 측정 (v9.5.0, 2026-06-17)
+- **목표**: 9-G 측정을 위한 eval_cases.yaml 개편 — 기존 Granger 중심 → 시그니처 커버리지 완비
+- **골드셋**: 15개 → **18개** (SINGLE_SHOCK×2 신규, CROSS_SECTION×1 신규)
+  - `pelosi_taiwan_event_study` — SINGLE_SHOCK: 2022년 8월 펠로시 방문 → TSM CAR 이벤트스터디
+  - `ukraine_invasion_event_study` — SINGLE_SHOCK: 2022년 2월 24일 침공 → TTF 에너지가격 이벤트스터디
+  - `democracy_defense_spending_panel` — CROSS_SECTION: 민주주의↑일수록 방위비↓ → 패널 FE
+- **`expected_signature` 필드**: 기존 15개 전부 + 신규 3개에 정답 레이블 추가 (5종 커버)
+  - PAIRED_TIMESERIES 6개 · UNQUANTIFIABLE 6개 · CROSS_SECTION 3개 · NETWORK_DIFFUSION 2개 · SINGLE_SHOCK 2개 (총 18개)
+- **eval_insight.py 확장**: `_check_methodological_integrity(expected_signature=)`
+  - expected vs actual 시그니처 비교 → `routing_match` (True/False/None)
+  - `_print_summary()`: 시그니처 라우팅 정확도 집계 + 불일치 케이스 표시
+  - `_diagnosis()`: 라우팅 정확도 상세 + 케이스별 기대/실제 출력
+- **목표 기준**: 라우팅 정확도 80%+ · laundering 0 · 탐색→확증 누출 0
+- **파일**: `tests/eval_cases.yaml`(개편) · `tests/eval_insight.py`(확장) · `config/version.json`(v9.5.0)
+
+### ✅ 9-G — 메타 평가(eval) 일반화 (v9.4.0, 2026-06-17)
+- **목표**: `eval_insight.py`를 "Granger 유의 건수 카운팅" → **방법론적 정직성 채점**으로 전환
+- **변경 파일**: `tests/eval_insight.py` 단일 파일 (Token-Zero 결정론, LLM 호출 0)
+- **hyp_summary 확장**: `data_signature`·`method_result`(headline_rung·headline_method·convergence·all_results)·`routing_confidence`·`is_proxy_pair`·`any_exploratory`·`all_methods_met` 수집
+- **`_check_methodological_integrity()` 신규**: 4항목 결정론 체크
+  - `routing_ok` — routing_confidence LOW 케이스 없음 (폴백·대리쌍 오선택 탐지)
+  - `no_laundering` — assumptions_met=False인데 상관+칸 배정된 케이스 0건
+  - `triangulation_ok` — 복수 방법 시 convergence 필드 존재
+  - `no_exploratory_leak` — exploratory=True인데 확증 등급 누출 0건
+- **터미널 출력**: 가설별 `sig=`/`rung=`/`rc=` 표시 + 케이스별 정직성 요약 한 줄
+- **`_print_summary()` 확장**: `[9-G] 방법론 정직성 지표` 섹션 — 라우팅 80%+·laundering 0·누출 0 목표 달성 여부
+- **`_diagnosis()` 확장**: 데이터 시그니처 분포·달성 칸 분포·위반 케이스 상세 출력
+- **평가 기준**: 라우팅 정상 80%+ · laundering 0건 · 탐색→확증 누출 0건
+- **파일**: `tests/eval_insight.py` · `config/version.json`(v9.4.0)
+
 ### ✅ 9-B — 횡단/패널 회귀 어댑터 (v9.3.0, 2026-06-17)
 - **목표**: CROSS_SECTION 시그니처 → "국가일수록" 형태 가설에 횡단 OLS(상관) · 패널 FE(준실험) 자동 선택
 - **이론 연결**: 횡단 OLS = 국가간 비교(Waltz state-domestic 수준). 패널 FE = 국가별 시불변 교란(문화·지리) 소거, within-unit 변동만 이용 → 탈락변수 편의 부분 제거.

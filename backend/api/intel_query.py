@@ -419,6 +419,7 @@ async def _stream_gemini(
     thinking: bool,
     source_counts: dict | None = None,
     default_regions: list[str] | None = None,
+    source_query: str = "",
 ) -> AsyncGenerator[str, None]:
     """Gemini 2.5 Flash SSE 스트리밍. thinking=True 시 thinkingBudget 8192.
 
@@ -561,6 +562,9 @@ async def _stream_gemini(
             # verification_cap 폐기 — 두 축을 하나의 숫자로 뭉개던 결함(Goodhart) 제거.
             specs = extract_hypotheses(full_text, default_regions=default_regions)
             if specs:
+                # [9-0] 원본 쿼리를 spec에 주입 — 시그니처 분류 시 H1+H0에 없는 키워드 보완
+                for _s in specs:
+                    _s.source_query = source_query
                 specs = await verify_hypotheses(specs)
                 # 사다리 최고 등급을 인사이트 대표 추론 등급으로 (인과 단정 아님)
                 _LADDER_ORDER = {"기술적": 0, "상관": 1, "선행성": 2}
@@ -684,7 +688,8 @@ async def intel_query(req: IntelQueryRequest):
         })
 
         async for chunk in _stream_gemini(
-            prompt, pq.thinking, source_counts, default_regions=pq.regions
+            prompt, pq.thinking, source_counts,
+            default_regions=pq.regions, source_query=req.query,
         ):
             yield chunk
 

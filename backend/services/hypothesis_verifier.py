@@ -794,8 +794,8 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         from services.methods.grader import grade as triangulate
 
         for s in results:
-            # 시그니처 결정 (쿼리 텍스트 = h1 + h0 결합)
-            query_text = f"{s.h1} {s.h0}"
+            # 시그니처 결정: 원본 쿼리 + h1 + h0 합산 — 원본에만 있는 "이벤트스터디", "패널 분석" 등 보완
+            query_text = f"{getattr(s, 'source_query', '')} {s.h1} {s.h0}"
             lt = getattr(s, "linear_testable", True)
             has_ts = s.granger_p is not None or s.verification_status != "PENDING"
             sig = classify_signature(query_text, linear_testable=lt, has_paired_timeseries=has_ts)

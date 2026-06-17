@@ -75,8 +75,10 @@ class HypothesisSpec:
     routing_confidence: str = ""            # HIGH / MEDIUM / LOW
     routing_alternatives: list[str] = field(default_factory=list)  # 대안 방법 힌트
     # ── [9-0] Method Router — 데이터 시그니처 + MethodResult ────────────────
+    # source_query: 원본 사용자 쿼리 — H1/H0에 없는 시그니처 키워드 보완용
     # data_signature: router가 채우는 데이터 모양 분류
     # method_result:  granger_adapter 등이 채우는 공통 스키마 결과 (JSON 직렬화용 dict)
+    source_query: str = ""              # 원본 쿼리 (intel_query에서 주입)
     data_signature: str = ""             # DataSignature 값 (router 결정)
     method_result: dict = field(default_factory=dict)  # MethodResult 직렬화
     # ── [9-P-4] 출력 2계층화 — 표면(비전공자 판독) / 펼침(전체 진단) ──────────
