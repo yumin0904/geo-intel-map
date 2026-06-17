@@ -286,7 +286,9 @@ async def _run_granger_for_spec(
             except Exception as _ext_exc:
                 logger.debug("[hypothesis] [B8-P90] 극단 검정 실패: %s", _ext_exc)
 
-        # 두 검정 모두 유의하지 않으면 비선형 구조 설명 승격
+        # [8-gate] 선형·극단 모두 비유의 — null을 비선형 증거로 승격하지 않는다.
+        #   affirming-the-null 방지: 비유의는 4가지 원인 중 '식별 불가'일 뿐이며,
+        #   비선형 주장은 적극적 비선형 검정의 양성 결과로만 가능하다.
         if (
             spec.verification_status == "PENDING"
             and spec.granger_p is not None
@@ -294,9 +296,10 @@ async def _run_granger_for_spec(
             and spec.extreme_granger_p > 0.10
         ):
             spec.inference_caveat += (
-                f" | [구조적 설명] 정규(p={spec.granger_p}) · 극단P90(p={spec.extreme_granger_p}) "
-                "모두 유의하지 않음. 지정학 이벤트→시장 전이가 선형·임계 모두 포착 불가 — "
-                "불연속적 체제 전환(regime shift) 또는 시차 가변(time-varying lag) 구조 가능성."
+                f" | [검정 비유의] 정규(p={spec.granger_p}) · 극단P90(p={spec.extreme_granger_p}) "
+                "모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 "
+                "중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 "
+                "임계회귀 등 적극적 비선형 검정이 필요(검증포인트)."
             )
 
         if proxy_label:
@@ -423,6 +426,23 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         return spec
 
     for spec in specs:
+        # ── [8-gate] 선형검정 부적합 변수 단락 — Granger 트랙 진입 차단 ────────
+        # 체제·임계 변수는 선형 Granger에 넣지 않고 '구조적 논증'으로 명시한다.
+        # 대리쌍 치환·노이즈 p값 생성을 원천 차단 → 선형검정 실패를 비선형 증거로
+        # 둔갑시키던 affirming-the-null 오류를 구조적으로 제거.
+        if not spec.linear_testable:
+            spec.inference_grade = _LADDER_DESCRIPTIVE
+            spec.verification_status = "PENDING"
+            spec.inference_caveat = (
+                "[구조적 논증 — 설계상 선형검정 제외] " + spec.testability_reason +
+                ". 통계 검증을 청구하지 않음. 비선형을 입증하려면 임계회귀(TAR)·"
+                "체제전환 모델 등 적극적 비선형 검정이 필요(검증포인트)."
+            )
+            spec.error = "선형검정 부적합(비선형 체제 변수) — Granger 미실행"
+            logger.info("[hypothesis] [8-gate] 선형검정 제외: %s", spec.h1[:60])
+            results.append(spec)
+            continue
+
         # [B4] 사건→사건 전이 가설이 최우선 — 시장 경로 대신 지역B 이벤트로 검정
         if spec.dependent_region and spec.region_code:
             spec = await _run_event_to_event(spec)

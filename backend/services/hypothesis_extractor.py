@@ -55,6 +55,11 @@ class HypothesisSpec:
     # ── [B8] P90 극단 이벤트 보조 검정 ──────────────────────────────────────
     extreme_granger_p: float | None = None   # P90 극단 시리즈 Granger p값 (보조)
     extreme_granger_f: float | None = None   # P90 극단 시리즈 F-통계량 (보조)
+    # ── [8-gate] 선형검정 적합성 게이트 (비선형 체제 변수 제외) ──────────────
+    # False면 선형 Granger 트랙 진입 금지 → 구조적 논증으로 분류 (verifier에서 단락).
+    # 체제·임계 변수를 선형검정에 강제 투입하던 범주오류 + null→비선형 승격 방지.
+    linear_testable: bool = True             # 선형 Granger 적합 여부
+    testability_reason: str = ""             # 부적합 사유 (감사용 — 출력 노출)
 
 
 # ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────
@@ -148,6 +153,40 @@ def _classify_variable_type(dependent_var: str) -> tuple[VariableType, list[str]
 
     # Type_A: 금융 ticker (기본값)
     return "Type_A", []
+
+
+# ── [8-gate] 선형검정 적합성 — 비선형 체제 변수 탐지 ──────────────────────────
+# 체제·임계 변수는 임계점·체제전환(regime shift)으로 작동하므로 선형 Granger가
+# 구조적으로 부적합하다(선형검정 실패 = 거짓 음성). 선형 트랙에 넣지 않고
+# '구조적 논증'으로 분류한다. 보수적 셋으로 시작 — 명백한 체제/임계 어휘만 등록해
+# 오탐(시장·공급망 '구조' 같은 단조 변수 오제외)을 피한다. (미탐 > 오탐 우선)
+_NONLINEAR_REGIME_KEYWORDS: list[str] = [
+    "체제", "정당성", "응집", "내구성", "결의",
+    "임계", "체제전환", "정권 붕괴", "정권 생존", "지속 의지", "전쟁 지속",
+    "regime", "legitimacy", "cohesion", "resilience", "threshold",
+]
+
+
+def _classify_linear_testability(
+    independent_var: str, dependent_var: str
+) -> tuple[bool, str]:
+    """
+    [8-gate] 독립·종속변수가 비선형 체제 변수인지 판정한다.
+
+    독립·종속 중 **하나라도** 체제/임계 어휘에 걸리면 선형검정 부적합으로 본다.
+    var_type(측정가능성)과 독립적인 축 — 측정 가능해도 비선형이면 선형검정 제외.
+
+    Returns:
+        (linear_testable, reason)  — 부적합이면 (False, 사유), 적합이면 (True, "")
+    """
+    combined = f"{independent_var} {dependent_var}".lower()
+    for kw in _NONLINEAR_REGIME_KEYWORDS:
+        if kw.lower() in combined:
+            return False, (
+                f"비선형 체제·임계 변수('{kw}') 포함 — 임계점·체제전환 구조라 "
+                f"선형 Granger 부적합"
+            )
+    return True, ""
 
 
 # ── region 키워드 매핑 ────────────────────────────────────────────────────────
@@ -351,6 +390,11 @@ def extract_hypotheses(
         # [P1] 변수 유형 3분류 — 종속변수 기준으로 판별
         var_type, proxy_suggestions = _classify_variable_type(dependent_var or h1_clean)
 
+        # [8-gate] 선형검정 적합성 — IV/DV에 비선형 체제 변수가 있으면 선형검정 제외
+        linear_testable, testability_reason = _classify_linear_testability(
+            independent_var or h1_clean, dependent_var
+        )
+
         spec = HypothesisSpec(
             h1=h1_clean,
             h0=_make_h0(h1_clean),
@@ -362,6 +406,8 @@ def extract_hypotheses(
             ticker=ticker,
             var_type=var_type,
             proxy_suggestions=proxy_suggestions,
+            linear_testable=linear_testable,
+            testability_reason=testability_reason,
         )
         specs.append(spec)
 

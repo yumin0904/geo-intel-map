@@ -576,6 +576,9 @@ async def _stream_gemini(
                             "ticker": s.ticker,
                             "var_type": s.var_type,
                             "proxy_suggestions": s.proxy_suggestions,
+                            # [8-gate] 선형검정 적합성 — False면 구조적 논증(검정 제외)
+                            "linear_testable": s.linear_testable,
+                            "testability_reason": s.testability_reason,
                             "verification_status": s.verification_status,
                             # 학술 재설계: 인과추론 사다리 필드
                             "inference_grade": s.inference_grade,
