@@ -71,8 +71,10 @@ _JUDGE_RUBRIC = """당신은 국제정치학 박사학위 논문 심사위원입
 
 [competing_rigor 경쟁이론 엄밀성]
 1=단일 이론, 경쟁이론 없음 / 2=경쟁이론 나열하나 수사적 기각('한계가 있다') /
-3=경쟁이론 예측 제시하나 실측 수치 비교 없음 / 4=예측 vs 실측 수치 비교 일부 제시 /
-5=양 이론 수치 편차로 우열 판정 + 종합 판정 명시
+3=경쟁이론 예측 제시하나 실측 수치 비교 없음 / 4=예측 vs 실측 수치 편차 제시 /
+5=양 이론 예측 vs 실측 편차를 수치로 명확히 제시 + 연구자가 우열을 판단하는 데 필요한 쟁점(숨은 가정·범위조건·metric 상이)을 정확히 제시
+   ※ [9-Q 해석 주체 원칙] AI가 '어느 이론이 우세한가'를 대신 단정하지 않는 것이 **정상**이다. 편차(사실)를 정확히 제시하고
+     판단 쟁점을 연구자에게 넘겼다면 5점에서 감점하지 말 것. AI가 우열을 단정해야 고득점이라고 보지 말라.
 
 [falsifiability 반증가능성]
 1=측정불가 추상 주장 / 2=가설 있으나 변수 모호 / 3=H1 있으나 측정·통제변수 불완전 /
@@ -292,11 +294,14 @@ def _check_methodological_integrity(hyp_summary: list[dict], expected_signature:
     n_triangulated = 0
 
     for h in hyp_summary:
-        rc = h.get("routing_confidence", "")
-        mr = h.get("method_result", {}) or {}
+        rc  = h.get("routing_confidence", "")
+        mr  = h.get("method_result", {}) or {}
+        sig = h.get("data_signature", "")
 
-        # (1) routing_ok: LOW는 폴백·대리쌍 경로 = 오선택 의심
-        if rc == "LOW":
+        # (1) routing_ok: LOW는 폴백·대리쌍 경로 = 오선택 의심.
+        # UNQUANTIFIABLE은 "검정 불가" 정직 선언이므로 LOW가 나오는 게 정상 동작 —
+        # 방법 오선택 카운트에서 제외한다 (측정 오류 방지).
+        if rc == "LOW" and sig != "UNQUANTIFIABLE":
             routing_low.append(h.get("h1", "")[:50])
 
         # (2) laundering: assumptions_met=False인데 상관+ 칸 배정

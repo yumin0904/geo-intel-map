@@ -268,7 +268,7 @@ cases:
 
   - id: china_rareearth_techno
     gold: true
-    expected_signature: PAIRED_TIMESERIES  # 수출통제 강도 ↔ HHI·공급망 지수 시계열
+    expected_signature: UNQUANTIFIABLE  # SIA 데이터 미적재 → 현재 DB에 HHI 시계열 없음 → UNQUANTIFIABLE이 정직한 판정. SIA 적재 후 PAIRED_TIMESERIES로 재조정.
     name: "중국 희토류 통제 → 반도체 공급망 HHI"
     query: "중국의 희토류·갈륨 수출통제가 반도체 공급망 집중도(HHI)에 미치는 구조적 영향을 SIA 시장 데이터로 분석해줘"
     mode: insight
