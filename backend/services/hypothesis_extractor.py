@@ -86,6 +86,12 @@ class HypothesisSpec:
     # confidence_word: 신뢰 한 단어 — "높음"/"보통"/"낮음"/"검정불가"
     surface_summary: str = ""               # 표면 — 한 줄 결론
     confidence_word: str = ""              # 표면 — 신뢰 한 단어
+    # ── [9-Q 우선순위 2] 인식론 모드 — HARKing(데이터→가설) 방어 ──────────────
+    # exploratory=True: 데이터를 본 뒤 가설을 생성(탐색) → 같은 데이터 검정은 순환.
+    #   헤드라인 등급을 '상관'에서 상한 + [탐색적] 라벨. 원본 추정치는 보존(칸만 강등).
+    # exploratory=False: 사용자가 데이터 보기 전 가설을 직접 선언(확증) → 캡 없음 + [확증].
+    # 기본 False(=확증) — 직접 호출(테스트)은 기존 동작 유지, intel_query가 모드로 설정.
+    exploratory: bool = False
 
 
 # ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────

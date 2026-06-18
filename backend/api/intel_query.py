@@ -573,8 +573,12 @@ async def _stream_gemini(
             specs = extract_hypotheses(full_text, default_regions=default_regions)
             if specs:
                 # [9-0] 원본 쿼리를 spec에 주입 — 시그니처 분류 시 H1+H0에 없는 키워드 보완
+                # [9-Q 우선순위 2] 인식론 모드 — verify(가설 직접 입력)=확증, 그 외=탐색(HARKing).
+                #   탐색형은 데이터를 본 뒤 가설을 생성 → 같은 데이터 검정은 순환 → 등급 '상관' 상한.
+                _is_exploratory = (pq.mode != "verify")
                 for _s in specs:
                     _s.source_query = source_query
+                    _s.exploratory  = _is_exploratory
                 specs = await verify_hypotheses(specs)
                 # 사다리 최고 등급을 인사이트 대표 추론 등급으로 (인과 단정 아님)
                 _LADDER_ORDER = {"기술적": 0, "상관": 1, "선행성": 2}
@@ -596,6 +600,8 @@ async def _stream_gemini(
                                 "routing_method": s.routing_method,
                                 "routing_confidence": s.routing_confidence,
                                 "routing_alternatives": s.routing_alternatives,
+                                # [9-Q 우선순위 2] 탐색/확증 뱃지용 플래그
+                                "exploratory": getattr(s, "exploratory", False),
                             },
                             # [9-P-4] 펼침(detail): 전체 진단·caveat — 전문가/감사용
                             "detail": {

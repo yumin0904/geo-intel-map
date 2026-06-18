@@ -93,6 +93,7 @@ _LOOKBACK_MONTHS: int = _THR["lookback_months"]  # 18→24: 2년 데이터로 Gr
 _LADDER_DESCRIPTIVE = "기술적"   # 검정 불가/미실행 — 서술적 근거만
 _LADDER_CORRELATIONAL = "상관"   # p<0.15 or 이론근거 약한 쌍 — 시사적
 _LADDER_PRECEDENCE = "선행성"    # p<0.05 + 이론근거 — Granger 예측적 선행 (인과 아님)
+_LADDER_QUASI_EXP = "준실험"     # 이벤트스터디·패널FE·합성통제 (9-A~E, method_result에만 존재)
 
 _GRANGER_CAVEAT = (
     "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제"
@@ -244,6 +245,52 @@ def _build_surface(spec: "HypothesisSpec") -> None:
     # routing_confidence=LOW 이면 confidence_word 하향 보정
     if spec.routing_confidence == "LOW" and spec.confidence_word not in ("검정불가", "낮음"):
         spec.confidence_word = "낮음"
+
+
+def _apply_epistemic_cap(spec: "HypothesisSpec") -> None:
+    """
+    [9-Q 우선순위 2] 인식론 모드 캡 — HARKing(데이터→가설) 방어.
+
+    탐색형(exploratory=True): 데이터를 본 뒤 가설을 생성 → 같은 데이터로 검정 = 순환.
+      "화살 쏜 뒤 과녁 그리기"와 같음 → 강한 인과 주장(선행성·준실험) 불가.
+      헤드라인 3곳(inference_grade·surface_summary·method_result.headline_rung)을
+      '상관'에서 상한 + [탐색적] 라벨. 단, 원본 추정치(native_stats·all_results)는 보존 —
+      칸(등급)만 강등하고 숫자는 안 지운다 (정직성: 방법 자체는 유효했음).
+    확증형(exploratory=False): 사용자가 데이터 보기 전 가설을 직접 선언 → 캡 없음 + [확증].
+
+    모든 등급 계산(FDR·_build_surface·Method Router)이 끝난 뒤 단일 패스로 적용.
+    LLM 호출 0 (Token-Zero).
+    """
+    if not getattr(spec, "exploratory", False):
+        # ── 확증형 — 캡 없음, 라벨만 (사용자 직접 선언 가설) ──
+        if spec.surface_summary and not spec.surface_summary.startswith("[확증]"):
+            spec.surface_summary = "[확증] " + spec.surface_summary
+        return
+
+    # ── 탐색형 — '상관' 상한 + [탐색적] 라벨 ──
+    _HARK_CAVEAT = (
+        "[탐색적] 데이터 관찰 후 가설 생성(HARKing) — 같은 데이터로 검정하면 순환이라 "
+        "선행성·준실험 주장 불가, '상관'에서 상한. 확증하려면 가설을 데이터 보기 전 선언(검증 모드)."
+    )
+
+    # 1. 레거시 inference_grade 캡 (선행성 → 상관)
+    if spec.inference_grade == _LADDER_PRECEDENCE:
+        spec.inference_grade = _LADDER_CORRELATIONAL
+        spec.inference_caveat = f"{_HARK_CAVEAT} · {spec.inference_caveat}".rstrip(" ·")
+
+    # 2. Method Router headline_rung 캡 (선행성·준실험 → 상관). all_results는 보존.
+    mr = spec.method_result
+    if mr and mr.get("headline_rung") in (_LADDER_PRECEDENCE, _LADDER_QUASI_EXP):
+        mr["epistemic_cap"] = f"[탐색적] {mr['headline_rung']}→상관 (HARKing 방어, 원본 추정치는 all_results 보존)"
+        mr["headline_rung"] = _LADDER_CORRELATIONAL
+
+    # 3. 표면 라벨 + 문구 정합 (등급이 상관인데 "선행성 유의"라 적혀 모순되지 않게)
+    summary = spec.surface_summary.replace("선행성 유의", "경향성")
+    if not summary.startswith("[탐색적]"):
+        summary = "[탐색적] " + summary
+    spec.surface_summary = summary
+    if spec.confidence_word == "높음":   # 캡됐으니 '높음'은 과대 — 한 단계 하향
+        spec.confidence_word = "보통"
 
 
 def _check_method_fit(spec: "HypothesisSpec") -> None:
@@ -863,6 +910,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             )
     except Exception as exc:
         logger.warning("[9-A] Method Router 연결 실패 (무시, Granger 결과 유지): %s", exc)
+
+    # [9-Q 우선순위 2] 인식론 모드 캡 — 모든 등급 계산이 끝난 최종 단일 패스.
+    #   탐색형(HARKing) → '상관' 상한 + [탐색적]. 확증형 → [확증] 라벨. (헤드라인 3곳 정합)
+    for s in results:
+        _apply_epistemic_cap(s)
 
     return results
 
