@@ -14,14 +14,18 @@ from dataclasses import dataclass, field
 # ── 쿼리 모드 감지 키워드 ─────────────────────────────────────────────────
 # 모드별로 Gemini 프롬프트 형식과 Thinking ON/OFF가 달라진다.
 _MODE_KEYWORDS: dict[str, list[str]] = {
-    "presentation": [
-        "발표", "프레젠테이션", "주제", "주제 선정", "슬라이드",
-        "논문", "리포트", "보고서", "각도", "어떻게 발표",
-        "presentation", "slide", "topic", "report",
-    ],
+    # verify를 먼저 체크 — "침공 발표가" 등 단독 '발표'가 쿼리 내용에 등장해도
+    # 검증 키워드(검증·근거·확인)가 있으면 verify로 우선 매칭한다.
     "verify": [
         "검증", "맞아", "근거", "사실이야", "틀렸어", "확인",
         "verify", "fact check", "evidence", "is it true",
+    ],
+    "presentation": [
+        # "발표" 단독어 제거 — 뉴스/외교 문장의 "침공 발표", "성명 발표" 등과 충돌.
+        # 발표 모드는 명시적 복합어·영문 키워드로만 감지.
+        "발표 주제", "프레젠테이션", "주제 선정", "슬라이드", "어떻게 발표",
+        "논문", "리포트", "보고서", "각도",
+        "presentation", "slide", "topic", "report",
     ],
     # "insight"는 기본값 — 위 두 가지에 해당 없으면 자동 선택
 }
