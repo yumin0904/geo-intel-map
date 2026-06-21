@@ -84,6 +84,16 @@ _KEY_EVENT_RANGES: list[tuple[str, int, int, int, str]] = [
     ("korean_peninsula", 2023, 336, 342, "Washington Declaration NCG"),
     # 2023-08-18 캠프데이비드 3자 (미·일·한) — #702~707 확인 완료
     ("korean_peninsula", 2023, 702, 708, "Camp David Trilateral US-Japan-Korea"),
+    # 2024-07-11 NATO 워싱턴 정상회의 + 바이든-윤 공동성명 (#600 핵심)
+    ("korean_peninsula", 2024, 594, 602, "Biden-Yoon NATO Washington Summit 2024"),
+    # 2024-11-15 APEC 페루 한미일 3자 공동성명 + 바이든-시진핑 (#1002~1009 핵심)
+    ("korean_peninsula", 2024, 1002, 1010, "APEC 2024 US-Japan-Korea Trilateral Biden-Xi"),
+    # 2025-01-20 트럼프 2기 취임 행정명령 (무기화 종식·연방청 개편·국경비상사태)
+    ("eastern_europe", 2025, 109, 117, "Trump 2nd Term Inauguration Day EOs"),
+    # 2025-02-04 이란 최대압박 NSPPM + 네타냐후 회견 (이란전 전전사)
+    ("hormuz", 2025, 221, 226, "Iran Maximum Pressure NSPPM Netanyahu 2025"),
+    # 2025-04-02 Liberation Day 상호관세 행정명령 (기술패권·무역전쟁)
+    ("techno_supply_chain", 2025, 423, 426, "Liberation Day Reciprocal Tariffs 2025"),
 ]
 
 # ── 주제별 일괄 적재 쿼리 (bulk_load용) ──────────────────────────────────
