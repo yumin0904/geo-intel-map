@@ -68,6 +68,24 @@ _SECTOR_KEYWORDS: list[str] = [
     "alliance", "extended deterrence",
 ]
 
+# ── 핵심 외교 사건 DCPD 패키지 범위 (이진 탐색으로 확인된 값) ───────────────
+# 형식: (region, year, pkg_num_start, pkg_num_end, label)
+# 이진 탐색으로 직접 확인 → 정확도 보장. 재탐색 불필요.
+_KEY_EVENT_RANGES: list[tuple[str, int, int, int, str]] = [
+    # 2018-06-12 트럼프-김정은 싱가포르 정상회담
+    ("korean_peninsula", 2018, 418, 423, "Trump-Kim Singapore Summit"),
+    # 2019-02-27 하노이 정상회담 (합의 불발)
+    ("korean_peninsula", 2019, 100, 106, "Trump-Kim Hanoi Summit"),
+    # 2021-05-21 바이든-문재인 정상회담
+    ("korean_peninsula", 2021, 426, 430, "Biden-Moon Summit"),
+    # 2022-05-21 바이든-윤석열 정상회담
+    ("korean_peninsula", 2022, 432, 438, "Biden-Yoon Summit"),
+    # 2023-04-26 워싱턴 선언 (핵협의그룹 NCG)
+    ("korean_peninsula", 2023, 336, 342, "Washington Declaration NCG"),
+    # 2023-08-18 캠프데이비드 3자 (미·일·한) — #702~707 확인 완료
+    ("korean_peninsula", 2023, 702, 708, "Camp David Trilateral US-Japan-Korea"),
+]
+
 # ── 주제별 일괄 적재 쿼리 (bulk_load용) ──────────────────────────────────
 _BULK_QUERIES: list[tuple[str, str]] = [
     ("korean_peninsula", "North Korea DPRK nuclear alliance denuclearization Korea"),
@@ -246,6 +264,102 @@ def online_search(
 
     con.close()
     return results
+
+
+def _fetch_pkg_meta(year: int, num: int, api_key: str) -> dict | None:
+    """단일 DCPD 패키지 메타데이터 조회."""
+    pkg_id = f"DCPD-{year:04d}{num:05d}"
+    url = f"https://api.govinfo.gov/packages/{pkg_id}/summary?api_key={api_key}"
+    from urllib.error import HTTPError
+    try:
+        with urlopen(Request(url, headers=_HEADERS), timeout=_TIMEOUT) as r:
+            data = json.loads(r.read())
+        return {
+            "pkg_id":  pkg_id,
+            "date":    data.get("dateIssued", "")[:10],
+            "title":   (data.get("title") or "").strip(),
+            "coll":    data.get("collectionCode", "CPD"),
+        }
+    except HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise
+
+
+def _bisect_dcpd(year: int, target: str, api_key: str) -> int:
+    """
+    이진 탐색으로 target 날짜(YYYY-MM-DD)의 DCPD 문서 번호 추정.
+    이미 알려진 번호가 없을 때 새 사건 날짜 탐색에 사용한다.
+    """
+    lo, hi = 1, 1800
+    for _ in range(22):
+        mid = (lo + hi) // 2
+        meta = _fetch_pkg_meta(year, mid, api_key)
+        if not meta:
+            hi = mid - 1
+            continue
+        d = meta["date"]
+        if d == target:
+            return mid
+        elif d < target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return (lo + hi) // 2
+
+
+def load_key_events(api_key: str = "") -> int:
+    """
+    핵심 외교 사건 DCPD 패키지를 직접 번호로 접근하여 적재.
+
+    _KEY_EVENT_RANGES에 이진 탐색으로 미리 확인한 패키지 번호 범위가 있다.
+    새 사건 추가 시 _bisect_dcpd()로 번호를 먼저 확인하고 범위를 등록하면 된다.
+
+    과정추적 Van Evera 이중결정 검정: 대통령 성명이 가설 메커니즘을 직접 확인하는
+    가장 강한 미국 측 1차 사료 (★★★★★).
+    """
+    if not api_key:
+        api_key = _load_api_key()
+    if not api_key:
+        logger.warning("[GovInfo] API 키 없음")
+        return 0
+
+    if not _DB_PATH.parent.exists():
+        return 0
+    con = sqlite3.connect(str(_DB_PATH))
+    _init_table(con)
+    total_new = 0
+
+    for region, year, n_start, n_end, label in _KEY_EVENT_RANGES:
+        logger.info("[GovInfo/key] %s (%d년 #%d~%d) 적재 중...", label, year, n_start, n_end)
+        for num in range(n_start, n_end + 1):
+            meta = _fetch_pkg_meta(year, num, api_key)
+            if not meta:
+                continue
+            uid = _stable_id(meta["pkg_id"], "pkg")
+            if con.execute("SELECT 1 FROM govinfo_releases WHERE id=?", (uid,)).fetchone():
+                continue
+
+            snippet = _extract_text_snippet(meta["pkg_id"], api_key)
+            try:
+                con.execute(
+                    """INSERT OR IGNORE INTO govinfo_releases
+                       (id,collection_code,package_id,granule_id,title,pub_date,description,region_hint,fetched_at)
+                       VALUES (?,?,?,?,?,?,?,?,?)""",
+                    (uid, meta["coll"], meta["pkg_id"], "", meta["title"],
+                     meta["date"], snippet, region,
+                     datetime.now(timezone.utc).isoformat()),
+                )
+                if con.total_changes > total_new:
+                    total_new = con.total_changes
+                    logger.info("[GovInfo/key] ✓ [%s] %s", meta["date"], meta["title"][:50])
+            except sqlite3.Error as exc:
+                logger.debug("[GovInfo] INSERT 실패: %s", exc)
+
+    con.commit()
+    con.close()
+    logger.info("[GovInfo] load_key_events 완료 — 신규 %d건", total_new)
+    return total_new
 
 
 def bulk_load(api_key: str = "") -> int:
@@ -460,6 +574,23 @@ if __name__ == "__main__":
 
     if "--stats" in sys.argv:
         print(json.dumps(stats(), indent=2, ensure_ascii=False))
+    elif "--key-events" in sys.argv:
+        # 핵심 외교 사건 직접 적재 (싱가포르·하노이·워싱턴 선언 등)
+        n = load_key_events()
+        print(f"key-events 완료 — 신규 {n}건")
+        print(json.dumps(stats(), indent=2, ensure_ascii=False))
+    elif "--bisect" in sys.argv:
+        # 새 사건 번호 탐색: python govinfo_connector.py --bisect 2023 2023-04-26
+        args = sys.argv[sys.argv.index("--bisect")+1:]
+        yr, dt = int(args[0]), args[1]
+        k = _load_api_key()
+        result = _bisect_dcpd(yr, dt, k)
+        print(f"추정 번호: {result}  →  DCPD-{yr:04d}{result:05d}")
+        # 주변 ±5 확인
+        for i in range(max(1,result-5), result+6):
+            m = _fetch_pkg_meta(yr, i, k)
+            if m:
+                print(f"  {i:5d}: [{m['date']}] {m['title'][:65]}")
     elif "--bulk" in sys.argv:
         # 주제별 역사적 문서 일괄 적재
         n = bulk_load()
