@@ -47,6 +47,10 @@ def _load_api_key() -> str:
 
 _HEADERS = {"Accept": "application/json", "User-Agent": "geo-intel-map/1.0"}
 
+# ── 유용한 컬렉션 코드 ────────────────────────────────────────────────────
+# CPD/PPP = 대통령 성명, PLAW/STATUTE = 공법(정책 공약 최강 증거), CHRG = 의회 청문회
+_USEFUL_CODES: set[str] = {"CPD", "WCPD", "DCPD", "PPP", "PLAW", "STATUTE", "CHRG", "CRPT"}
+
 # ── 수집 대상 키워드 (섹터별) ─────────────────────────────────────────────
 # 제목에 하나라도 포함되면 수집
 _SECTOR_KEYWORDS: list[str] = [
@@ -62,6 +66,22 @@ _SECTOR_KEYWORDS: list[str] = [
     "semiconductor", "chips act", "cyber",
     # 동맹
     "alliance", "extended deterrence",
+]
+
+# ── 주제별 일괄 적재 쿼리 (bulk_load용) ──────────────────────────────────
+_BULK_QUERIES: list[tuple[str, str]] = [
+    ("korean_peninsula", "North Korea DPRK nuclear alliance denuclearization Korea"),
+    ("korean_peninsula", "Hanoi Singapore summit Kim Jong Un 2018 2019"),
+    ("korean_peninsula", "Washington Declaration Korea extended deterrence 2023"),
+    ("korean_peninsula", "Asia Reassurance Initiative Korea DPRK sanctions"),
+    ("korean_peninsula", "National Defense Authorization North Korea DPRK"),
+    ("taiwan_strait",    "Taiwan Strait South China Sea semiconductor arms"),
+    ("taiwan_strait",    "Taiwan Relations Act deterrence China"),
+    ("hormuz",          "Iran nuclear JCPOA sanctions Hormuz"),
+    ("eastern_europe",  "Ukraine Russia NATO defense Zelensky 2022 2023"),
+    ("bab_el_mandeb",   "Houthi Red Sea Yemen maritime security"),
+    ("techno_supply_chain", "semiconductor chips export control China CHIPS Act"),
+    ("indo_pacific",    "Indo-Pacific Quad AUKUS alliance security"),
 ]
 
 
@@ -173,12 +193,11 @@ def online_search(
         logger.warning("[GovInfo] 검색 실패: %s", exc)
         return []
 
-    # 대통령 문서계열만 필터 (CPD=현대, WCPD=주간, DCPD=일간, PPP=Public Papers 레거시)
-    _PRES_DOC_CODES = {"CPD", "WCPD", "DCPD", "PPP"}
     all_items = data.get("results", [])
-    pres_items = [i for i in all_items if i.get("collectionCode", "") in _PRES_DOC_CODES]
-    # 대통령 문서가 없으면 전체 중 상위 사용
-    chosen = pres_items if pres_items else all_items
+    # 유용한 컬렉션만 필터 (대통령 문서 + 공법 + 청문회)
+    chosen = [i for i in all_items if i.get("collectionCode", "") in _USEFUL_CODES]
+    if not chosen:
+        chosen = all_items  # 없으면 전체
 
     results = []
     if not _DB_PATH.parent.exists():
@@ -227,6 +246,80 @@ def online_search(
 
     con.close()
     return results
+
+
+def bulk_load(api_key: str = "") -> int:
+    """
+    주제별 쿼리로 역사적 문서 일괄 적재 (초기 적재용).
+
+    _BULK_QUERIES에 정의된 지역×주제 쌍으로 검색 API를 호출.
+    CPD(대통령 성명), PLAW(공법), STATUTE(법안), CHRG(청문회) 포함.
+    이미 적재된 문서는 INSERT OR IGNORE로 건너뜀.
+    """
+    if not api_key:
+        api_key = _load_api_key()
+    if not api_key:
+        logger.warning("[GovInfo] API 키 없음")
+        return 0
+
+    if not _DB_PATH.parent.exists():
+        return 0
+    con = sqlite3.connect(str(_DB_PATH))
+    _init_table(con)
+    total_new = 0
+
+    for region, query in _BULK_QUERIES:
+        payload = json.dumps({
+            "query":      query,
+            "pageSize":   20,
+            "offsetMark": "*",
+        }).encode()
+        url = f"https://api.govinfo.gov/search?api_key={api_key}"
+        req = Request(url, data=payload,
+            headers={**_HEADERS, "Content-Type": "application/json"},
+            method="POST")
+        try:
+            with urlopen(req, timeout=_TIMEOUT) as r:
+                data = json.loads(r.read())
+        except URLError as exc:
+            logger.warning("[GovInfo] bulk_load 쿼리 실패 %s: %s", query[:30], exc)
+            continue
+
+        results = [
+            item for item in data.get("results", [])
+            if item.get("collectionCode", "") in _USEFUL_CODES
+        ]
+
+        for item in results[:8]:
+            pkg_id     = item.get("packageId", "")
+            granule_id = item.get("granuleId", "") or ""
+            title      = (item.get("title") or "").strip()
+            pub_date   = (item.get("dateIssued") or "")[:10]
+            coll       = item.get("collectionCode", "")
+            uid        = _stable_id(pkg_id, granule_id or "pkg")
+
+            if con.execute("SELECT 1 FROM govinfo_releases WHERE id=?", (uid,)).fetchone():
+                continue
+
+            snippet = _extract_text_snippet(pkg_id, api_key)
+            try:
+                con.execute(
+                    """INSERT OR IGNORE INTO govinfo_releases
+                       (id,collection_code,package_id,granule_id,title,pub_date,description,region_hint,fetched_at)
+                       VALUES (?,?,?,?,?,?,?,?,?)""",
+                    (uid, coll, pkg_id, granule_id, title, pub_date, snippet, region,
+                     datetime.now(timezone.utc).isoformat()),
+                )
+                if con.total_changes > total_new:
+                    total_new = con.total_changes
+                    logger.info("[GovInfo/bulk] ✓ [%s][%s][%s] %s", pub_date, coll, region[:10], title[:50])
+            except sqlite3.Error as exc:
+                logger.debug("[GovInfo] INSERT 실패: %s", exc)
+
+    con.commit()
+    con.close()
+    logger.info("[GovInfo] bulk_load 완료 — 신규 %d건", total_new)
+    return total_new
 
 
 def collect_recent(days_back: int = 7, api_key: str = "") -> int:
@@ -367,6 +460,11 @@ if __name__ == "__main__":
 
     if "--stats" in sys.argv:
         print(json.dumps(stats(), indent=2, ensure_ascii=False))
+    elif "--bulk" in sys.argv:
+        # 주제별 역사적 문서 일괄 적재
+        n = bulk_load()
+        print(f"bulk 완료 — 신규 {n}건")
+        print(json.dumps(stats(), indent=2, ensure_ascii=False))
     elif "--search" in sys.argv:
         idx = sys.argv.index("--search")
         q = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else "Korea"
@@ -376,7 +474,7 @@ if __name__ == "__main__":
             if r['description']:
                 print(f"  {r['description'][:100]}")
     else:
-        # 최근 30일치 수집 (첫 실행)
-        n = collect_recent(days_back=30)
+        # 최근 7일치 수집 (스케줄러용)
+        n = collect_recent(days_back=7)
         print(f"완료 — 신규 {n}건")
         print(json.dumps(stats(), indent=2, ensure_ascii=False))
