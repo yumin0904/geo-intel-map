@@ -26,6 +26,7 @@ from db.archive_manager import ArchiveManager
 from jobs.gdelt_job import run_gdelt_batch
 from jobs.reliefweb_job import run_reliefweb_batch
 from jobs.firms_sensor_job import run_firms_sensor_batch
+from jobs.press_releases_job import run_nk_press_batch, run_un_news_batch, run_policy_think_tank_batch
 
 # ── 글로벌 싱글톤 ─────────────────────────────────────────────────────────
 _archive_mgr = ArchiveManager()
@@ -91,6 +92,37 @@ async def lifespan(app: FastAPI):
         replace_existing=True,
         misfire_grace_time=300,
     )
+
+    # NKNews + 38 North — 6시간마다 (한반도 과정추적 흡연총 소스)
+    _scheduler.add_job(
+        run_nk_press_batch,
+        trigger="interval",
+        hours=6,
+        id="nk_press",
+        replace_existing=True,
+        misfire_grace_time=300,
+    )
+
+    # UN News RSS — 6시간마다 (이중결정 검정 다자 소스, 30건/회 누적)
+    _scheduler.add_job(
+        run_un_news_batch,
+        trigger="interval",
+        hours=6,
+        id="un_news",
+        replace_existing=True,
+        misfire_grace_time=300,
+    )
+
+    # Atlantic Council + Arms Control Assoc — 6시간마다 (미국 외교정책 시각, State Dept 대안)
+    _scheduler.add_job(
+        run_policy_think_tank_batch,
+        trigger="interval",
+        hours=6,
+        id="policy_think_tank",
+        replace_existing=True,
+        misfire_grace_time=300,
+    )
+
     _scheduler.start()
 
     seed_tutorial_canvas()
