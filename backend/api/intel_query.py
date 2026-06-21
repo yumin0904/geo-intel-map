@@ -201,7 +201,15 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
         "'구조적으로 ~을 가능하게 하는 조건 / ~의 배경 조건이다'처럼 이론적·조건적 서술만 하라.\n"
         "   · 이런 변수를 억지로 측정 가능한 대리지표(예: 분쟁건수·유가)로 바꿔 인과를 주장하지 말라(대리쌍 강제 금지).\n"
         "   · 통계로 안 잡힌다는 사실 자체를 '비선형 전이의 증거'로 제시하지 말라(affirming-the-null 금지). "
-        "비선형은 별도의 적극적 검정(임계회귀 등)으로만 주장 가능하다.\n\n"
+        "비선형은 별도의 적극적 검정(임계회귀 등)으로만 주장 가능하다.\n"
+        "   ★ [9-Q 질적 갈래 — 과정추적 스캐폴딩 모드, 필수] 서버가 이 분석을 UNQUANTIFIABLE(정량 검정 불가)로 "
+        "분류하면, 너는 과정추적(Process Tracing) 조력자로 전환한다.\n"
+        "   · [관찰]·[변수]·[가설]·[경쟁이론] 섹션을 정상 작성하되, [가설] H1은 '이 메커니즘이 작동한다면 "
+        "어떤 증거 흔적이 남아야 하는가?'의 형태로 공식화하라 (통계 가설 형식 강제 금지).\n"
+        "   · [검증포인트]에 연구자가 직접 확인해야 할 1차 사료(외교문서·보도자료·내부기록)를 구체적으로 안내하라.\n"
+        "   · 결론(가설 지지/기각 판정)은 절대 내리지 말라 — 서버가 별도로 제공하는 "
+        "Van Evera 4검정 스캐폴딩을 보고 연구자가 판정한다. AI가 '~가 원인이다'로 단정하면 "
+        "질적 p-해킹(엔진이 서사를 가짜 엄밀성으로 포장)이 된다.\n\n"
 
         "## Token-Zero 산술 규율 (Phase 8 융합2) — 절대 준수\n"
         "<context>의 편차·변화율·격차·HHI·비율은 **이미 Python으로 계산되어** 제공된다.\n"
@@ -336,6 +344,8 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
 - 통제변수(제거해야 할 혼재 요인):
 
 ### [단계 3] 가설 공식화
+⚠️ [H1 고정 — 검증 모드 필수] H1은 사용자가 위에서 제시한 주장을 정량 지표로 받아 쓴다.
+  AI가 자체 가설을 만들거나 주장의 방향을 바꾸는 것은 금지. 변수 식별·형식화만 담당한다.
 - H1 (주장 지지): [반증 가능 형태 — "X가 증가할 때 Y가 유의하게 변화한다"]
   ※ X, Y는 정량 지표(건수·가격·비율·지수)여야 한다. 정량화 불가 시 이 줄 생략하고 [검증포인트]에 서술.
 - H0 (귀무 가설): [H1이 틀렸을 때 관찰될 패턴]
@@ -430,6 +440,7 @@ async def _stream_gemini(
     source_counts: dict | None = None,
     default_regions: list[str] | None = None,
     source_query: str = "",
+    mode: str = "insight",
 ) -> AsyncGenerator[str, None]:
     """Gemini 2.5 Flash SSE 스트리밍. thinking=True 시 thinkingBudget 8192.
 
@@ -575,17 +586,32 @@ async def _stream_gemini(
                 # [9-0] 원본 쿼리를 spec에 주입 — 시그니처 분류 시 H1+H0에 없는 키워드 보완
                 # [9-Q 우선순위 2] 인식론 모드 — verify(가설 직접 입력)=확증, 그 외=탐색(HARKing).
                 #   탐색형은 데이터를 본 뒤 가설을 생성 → 같은 데이터 검정은 순환 → 등급 '상관' 상한.
-                _is_exploratory = (pq.mode != "verify")
+                _is_exploratory = (mode != "verify")
                 for _s in specs:
                     _s.source_query = source_query
                     _s.exploratory  = _is_exploratory
                 specs = await verify_hypotheses(specs)
-                # 사다리 최고 등급을 인사이트 대표 추론 등급으로 (인과 단정 아님)
-                _LADDER_ORDER = {"기술적": 0, "상관": 1, "선행성": 2}
-                best_spec = max(
-                    specs, key=lambda s: _LADDER_ORDER.get(s.inference_grade, 0)
+                # [3-2 발견2] 사다리 최고 등급 — Method Router headline_rung(준실험)도 포함
+                # 확증형(verify)은 _apply_epistemic_cap에서 캡 없음 → 준실험 그대로 노출.
+                # 탐색형은 캡 후 headline_rung이 이미 '상관'으로 강등돼 있어 준실험 누출 없음.
+                _LADDER_ORDER = {"기술적": 0, "상관": 1, "선행성": 2, "준실험": 3}
+
+                def _spec_rung(s: object) -> int:
+                    mr = getattr(s, "method_result", None) or {}
+                    return max(
+                        _LADDER_ORDER.get(s.inference_grade, 0),
+                        _LADDER_ORDER.get(mr.get("headline_rung", ""), -1),
+                    )
+
+                best_spec = max(specs, key=_spec_rung)
+                _mr_best = getattr(best_spec, "method_result", None) or {}
+                _ig = best_spec.inference_grade
+                _mr_rung = _mr_best.get("headline_rung", "")
+                score_result["inference_grade"] = (
+                    _mr_rung
+                    if _LADDER_ORDER.get(_mr_rung, -1) > _LADDER_ORDER.get(_ig, 0)
+                    else _ig
                 )
-                score_result["inference_grade"]  = best_spec.inference_grade
                 score_result["inference_caveat"] = best_spec.inference_caveat
                 # hypothesis 이벤트 전송
                 yield _sse({
@@ -706,6 +732,7 @@ async def intel_query(req: IntelQueryRequest):
         async for chunk in _stream_gemini(
             prompt, pq.thinking, source_counts,
             default_regions=pq.regions, source_query=req.query,
+            mode=pq.mode,
         ):
             yield chunk
 

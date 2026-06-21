@@ -117,7 +117,11 @@ def select_method_set(signature: DataSignature) -> list[str]:
 
 # 구현된 방법 목록 — 어댑터 파일 존재 여부
 # 9-A event_study 완료(2026-06-17), 9-B panel_regression 완료(2026-06-17), 9-C~E는 stub
-_IMPLEMENTED_METHODS: set[str] = {"granger", "structural_arg", "event_study", "panel_regression"}
+_IMPLEMENTED_METHODS: set[str] = {
+    "granger", "structural_arg",
+    "event_study", "panel_regression",
+    "process_tracing",   # [9-Q 우선순위 3] UNQUANTIFIABLE → Van Evera 4검정 스캐폴딩
+}
 
 
 def filter_implemented(methods: list[str]) -> tuple[list[str], list[str]]:

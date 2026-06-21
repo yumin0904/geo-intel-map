@@ -261,14 +261,19 @@ def _check_rival_comparison(text: str) -> dict:
     }
 
 
-def _check_methodological_integrity(hyp_summary: list[dict], expected_signature: str = "") -> dict:
-    """[9-G] 방법론적 정직성 4항목 체크 — Token-Zero 결정론.
+def _check_methodological_integrity(
+    hyp_summary: list[dict],
+    expected_signature: str = "",
+    case_mode: str = "insight",  # [3-2 발견3] "verify" = 확증형, 나머지 = 탐색형
+) -> dict:
+    """[9-G] 방법론적 정직성 4+1항목 체크 — Token-Zero 결정론.
 
     항목:
-      routing_ok        — routing_confidence가 HIGH 또는 MEDIUM (LOW=폴백)
-      no_laundering     — assumptions_met=False인데 칸이 상관+ 인 케이스 0건
-      triangulation_ok  — 복수 방법 적용 시 convergence 필드 존재
-      no_exploratory_leak — exploratory=True인데 인과추론 등급이 상관/선행성/준실험인 케이스 0건
+      routing_ok             — routing_confidence가 HIGH 또는 MEDIUM (LOW=폴백)
+      no_laundering          — assumptions_met=False인데 칸이 상관+ 인 케이스 0건
+      triangulation_ok       — 복수 방법 적용 시 convergence 필드 존재
+      no_exploratory_leak    — exploratory=True인데 인과추론 등급이 상관/선행성/준실험인 케이스 0건
+      confirmatory_label_ok  — [3-2 발견3] verify 모드인데 [탐색적] 라벨 붙은 케이스 0건
     """
     if not hyp_summary:
         return {
@@ -276,9 +281,11 @@ def _check_methodological_integrity(hyp_summary: list[dict], expected_signature:
             "no_laundering": None,
             "triangulation_ok": None,
             "no_exploratory_leak": None,
+            "confirmatory_label_ok": None,
             "routing_low_cases": [],
             "laundering_cases": [],
             "exploratory_leak_cases": [],
+            "confirmatory_label_violations": [],
             "n_triangulated": 0,
             "n_hypotheses": 0,
             # [9-G] 시그니처 라우팅 정확도
@@ -287,11 +294,14 @@ def _check_methodological_integrity(hyp_summary: list[dict], expected_signature:
             "actual_signatures": [],
         }
 
-    _CAUSAL_RUNGS = {"상관", "선행성", "준실험"}
+    # 탐색형 캡 상한이 "상관"이므로 "상관" 자체는 누출 아님 — 캡 위 등급만 누출로 판정
+    _CAUSAL_RUNGS = {"선행성", "준실험"}
     routing_low = []
     laundering  = []
     expl_leak   = []
+    confirm_label_violations = []
     n_triangulated = 0
+    _is_verify = (case_mode == "verify")
 
     for h in hyp_summary:
         rc  = h.get("routing_confidence", "")
@@ -321,9 +331,18 @@ def _check_methodological_integrity(hyp_summary: list[dict], expected_signature:
         if h.get("any_exploratory") and h.get("headline_rung", "") in _CAUSAL_RUNGS:
             expl_leak.append(h.get("h1", "")[:50])
 
+        # (5) [3-2 발견3] confirmatory_label: verify 모드인데 [탐색적] 라벨 — 캡이 잘못 적용된 것
+        # verify = 확증형이므로 surface에 [확증] 라벨이 붙어야 하고 [탐색적]은 위반.
+        if _is_verify and "[탐색적]" in h.get("surface_summary", ""):
+            confirm_label_violations.append({
+                "h1": h.get("h1", "")[:50],
+                "surface": h.get("surface_summary", "")[:80],
+            })
+
     routing_ok = len(routing_low) == 0
     no_laundering = len(laundering) == 0
     no_expl_leak = len(expl_leak) == 0
+    confirm_label_ok = (len(confirm_label_violations) == 0) if _is_verify else None
     triangulation_ok = True  # 복수 방법이 있을 때만 의미있음 (없으면 N/A)
 
     # [9-G] 시그니처 라우팅 정확도 — expected vs actual 비교
@@ -338,9 +357,11 @@ def _check_methodological_integrity(hyp_summary: list[dict], expected_signature:
         "no_laundering":        no_laundering,
         "triangulation_ok":     triangulation_ok,
         "no_exploratory_leak":  no_expl_leak,
+        "confirmatory_label_ok": confirm_label_ok,
         "routing_low_cases":    routing_low,
         "laundering_cases":     laundering,
         "exploratory_leak_cases": expl_leak,
+        "confirmatory_label_violations": confirm_label_violations,
         "n_triangulated":       n_triangulated,
         "n_hypotheses":         len(hyp_summary),
         # 라우팅 정확도
@@ -501,11 +522,16 @@ def evaluate_case(
                     r.get("exploratory", False)
                     for r in mr.get("all_results", [])
                 ),
+                # [3-2 발견3] surface.exploratory — 탐색/확증 라벨 직접 검증용
+                "surface_exploratory": surface.get("exploratory", True),
+                "surface_summary":     surface.get("summary", ""),
             })
 
     completeness = _score_completeness(section_check)
     method_integrity = _check_methodological_integrity(
-        hyp_summary, expected_signature=case.get("expected_signature", "")
+        hyp_summary,
+        expected_signature=case.get("expected_signature", ""),
+        case_mode=case.get("mode", "insight"),  # [3-2 발견3] 탐색/확증 구분
     )
     missing_sections = [s for s, ok in section_check.items() if not ok]
     missing_tags     = [t for t, ok in tag_check.items() if not ok]
@@ -557,9 +583,10 @@ def evaluate_case(
     mi = method_integrity
     if mi["n_hypotheses"] > 0:
         items = [
-            ("라우팅",   mi["routing_ok"],          mi["routing_low_cases"]),
-            ("laundering", mi["no_laundering"],     mi["laundering_cases"]),
-            ("탐색누출", mi["no_exploratory_leak"], mi["exploratory_leak_cases"]),
+            ("라우팅",   mi["routing_ok"],            mi["routing_low_cases"]),
+            ("laundering", mi["no_laundering"],       mi["laundering_cases"]),
+            ("탐색누출", mi["no_exploratory_leak"],   mi["exploratory_leak_cases"]),
+            ("확증라벨", mi["confirmatory_label_ok"], mi.get("confirmatory_label_violations", [])),  # [3-2]
         ]
         parts = []
         for label, ok, bad in items:
@@ -680,6 +707,7 @@ def _print_summary(results: list[dict]) -> None:
 
         total_laundering = sum(len(m.get("laundering_cases", [])) for m in mi_with_hyp)
         total_leak = sum(len(m.get("exploratory_leak_cases", [])) for m in mi_with_hyp)
+        total_confirm_viol = sum(len(m.get("confirmatory_label_violations", [])) for m in mi_with_hyp)  # [3-2]
         total_tria = sum(m.get("n_triangulated", 0) for m in mi_with_hyp)
         routing_low_all = [c for m in mi_with_hyp for c in m.get("routing_low_cases", [])]
 
@@ -701,15 +729,26 @@ def _print_summary(results: list[dict]) -> None:
         print(f"   라우팅 정상(HIGH/MED): {_pct('routing_ok')}")
         print(f"   laundering 0건:        {_pct('no_laundering')}  (총 {total_laundering}건 위반)")
         print(f"   탐색→확증 누출 0건:    {_pct('no_exploratory_leak')}  (총 {total_leak}건 누출)")
+        # [3-2 발견3] 확증 라벨 위반 (verify 케이스에 [탐색적] 라벨이 붙은 것)
+        verify_cases = [m for m in mi_with_hyp if m.get("confirmatory_label_ok") is not None]
+        if verify_cases:
+            conf_ok = sum(1 for m in verify_cases if m.get("confirmatory_label_ok"))
+            print(f"   확증라벨 정상:         {conf_ok}/{len(verify_cases)} ({round(conf_ok/len(verify_cases)*100)}%)  (총 {total_confirm_viol}건 위반)")
         print(f"   삼각측량 적용 케이스:  {total_tria}건")
         if routing_low_all:
             print(f"   ⚠ LOW 라우팅 케이스 ({len(routing_low_all)}개): {routing_low_all[:3]}")
         # 목표 기준 (라우팅 정확도 포함)
         sig_rate_ok = (len(sig_match) / len(sig_labeled) >= 0.80) if sig_labeled else True
         routing_rate = sum(1 for m in mi_with_hyp if m.get("routing_ok")) / n
-        target_ok = sig_rate_ok and routing_rate >= 0.80 and total_laundering == 0 and total_leak == 0
+        target_ok = (
+            sig_rate_ok
+            and routing_rate >= 0.80
+            and total_laundering == 0
+            and total_leak == 0
+            and total_confirm_viol == 0  # [3-2] 확증 라벨 위반 0
+        )
         status_str = "✅ 9-G 목표 충족" if target_ok else "❌ 9-G 목표 미충족"
-        print(f"   {status_str} (시그니처정확도 80%+ · 라우팅 80%+ · laundering 0 · 누출 0)")
+        print(f"   {status_str} (시그니처정확도 80%+ · 라우팅 80%+ · laundering 0 · 누출 0 · 확증라벨 위반 0)")
 
     # 잘림·API오류 재시도 통계 (일시적 Gemini 현상 모니터링)
     retried = [r for r in results if r.get("retries", 0) > 0]
@@ -834,6 +873,15 @@ def _diagnosis(results: list[dict]) -> str:
                 lines.append(f"  - {c}")
         else:
             lines.append("- 탐색→확증 누출 0건 ✅")
+
+        # [3-2 발견3] 확증 라벨 위반 상세 (verify 케이스에 [탐색적] 라벨)
+        all_confirm_viol = [c for m in mi_with_hyp for c in m.get("confirmatory_label_violations", [])]
+        if all_confirm_viol:
+            lines.append(f"\n⚠️  확증 라벨 위반 {len(all_confirm_viol)}건 (verify 모드인데 [탐색적] 라벨):")
+            for c in all_confirm_viol[:5]:
+                lines.append(f"  - h1={c.get('h1', '')} / surface={c.get('surface', '')}")
+        else:
+            lines.append("- 확증 라벨 위반 0건 ✅ ([확증] 라벨 정상)")
 
         # LOW 라우팅 케이스
         all_low = [c for m in mi_with_hyp for c in m.get("routing_low_cases", [])]

@@ -197,7 +197,11 @@ def _build_surface(spec: "HypothesisSpec") -> None:
     m = spec.routing_method
 
     if m == _ROUTE_STRUCTURAL:
-        spec.surface_summary  = f"[구조적 논증] {iv} → {dv} — 체제·임계 변수, 선형검정 제외"
+        # [9-Q 우선순위 3] 구조적 논증 → 과정추적 스캐폴딩으로 전환
+        spec.surface_summary  = (
+            f"[과정추적] {iv} → {dv} — Van Evera 4검정 스캐폴딩 제공 "
+            f"(정량 검정 불가, 판정은 연구자)"
+        )
         spec.confidence_word  = "검정불가"
     elif m == _ROUTE_EVENT_EVENT:
         dep = spec.dependent_region or "?"
@@ -838,6 +842,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         from services.methods.granger_adapter import from_spec as _granger_adapt
         from services.methods.event_study import from_spec as _event_study_adapt
         from services.methods.panel_regression import from_spec as _panel_reg_adapt
+        from services.methods.process_tracing import process_tracing_adapt as _pt_adapt  # [9-Q 우선순위 3]
         from services.methods.grader import grade as triangulate
 
         for s in results:
@@ -867,7 +872,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                         # 동기 어댑터 (SQLite 쿼리)
                         mr = _panel_reg_adapt(s)
                         method_results.append(mr)
-                    # structural_arg: MethodResult 불필요 (등급 기여 없음)
+                    # [9-Q 우선순위 3] process_tracing: Van Evera 4검정 스캐폴딩
+                    elif method == "process_tracing":
+                        mr = _pt_adapt(s)
+                        method_results.append(mr)
+                    # structural_arg: MethodResult 불필요 (등급 기여 없음, 레거시 경로)
                     elif method == "structural_arg":
                         pass
                 except Exception as _m_exc:

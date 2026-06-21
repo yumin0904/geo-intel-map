@@ -32,7 +32,7 @@ RUNG_ORDER: dict[str, int] = {
 # ── 데이터 시그니처 ────────────────────────────────────────────────────────────
 # 쿼리 직후 데이터 모양으로 결정 — 결과 보기 전에 방법집합을 고정.
 DataSignature = Literal[
-    "UNQUANTIFIABLE",    # 비선형·체제 변수 → 구조적 논증 (8-gate 처리)
+    "UNQUANTIFIABLE",    # 비선형·체제 변수 → 과정추적 스캐폴딩 (9-Q 우선순위 3)
     "SINGLE_SHOCK",      # 특정 날짜·명명 사건 → 9-A 이벤트스터디
     "CROSS_SECTION",     # 국가간 비교·시간축 없음 → 9-B 횡단/패널회귀
     "NONLINEAR",         # 임계·체제 변수(정량화 가능) → 9-C 비선형
@@ -43,7 +43,7 @@ DataSignature = Literal[
 
 # 시그니처별 적용 가능 방법 집합 (사전 선언, 순서 = 주 방법 우선)
 SIGNATURE_METHOD_MAP: dict[str, list[str]] = {
-    "UNQUANTIFIABLE":    ["structural_arg"],
+    "UNQUANTIFIABLE":    ["process_tracing"],  # [9-Q 우선순위 3] 거절→과정추적 스캐폴딩
     "SINGLE_SHOCK":      ["event_study", "granger"],      # 삼각측량: 국소·전역
     "CROSS_SECTION":     ["panel_regression", "granger"], # 삼각측량: 단위간·lead-lag
     "NONLINEAR":         ["nonlinear_test"],               # 9-C (데이터 누적 후)
