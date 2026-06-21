@@ -26,7 +26,7 @@ from db.archive_manager import ArchiveManager
 from jobs.gdelt_job import run_gdelt_batch
 from jobs.reliefweb_job import run_reliefweb_batch
 from jobs.firms_sensor_job import run_firms_sensor_batch
-from jobs.press_releases_job import run_nk_press_batch, run_un_news_batch, run_policy_think_tank_batch
+from jobs.press_releases_job import run_nk_press_batch, run_un_news_batch, run_policy_think_tank_batch, run_govinfo_batch
 
 # ── 글로벌 싱글톤 ─────────────────────────────────────────────────────────
 _archive_mgr = ArchiveManager()
@@ -121,6 +121,16 @@ async def lifespan(app: FastAPI):
         id="policy_think_tank",
         replace_existing=True,
         misfire_grace_time=300,
+    )
+
+    # GovInfo CPD 대통령 성명 — 12시간마다 (최고 권위 미국 1차 사료, 이중결정 검정 핵심)
+    _scheduler.add_job(
+        run_govinfo_batch,
+        trigger="interval",
+        hours=12,
+        id="govinfo_cpd",
+        replace_existing=True,
+        misfire_grace_time=600,
     )
 
     _scheduler.start()

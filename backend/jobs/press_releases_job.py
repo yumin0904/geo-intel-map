@@ -47,3 +47,13 @@ def run_policy_think_tank_batch() -> None:
         logger.info("[PressJob/Policy] 완료 — %d건 신규", n)
     except Exception as exc:
         logger.warning("[PressJob/Policy] 실패 (다음 회차 재시도): %s", exc)
+
+
+def run_govinfo_batch() -> None:
+    """GovInfo CPD 최근 7일치 대통령 성명 수집 → govinfo_releases 저장."""
+    try:
+        from connectors.govinfo_connector import collect_recent
+        n = collect_recent(days_back=7)
+        logger.info("[PressJob/GovInfo] 완료 — %d건 신규", n)
+    except Exception as exc:
+        logger.warning("[PressJob/GovInfo] 실패 (다음 회차 재시도): %s", exc)

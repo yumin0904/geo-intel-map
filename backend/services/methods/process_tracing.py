@@ -245,6 +245,88 @@ def _fetch_policy_evidence(region: str | None, h1: str, limit: int = 4) -> list[
         return []
 
 
+def _fetch_govinfo_evidence(region: str | None, h1: str, limit: int = 3) -> list[dict]:
+    """
+    GovInfo CPD(대통령 성명·기자회견 원문) 온디맨드 검색.
+
+    미국 정부 1차 사료 중 최고 권위 — 이중결정 검정 핵심 증거.
+    예: "트럼프 싱가포르 정상회담 공동성명", "바이든 워싱턴 선언(확장억제)" 등.
+    API 호출 결과를 DB에 캐싱 → 재호출 시 DB 조회.
+    """
+    if not _DB_PATH.exists():
+        # DB 없으면 온라인 검색만
+        pass
+    keywords = _extract_keywords(h1) if h1 else []
+    # 지역 + H1 핵심어로 쿼리 구성
+    region_terms: dict[str, str] = {
+        "korean_peninsula": "North Korea DPRK nuclear alliance deterrence",
+        "taiwan_strait":    "Taiwan South China Sea Indo-Pacific",
+        "hormuz":           "Iran nuclear Hormuz sanctions",
+        "eastern_europe":   "Ukraine Russia NATO alliance",
+        "bab_el_mandeb":    "Houthi Red Sea maritime security",
+        "techno_supply_chain": "semiconductor chips supply chain China",
+    }
+    base_query = region_terms.get(region or "", "nuclear alliance security")
+    if keywords:
+        kw_str = " ".join(keywords[:3])
+        query = f"{base_query} {kw_str}"
+    else:
+        query = base_query
+
+    # 1순위: 로컬 DB 검색 (캐시)
+    local = []
+    try:
+        con = sqlite3.connect(str(_DB_PATH))
+        if region:
+            cur = con.execute(
+                """SELECT title, pub_date, description
+                   FROM govinfo_releases
+                   WHERE region_hint=?
+                   ORDER BY pub_date DESC LIMIT ?""",
+                (region, limit),
+            )
+        else:
+            cur = con.execute(
+                """SELECT title, pub_date, description
+                   FROM govinfo_releases
+                   ORDER BY pub_date DESC LIMIT ?""",
+                (limit,),
+            )
+        local = [
+            {
+                "title":       r[0] or "",
+                "date":        (r[1] or "")[:10],
+                "source_db":   "CPD (White House)",
+                "description": (r[2] or "")[:120],
+            }
+            for r in cur.fetchall()
+        ]
+        con.close()
+    except Exception:
+        pass
+
+    if len(local) >= limit:
+        return local
+
+    # 2순위: 온라인 검색 (로컬 부족 시)
+    try:
+        from connectors.govinfo_connector import online_search
+        online = online_search(query, region=region, limit=limit)
+        seen = {r["title"] for r in local}
+        for item in online:
+            if item["title"] not in seen:
+                local.append({
+                    "title":       item.get("title", ""),
+                    "date":        item.get("date", ""),
+                    "source_db":   item.get("source_db", "CPD (White House)"),
+                    "description": (item.get("description", ""))[:120],
+                })
+    except Exception as exc:
+        logger.debug("[process_tracing] GovInfo 온라인 검색 실패: %s", exc)
+
+    return local[:limit]
+
+
 def _fetch_un_evidence(region: str | None, h1: str, limit: int = 3) -> list[dict]:
     """
     UN News에서 관련 기사 조회 — 이중결정 검정 다자 소스.
@@ -387,7 +469,8 @@ def process_tracing_adapt(spec: "HypothesisSpec") -> MethodResult:
     # 증거 소스별 조회 (Token-Zero 결정론)
     acled_evidence  = _fetch_region_evidence(region)           # ACLED 분쟁 사건 (후프·밀짚)
     mofa_evidence   = _fetch_mofa_evidence(region, h1_text)    # 외교부 공문·성명 (흡연총)
-    policy_evidence = _fetch_policy_evidence(region, h1_text)  # Atlantic Council·ACA (흡연총 미국 시각)
+    policy_evidence  = _fetch_policy_evidence(region, h1_text)  # Atlantic Council·ACA (흡연총 미국 시각)
+    govinfo_evidence = _fetch_govinfo_evidence(region, h1_text) # CPD 대통령 성명 (이중결정 최고 권위)
     # 한반도 가설이면 NK 전문 소스 추가 (NKNews + 38 North)
     nk_evidence = (
         _fetch_nk_evidence(h1_text)
@@ -400,13 +483,13 @@ def process_tracing_adapt(spec: "HypothesisSpec") -> MethodResult:
     #   후프(0)   — ACLED 사건(선행 조건) + MOFA 성명(정책 선언 존재 여부)
     #   흡연총(1) — MOFA(한국 1차) + NKNews/38North(전문 분석) + Atlantic Council(미국 시각)
     #   밀짚(2)   — ACLED 사건(주변 신호)
-    #   이중결정(3)— UN News(다자 확인) + Atlantic Council(미국 외교정책 시각)
-    #               → 한국(MOFA)·미국(AtlanticCouncil)·UN 세 관점 일치 = 이중결정 근거
+    #   이중결정(3)— CPD 대통령 성명(★★★★★, 최고 권위) + UN News(다자) + Atlantic Council(분석)
+    #               → 한국(MOFA)·미국 대통령(CPD)·UN 3각 일치 = 이중결정 가장 강한 증거
     _ev_map: dict[int, list[dict]] = {
         0: acled_evidence + mofa_evidence[:2],
         1: mofa_evidence + nk_evidence + policy_evidence[:2],
         2: acled_evidence,
-        3: un_evidence + policy_evidence[2:4],
+        3: govinfo_evidence + un_evidence + policy_evidence[2:4],
     }
 
     def _note(i: int) -> str:
@@ -436,17 +519,19 @@ def process_tracing_adapt(spec: "HypothesisSpec") -> MethodResult:
                 "DB 증거 없음 — 언론 보도·통계 동향으로 탐색 필요"
             )
         if i == 3:
-            u = len(un_evidence)
+            g  = len(govinfo_evidence)
+            u  = len(un_evidence)
             p2 = len(policy_evidence[2:4])
-            if u or p2:
+            if g or u or p2:
                 parts = []
+                if g:  parts.append(f"CPD 대통령 성명 {g}건(★★★★★)")
                 if u:  parts.append(f"UN News {u}건")
                 if p2: parts.append(f"Atlantic Council/ACA {p2}건")
                 return (
                     " + ".join(parts)
-                    + " — 한(MOFA)·미(AC)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                    + " — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
                 )
-            return "UN/싱크탱크 소스 없음 — UN 결의·공동성명으로 직접 탐색 필요"
+            return "공식 소스 없음 — 대통령 성명·UN 결의·공동성명으로 직접 탐색 필요"
         return ""
 
     _note_map: dict[int, str] = {i: _note(i) for i in range(4)}
