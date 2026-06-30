@@ -29,6 +29,27 @@ from pydantic import BaseModel
 
 _INTEL_DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
 
+# [9-Q 우선순위 2] 인식론 모드 — 탐색적(exploratory) 카드 본문 규율.
+#   배경(P1 HARKing): 엔진은 데이터를 *먼저* 조회한 뒤 Gemini가 그 데이터로 가설을 생성하고,
+#   같은 데이터로 검정한다 → "화살 쏜 뒤 과녁 그리기"(사후가설). 탐색을 확증으로 위장하는 순환.
+#   백엔드 verifier._apply_epistemic_cap는 구조화 surface(surface_summary·등급)만 캡 →
+#   사용자가 실제로 읽는 카드 본문(Gemini 작성 full_text)은 캡을 모른 채 '선행성·인과'를 주장해
+#   HARKing이 표면층으로 누출. 그래서 본문에도 동일한 '상관' 상한 + [탐색적] 도장을 강제한다.
+#   (확증은 verify 모드 — 사용자가 데이터 보기 전 가설을 직접 선언 → 별도 task에서 [확증] 처리.)
+_EXPLORATORY_EPISTEMIC_BLOCK = """\
+## [9-Q 인식론 모드 — 탐색적(exploratory)] ★ 다른 모든 등급 규칙보다 우선
+이 분석은 **데이터를 먼저 관찰한 뒤 가설을 세우는 탐색 모드**다. 같은 데이터로 만든 가설을
+같은 데이터로 검정하면 순환논증(HARKing — 사후가설)이므로, 탐색 결과는 가설의 *생성*이지
+*확증*이 아니다. 데이터가 아무리 강해 보여도 다음을 반드시 지켜라:
+- [헤드라인] 맨 앞에 `[탐색적]` 도장을 반드시 찍어라 (생략 시 규칙 위반).
+- [주장] 등급은 **'상관'을 초과할 수 없다.** '선행성'·'인과' 등급과 그 동사
+  (유발한다·초래한다·선행한다·앞선다·~로 이어진다·~때문이다·강화한다·약화시킨다)를 절대 쓰지 마라.
+  최대 '상관'(상관한다·공변한다·동조한다)까지만 허용. 데이터가 시간 선후를 보여도 탐색에서는 '상관'까지다.
+- [검증포인트]에 "확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로
+  재검정해야 한다"를 반드시 명시하라.
+
+"""
+
 
 @contextmanager
 def _db() -> Iterator[sqlite3.Connection]:
@@ -311,6 +332,12 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
     _nob_block = _nob_hints if _nob_hints else "     (이 쿼리에 해당하는 이론 반례 데이터 없음 — 자체 분석)"
     _card_fmt = _card_fmt.replace("{_NOB_HINTS_PLACEHOLDER}", _nob_block)
 
+    # [9-Q 우선순위 2] 탐색/확증 라벨을 카드 본문에도 적용 (백엔드 캡과 정합).
+    #   탐색(insight·presentation): 데이터→가설 순환 방어 — [탐색적] 도장 + 등급 '상관' 상한.
+    #   확증(verify): 사용자가 데이터 보기 전 가설을 선언 → 아래 verify task에서 [확증] 처리.
+    if pq.mode != "verify":
+        _card_fmt = _EXPLORATORY_EPISTEMIC_BLOCK + _card_fmt
+
     if pq.mode == "presentation":
         task = f"""## 요청
 사용자가 다음 주제로 발표를 준비하고 있습니다: "{pq.raw_query}"
@@ -331,6 +358,13 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
     elif pq.mode == "verify":
         task = f"""## 요청
 사용자가 다음 주장을 검증하려 합니다: "{pq.raw_query}"
+
+## [9-Q 인식론 모드 — 확증적(confirmatory)]
+사용자가 데이터를 보기 **전에** 가설(주장)을 직접 선언했으므로 이 분석은 확증 모드다.
+탐색(데이터→가설)과 달리 검정 결과가 지지하는 한도까지 등급을 허용한다(상관 상한 없음).
+- [최종 판정]의 **결론** 맨 앞에 `[확증]` 표기를 반드시 붙여라.
+- 단, **완전한 사전등록(pre-registration)은 아니다** — 통제변수가 사전 선언되지 않았고
+  사용자가 뉴스를 접한 뒤 주장했을 수 있다. [단계 5] 또는 한계에 "통제변수 미사전선언" 캐비엇 1줄을 남겨라.
 
 ⚠️ <context>에 있는 수치는 [UNVERIFIED] 없이 인용하라. [UNVERIFIED]는 context 외부 사실에만 사용.
 
