@@ -591,6 +591,16 @@ async def _stream_gemini(
                     _s.source_query = source_query
                     _s.exploratory  = _is_exploratory
                 specs = await verify_hypotheses(specs)
+
+                # [Phase 10-1] 예측 계측 — 반증가능 타깃·방향·시점을 로그에 동결.
+                # Token-Zero(LLM 無). 채점(10-2)은 resolve_by 도래 후 실측 대조.
+                # 계측 실패가 SSE 흐름을 막지 않도록 log_predictions 내부에서 흡수됨.
+                try:
+                    from services.prediction_instrument import log_predictions
+                    log_predictions(specs, source_query)
+                except Exception as _pred_exc:  # noqa: BLE001
+                    logger.warning("[10-1] 예측 계측 호출 실패: %s", _pred_exc)
+
                 # [3-2 발견2] 사다리 최고 등급 — Method Router headline_rung(준실험)도 포함
                 # 확증형(verify)은 _apply_epistemic_cap에서 캡 없음 → 준실험 그대로 노출.
                 # 탐색형은 캡 후 headline_rung이 이미 '상관'으로 강등돼 있어 준실험 누출 없음.

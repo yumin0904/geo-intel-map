@@ -27,6 +27,7 @@ from jobs.gdelt_job import run_gdelt_batch
 from jobs.reliefweb_job import run_reliefweb_batch
 from jobs.firms_sensor_job import run_firms_sensor_batch
 from jobs.press_releases_job import run_nk_press_batch, run_un_news_batch, run_policy_think_tank_batch, run_govinfo_batch
+from jobs.prediction_scoring_job import run_prediction_scoring_batch
 
 # ── 글로벌 싱글톤 ─────────────────────────────────────────────────────────
 _archive_mgr = ArchiveManager()
@@ -131,6 +132,16 @@ async def lifespan(app: FastAPI):
         id="govinfo_cpd",
         replace_existing=True,
         misfire_grace_time=600,
+    )
+
+    # [Phase 10-2] 예측 채점 — 24시간마다 만기 예측을 실측 대조 (Token-Zero 산술)
+    _scheduler.add_job(
+        run_prediction_scoring_batch,
+        trigger="interval",
+        hours=24,
+        id="prediction_scoring",
+        replace_existing=True,
+        misfire_grace_time=3600,
     )
 
     _scheduler.start()

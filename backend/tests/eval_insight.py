@@ -271,7 +271,8 @@ def _check_methodological_integrity(
     항목:
       routing_ok             — routing_confidence가 HIGH 또는 MEDIUM (LOW=폴백)
       no_laundering          — assumptions_met=False인데 칸이 상관+ 인 케이스 0건
-      triangulation_ok       — 복수 방법 적용 시 convergence 필드 존재
+      triangulation_ok       — 자격(assumptions_met) 방법 2+ 케이스에서 수렴/발산이 보고됨
+                               (미보고=정직성 위반. 자격 단일이면 N/A=None)
       no_exploratory_leak    — exploratory=True인데 인과추론 등급이 상관/선행성/준실험인 케이스 0건
       confirmatory_label_ok  — [3-2 발견3] verify 모드인데 [탐색적] 라벨 붙은 케이스 0건
     """
@@ -286,6 +287,7 @@ def _check_methodological_integrity(
             "laundering_cases": [],
             "exploratory_leak_cases": [],
             "confirmatory_label_violations": [],
+            "triangulation_violations": [],
             "n_triangulated": 0,
             "n_hypotheses": 0,
             # [9-G] 시그니처 라우팅 정확도
@@ -300,6 +302,7 @@ def _check_methodological_integrity(
     laundering  = []
     expl_leak   = []
     confirm_label_violations = []
+    tria_violations = []   # [9-G] 자격 방법 2+인데 수렴/발산 미보고 (정직성 위반)
     n_triangulated = 0
     _is_verify = (case_mode == "verify")
 
@@ -323,9 +326,19 @@ def _check_methodological_integrity(
                     "rung": r.get("actual_rung", ""),
                 })
 
-        # (3) triangulation: 복수 방법이면 convergence 존재 여부
-        if len(mr.get("all_results", [])) >= 2:
+        # (3) triangulation: 자격(assumptions_met) 방법이 2+면 수렴/발산이 *반드시* 보고돼야 함.
+        # grader는 eligible≥2일 때만 convergence를 채우므로, 자격 기준으로 센다.
+        # (CLAUDE.md 9-G "삼각측량 수렴/발산을 정직하게 보고했나" + p-해킹 가드 "집합 전부 보고")
+        n_eligible = sum(
+            1 for r in mr.get("all_results", []) if r.get("assumptions_met")
+        )
+        if n_eligible >= 2:
             n_triangulated += 1
+            if mr.get("convergence") is None:
+                tria_violations.append({
+                    "h1": h.get("h1", "")[:50],
+                    "n_eligible": n_eligible,
+                })
 
         # (4) exploratory_leak: 탐색형인데 확증 등급 누출
         if h.get("any_exploratory") and h.get("headline_rung", "") in _CAUSAL_RUNGS:
@@ -343,7 +356,8 @@ def _check_methodological_integrity(
     no_laundering = len(laundering) == 0
     no_expl_leak = len(expl_leak) == 0
     confirm_label_ok = (len(confirm_label_violations) == 0) if _is_verify else None
-    triangulation_ok = True  # 복수 방법이 있을 때만 의미있음 (없으면 N/A)
+    # 자격 방법 2+ 케이스가 있을 때만 의미 — 없으면 N/A(True), 있으면 수렴/발산 보고 여부로 판정
+    triangulation_ok = (len(tria_violations) == 0) if n_triangulated else None
 
     # [9-G] 시그니처 라우팅 정확도 — expected vs actual 비교
     actual_sigs = [h.get("data_signature", "") for h in hyp_summary if h.get("data_signature")]
@@ -362,6 +376,7 @@ def _check_methodological_integrity(
         "laundering_cases":     laundering,
         "exploratory_leak_cases": expl_leak,
         "confirmatory_label_violations": confirm_label_violations,
+        "triangulation_violations": tria_violations,
         "n_triangulated":       n_triangulated,
         "n_hypotheses":         len(hyp_summary),
         # 라우팅 정확도
@@ -709,6 +724,7 @@ def _print_summary(results: list[dict]) -> None:
         total_leak = sum(len(m.get("exploratory_leak_cases", [])) for m in mi_with_hyp)
         total_confirm_viol = sum(len(m.get("confirmatory_label_violations", [])) for m in mi_with_hyp)  # [3-2]
         total_tria = sum(m.get("n_triangulated", 0) for m in mi_with_hyp)
+        total_tria_viol = sum(len(m.get("triangulation_violations", [])) for m in mi_with_hyp)  # [9-G]
         routing_low_all = [c for m in mi_with_hyp for c in m.get("routing_low_cases", [])]
 
         print(f"\n🔍 [9-G] 방법론 정직성 지표 ({n}케이스 기준)")
@@ -734,7 +750,12 @@ def _print_summary(results: list[dict]) -> None:
         if verify_cases:
             conf_ok = sum(1 for m in verify_cases if m.get("confirmatory_label_ok"))
             print(f"   확증라벨 정상:         {conf_ok}/{len(verify_cases)} ({round(conf_ok/len(verify_cases)*100)}%)  (총 {total_confirm_viol}건 위반)")
-        print(f"   삼각측량 적용 케이스:  {total_tria}건")
+        # [9-G] 삼각측량 정직성: 자격 방법 2+인데 수렴/발산 미보고 = 위반
+        if total_tria:
+            tria_mark = "✅" if total_tria_viol == 0 else "❌"
+            print(f"   {tria_mark} 삼각측량 수렴/발산 보고: {total_tria - total_tria_viol}/{total_tria}건  (미보고 {total_tria_viol}건)")
+        else:
+            print(f"   삼각측량 적용 케이스:  0건 (자격 방법 단일 — N/A)")
         if routing_low_all:
             print(f"   ⚠ LOW 라우팅 케이스 ({len(routing_low_all)}개): {routing_low_all[:3]}")
         # 목표 기준 (라우팅 정확도 포함)
@@ -746,9 +767,10 @@ def _print_summary(results: list[dict]) -> None:
             and total_laundering == 0
             and total_leak == 0
             and total_confirm_viol == 0  # [3-2] 확증 라벨 위반 0
+            and total_tria_viol == 0     # [9-G] 삼각측량 수렴/발산 미보고 0
         )
         status_str = "✅ 9-G 목표 충족" if target_ok else "❌ 9-G 목표 미충족"
-        print(f"   {status_str} (시그니처정확도 80%+ · 라우팅 80%+ · laundering 0 · 누출 0 · 확증라벨 위반 0)")
+        print(f"   {status_str} (시그니처정확도 80%+ · 라우팅 80%+ · laundering 0 · 누출 0 · 확증라벨 위반 0 · 삼각측량 보고 누락 0)")
 
     # 잘림·API오류 재시도 통계 (일시적 Gemini 현상 모니터링)
     retried = [r for r in results if r.get("retries", 0) > 0]
