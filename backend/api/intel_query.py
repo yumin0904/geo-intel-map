@@ -84,6 +84,18 @@ _GEMINI_URL   = (
     f"{_GEMINI_MODEL}:streamGenerateContent?alt=sse&key={{key}}"
 )
 
+# ── LLM provider 전환 (클라우드 Gemini ↔ 로컬 Ollama) ──────────────────────
+#   왜: Gemini 무료티어 일일 한도(429)·비용에서 자유롭게 개발·테스트하려고
+#   로컬 LLM(Ollama)로 갈아끼우는 얇은 전환층. 산술·통계검정은 여전히 Token-Zero
+#   파이썬이 담당하고, 이 층은 '자연어 분석문 생성'만 provider를 바꾼다.
+#   .env LLM_PROVIDER=gemini(기본) | ollama 로 선택.
+_LLM_PROVIDER  = os.getenv("LLM_PROVIDER", "gemini").strip().lower()
+_OLLAMA_HOST   = os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
+_OLLAMA_MODEL  = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
+# 8GB M1 기준: num_ctx 8192 = 모델 2GB + KV캐시 ~1GB. 프롬프트가 길면 일부 잘릴 수
+# 있음(로컬 품질 한계 — 의도된 트레이드오프). 램 여유에 따라 .env로 조절.
+_OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
+
 # ── 요청 스키마 ───────────────────────────────────────────────────────────
 
 class IntelQueryRequest(BaseModel):
@@ -475,6 +487,52 @@ def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
+async def _ollama_stream_text(prompt: str) -> AsyncGenerator[str, None]:
+    """로컬 Ollama(/api/generate) 스트리밍 → 텍스트 청크만 yield.
+
+    Ollama 응답은 JSONL(줄마다 JSON) — 각 줄의 'response' 필드가 부분 텍스트.
+    오류·미연결 시 사용자에게 보이는 경고 텍스트를 yield (SSE 흐름 유지).
+    """
+    body = {
+        "model": _OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": True,
+        "options": {
+            "temperature": 0.7,
+            "num_ctx": _OLLAMA_NUM_CTX,
+            "num_predict": 4096,   # 출력 상한 (인사이트 카드 ~2.5~4k 토큰)
+        },
+    }
+    try:
+        async with httpx.AsyncClient(timeout=300) as client:
+            async with client.stream("POST", f"{_OLLAMA_HOST}/api/generate", json=body) as resp:
+                if resp.status_code != 200:
+                    err = await resp.aread()
+                    logger.error("[intel] Ollama %d: %s", resp.status_code, err[:200])
+                    yield f"⚠️ Ollama 오류 ({resp.status_code}) — 모델/서버 확인"
+                    return
+                async for raw_line in resp.aiter_lines():
+                    if not raw_line.strip():
+                        continue
+                    try:
+                        obj = json.loads(raw_line)
+                    except json.JSONDecodeError:
+                        continue
+                    text = obj.get("response", "")
+                    if text:
+                        yield text
+                    if obj.get("done"):
+                        break
+    except httpx.ConnectError:
+        yield ("⚠️ Ollama 서버에 연결할 수 없습니다 — `brew services start ollama` 확인 "
+               f"(host={_OLLAMA_HOST}).")
+    except httpx.TimeoutException:
+        yield "\n\n⚠️ Ollama 응답 시간 초과(로컬 모델이 느릴 수 있음). 다시 시도해주세요."
+    except Exception as e:  # noqa: BLE001
+        logger.exception("[intel] Ollama 스트리밍 예외: %s", e)
+        yield f"\n\n⚠️ Ollama 오류: {e}"
+
+
 async def _stream_gemini(
     prompt: str,
     thinking: bool,
@@ -489,7 +547,7 @@ async def _stream_gemini(
         매핑 오류 방지 — 예: korean_peninsula 쿼리가 middle_east→ITA로 검정되는 버그).
     """
 
-    if not _GEMINI_KEY:
+    if _LLM_PROVIDER != "ollama" and not _GEMINI_KEY:
         yield _sse({"text": "⚠️ GEMINI_API_KEY가 설정되지 않았습니다.", "done": False})
         yield _sse({"done": True})
         return
@@ -579,6 +637,15 @@ async def _stream_gemini(
             logger.exception("[intel] 스트리밍 예외: %s", e)
             yield _sse({"text": f"\n\n⚠️ 오류: {e}", "done": False})
 
+        async for _ev in _finalize(full_text):
+            yield _ev
+
+    async def _finalize(full_text: str) -> AsyncGenerator[str, None]:
+        """스트리밍 완료 후 채점·가설추출·예측계측 — provider 무관 후처리.
+
+        Gemini·Ollama 어느 경로든 동일한 full_text를 받아 동일하게 처리한다
+        (산술·통계는 Token-Zero 파이썬이므로 provider와 무관).
+        """
         # §19-D 신뢰도 점수 역산 — 스트리밍 완료 후 score 이벤트 전송
         if full_text:
             score_result = score_output(full_text)
@@ -720,6 +787,17 @@ async def _stream_gemini(
             yield _sse({"type": "score", "done": False, **score_result})
 
         yield _sse({"done": True})
+
+    # === provider 분기: 로컬 Ollama vs 클라우드 Gemini ===
+    #   Ollama 경로는 503/thinking 재시도가 불필요(로컬) → 단순 스트림 + 동일 _finalize.
+    if _LLM_PROVIDER == "ollama":
+        _ft = ""
+        async for _t in _ollama_stream_text(prompt):
+            _ft += _t
+            yield _sse({"text": _t, "done": False})
+        async for _ev in _finalize(_ft):
+            yield _ev
+        return
 
     async for chunk in _do_stream(body):
         yield chunk
