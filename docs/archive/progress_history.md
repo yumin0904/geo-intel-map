@@ -2615,3 +2615,727 @@ loop.run_in_executor(None, _get_gtd_stats, pq.regions),                  # #22 (
 ### Phase 8 (후순위, Phase 7 완료 후)
 
 브리핑 연쇄 그래프(P8-1) · 행위자 네트워크(P8-2) · 교차 인사이트(P8-4) · 타임라인 뷰(P8-5)
+
+
+---
+
+## 📦 Phase 8 상세 구현 일지 (v7.9.0 ~ v8.11.0, 2026-06-07~10)
+
+> progress.md에서 2026-06-30 분리. Phase 8 박사수준 추론 사이클의 구현 상세.
+> 요약·완료 게이트는 progress.md 본문 'Phase 8' 절에 유지됨.
+
+### Cycle 8-C-5 — 회귀 수정 (DV 방향 조건부 완화 + API 오류 분리) (v8.11.0, 2026-06-10)
+
+**Opus 분석 기반 수정 3건**:
+1. **DV 방향 비교 조건부 완화** — "DV 실측 있을 때만" + 없을 때 `[UNVERIFIED] DV 부재` 정직 경로 (모델 freeze 해소)
+2. **`**DV 예측 방향**` 독립 라벨 제거** — `반증 가능 예측` 줄에 부호(`▲/▼/↔`)만 인라인 병합 (출력 복붙 오염 차단)
+3. **API 오류 감지 강화** — "과부하 상태" 메시지도 `error`로 분류 (FAIL→SKIP 처리)
+
+**eval 결과 (15케이스 --judge, 2026-06-10) — Gemini API 과부하 환경**
+
+| 항목 | v8.10.4 | v8.11.0 | Δ |
+|------|---------|---------|---|
+| PASS | 14/15 | **13/15 (오류 2, 실패 0)** | FAIL→오류 분리 ✅ |
+| 평균 신뢰도 | 92 | **93** | +1 |
+| judge 케이스 | 7 | **3** | API 과부하로 샘플 부족 |
+| 경쟁이론엄밀 | 3.29 | **3.33** | ↑ (샘플 부족, 신뢰도 낮음) |
+| 종합 | 3.46 | **3.00** | (샘플 3개 → 비교 불가) |
+
+**공통 케이스 변화 (3개)**:
+- `mearsheimer_vs_liberal_taiwan`: 경쟁 3→**4** ✅ (DV 방향 수정 효과)
+- `salt_typhoon_cyber_deterrence`: 경쟁 4→3 (LLM 변동성)
+- `taiwan_liberal_vs_realist`: 경쟁 4→3 (LLM 변동성)
+
+**판정**: API 과부하로 judge 3케이스 → 유의미한 통계 비교 불가. API 안정 후 재측정 필요.
+- 수정 1 (DV 조건부): `mearsheimer` +1 긍정 신호
+- 수정 3 (오류 분리): exit code 0 ✅ (이전 FAIL 케이스 SKIP 처리됨)
+
+### Cycle 8-C-4 — 추론 품질 3종 개선 시도 + 회귀 발생 (v8.10.4, 2026-06-10)
+
+**목표**: 점수 정체 원인 3가지 동시 공략 (2순위→1순위→3순위 순으로 적용)
+
+**구현 3건**:
+1. **[2순위] 동사 강제 (v8.10.2)**: `intel_query.py` [주장] 섹션에 등급별 허용 동사 표 삽입 + 자기검열 단계 추가
+2. **[1순위] 비자명 재료 주입 (v8.10.3)**: `claim_ledger.build_nob_hints()` 신규 함수 → 이론 반례 경계 3개 카드 템플릿에 직접 주입
+3. **[3순위] DV 방향 비교 (v8.10.4)**: `theory_comparator._extract_dv_direction()` → 각 이론 프로파일에 `**DV 예측 방향**:` 추가, DV 방향 필수 비교 지침
+
+**eval 결과 (15케이스 --judge, 2026-06-10)**
+
+| 항목 | v8.9.0 (기준) | v8.10.4 | Δ |
+|------|---------|---------|---|
+| PASS | 29/30 | **14/15** | taiwan_semiconductor FAIL (빈응답) |
+| 평균 신뢰도 | 92 | **92** (FAIL 제외) | 동일 |
+| **비자명성** | 3.17/5 | **3.29/5** | ↑+0.12 |
+| **추론정직성** | 3.17/5 | **3.57/5** | ↑+0.40 ✅ 최대 개선 |
+| **경쟁이론엄밀** | 3.67/5 | **3.29/5** | ↓-0.38 ⚠️ 회귀 |
+| **반증가능성** | 3.83/5 | **3.71/5** | ↓-0.12 |
+| **종합** | 3.46/5 | **3.46/5** | 동일 (FAIL 제외 기준) |
+
+> 주의: 이전 세션 요약에서 "3.16/5"로 오기됨 — taiwan_semiconductor FAIL(0점) 포함 평균. 정확한 비교 기준은 "FAIL 제외 7케이스 3.46/5".
+
+**회귀 원인 분석**:
+1. `taiwan_semiconductor` 완전 빈 응답 (confidence=0, 섹션 0%) — nob_hints 컨텍스트 길이 초과 추정
+2. `경쟁이론엄밀 -0.38`: DV 방향 지침이 Gemini의 비교 구조를 혼란시킴 (IV 앵커 방식과 충돌 가능성)
+3. `russia_china_arctic_control` 전 항목 2점 — 이 케이스가 점수 평균 끌어내림
+
+**다음 과제**: Opus 분석 → 회귀 원인 확정 + 수정 방향 제시
+
+### Cycle 8-C-3 — HIIK 쿼리 버그 수정 + Granger 오매핑 해소 (v8.9.0, 2026-06-10)
+
+**외부 평가 기반 (Claude.ai + Gemini 교차 검토, v8.8.0 결과물 분석)**:
+
+두 평가 공통 지적:
+1. **[P0] Granger 변수 오매핑**: H1 "대테러 예방 예산 감소" → 실제 매핑 `hormuz × CL=F` (개념 무관) → p=0.9884 당연한 결과
+2. **[P3] 앵커 미제공 잔존**: `_get_hiik_conflict`가 `WHERE region LIKE '%Iran%'`로 검색했으나 DB에는 `region='hormuz'` → **항상 빈 결과** (완전한 버그)
+
+**수정 2건**:
+1. `theory_comparator._get_hiik_conflict`: `WHERE region LIKE '%{country}%'` → `WHERE region=?` (region_code 직접 매핑)
+   → hormuz(intensity=4), middle_east(intensity=5), eastern_europe(intensity=5) 정상 반환
+2. `hypothesis_extractor._EVENT_DEP_KEYWORDS`: "지원"·"원조"·"지원액" 계열 추가
+   → "우크라이나 지원 규모" 포함 H1 → `dep_region=eastern_europe` → `사건→사건` 경로 활성화
+
+**eval 결과 (30케이스 --judge, 2026-06-10)**
+
+| 항목 | v8.8.0 | v8.9.0 | Δ |
+|------|--------|--------|---|
+| PASS | 29/30 | **29/30** | 동일 |
+| 평균 신뢰도 | 92 | **92** | 동일 |
+| **선행성(Granger p<0.15)** | 0건 | **2건** | **▲ +2 ✅** |
+| 상관 | — | 3건 | |
+| 경쟁이론엄밀 | 3.53 | **3.35** | −0.18 ⚠️ |
+| 종합 | 3.50 | 3.38 | −0.12 |
+| Granger VERIFIED | 2 | **2** | 동일(새 케이스) |
+
+**선행성 2건 상세**:
+- `middle_east_hormuz_contagion`: ACLED 중동→호르무즈 사건→사건, p=0.0 (완전 유의)
+- `ukraine_middleeast_contagion`: ACLED 우크라이나→중동, p=0.0111 ← 자원배분 메커니즘 Granger 입증
+
+**LLM 점수 하락 분석 (정직성 원칙)**:
+- 경쟁이론엄밀 -0.18: v8.8.0 vs v8.9.0 judge 샘플 23케이스 동일하나 LLM 변동성 범위. `taiwan_liberal_vs_realist` 경쟁=2 지속이 평균 끌어내림.
+- 하락이 내 변경에서 기인하는지 검증: HIIK 데이터 직접 사용 케이스(gray_zone) 오히려 안정 (sahel=4, south_china_sea=3). 앵커 없던 케이스가 앵커 받았으므로 과잉 주장 가능성 없음.
+- 노이즈 판단 유지.
+
+**남은 문제**: `taiwan_liberal_vs_realist` 경쟁=2 (종합=2.25) 지속 → [앵커 미제공] 잔존 + Gemini 프롬프트 무시.
+
+### Cycle 8-C-2 — theory_comparator 선택·앵커·실측 배선 확장 (v8.8.0, 2026-06-09)
+
+**배경**: v8.7.0 진단에서 "이론 51개 적재해도 경쟁이론엄밀 안 오름" 근본 원인 규명 →
+theory_comparator가 비교 등판 이론을 하드코딩 11개로 고정 + 군사 이론 milex 앵커 미작동.
+
+**수정 4건**
+1. **🐛 진짜 버그**: `_get_sipri_milex_for_theories`가 존재하지 않는 컬럼 `country_iso3`(실제 `iso3`) 참조
+   → 예외 조용히 삼켜져 **모든 군사 이론이 milex 앵커 못 받던 근본 원인** (taiwan "[앵커 미제공]"의 정체). 수정.
+2. **선택 풀 확장**: `_SECTOR/_REGION_THEORY_PAIRS` 11개 → 차별화 변수 쌍 중심 확대.
+   핵심: 한 쌍에 서로 다른 metric 배치(현실주의=milex / 자유주의=trade_hhi / 민주평화=polity) → 실측값이 우열 판정.
+3. **앵커 레지스트리 확장**: `_THEORY_ANCHORS` 10개 → 30개 (기존 적재 데이터에 정직 매핑, DV 직접측정 아님 명시 유지).
+4. **`milex_min` 메트릭 추가**: NATO 무임승차(burden_sharing) 판정용 (2% GDP 가이드라인).
+
+**eval 결과 (30케이스 --judge) — v8.7.0 대비 (둘 다 30케이스, 공정 비교)**
+
+| 항목 | v8.7.0 | v8.8.0 | Δ |
+|------|--------|--------|---|
+| PASS | 25/30 | **29/30** | +4 ✅ |
+| 평균 신뢰도 | 85 | **92** | +7 ✅ |
+| PROVISIONAL(<60) | 2 | **0** | ✅ |
+| 경쟁이론엄밀 | 3.40 | **3.53** | **+0.13 ✅ (타깃)** |
+| 비자명성 | 3.47 | 3.53 | +0.06 |
+| 추론정직성 | 3.67 | 3.27 | −0.40 ⚠️ |
+| 반증가능성 | 3.73 | 3.67 | −0.06 |
+| 종합 | 3.57 | 3.50 | −0.07 (노이즈 범위) |
+
+**정직성 하락 분석 (메모리 §정직성>심판 원칙 준수)**:
+- 하락 4건(india·middle_east_hormuz·ukraine_middleeast·eia_gas)은 **내 변경 영역 아닌 contagion/Granger 통계 케이스**.
+  판정 코멘트가 늘 같던 "인과추론 엄밀성 부족" → LLM 심판 노이즈.
+- **앵커 주입 케이스 육안 검증**: nato_burden_sharing "전제 충족, 직접 설명하지는 않음" 등 **과잉 주장 없이 정직**.
+  → 내 변경이 dishonesty 유발 안 함 확인. 정직성 하락은 심판 변동.
+- 개선 케이스: taiwan_liberal_vs_realist(최악 2.5) 경쟁 2→4·정직 2→3, sahel 경쟁 3→4.
+
+**성과**: 타깃(경쟁이론엄밀)+구조(PASS·신뢰도) 명확 개선. milex 버그 수정이 핵심.
+**남은 문제(다음 레버)**: Gemini가 제공된 비교 컨텍스트를 무시하고 자기 이론 선택 → "[앵커 미제공]" 잔존
+(taiwan 케이스). **프롬프트 준수 강제**가 다음 사이클. § 군사·사이버 변수 단일화(milex 쏠림) = §20 Phase D 데이터 벽 잔존.
+
+---
+
+### eval 결과 (v8.7.0, 30케이스 --judge, 2026-06-09)
+
+**30케이스 구조 평가**
+- PASS: **25/30 (83%)** | FAIL: 5 | 오류: 0
+- 평균 신뢰도: **85/100**
+- 평균 응답시간: 51.3s
+
+**LLM 심판 (15케이스 judge)**
+| 항목 | v8.7.0 | 출발점(v7.8.9, 15케이스) | 목표 |
+|------|------|------|------|
+| 종합 | **3.57/5** | 3.68 | 4.2+ |
+| 비자명성 | 3.47 | 3.57 | 3.9+ |
+| 추론정직성 | 3.67 | 3.86 | — |
+| 경쟁이론엄밀 | **3.40** | 3.43 | 4.0+ |
+| 반증가능성 | 3.73 | 3.86 | — |
+
+> ⚠️ 출발점은 15케이스(쉬운 케이스 편중), v8.7.0은 30케이스(하드케이스 포함) — 직접 비교 시 불리.
+
+**구조 지표**
+- 경쟁이론 수치비교[엄격]: **89%** (16/18, 이전 100% — 30케이스 확장으로 하드케이스 포함)
+- H1 추출: **21/22 (95%)**
+- Granger: VERIFIED 2건 ✅ · PARTIAL 2건 · PENDING 39건
+- 추론등급: 선행성 2건, 상관 2건, 기술적 26건
+
+**실패 케이스 분석** (사후 원문 검증으로 정정 — 2026-06-09)
+| 케이스 | 실제 원인 |
+|--------|------|
+| korean_peninsula_alliance | **Gemini API 과부하** (full_text 44자 "API 과부하" 메시지) — 일시적 노이즈, 코드 무관 |
+| china_cyber_us | 생성 449자에서 중단 (잘림) — 컨텍스트 길이 아닌 생성 조기 종료, 별개 이슈 |
+| china_ai_export_ban | [검증포인트][문헌공백] 섹션 누락 (포맷 프롬프트) |
+| india_indo_pacific_balancing | [검증포인트][문헌공백] 섹션 누락 (포맷 프롬프트) |
+| taiwan_liberal_vs_realist | [단계5] 누락 · 질적 2.5/5 (경쟁이론 수치 비교 미충족) |
+
+**진단 (사후 코드 분석으로 근본 원인 규명)**: 이론 51개 적재는 **경쟁이론엄밀(3.40)에 거의 무효**였다.
+theory_comparator.py가 비교에 등판시키는 이론이 `_SECTOR_THEORY_PAIRS`/`_REGION_THEORY_PAIRS`에
+**하드코딩된 11개**로 고정 → 라이브러리 51개 중 추가한 24개는 영원히 미선택.
+구조 결함 3개: ① 선택 풀 11개 고정 ② 실측 주입 tid 문자열 하드코딩(`if "mahan" in tid`) ③ 앵커 레지스트리 10개.
+판정 코멘트 15개가 일관되게 "실측 비교가 수치 편차로 이어지지 못함" — [앵커 미제공] 26회 등장.
+→ 진짜 레버는 이론 추가가 아니라 **theory_comparator 선택·앵커·실측 배선 확장** (다음 사이클 8-C-2).
+※ 단 군사·사이버 케이스는 변수가 milex_gap 하나로 몰려 차별화 불가 → §20 Phase D 데이터 벽 잔존.
+
+---
+
+### v8.7.0 구현 내역 (이론 대량 적재 12개 — 8-D 후속 4차, 51개 달성, 2026-06-09)
+
+**목표**: 50개+ 이론 적재 — 방법론·사이버·기술·인도태평양 핵심 이론 완비
+
+| 파일 | 이론 | 폴더 |
+|------|------|------|
+| `apt_attribution_theory.md` | APT 귀속 이론 (Rid & Buchanan 2015) | `06_cyber/` |
+| `cyber_sovereignty.md` | 사이버 주권론 (Deibert 2013) | `06_cyber/` |
+| `dual_use_technology.md` | 이중용도 기술 통제론 (Feigenbaum/Bauer) | `03_techno/` |
+| `nuclear_taboo_theory.md` | 핵 금기 이론 (Tannenwald 1999) | `04_indo_pacific/` |
+| `burden_sharing_theory.md` | 동맹 비용분담 이론 (Olson & Zeckhauser 1966) | `04_indo_pacific/` |
+| `nuclear_nonproliferation_theory.md` | 핵 비확산 이론 (Waltz vs Sagan 1981) | `04_indo_pacific/` |
+| `constructivism.md` | 구성주의 (Wendt 1992) | `00_methods/` |
+| `prospect_theory_ir.md` | 전망 이론 (Levy 1992, Mercer) | `00_methods/` |
+| `escalation_theory.md` | 에스컬레이션 이론 (Kahn 1962) | `05_gray_zone/` |
+| `economic_sanctions_theory.md` | 경제 제재 이론 (Hufbauer/Drezner) | `05_gray_zone/` |
+| `ai_strategic_competition.md` | AI 전략 경쟁론 (Allen/NSCAI 2021) | `03_techno/` |
+| `critical_minerals_security.md` | 핵심 광물 안보론 (Overland 2019) | `03_techno/` |
+
+**인덱싱 결과**: 124개 upsert, 오류 0
+
+**섹터별 이론 수 (v8.7.0 기준)**
+
+| 섹터 | 이전 | 현재 |
+|------|------|------|
+| indo_pacific | 15개 | 20개 |
+| gray_zone | 6개 | 8개 |
+| techno | 4개 | 7개 |
+| maritime | 6개 | 6개 |
+| energy | 5개 | 5개 |
+| cyber | 3개 | 5개 |
+| **합계** | **39개** | **51개** |
+
+**claim_ledger 기대 효과**: 방법론(구성주의·전망이론)·핵 이론(금기·비확산) 추가로
+비자명성 탐지 커버리지 확장 + APT 귀속·사이버 주권으로 사이버 섹터 원장 신호 강화
+
+---
+
+### v8.6.0 구현 내역 (이론 대량 적재 12개 — 8-D 후속 3차, 2026-06-09)
+
+**목표**: 피인용 rival_theories 우선 + 취약 섹터(gray_zone·energy·maritime) 강화
+
+**피인용 분석 기반 우선 추가 (3회/2회 피인용)**
+
+| 파일 | 이론 | 폴더 | 피인용 |
+|------|------|------|-------|
+| `liberal_institutionalism.md` | 자유주의 제도론 (Keohane & Nye 1977) | `04_indo_pacific/` | 3회 |
+| `hegemonic_stability_theory.md` | 패권 안정론 (Kindleberger 1973) | `04_indo_pacific/` | 2회 |
+| `conventional_deterrence.md` | 재래식 억지론 (Mearsheimer 1983) | `04_indo_pacific/` | 2회 |
+| `coercive_diplomacy.md` | 강압 외교 (Schelling 1966) | `04_indo_pacific/` | 2회 |
+
+**섹터별 강화**
+
+| 파일 | 이론 | 섹터 |
+|------|------|------|
+| `power_transition_theory.md` | 세력전이론 (Organski 1958) | indo_pacific |
+| `democratic_peace_theory.md` | 민주 평화론 (Doyle 1983) | indo_pacific |
+| `proxy_war_theory.md` | 대리전 이론 (Mumford 2013) | gray_zone |
+| `salami_slicing.md` | 살라미 전술 (Mastro/Fravel 2014) | gray_zone |
+| `lawfare.md` | 법전쟁 (Dunlap 2001) | gray_zone |
+| `rentier_state_theory.md` | 렌티어 국가론 (Beblawi 1987) | energy |
+| `energy_security_theory.md` | 에너지 안보론 (Yergin 1991) | energy |
+| `corbett_sea_control.md` | 코르벳 제한적 제해권 (Corbett 1911) | maritime |
+| `command_of_the_commons.md` | 공유지 지배권 (Posen 2003) | maritime |
+| `techno_globalism.md` | 기술 세계주의 (Rosecrance 1996) | techno |
+| `cognitive_warfare.md` | 인지전 이론 (du Cluzel 2020) | cyber |
+
+**인덱싱 결과**: 112개 upsert, 오류 0
+
+**섹터별 이론 수 (v8.6.0 기준)**
+
+| 섹터 | 이전 | 현재 |
+|------|------|------|
+| indo_pacific | 6개 | 15개 |
+| gray_zone | 3개 | 6개 |
+| maritime | 4개 | 6개 |
+| energy | 3개 | 5개 |
+| techno | 3개 | 4개 |
+| cyber | 2개 | 3개 |
+| **합계** | **21개** | **39개** |
+
+**claim_ledger 기대 효과**: rival_theories 피인용 이론들이 실제 문서로 존재하게 됨
+→ 원장 신호 ②(경쟁이론 미해결 쌍)의 재료 대폭 확충 → 경쟁이론엄밀 상승 예상
+
+---
+
+### v8.5.0 구현 내역 (이론 신규 3개 추가 — 8-D 후속 2차, 2026-06-09)
+
+**목표**: 원장 신호 ①②의 재료 확충 — 안보딜레마·역외균형·사이버 공세-방어 균형 신규 추가
+
+| 파일 | 이론 | 폴더 |
+|------|------|------|
+| `security_dilemma.md` | 안보 딜레마 (Jervis 1978) | `04_indo_pacific/` |
+| `offshore_balancing.md` | 역외균형 전략 (Mearsheimer & Walt 2016) | `04_indo_pacific/` |
+| `cyber_offense_defense_balance.md` | 사이버 공세-방어 균형 (Lynn 2010, Buchanan 2017) | `06_cyber/` |
+
+**7-A 필드 완비**: 모든 이론에 IV·DV·conditions·falsifiable_prediction·known_counterexample·rival_theories 포함.
+
+**결과**: 총 이론 97개 (전 24개 → 이론 파일만 이전 21+3=24개 concept 이론). claim_ledger `_fetch_theory_claims` 확인 — 3개 모두 정상 노출.
+
+**경쟁이론 커버리지 확장 (신규 이론의 rival_theories)**:
+- 안보딜레마 ↔ Balance of Threat (Walt), Deterrence Theory, Offensive Realism
+- 역외균형 ↔ Liberal Hegemony (Ikenberry), Primacy Theory, Alliance Entrapment
+- 사이버 공세-방어 ↔ Cyber Deterrence (Libicki), Digital Iron Curtain, Security Dilemma in Cyberspace
+
+---
+
+### v8.4.0 구현 내역 (이론 라이브러리 보강 — 8-D 후속, 2026-06-09)
+
+**진단**: 8-D 원장 메커니즘은 완성됐으나 신호 ①②(반례·경쟁이론)의 재료인 **이론 문서가
+얇았다**. 이론 21개 중 9개가 7-A 프로파일 미완(반례·경쟁이론·예측 필드 빈 껍데기) →
+검색엔 잡히나 원장 공백 탐지엔 미기여. 그 9개가 하필 골드셋 도메인과 정확히 겹침.
+
+**작업**: 빈 껍데기 9개에 7-A 5종 필드(IV·DV·conditions·falsifiable_prediction·
+known_counterexample·rival_theories) 추가. 품질 바 = 반례는 구체적·검증가능(막연한
+'상황에 따라' 금지), 경쟁이론은 예측이 갈리는 진짜 긴장 쌍. 사용자(전공자) 검수.
+
+| 보강 이론 | 핵심 반례 (검증가능) |
+|----------|---------------------|
+| 반도체 공급망 (TSMC) | CHIPS법·라피더스·SMIC 분산 시 전이 강도 하락 |
+| 초크포인트/SLOC | 후티 공격에도 유가 제한적(2024~25, SPR·OPEC+ 흡수) |
+| 자원의 저주 | 노르웨이·보츠와나 — 제도 질이 매개변수 |
+| 정보전·인지전 | 핀란드·에스토니아 — 수용자 회복력이 매개 |
+| 확장억제 | 핵우산 하 한국 독자핵 여론 70% — reassurance 미보장 |
+| 코리아 디스카운트 | 밸류업 후에도 지속·반도체 호조 시 약화 — 단일 원인 아님 |
+| FONOP | 2015~ 정례화에도 인공섬 군사화 지속 — 선언적 한계 |
+| 진주목걸이 | 함반토타·과다르 군사기지화 정체 — 군민겸용 가정 한계 |
+| 기술 민족주의 | 수출통제가 SMIC 7nm 자립 가속 — 역효과 |
+
+**결과**: 이론 프로파일 완비 **12/21 → 21/21**. 모든 골드셋 케이스에서 원장 신호
+①②가 표시 상한(반례5·경쟁4) 충족 (이전엔 다수 케이스 신호 얇음).
+
+**eval (gold15 --judge) — 8-D 전체 진행 경로**
+
+| 지표 | v8.2.0 (21심판) | 8-D 직결 (9) | v8.4.0 보강 (10) |
+|------|----------------|-------------|------------------|
+| **비자명성** | 3.43 | 3.56 | **3.70** |
+| 추론정직성 | 3.33 | 3.44 | 3.50 |
+| 경쟁이론엄밀 | 3.38 | 3.44 | 3.30 |
+| 반증가능성 | 3.52 | 3.44 | 3.80 |
+| **종합** | 3.42 | 3.47 | **3.58** |
+| PASS | — | 13/15 | **15/15** |
+
+**정직한 판정**:
+1. ✅ 이론 보강이 비자명성을 직접 끌어올림 (3.43→3.70, +0.27). 2점대 케이스 소멸.
+2. ✅ 종합 3.58 — Phase 8 전체 최고치. PASS 15/15(잘림 실패 0).
+3. ⚠️ **경쟁이론엄밀 3.30 정체** — 원장이 경쟁이론을 풍부히 *노출*하나 그것들 간 *수치 판정*
+   미수행. 이건 라이브러리 콘텐츠가 아니라 **8-C 앵커를 경쟁이론쌍 판정까지 확장**해야 풀림.
+4. 비자명 3.9·종합 4.2 목표엔 미달이나 명확한 상승 궤도.
+
+**다음 후보**:
+- (a) 8-C 앵커 확장 — 원장이 노출한 경쟁이론쌍을 수치로 판정 → 경쟁이론엄밀 공략
+- (b) cyber 이론 추가 (현재 libicki 1개) + 신규 정전 이론(안보딜레마·세력균형·역외균형)
+- (c) Phase 10 후보: 하이브리드 임베딩 검색 (사용자 합의 — 추론 게이트 후)
+
+### v8.3.0 구현 내역 (8-D — 문헌 공백 탐지, 2026-06-09)
+
+**진단**: [문헌공백] 섹션이 순수 LLM 생성 → 엔진이 라이브러리 94개 문서가 실제로
+무엇을 주장하는지 모른 채 추측 → 막연한 "추가 연구 필요"류 → 비자명성 3.43 고착.
+**재료는 이미 있음**: 7-A가 이론 문서에 `known_counterexample`·`rival_theories` 구조화 완료.
+
+**설계 결정 (사용자 승인)**: "기존 필드만 + 미래 확장 가능" — 오늘은 손 안 가게(기존
+필드 자동 활용), 미래엔 막지 않게(`contested_by` 파이프라인 준비). 벡터 DB 등 신규 인프라 0.
+
+| 파일 | 내용 |
+|------|------|
+| `services/claim_ledger.py` (신규) | 결정론적 문헌 공백 원장 — 3종 신호(①반례 클러스터 ②경쟁이론 미해결 ③교차도메인 밀도) + ④contested_by 확장 훅. 이론 프로파일 직접 조회(`_fetch_theory_claims`)로 검색 순위 의존 제거 |
+| `services/library/md_indexer.py` | `contested_by` 컬럼 추가(스키마·마이그레이션·파싱·INSERT) — 미래 확장 훅, 오늘은 비어둠 |
+| `services/intel_analyzer.py` | SELECT에 `contested_by` 추가 + 원장을 priority tier로 주입 (theory_cmp_ctx 패턴 재사용) |
+| `api/intel_query.py` | [문헌공백] 원장 grounding 필수화 + **[비자명기여] 원장 직결** (3종 신호 → 반직관·교차도메인·범위조건 직접 매핑) |
+
+**Token-Zero 준수**: 원장 추출·집계는 전부 Python 결정론. Gemini는 서술만. 추출 LLM 호출 0.
+
+**확장성**: 새 라이브러리 문서 = md_indexer 인덱싱 즉시 원장 자동 합류(유지보수 0).
+신호별 재료: ①② = 이론 문서(현재 12개, 보강 시 강화), ③ = 모든 문서(브리핑 포함).
+
+**eval 결과 (골드셋 15, --judge) — 2단계 측정으로 진짜 레버 규명**
+
+| 지표 | v8.2.0 (21심판) | 8-D run1 문헌공백만 (11) | 8-D run2 +비자명기여직결 (9) |
+|------|----------------|------------------------|---------------------------|
+| **비자명성** | 3.43 | 3.45 | **3.56** |
+| 추론정직성 | 3.33 | 3.18 | 3.44 |
+| 경쟁이론엄밀 | 3.38 | 3.09 | 3.44 |
+| 반증가능성 | 3.52 | 3.64 | 3.44 |
+| **종합** | 3.42 | 3.34 | **3.47** |
+
+**정직한 판정**:
+1. ✅ 메커니즘 완전 작동 — [문헌공백]이 원장 11/11 인용 ("원장 ②에서 지적된 바와 같이...")
+2. ✅ **진짜 레버 규명** — run1(문헌공백만)은 비자명성 정체(3.45). [비자명기여]에도 원장을
+   직결한 run2에서 3.56으로 상승. 심판은 [문헌공백] 칸이 아니라 [비자명기여] 라인을 채점함이 확인됨.
+3. ◐ **목표 3.9 미달** — 3.56까지 왔으나 부족. 심판 표본 9케이스(잘림 재시도로 축소)라 노이즈 큼.
+4. 8-D 핵심 교훈: 원장은 좋은 인프라지만 **이론 문서가 12개로 얇아** 신호 ①②가 제한적.
+   → 비자명성 추가 상승은 **이론 라이브러리 보강**(반례·경쟁이론 늘리기)이 다음 레버.
+
+**다음 후보 (사용자 논의)**:
+- (a) 이론 라이브러리 보강 — 신호 ①② 재료 확충 → 비자명성 직접 상승
+- (b) 하이브리드 임베딩 검색 — 키워드 LIKE의 한국어 재현율 한계 보완 (벡터 DB ❌, 메모리 내
+  Gemini 임베딩 + LIKE 병행). 94개 규모라 DB 불필요. 별도 사이클, 선행 검증 필요
+
+### v8.2.0 구현 내역 (8-C 보완 + 8-B — Granger 강화, 2026-06-09)
+
+**8-C 보완: 앵커 인용 강제**
+
+| 파일 | 변경 내용 |
+|------|---------|
+| `api/intel_query.py` | 앵커 인용 "있으면 인용" → **필수 규칙**으로 강화. context에 앵커 있으면 `판정:` 줄에 반드시 포함, 생략 시 "규칙 위반" 명시. 없을 때만 `[앵커 미제공]` |
+| `api/intel_query.py` | `asyncio` 추가 + Gemini 503 지수 백오프 재시도 (5s→15s→30s, 최대 3회) |
+
+**8-B: Granger 방법론 강화 (P90 극단 이벤트 + 구조적 설명 승격)**
+
+이론적 근거: 지정학 충격의 시장 전이는 비선형 — 일상 이벤트는 노이즈, 극단 사건만 임계 전이 발생 (Farrell & Newman 2019).
+
+| 파일 | 변경 내용 |
+|------|---------|
+| `services/cascade/correlation.py` | `_load_extreme_event_series()` 추가 — 비제로 P90 초과분(excess severity) 시리즈. 비제로 20일·극단 10일 최소 조건, weekly sparse 시리즈 제외 |
+| `services/hypothesis_extractor.py` | `HypothesisSpec`에 `extreme_granger_p`, `extreme_granger_f` 필드 추가 |
+| `services/hypothesis_verifier.py` | 정규 Granger p>0.15 시 P90 재시도 → 극단 유의(p<0.05) 시 PARTIAL 승격 + `[비선형 임계 전이]` 설명. 양쪽 모두 실패 시 `[구조적 설명]` inference_caveat 자동 추가. 캐시에 extreme_granger_p·f 저장 |
+
+**eval 결과 (30케이스 --judge, 2026-06-09)**
+
+| 지표 | v8.1.0 (7케이스) | **v8.2.0 (30케이스)** | 목표 | 판정 |
+|------|-----------------|----------------------|------|------|
+| PASS | — | **29/30 (97%)** | — | ✅ |
+| 평균 신뢰도 | 93 | **90** | — | 동급 |
+| **LLM 심판 종합** | 3.43 | **3.42** | 4.2+ | ⬜ 정체 |
+| — 비자명성 | — | 3.43 | — | — |
+| — 추론정직성 | — | 3.33 | — | — |
+| — **경쟁이론엄밀** | 3.29 | **3.38** | 4.0+ | +0.09 ↑ |
+| — 반증가능성 | — | 3.52 | — | — |
+| 경쟁이론 수치비교[엄격] | 100% | **94%** | — | — |
+| **Granger VERIFIED** | 0건 | **2건** ✅ | 2건 | ✅ 달성 |
+| Granger 상관(PARTIAL) | 3건 | **5건** | — | ↑ |
+
+**VERIFIED 2건 상세:**
+- `middle_east_hormuz` (사건→사건 B4): 중동 분쟁 → 호르무즈 도발 전이 p=0.0000 (grounded=True)
+- `ukraine_middleeast` (사건→사건 B4): 우크라이나 → 중동 분쟁 전이 p=0.0039 (grounded=True)
+
+**정직한 판정:**
+- ✅ Granger VERIFIED 2건 달성 (8-B 성공) — 단, B4 사건→사건 케이스로 LLM 심판 점수 낮음(2.8)
+- ✅ 경쟁이론엄밀 +0.09 (8-C 보완 효과)
+- ⬜ LLM 심판 종합 3.42 — 목표 4.2+까지 여전히 0.8p 차이
+- ⚠️ `nato_burden_sharing` 케이스 1.0/5 충격 (NATO 데이터 부재) — 평균 하향 압력
+- `nato_burden_sharing` 이상치 제외 시 종합 ~3.55 추정
+
+**다음 (8-D):**
+- 문헌 공백 탐지 — 라이브러리 주장 구조화 + 교차 모순 탐지
+
+### v8.2.1 핫픽스 — nato_burden_sharing 데이터 공백 해결 (2026-06-09)
+
+**문제**: `nato_burden_sharing` 케이스 1.0/5 (전체 평균 끌어내림)
+- entity_parser가 "NATO·자유편승·방위비" 키워드에서 actors/sectors 미추출
+- SIPRI milex 조회에 USA 하나만 전달 → 회원국 비교 불가
+
+**수정:**
+| 파일 | 내용 |
+|------|------|
+| `services/entity_parser.py` | NATO 키워드 감지 시 actors에 USA·DEU·FRA·GBR·POL 자동 추가 + `indo_pacific` 섹터 추가 |
+| `services/intel_analyzer.py` | NATO core 4개국 감지 시 TUR 추가 확장 (DB 확인된 회원국만) |
+
+**결과**: 1.0/5 → **3.75/5** (비자명 3·정직 4·경쟁 4·반증 4)
+
+### v8.1.0 구현 내역 (8-C — 경쟁이론 정량 앵커, 2026-06-07)
+
+**진단**: 융합2 편차 사전계산에도 경쟁이론엄밀이 안 오른 이유 — 계산한 게 "두 실측값 격차"지
+"이론 예측 대비 실측 편차"가 아니었고, 이론 프로파일에 예측 방향·임계값이 부호화 안 됨.
++ 대부분 이론에서 DV(양보 빈도) 실측 시계열 부재 → IV만 있음.
+
+**설계 결정 (사용자 승인)**: DV 데이터 공백으로 "IV→DV 회귀 편차"는 불가 →
+**이론별 정량 앵커(임계값) 대비 실측 편차 = 전제조건 충족도**로 한정. "이론 입증" 아님(정직).
+DV hand-coding 데이터셋 확보 시 "입증"으로 격상 → CLAUDE.md §20 Phase D에 장기계획 기록.
+
+| 파일 | 내용 |
+|------|------|
+| `theory_comparator.py` | `_THEORY_ANCHORS`(9개 이론 임계·방향) + `_collect_anchor_metrics` + `_anchor_verdict` + 블록·종합 주입 |
+| `api/intel_query.py` | [경쟁설명] 지침에 앵커 편차·전제충족 인용 안내 |
+| `arithmetic_layer.py` | 재사용 (delta·fmt_signed·pct_point_gap) |
+| `docs/cycle8c_design.md` | 설계 핸드오프 |
+
+**정직성 가드**: 임계는 표준 기준만 (HHI 2500=美 DOJ, WGI 0, Polity ±6, HIIK 3).
+실측 없으면 판정 생략. 종합은 metric 스케일 상이로 충족 여부만 비교(편차 크기 직접비교 금지).
+
+**eval 결과 (골드셋 15, --judge --fast)**
+
+| 지표 | v7.8.9 | v7.11.0 | v8.1.0 | 비고 |
+|------|--------|---------|--------|------|
+| 경쟁이론엄밀 | 3.43 | 3.10 | **3.29** | 8-C로 +0.19 회복 |
+| 종합 | 3.68 | 3.42 | 3.43 | 정체 |
+| 추론 사다리(상관) | — | 1/15 | **3/14** | 개선(8-A 누적) |
+| 경쟁이론[엄격] | 100% | 91% | 100% | 회복 |
+| 평균 신뢰도 | 93 | 92 | 93 | 동급 |
+| 심판 케이스 수 | ? | 10 | **7** | 표본 작아 노이즈 큼 |
+
+**정직한 판정**: 8-C는 **메커니즘 성공, 인용 강제 부족**의 절반 성공.
+- 앵커 라인 정확히 생성·주입 확인 (taiwan_strait HHI 25449, TSMC↔SMIC 55.8%p 등 전부 Python 계산)
+- `china_rareearth_techno`는 의도대로 작동 — "판정: 높은 HHI는 전제 조건 충족", competing_rigor **4점(최고)**
+- **그러나 15케이스 중 앵커 '전제 충족' 표현 인용은 1건뿐** → Gemini 인용률 낮아 평균 효과 제한
+- 원인: 프롬프트가 "있으면 인용"의 선택적 지침. 심판 7케이스라 수치 자체도 노이즈 큼
+
+**다음 (보완 + 8-B)**:
+1. [8-C 보완] 프롬프트 인용 강제 — "context에 앵커 있으면 [경쟁설명] 판정에 반드시 포함"
+   (없으면 [산술 미제공] 유지 — 억지 생성 방지). eval 재측정은 8-B와 묶어 비용 절약.
+2. [8-B] Granger 방법론 강화 — 극단사건 P90 + 고빈도 종속 + 조건부 통제
+
+### v7.11.0 구현 내역 (8-A — H1 측정가능성 강제, 2026-06-07)
+
+**진단**: Type_B 41%는 ① Gemini가 "분쟁 건수·도발 빈도"류를 종속변수로 자주 생성 +
+② `_classify_variable_type`이 Type_C 키워드를 최우선 판별 → "유가 의존도"처럼 측정 가능한데
+추상 키워드 섞인 변수를 Type_C로 오분류. Type_B는 verifier에서 검정 경로 없어 항상 PENDING 사망.
+
+| 파일 | 내용 |
+|------|------|
+| `config/measurable_variables.yaml` (신규) | 검증 가능 변수 단일 카탈로그 — 시장지표 12개(ticker 정합) + ACLED 지역 10개 |
+| `hypothesis_extractor.py` | yaml 로더 + `build_measurable_menu()` + `_classify`에 측정가능 우선 단계(`_match_ticker` 성공 시 Type_A) |
+| `api/intel_query.py` | H1 규칙에 측정가능 메뉴 주입 + 종속변수 강제 선택 지침 |
+| `docs/cycle8a_design.md` (신규) | 설계 핸드오프 |
+
+**정직성 가드**: 측정 불가 변수는 Type_C/B 유지(억지 Type_A 전환 금지), "적합한 Y 없으면 정량 가설 없음" 명시.
+
+### v7.11.0 eval 결과 (2026-06-07, 골드셋 15케이스 --judge --fast)
+
+| 지표 | v7.8.9 | v7.11.0 | 판정 |
+|------|--------|---------|------|
+| **Type_B 비율** | 41% | **14%** (3/21) | ✅ 목표(<15%) 달성 |
+| Type_A | — | 67% (14/21) | 검정 가능 변수로 이동 |
+| PASS | 12/15 | 14/15 | ↑ |
+| 평균 신뢰도 | 93 | 92 | 동급 |
+| 경쟁이론 수치비교[엄격] | 100% | 91% (10/11) | 이상치 1건 누락 |
+
+**LLM 심판 종합 — 표면 3.42 (하락), 이상치 제외 시 3.56**
+
+`hormuz_iran_blockade` 케이스가 API 잘림으로 [경쟁설명]·[검증포인트]·[문헌공백] 3섹션
+통째 누락(재시도 5회 미복구) → competing_rigor 1·honesty 2로 평균 잠식. 코드 아닌 API 문제.
+
+| 축 | 전체(10) | 이상치 제외(9) | v7.8.9 |
+|----|---------|--------------|--------|
+| 비자명성 | 3.60 | **3.67** | 3.57 ↑ |
+| 추론정직성 | 3.50 | 3.67 | 3.86 |
+| 경쟁이론엄밀 | 3.10 | 3.33 | 3.43 |
+| 반증가능성 | 3.50 | 3.56 | 3.86 |
+| **종합** | 3.42 | **3.56** | 3.68 |
+
+**정직한 판정 (합리화 없이)**
+1. ✅ 8-A 성공 — Type_B 41%→14%, 비자명성 오히려 ↑(3.57→3.67). 측정가능 강제가 추론 품질 무해.
+2. 종합 하락 주범은 이상치 1개(응답 잘림). 제외 시 3.56으로 v7.8.9와 노이즈 범위(±0.12) 내.
+3. **단, 융합2 편차 사전계산이 경쟁이론엄밀 점수로 전환 안 됨** (3.43→3.33). 인정해야 할 사실 —
+   융합2는 산술 인프라만 깔았고, theory_comparator의 편차→판정 연결은 **8-C 과제**임이 재확인.
+
+**다음**: 8-C (경쟁이론 편차 본격 — 산술 레이어를 예측↔실측 편차 판정에 연결)
+
+### v7.9.0 구현 내역 (융합1 — 관련성 게이트, 2026-06-07)
+
+**intel_analyzer.py 단일 파일 작업**
+
+| 추가 | 내용 |
+|------|------|
+| `_SOURCE_SPECS` | 17개 data 소스 섹터 친화도 테이블 |
+| `_coverage_bonus()` / `_score_source()` | Token-Zero 관련성 점수 함수 (섹터 적중 +2.0, off-domain -1.0, 지역·행위자 coverage +0.5/+0.3) |
+| `_emit_*()` × 17개 | 각 data 소스를 `list[str]` 블록으로 반환하는 순수 emitter 함수 |
+| `_SOURCE_EMITTERS` | key → emitter 매핑 dict |
+
+**`_build_context` 변경**
+- `theory_cmp_ctx` 파라미터 추가
+- backbone 직후 `theory_cmp_ctx` **priority tier** 우선 주입 (구 "잔량 append" 폐지)
+- 17개 인라인 data 섹션 → 관련성 점수 정렬 후 budget 한도까지 emit
+- 정직성 가드: 점수는 주제 적합성만, 가설 지지 여부 금지
+
+**`build_intel_context` 변경**
+- `theory_cmp_ctx=theory_cmp_ctx` 키워드 인자 전달
+- 구 "잔량 append" 블록 제거
+
+**효과**: cyber 쿼리 → CSIS·ITU 상위 배치 / energy 쿼리 → EIA·FRED 상위 배치 / theory_cmp 누락 0
+
+### v7.10.0 구현 내역 (융합2 — Token-Zero 산술 레이어, 2026-06-07)
+
+**신규: `services/arithmetic_layer.py`**
+- `pct_change`, `delta`, `pct_point_gap`, `ratio`, `share_of`, `hhi`, `concentration_label`, `fmt_signed`
+- 전부 None-safe · 0분모-safe · 예외 없이 None 반환 · 부작용 0
+
+**`theory_comparator.py` 수정**
+
+인라인 산술 3곳 → arithmetic_layer 통일 (수치 불변):
+- `_get_sipri_arms_hhi`: `(dominant/total*100)` → `share_of()`
+- `_get_fred_for_theories`: `(latest-oldest)/oldest*100` → `pct_change()`
+- `_get_trade_hhi`: `sum(r²)*10000` → `hhi()`
+
+격차 사전계산 주입 (`(사전계산)` 꼬리표):
+- mahan·a2ad 블록: SIPRI 국방비 GDP% 격차
+- mearsheimer·waltz 블록: 권력 격차(국방비)
+- weaponized_interdependence 블록: FRED 추세 부호 강제(`fmt_signed`) + trade HHI `concentration_label`
+- digital_iron_curtain 블록: TSMC↔SMIC 점유율 격차
+
+**`intel_query.py` 수정**
+- `system_role`에 **Token-Zero 산술 규율** 블록 추가 (암산 금지, context 값 인용 강제)
+- [경쟁설명] 예시 교체 → `(사전계산)` 꼬리표 인용 패턴 (`-37.0%p, 사전계산`)
+
+**설계 문서**
+- `docs/fusion1_design.md` — Opus 설계 핸드오프
+- `docs/fusion2_design.md` — Opus 설계 핸드오프
+
+---
+
+## ★ 차기 개선 로드맵 (2026-06-07 수립, Phase 7-D 완료분) — 인사이트 학술 완성도 + 성능
+
+### 현재 좌표
+- 형식·증거 등급: ✅ 천장 도달 (증거 92~100, PASS 30/30) → **더 손대지 말 것**
+- 내용·추론 등급: ⬜ **프런티어** — LLM 심판 종합 2.6/5 (~52%)
+  - 반증가능성 3.14(최고) · 비자명성 2.79 · 추론정직성 2.45 · **경쟁이론엄밀 2.21(최저, 데이터 병목)**
+  - 추론 사다리: 대부분 **기술적** 고착 (VERIFIED 2 / PARTIAL 4)
+- 검증된 인과(v7.8.0): **데이터→theory_comparator 연결 케이스만 경쟁이론엄밀↑** (나머지는 심판 노이즈)
+
+### 착수 순서 (확정)
+
+**[1순위] AR-1a — 기존 적재 데이터 완전 연결 (싼 값, 검증된 레버)**
+- DB에 이미 있으나 theory_comparator 미연결인 데이터(Polity5·HIIK·ITU·OWID)를 지역×이론쌍에 연결
+- east_china_sea처럼 전 지역의 이론쌍·실측 매핑 커버리지 완성
+- 신규 적재 0 → 비용 최소, 경쟁이론엄밀 직접 상승
+- 측정: [경쟁설명] 수치비교율 (현재 ~50% [엄격] → 케이스 다양성 확대)
+
+**[2순위] AR-2 — 추론 사다리 천장 돌파 (구조적 약점)**
+- 현재 Type_C는 H1 종속변수를 무시하고 '지역분쟁→지역proxy' 대체검정 → H1의 실제 주장 미검정
+- 종속변수가 실측 시계열(SIPRI·EIA·FRED·OWID)에 매핑되면 proxy 대신 **그 변수 직접 검정**
+- 측정: VERIFIED/PARTIAL 건수 (현재 2/4)
+- PERF-2(Granger 캐싱)와 자연 중첩 → 함께 처리
+
+**[3순위] AR-1b — 신규 데이터 (7-D L2/L3)**
+- 기존 데이터 소진 후 Comtrade(무역 HHI) → 상호의존 무기화 IV 수치화, 이어서 GTD·ACLED 확장
+- 측정: 신뢰도 평균 85+ + UNVERIFIED↓
+
+**[가드레일] AR-3 — 측정 방법론 (전 과정에 병행)**
+- 골드셋 10~15개 + 고정 루브릭 → 심판 점수 과적합(Goodhart) 방지
+- 원칙: 심판 점수↑가 환각↑ 유발하면 기각 (정직성 > 프록시)
+
+**[최후순위] PERF — 성능 (학술 프런티어 다음)**
+- 레이턴시(~33s) context 가지치기 · 정적 데이터 캐싱 · eval 분기당 1회
+
+### 운영 원칙
+- 형식 점수 무회귀 확인만 하고 건드리지 말 것 (천장)
+- 데이터는 **적재→intel_analyzer 노출→theory_comparator 연결 3단계 모두** 해야 점수 반영 (v7.8.0 버그 교훈)
+- Phase 8(시각화) 게이트: 신뢰도 85+ & 경쟁이론 수치비교 50%+ 동시 충족
+
+### 진행 현황 (2026-06-07)
+```
+[1] AR-1a 데이터 연결   ✅ v7.8.5 → 경쟁이론엄밀 +0.15
+[2] AR-2 추론 사다리    ✅ v7.8.6 → 대만달러 선행성 역량 추가(p=0.0005)
+[병행] AR-3 가드레일    ✅ v7.8.7 (심판 절단버그+앵커, 다음 eval부터 적용)
+[3] AR-1b Comtrade      ✅ v7.8.8 → Weaponized Interdependence IV 수치화 (HHI proxy)
+[최후] PERF             ✅ v7.8.9 → 3종 TTL 캐시 (yfinance 6h·Granger 1h·정적 5m)
+[eval] 골드셋 측정      ✅ v7.8.9 기준 — 종합 3.68/5 (석사 중반), Phase 8 게이트 충족
+```
+
+### v7.8.9 eval 결과 (2026-06-07, 골드셋 15케이스 --judge)
+
+| 지표 | v7.8.6 | v7.8.9 | Δ |
+|------|--------|--------|---|
+| PASS 비율 | 14/17 (82%) | 12/15 (80%) | 동급 |
+| 평균 신뢰도 | 70/100 | **93/100** | **+23** |
+| 경쟁이론 수치비교 [엄격] | ~50% | **100%** | **+50%p** |
+| LLM 심판 종합 | 2.75/5 | **3.68/5** | **+0.93** |
+| — 비자명성 | 2.77 | 3.57 | +0.80 |
+| — 추론정직성 | 2.68 | 3.86 | +1.18 |
+| — 경쟁이론엄밀 | 2.36 | 3.43 | +1.07 |
+| — 반증가능성 | 3.18 | 3.86 | +0.68 |
+
+**Phase 8 게이트 판정**: 신뢰도 93(≥85) ✅ + 경쟁이론 수치비교 100%(≥50%) ✅ → **Phase 8 착수 가능**
+
+**학술 레벨**: 학부 우수(v7.8.0) → **석사 중반(v7.8.9)**
+
+**남은 취약점**
+- Granger 전원 PENDING (17개, p=0.54~0.98): Type_B 41% (측정불가 변수) + 평균 분쟁 강도→시장 비선형 구조
+- 경쟁이론엄밀 3.43: 레이블 형식은 충족, 수치 편차 계산 깊이 부족
+- 비자명성 3.57: 조합적 통찰 수준, 독창적 문헌 공백 식별 미흡
+- 503 오류 5건 (Gemini 과부하 — 재시도로 대부분 복구)
+
+**박사 수준(4.5/5) 도달 조건**
+- Granger 유의 2건+ (현재 0건) → Type_B→Type_A 전환 + GTD 데이터 필요
+- 경쟁이론 수치 편차 계산 심화 (예측값 vs 실측값 오차 명시)
+- 비자명성: 기존 문헌이 다루지 않은 패턴 식별
+
+**eval 비용 절감 (이번 세션 구현)**
+- `--gold` 플래그: 30→15 케이스 (~50% 시간 절감)
+- `--fast` 플래그: 대기 5s→2s, 재시도 15/40s→5/15s
+- `eval_cases.yaml` 골드셋 15개 태깅 완료
+
+### v7.8.8 구현 내역 (AR-1b Comtrade + 데이터 파이프라인 버그 5종 수정)
+
+**AR-1b: UN Comtrade 무역 의존도 → Weaponized Interdependence IV 수치화**
+- `_get_trade_dependency()` 신규 (intel_analyzer.py #23번 소스)
+  - historical_trade_matrix 6,607건 활용 (HS 8542·27·26, 2020~2025)
+  - dependency_ratio ≥ 0.1(10%) 쌍만 반환 — 비대칭 의존 구조 포착
+  - 지역→핵심행위자 매핑 8개 지역 커버
+- `_get_trade_hhi()` 신규 (theory_comparator.py)
+  - HHI proxy = 상위 3쌍 dependency_ratio² 합산 × 10000 (>2500=독과점)
+  - weaponized_interdependence·resource_weaponization 이론쌍에 자동 연결
+- 검증 결과 (taiwan_strait, CHN·USA·KOR):
+  - HS26 희토류 HHI=25449 (독과점, KOR←CHN 92.9%)
+  - HS8542 반도체 HHI=17797 (독과점, KOR←CHN 79.9%)
+  - [경쟁설명]에 "실측 — 반도체(HS 8542) 공급망 HHI: 17797 [UN Comtrade]" 자동 삽입
+
+**할루시네이션·병목 5종 수정 (별도 세션)**
+- Fix A: ITU IDI 경고 섹션 헤더로 이동 (사이버 방어력 동치 금지 선제 명시)
+- Fix B: cascade `correlation_score` → `룰매칭강도` 라벨 변경
+- Fix C: FRED 기본값(유가·금) 무조건 주입 제거 (`return []`)
+- Fix D: `_over_budget()` 헬퍼 + Cycle 6-A/7-D 섹션 10개 가드 + 하드 절단 + theory_cmp_ctx 예산 가드
+- Fix E: SIPRI arms 조건 단순화 (`bool(sectors) and all(s in {"techno","cyber"}...)`)
+
+**이론 연결**: Farrell & Newman Weaponized Interdependence — 공급망 집중도(IV)가 정치적 레버리지로 전환되는 메커니즘을 Comtrade HHI로 직접 수치화.
+
+### v7.8.9 구현 내역 (PERF — 레이턴시 개선)
+
+**3종 TTL 캐시로 반복 쿼리 레이턴시 단축**
+
+| 캐시 | 위치 | TTL | 효과 |
+|------|------|-----|------|
+| PERF-1: yfinance 시장 시계열 | `correlation.py` `_market_cache` | 6h | 동일 ticker 재다운로드 방지 (~10-20s 절약) |
+| PERF-2: Granger 결과 | `hypothesis_verifier.py` `_granger_spec_cache` | 1h | 동일 지역·ticker 쌍 재계산 방지 (~5-10s 절약) |
+| PERF-3: 정적 소스 5종 | `intel_analyzer.py` `_STATIC_CACHE` | 5m | Polity5·HIIK·ITU·semi_market SQLite 중복 I/O 방지 |
+
+- `_cache_get/_cache_set`: `correlation.py` 모듈 레벨 TTL 딕셔너리 헬퍼
+- `_gcache_get/_gcache_set`: `hypothesis_verifier.py` Granger 전용 캐시 헬퍼
+- `_scache_key/_scache_get/_scache_set`: `intel_analyzer.py` 정적 소스 캐시 헬퍼 (list→tuple 변환)
+- 5분 TTL → 개발 중 DB 재적재 즉시 반영 가능, 프로덕션에서 불필요한 재조회 차단
+
+### v7.8.6 측정 결과 (AR-1a+AR-2 누적, 옛 루브릭 — v7.8.0과 비교가능)
+| 심판 축 | v7.8.0 | v7.8.6 | Δ |
+|---------|--------|--------|---|
+| 비자명성 | 2.79 | 2.77 | ~0 |
+| 추론정직성 | 2.45 | **2.68** | +0.23 |
+| 경쟁이론엄밀 | 2.21 | **2.36** | +0.15 |
+| 반증가능성 | 3.14 | 3.18 | +0.04 |
+| **종합** | **2.65** | **2.75** | **+0.10** |
+
+단서: v7.8.6은 22케이스 채점(v7.8.0=29, 절단·재시도로 일부 누락) — 완전 동일표본 아님.
+AR-2의 대만달러 선행성은 eval H1이 'TWD'를 명시해야 발동 → 이 케이스셋엔 미발동(역량만 확보).
+
+---
+---
+
+## 완료된 Phase 작업 기록
+
+> 아카이브:  (Phase 0~7 완료 작업 로그, ~2,600줄)
