@@ -1,15 +1,15 @@
 {
-  "timestamp": "20260621_2056",
+  "timestamp": "20260630_1613",
   "server": "http://localhost:8000",
   "total": 1,
   "passed": 1,
   "results": [
     {
-      "id": "ukraine_invasion_event_study",
-      "name": "2022년 러시아 우크라이나 침공 발표 → 유럽 에너지 가격 충격 (이벤트스터디)",
+      "id": "mearsheimer_vs_liberal_taiwan",
+      "name": "Mearsheimer 공격적 현실주의 vs 자유주의 상호의존 — 대만 분쟁 예측 비교",
       "mode": "verify",
       "passed": true,
-      "elapsed": 23.7,
+      "elapsed": 20.5,
       "confidence": 100,
       "inference_grade": "기술적",
       "provisional": false,
@@ -18,128 +18,47 @@
       "missing_tags": [],
       "has_h1": true,
       "h1_expected": true,
-      "hypothesis": [
-        {
-          "h1": "2022년 2월 24일 러시아의 우크라이나 침공 발표는 유럽 천연가스 선물(TTF) 가격에 통계적으로 유의미한 비정상수익률(CAR)을 유발한다. (등급: 상관)",
-          "status": "PENDING",
-          "var_type": "Type_A",
-          "p_value": 0.6269,
-          "granger_q": null,
-          "inference_grade": "기술적",
-          "theory_grounded": false,
-          "differenced": true,
-          "data_signature": "SINGLE_SHOCK",
-          "routing_method": "granger_typeA",
-          "routing_confidence": "MEDIUM",
-          "is_proxy_pair": false,
-          "method_result": {
-            "headline_rung": "기술적",
-            "headline_method": "granger",
-            "convergence": null,
-            "convergence_note": "",
-            "stub_methods": [],
-            "all_results": [
-              {
-                "method": "event_study",
-                "signature": "SINGLE_SHOCK",
-                "effect_estimate": null,
-                "effect_size_label": "",
-                "significance": null,
-                "ci_low": null,
-                "ci_high": null,
-                "assumptions_met": false,
-                "assumption_caveat": "시장 모델 R²=0.001<0.05 — 벤치마크 설명력 부족",
-                "reachable_rung": "준실험",
-                "actual_rung": "상관",
-                "confidence_within_rung": 0,
-                "robustness": {
-                  "n_estimation": 97,
-                  "r2_market_model": 0.0007
-                },
-                "native_stats": {
-                  "ticker": "NG=F",
-                  "event_date": "2022-02-24"
-                },
-                "exploratory": false
-              },
-              {
-                "method": "granger",
-                "signature": "SINGLE_SHOCK",
-                "effect_estimate": 0.467,
-                "effect_size_label": "무시할 수준",
-                "significance": 0.6269,
-                "ci_low": null,
-                "ci_high": null,
-                "assumptions_met": true,
-                "assumption_caveat": "",
-                "reachable_rung": "선행성",
-                "actual_rung": "기술적",
-                "confidence_within_rung": 25,
-                "robustness": {
-                  "extreme_p": 0.8186,
-                  "differenced": true,
-                  "controlled": true
-                },
-                "native_stats": {
-                  "granger_p": 0.6269,
-                  "granger_q": null,
-                  "f_statistic": 0.467,
-                  "best_lag": 2,
-                  "n_obs": 478
-                },
-                "exploratory": false
-              }
-            ]
-          },
-          "headline_rung": "기술적",
-          "headline_method": "granger",
-          "convergence": null,
-          "all_methods_met": false,
-          "any_exploratory": false,
-          "surface_exploratory": false,
-          "surface_summary": "[확증] [Granger] 2022년 2월 24일 러시아의 우크라이나 침공 발표는 유럽 천연가스 선물(TTF) 가격에 통계적으로 유의미한 비정상수익률(CAR)을 유발한다. (등급: 상관) → 미식별 — 비유의"
-        }
-      ],
+      "hypothesis": [],
       "labels": {
-        "UNVERIFIED": 4,
-        "SPECULATIVE": 1,
+        "UNVERIFIED": 3,
+        "SPECULATIVE": 2,
         "PROVISIONAL": 0,
         "TEMPORAL_REVERSAL": 0,
-        "HIGH_chain": 2,
-        "MEDIUM_chain": 0,
+        "HIGH_chain": 3,
+        "MEDIUM_chain": 2,
         "LOW_chain": 0
       },
       "rival_check": {
         "has_prediction_label": true,
         "has_measured_label": true,
         "has_verdict_label": true,
-        "theory_mentions": 5,
+        "theory_mentions": 9,
         "has_numbers_in_rival": true,
         "quantitative_comparison": true,
         "comparative_comparison": true
       },
-      "expected_min_score": 55,
+      "full_text": "## [확증] 대만 분쟁 가능성: 공격적 현실주의와 자유주의 상호의존 이론의 설명력 비교\n\n### [단계 1] 관찰\n대만해협의 지정학적 긴장은 지속적으로 관찰되며, 이는 다양한 도메인에서 측정 가능한 현상으로 나타납니다. 중국은 2023년 세계 조선 시장의 50% 이상을 장악하며 미국(0.1%)을 압도하고 있으며, 핵잠수함 원자로 용기 제조사인 중국 제1중공업이 인도네시아 니켈 자산을 흡수하는 등 핵심 광물 공급망을 당-기업 네트워크를 통해 통제하고 있습니다. 이는 군사적 역량과 산업 기반의 연계를 강화하는 움직임으로 해석될 수 있습니다. 동시에, 대만은 세계 첨단 반도체(5nm 이하)의 약 90%를 생산하는 병목점이며, 대만해협의 ACLED 분쟁 이벤트 발생 시 반도체 ETF(SOXX)가 직접 하락하는 현상(룰매칭강도 0.67)이 관찰됩니다. 미국의 국방비는 2023년 GDP 대비 3.4%로 중국의 1.7%보다 높으나, 중국은 410기의 핵탄두를 보유하고 있으며, 대만(2.2% GDP)은 미국의 무기 지원(2024년 M1A2 전차 500.0mn TIV, 2023년 패트리어트 미사일 680.0mn TIV)에 의존하고 있습니다.\n\n### [단계 2] 변수 식별\n-   **독립변수(원인 후보)**:\n    *   **권력 격차 지수**: 강대국(중국)과 대상국(대만) 간의 상대적 군사력 및 경제력 격차 (예: Our World in Data의 국방비 비율, 핵탄두 보유량)\n    *   **국제 제도 참여 밀도**: 대만 및 중국의 국제 기구 참여 수준 (예: WTO, UN 등 국제 조약 수 및 IGO 회원국 수 — [UNVERIFIED] 정량값 부재)\n    *   **무역 상호의존 집중도**: 대만과 중국 간의 경제적 상호의존 수준 (예: HHI 지수, 교역량 — <context>의 무역 상호의존 집중도 HHI 25449.0)\n-   **종속변수(결과)**:\n    *   **대만해협 ACLED 분쟁 이벤트 건수**: 대만해협 지역에서 발생하는 무력 분쟁의 빈도 (ACLED taiwan_strait 총 1207건)\n    *   **반도체 ETF(SOXX) 가격 변화**: 대만해협 긴장 고조 시 시장의 즉각적인 반응을 나타내는 지표 (대만해협 ACLED 극단 이벤트 발생 후 1일 내 SOXX -0.14%)\n-   **통제변수(제거해야 할 혼재 요인)**: 동맹 관계, 핵억지 유무, 국내 정치적 안정성, 국제 유가 등 거시 경제 변수. (단, 통제변수 미사전선언)\n\n### [단계 3] 가설 공식화\n-   H1 (주장 지지): (등급: 상관) 중국과 대만 간의 권력 격차(예: 국방비 비율 격차)가 감소할 때, 대만해협 ACLED 분쟁 이벤트 월별 건수가 통계적으로 유의미하게 증가한다.\n-   H0 (귀무 가설): 중국과 대만 간의 권력 격차 감소는 대만해협 ACLED 분쟁 이벤트 월별 건수 변화와 통계적으로 유의미한 상관관계를 보이지 않는다.\n\n### [단계 4] 경쟁 이론\n사용자 쿼리에 따라 미어샤이머의 공격적 현실주의와 케오헤인-나이의 자유주의 제도론을 비교합니다.\n\n**공격적 현실주의 (Offensive Realism) (Mearsheimer):**\n  예측: 권력 격차 감소 시 강대국 간 갈등 빈도 증가. 중국의 군사력 강화(국방비 증가, 조선업 장악)는 대만해협에서 중국의 강압적 행동과 갈등 빈도를 증가시킬 것이다.\n  실측:\n    *   OWID 군사력 격차: China 1.6%GDP 핵410기 | Taiwan 2.2%GDP | United States 3.3%GDP 핵3748기 (2023년 기준 국방비 비율은 대만이 중국보다 높으나, 미국의 지원을 고려해야 함. 핵탄두는 중국이 대만보다 압도적으로 많음).\n    *   대만해협 ACLED 분쟁 이벤트: 총 1207건, 평균 심각도 18.2/100 (분쟁의 절대적 빈도가 높음).\n  판정: 우세 — 예측 '권력 격차 감소 시 갈등 빈도 증가' vs 실측 '중국의 군사력 증강 및 대만해협 분쟁 건수 1207건 동반' — 방향 일치 (앵커: [앵커 미제공])\n  반례: 중-미 경제 상호의존이 군사 충돌을 억제하는 사례 (자유주의적 평화로 부분 설명); 2008년 이후 중국의 부상에도 군사 충돌 미발생.\n\n**자유주의 제도론 (Liberal Institutionalism / Neoliberal Institutionalism) (Keohane):**\n  예측: 국제 제도 참여 밀도 및 상호의존 증가 시 양국 무력 분쟁 발생 확률 감소. 대만과 중국 간 경제적 상호의존이 높을수록 대만해협의 갈등은 억제될 것이다.\n  실측:\n    *   앵커(IV 전제조건) — 무역 상호의존 집중도(HHI, 의존 강도 proxy): 실측 25449.0 vs 임계 2500 (편차 +22949.0, 사전계산) → 전제 충족: 의존 높을수록 자유주의는 분쟁 억제 예측 — 단 비대칭이면 무기화로 역전(Farrell&Newman과 정면 경쟁점).\n    *   대만해협 ACLED 분쟁 이벤트: 총 1207건 (높은 분쟁 빈도).\n  판정: 열세 — 예측 '상호의존 증가 시 분쟁 감소' vs 실측 '상호의존 집중도 HHI 25449.0에도 불구하고 대만해협 ACLED 분쟁 1207건 발생' — 방향 불일치 (앵커: 무역 상호의존 집중도 HHI 25449.0, 전제 충족, 사전계산)\n  반례: 러시아의 WTO·G8·OSCE 참여에도 2014·2022년 우크라이나 침공; 중국의 WTO 가입 후 무역 보조금·IP 침해 지속.\n\n▶ **편차 비교 (사실)**: 공격적 현실주의의 예측은 중국의 군사력 증강과 대만해협 분쟁 발생이 동반된다는 점에서 실측과 방향이 일치하는 반면, 자유주의 제도론은 높은 상호의존 집중도에도 불구하고 분쟁이 지속된다는 점에서 예측과 실측이 불일치합니다. 정량적 편차는 공격적 현실주의의 경우 '갈등 빈도 증가' 예측과 '1207건의 분쟁 이벤트' 관찰 간의 부합, 자유주의 제도론의 경우 '분쟁 감소' 예측과 '1207건의 분쟁 이벤트' 관찰 간의 불일치로 나타납니다.\n\n▶ **당신의 판단 (연구자 몫)**: 위 편차를 바탕으로 어느 이론이 더 설명력 있는지 연구자가 판정합니다. 판단 쟁점으로는 다음과 같습니다: (1) 자유주의 제도론의 '상호의존'이 단순히 교역량 외에 '무기화된 상호의존'의 측면을 고려하는지, 즉 비대칭적 의존이 오히려 갈등의 레버리지로 작동할 수 있는지 여부가 중요합니다. <context>의 `Weaponized Interdependence` 이론은 이러한 점을 지적합니다. (2) 공격적 현실주의가 예측하는 '권력 격차 감소'의 기준점을 어디에 두느냐에 따라 대만해협에서의 행동 양태 해석이 달라질 수 있습니다. 특히 핵전력과 재래식 전력의 비교, 그리고 미국의 개입 가능성 등 다층적인 권력 요소를 통합적으로 고려해야 합니다.\n\n### [단계 5] 근거 평가\n-   **지지 증거**:\n    *   **공격적 현실주의 지지**:\n        *   중국은 2023년 세계 조선 시장의 50% 이상을 장악하여 미국(0.1%)을 압도하고, 핵잠수함 원자로 용기 제조사인 중국 제1중공업이 인도네시아 니켈 자산을 흡수하는 등 군사-산업 연계를 강화하고 있습니다. 이는 중국의 권력 증강 및 잠재적 공격 역량 확대로 해석됩니다 ([War on the Rocks] 소유 없는 통제).\n        *   중국의 국방비는 2023년 GDP 대비 1.7%로 대만(2.2%)보다 낮지만, 핵탄두 410기를 보유하고 있으며, 미국의 조선 역량 약화는 대만 유사시 미국의 전력 투사 역량에 직접적 영향을 미칩니다. 이는 중국의 권력 투사 능력 강화로 이어질 수 있습니다 ([CSIS] 경제력과 해양력의 관계 재검토, Our World in Data).\n        *   대만해협 ACLED 분쟁 이벤트가 총 1207건 발생한 것은 권력 불균형 또는 경쟁 심화가 갈등 빈도 증가로 이어진다는 공격적 현실주의의 예측과 부합합니다 (ACLED 이벤트 통계).\n    *   **자유주의 제도론 반증**:\n        *   무역 상호의존 집중도(HHI)가 실측 25449.0으로 매우 높음에도 불구하고, 대만해협에서는 1207건의 분쟁 이벤트가 발생했습니다. 이는 높은 상호의존이 반드시 분쟁을 억제하지 않는다는 것을 시사하며, 자유주의 제도론의 예측과 상반됩니다. ([경쟁 이론 비교 프로파일] 자유주의 제도론 실측 데이터, ACLED 이벤트 통계).\n        *   대만해협 분쟁(ACLED)이 반도체 ETF(SOXX)의 직접 하락(Δ=-0.17%)을 유발하는 것은, 상호의존이 오히려 취약점으로 작용하여 지정학적 충격이 경제적 파급효과로 이어진다는 `Weaponized Interdependence` 이론(Farrell & Newman)의 설명과 일치하며, 상호의존이 평화 유발 요인이라는 단순한 자유주의적 예측을 반박합니다. (Cascade 인과 룰 발화 실적).\n\n-   **반증 증거**:\n    *   공격적 현실주의는 중-미 간 경제 상호의존이 군사 충돌을 억제하는 사례나 2008년 이후 중국의 부상에도 군사 충돌이 미발생한 사례를 충분히 설명하지 못합니다. (공격적 현실주의 '알려진 반례').\n    *   자유주의 제도론의 경우, 러시아의 우크라이나 침공과 같은 사례에서 국제 제도가 강대국의 이익 극대화 행동을 억제하지 못했음을 보여줍니다. ([경쟁 이론 비교 프로파일] 자유주의 제도론 '알려진 반례').\n\n-   **미검증 항목**:\n    *   중국과 대만 간의 정확한 국제 제도 참여 밀도 (조약 수·IGO 회원국 수)에 대한 정량적 데이터가 <context>에 부재합니다. [UNVERIFIED]\n    *   H1의 종속변수로 설정한 'ACLED 분쟁 이벤트 월별 건수'와 독립변수 '국방비 비율 격차' 간의 통계적 유의미한 상관관계 또는 인과관계는 <context>에서 직접적으로 검증되지 않았습니다. [UNVERIFIED]\n\n### [단계 6] 연쇄 고리 강도 자기평가\n-   중국의 군사력 증강 및 산업 기반 강화 → 대만해협 권력 격차 변화: HIGH\n-   대만해협 권력 격차 변화 → ACLED 분쟁 이벤트 변화: MEDIUM (권력 격차와 분쟁 빈도 간의 직접적인 통계적 인과관계가 <context>에서 제시되지 않았으므로, 이론적 추론에 기반)\n-   대만해협 분쟁(ACLED) → 반도체 ETF(SOXX) 직접 하락: HIGH (룰매칭강도 0.67, P4-4 Granger 검증 결과 p=0.030)\n-   높은 무역 상호의존 집중도 → 분쟁 억제 실패: HIGH (HHI 수치와 ACLED 분쟁 건수 실측치 비교)\n\n전체 연쇄 고리에 MEDIUM 강도의 고리가 포함되어 있으므로, 전체 결론에 [SPECULATIVE] 레이블을 붙입니다.\n\n### 최종 판정\n-   **결론**: [확증] H1에 대한 직접적인 통계적 검증 데이터는 부재하나, <context>의 증거들은 중국의 군사력 증강과 대만해협의 높은 분쟁 빈도 및 경제적 취약성(반도체 공급망)이 동반된다는 점에서 공격적 현실주의의 예측 방향과 더 일치합니다. 반면, 높은 무역 상호의존 집중도에도 불구하고 분쟁이 지속되고 경제적 충격이 전이되는 현상은 자유주의 제도론의 예측과 상반됩니다.\n-   **레이블**: [SPECULATIVE]",
+      "expected_min_score": 60,
       "retries": 0,
       "quality": null,
       "method_integrity": {
-        "routing_ok": true,
-        "no_laundering": true,
-        "triangulation_ok": true,
-        "no_exploratory_leak": true,
-        "confirmatory_label_ok": true,
+        "routing_ok": null,
+        "no_laundering": null,
+        "triangulation_ok": null,
+        "no_exploratory_leak": null,
+        "confirmatory_label_ok": null,
         "routing_low_cases": [],
         "laundering_cases": [],
         "exploratory_leak_cases": [],
         "confirmatory_label_violations": [],
-        "n_triangulated": 1,
-        "n_hypotheses": 1,
-        "expected_signature": "SINGLE_SHOCK",
-        "routing_match": true,
-        "actual_signatures": [
-          "SINGLE_SHOCK"
-        ]
+        "triangulation_violations": [],
+        "n_triangulated": 0,
+        "n_hypotheses": 0,
+        "expected_signature": "UNQUANTIFIABLE",
+        "routing_match": null,
+        "actual_signatures": []
       }
     }
   ],
-  "diagnosis": "## 자동화 테스트 진단\n\n\n### 신뢰도 분포\n- 최고: 100, 최저: 100, 평균: 100\n- 60 미만(PROVISIONAL): 0/1\n\n### H1 가설 추출률\n- 1/1 케이스에서 H1 추출 성공\n  ✅ [ukraine_invasion_event_study]\n\n### Granger 검증 현황 (1개 가설)\n- PENDING: 1개\n\n### [9-G] 방법론 정직성 진단 (1케이스)\n#### 데이터 시그니처 분포\n- SINGLE_SHOCK: 1개\n#### Method Router 달성 칸 분포\n- 기술적: 1개\n\n#### 시그니처 라우팅 정확도: 1/1 (100%)\n- ✅ 기대=SINGLE_SHOCK 실제=['SINGLE_SHOCK']\n- laundering 0건 ✅\n- 탐색→확증 누출 0건 ✅\n- 확증 라벨 위반 0건 ✅ ([확증] 라벨 정상)"
+  "diagnosis": "## 자동화 테스트 진단\n\n\n### 신뢰도 분포\n- 최고: 100, 최저: 100, 평균: 100\n- 60 미만(PROVISIONAL): 0/1\n\n### H1 가설 추출률\n- 1/1 케이스에서 H1 추출 성공\n  ✅ [mearsheimer_vs_liberal_taiwan]"
 }
