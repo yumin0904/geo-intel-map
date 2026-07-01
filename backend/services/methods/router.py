@@ -87,18 +87,55 @@ _RE_THEORY_ADJUDICATION = re.compile(
     r".{0,40}?(?:비교|중\s*어느|어느\s*쪽|더\s*(?:잘\s*)?설명|설명력)",
     re.DOTALL,
 )
-# 정량 오버라이드 — 측정가능 변수·수치·통계기법이 명시되면 판별형 아님(정량 케이스 보호).
+# 해석형(interpretive) 질문 — 측정 도구가 없는 결과를 '왜/어떻게'로 묻는 질문.
+#   예: 억지 '실패한 이유'(귀속), 딜레마 '어떻게 회피하는지'(메커니즘), 역량 '공백'(측정불가).
+#   이론 판별과 마찬가지로 공변(Granger) 검정 부적합 → 과정추적/구조적 논증 대상.
+_RE_INTERPRETIVE = re.compile(
+    r"실패한?\s*이유|실패\s*원인"                                # 귀속(attribution): 왜 실패했나
+    r"|어떻게\s*.{0,12}?(회피|하는지|막는지|바꾸는지|작동하는지)"   # 메커니즘: 어떻게 ~하나
+    r"|역량\s*공백|공백을\s*.{0,8}?분석",                        # 측정불가 공백(gap)
+    re.DOTALL,
+)
+
+# 정량 오버라이드 — 측정가능 변수·수치·통계기법·데이터출처가 명시되면 UNQUANTIFIABLE 아님.
 #   예: "무역 의존도(자유주의)와 군사력 격차(현실주의) 중 어느 변수가 …를 수치로 검증"은
-#   두 이론이 아니라 두 '변수' 비교 → CROSS_SECTION 유지.
+#   두 이론이 아니라 두 '변수' 비교 → CROSS_SECTION 유지. "미치는 영향/지수(WGI·HIIK)"도 측정 프레임.
 _RE_QUANT_OVERRIDE = re.compile(
     r"수치로|데이터로|어느\s*변수|%\s*gdp|gdp\s*대비|시계열|패널|hhi|car"
-    r"|이벤트\s*스터디|비정상수익|고정효과|회귀",
+    r"|이벤트\s*스터디|비정상수익|고정효과|회귀|지수\s*\(|wgi|hiik"
+    r"|미치는\s*(영향|충격|연쇄)",
     re.IGNORECASE,
 )
 
 
+def unquantifiable_question_reason(query_text: str) -> str | None:
+    """
+    [9-Q 쿼리-우선] 질문의 '논리 형태'가 공변(Granger) 검정 부적합인지 판정하고 사유를 반환.
+
+    조작화(H1의 정량화·ticker) 이전, 원본 쿼리에서 직접 감지 — 방법을 질문에서 선택하기 위함.
+    정량 신호(수치·데이터출처·측정영향)가 있으면 None(정량 케이스 보호).
+    """
+    text = query_text or ""
+    if _RE_QUANT_OVERRIDE.search(text):
+        return None
+    if _RE_THEORY_ADJUDICATION.search(text):
+        return (
+            "이론 판별형 질문(복수 이론 비교) — 두 이론이 같은 관측치를 예측(관측적 동등성)"
+            "하므로 공변(Granger) 검정으로 판별 불가"
+        )
+    if _RE_INTERPRETIVE.search(text):
+        return (
+            "해석형 질문(메커니즘·귀속·역량공백을 '왜/어떻게'로 물음) — 측정 도구가 없는 "
+            "결과를 묻는 질문이라 공변 검정 부적합"
+        )
+    return None
+
+
 def is_theory_adjudication(query_text: str) -> bool:
-    """쿼리가 '복수 이론 판별' 질문인지 감지한다 (관측적 동등성 → 공변검정 부적합)."""
+    """쿼리가 '복수 이론 판별' 질문인지 감지한다 (관측적 동등성 → 공변검정 부적합).
+
+    하위호환 유지용. 통합 판정은 `unquantifiable_question_reason` 사용.
+    """
     text = query_text or ""
     if _RE_QUANT_OVERRIDE.search(text):
         return False
@@ -113,12 +150,12 @@ def classify_signature(
     """
     쿼리 텍스트 + spec 속성으로 DataSignature를 결정한다.
 
-    [9-Q 쿼리-우선] 이론 판별형 질문은 조작화(linear_testable/ticker)와 무관하게
+    [9-Q 쿼리-우선] 이론 판별형·해석형 질문은 조작화(linear_testable/ticker)와 무관하게
       UNQUANTIFIABLE로 직행 — 방법을 '질문의 논리 형태'에서 선택하기 위함.
     linear_testable=False면 8-gate 이미 처리 → UNQUANTIFIABLE.
     has_paired_timeseries=False면 PAIRED_TIMESERIES 미선택.
     """
-    if is_theory_adjudication(query_text):
+    if unquantifiable_question_reason(query_text):
         return "UNQUANTIFIABLE"
 
     if not linear_testable:

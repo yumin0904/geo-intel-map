@@ -599,19 +599,18 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     _seen_pairs: set[tuple[str | None, str | None]] = set()
 
     # [9-Q 쿼리-우선 라우팅] 조작화(H1)를 계산하기 '전에' 질문의 논리 형태로 방법을 정한다.
-    #   이론 판별형 질문(복수 이론 비교)은 LLM이 만든 정량 H1·ticker와 무관하게
-    #   선형검정 부적합(→ 구조적 논증/과정추적)으로 확정 — 순서 역전(조작화→방법) 차단.
-    from services.methods.router import is_theory_adjudication as _is_adjudication
+    #   이론 판별형(복수 이론 비교)·해석형(왜/어떻게 — 메커니즘·귀속·역량공백) 질문은 LLM이 만든
+    #   정량 H1·ticker와 무관하게 선형검정 부적합(→ 구조적 논증/과정추적)으로 확정.
+    #   순서 역전(조작화→방법)을 질문→방법으로 바로잡음.
+    from services.methods.router import unquantifiable_question_reason as _unq_reason
 
     for spec in specs:
-        # ── [9-Q] 이론 판별 veto — spec.linear_testable을 쿼리 형태로 선행 무효화 ──
-        if spec.linear_testable and _is_adjudication(getattr(spec, "source_query", "")):
+        # ── [9-Q] 쿼리-우선 veto — spec.linear_testable을 쿼리 형태로 선행 무효화 ──
+        _reason = _unq_reason(getattr(spec, "source_query", ""))
+        if spec.linear_testable and _reason:
             spec.linear_testable = False
-            spec.testability_reason = (
-                "이론 판별형 질문(복수 이론 비교) — 두 이론이 같은 관측치를 예측(관측적 "
-                "동등성)하므로 공변(Granger) 검정으로 판별 불가. 과정추적·구조적 논증 대상"
-            )
-            logger.info("[hypothesis] [9-Q 쿼리-우선] 이론 판별 → 선형검정 제외: %s",
+            spec.testability_reason = _reason + ". 과정추적·구조적 논증 대상"
+            logger.info("[hypothesis] [9-Q 쿼리-우선] → 선형검정 제외: %s",
                         (getattr(spec, "source_query", "") or spec.h1)[:60])
 
         # ── [8-gate] 선형검정 부적합 변수 단락 — Granger 트랙 진입 차단 ────────
