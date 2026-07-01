@@ -69,6 +69,41 @@ _RE_NONLINEAR_QUANTIFIABLE = re.compile(
     re.IGNORECASE,
 )
 
+# ── [9-Q 쿼리-우선 라우팅] 이론 판별(theory adjudication) 감지 ──────────────────
+# 배경: 방법은 '질문의 논리적 형태'에서 선택돼야 한다(9-0 설계). 그런데 기존 파이프라인은
+#   LLM이 만든 H1(정량화된 대리변수·ticker)에서 linear_testable을 계산 → 조작화가 방법 선택을
+#   오염시키는 '순서 역전'이 발생했다. "마한 vs 미어샤이머" 같은 이론 판별 질문은 두 이론이
+#   같은 관측치를 예측(관측적 동등성)하므로 공변(Granger) 검정으로 판별 불가 → 과정추적/구조적
+#   논증 대상이다. 이를 조작화 이전, '쿼리'에서 직접 감지한다.
+#
+# 이론 토큰: 명명된 IR 이론/-이즘 (예: 현실주의, 자유주의, 해양력 이론, 회색지대 이론, ~ 이론)
+_THEORY_TOKEN = (
+    r"(?:현실주의|자유주의|해양력\s*이론|회색지대\s*이론|하이브리드\s*전쟁\s*이론"
+    r"|억지\s*이론|동맹\s*딜레마|상호의존\s*이론|[가-힣]{2,}\s*이론)"
+)
+# 두 이론이 '와/과'로 병치 + 비교/판별(어느 쪽이 더 설명력) 요구
+_RE_THEORY_ADJUDICATION = re.compile(
+    _THEORY_TOKEN + r".{0,45}?(?:와|과)\s*.{0,45}?" + _THEORY_TOKEN +
+    r".{0,40}?(?:비교|중\s*어느|어느\s*쪽|더\s*(?:잘\s*)?설명|설명력)",
+    re.DOTALL,
+)
+# 정량 오버라이드 — 측정가능 변수·수치·통계기법이 명시되면 판별형 아님(정량 케이스 보호).
+#   예: "무역 의존도(자유주의)와 군사력 격차(현실주의) 중 어느 변수가 …를 수치로 검증"은
+#   두 이론이 아니라 두 '변수' 비교 → CROSS_SECTION 유지.
+_RE_QUANT_OVERRIDE = re.compile(
+    r"수치로|데이터로|어느\s*변수|%\s*gdp|gdp\s*대비|시계열|패널|hhi|car"
+    r"|이벤트\s*스터디|비정상수익|고정효과|회귀",
+    re.IGNORECASE,
+)
+
+
+def is_theory_adjudication(query_text: str) -> bool:
+    """쿼리가 '복수 이론 판별' 질문인지 감지한다 (관측적 동등성 → 공변검정 부적합)."""
+    text = query_text or ""
+    if _RE_QUANT_OVERRIDE.search(text):
+        return False
+    return bool(_RE_THEORY_ADJUDICATION.search(text))
+
 
 def classify_signature(
     query_text: str,
@@ -78,9 +113,14 @@ def classify_signature(
     """
     쿼리 텍스트 + spec 속성으로 DataSignature를 결정한다.
 
+    [9-Q 쿼리-우선] 이론 판별형 질문은 조작화(linear_testable/ticker)와 무관하게
+      UNQUANTIFIABLE로 직행 — 방법을 '질문의 논리 형태'에서 선택하기 위함.
     linear_testable=False면 8-gate 이미 처리 → UNQUANTIFIABLE.
     has_paired_timeseries=False면 PAIRED_TIMESERIES 미선택.
     """
+    if is_theory_adjudication(query_text):
+        return "UNQUANTIFIABLE"
+
     if not linear_testable:
         return "UNQUANTIFIABLE"
 

@@ -598,7 +598,22 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     # 데이터는 동일하므로 캐시 히트 후 수치만 복사 (재계산 불필요).
     _seen_pairs: set[tuple[str | None, str | None]] = set()
 
+    # [9-Q 쿼리-우선 라우팅] 조작화(H1)를 계산하기 '전에' 질문의 논리 형태로 방법을 정한다.
+    #   이론 판별형 질문(복수 이론 비교)은 LLM이 만든 정량 H1·ticker와 무관하게
+    #   선형검정 부적합(→ 구조적 논증/과정추적)으로 확정 — 순서 역전(조작화→방법) 차단.
+    from services.methods.router import is_theory_adjudication as _is_adjudication
+
     for spec in specs:
+        # ── [9-Q] 이론 판별 veto — spec.linear_testable을 쿼리 형태로 선행 무효화 ──
+        if spec.linear_testable and _is_adjudication(getattr(spec, "source_query", "")):
+            spec.linear_testable = False
+            spec.testability_reason = (
+                "이론 판별형 질문(복수 이론 비교) — 두 이론이 같은 관측치를 예측(관측적 "
+                "동등성)하므로 공변(Granger) 검정으로 판별 불가. 과정추적·구조적 논증 대상"
+            )
+            logger.info("[hypothesis] [9-Q 쿼리-우선] 이론 판별 → 선형검정 제외: %s",
+                        (getattr(spec, "source_query", "") or spec.h1)[:60])
+
         # ── [8-gate] 선형검정 부적합 변수 단락 — Granger 트랙 진입 차단 ────────
         # 체제·임계 변수는 선형 Granger에 넣지 않고 '구조적 논증'으로 명시한다.
         # 대리쌍 치환·노이즈 p값 생성을 원천 차단 → 선형검정 실패를 비선형 증거로
