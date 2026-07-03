@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.geo-intel.collect</string>
+
+    <!-- 하루 2회 (09:00 / 21:00). Mac이 잠자던 시각의 실행은 깨어날 때 1회 보충됨 -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>21</integer><key>Minute</key><integer>0</integer></dict>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/kang-yumin/Projects/geo-intel-map/backend/.venv/bin/python</string>
+        <string>jobs/collect_standalone.py</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend/logs/collect_launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend/logs/collect_launchd.log</string>
+
+    <!-- 등록 직후 자동 1회 실행은 하지 않음 (검증은 launchctl kickstart로 수동) -->
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
