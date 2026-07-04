@@ -18,6 +18,7 @@ v6.3.0 추가:
 from __future__ import annotations
 
 import logging
+import re
 import time
 from datetime import date, timedelta
 from pathlib import Path
@@ -179,6 +180,18 @@ _ROUTE_GRANGER_A_DG  = "granger_typeA_downgrade" # Type_A → C 강등 후 Grang
 _ROUTE_SECTOR_PROXY  = "granger_sector_proxy"    # 섹터 proxy fallback
 _ROUTE_PENDING_A     = "pending_typeA_no_mapping" # Type_A 매핑 실패
 _ROUTE_GRANGER_A     = "granger_typeA"           # Type_A 정상: 금융 ticker Granger
+_ROUTE_NO_HYPOTHESIS = "no_quantitative_hypothesis"    # H1이 '정량 가설 없음' 선언문 — 검정 대상 아님
+_ROUTE_PENDING_METHOD = "pending_method_unimplemented" # 시그니처 판정 명확, 해당 방법(9-A/9-B) 미구현
+
+# 추출기가 검정 불가를 정직하게 선언한 문장 패턴 (H1 자리에 선언문이 오는 실측 형태 2종).
+# 이 선언문이 Type_A/C로 오분류되면 섹터 proxy Granger까지 흘러가 유의 결과로 '세탁'될 수 있어
+# 검정 진입 전에 단락한다 (실측: 20260704 eval china_rareearth — 선언문이 PARTIAL p=0.0 획득).
+_RE_NO_HYPOTHESIS = re.compile(r"(검증\s*가능한[^.]{0,30}?가설[이은는]?\s*없|정량\s*가설\s*없음)")
+
+
+def _is_no_hypothesis_declaration(h1: str) -> bool:
+    """H1이 실제 가설이 아니라 '검정할 가설 없음' 선언문인지 판별한다."""
+    return bool(_RE_NO_HYPOTHESIS.search(h1 or ""))
 
 
 def _build_surface(spec: "HypothesisSpec") -> None:
@@ -241,6 +254,14 @@ def _build_surface(spec: "HypothesisSpec") -> None:
         else:
             spec.surface_summary = f"[Granger] {iv} → {dv} — 비유의"
             spec.confidence_word = "낮음"
+    elif m == _ROUTE_NO_HYPOTHESIS:
+        spec.surface_summary  = "[가설없음] 검증 가능한 정량 가설 없음 — 검정 생략, 서술·이론 근거만"
+        spec.confidence_word  = "검정불가"
+    elif m == _ROUTE_PENDING_METHOD:
+        spec.surface_summary  = (
+            f"[방법대기] {iv} → {dv} — {spec.data_signature} 전용 방법(9-A/9-B) 미구현, 검정 보류"
+        )
+        spec.confidence_word  = "검정불가"
     else:
         # _ROUTE_PENDING_A 또는 미분류
         spec.surface_summary  = f"[검정불가] {iv} → {dv} — 데이터 매핑 실패"
@@ -634,6 +655,25 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             results.append(spec)
             continue
 
+        # ── '정량 가설 없음' 선언문 단락 — 검정 대상이 아니므로 어떤 검정 경로에도 넣지 않음 ──
+        # 선언문에 var_type(Type_A/C)이 붙어 폴백·섹터 proxy Granger로 흘러가면
+        # "가설 없음"이 유의 결과를 얻는 모순(laundering)이 생긴다. 선언 자체는 정직한
+        # 판정이므로 routing_confidence=HIGH (UNQUANTIFIABLE 제외 규칙과 같은 논리).
+        if _is_no_hypothesis_declaration(spec.h1):
+            spec.inference_grade = _LADDER_DESCRIPTIVE
+            spec.verification_status = "PENDING"
+            spec.error = "정량 가설 없음 선언 — 검정 미실행"
+            spec.inference_caveat = (
+                "검정 대상 아님 — 추출기가 '검증 가능한 정량 가설 없음'을 선언. "
+                "서술·이론 근거만 가능. " + (spec.inference_caveat or "")
+            ).rstrip()
+            spec.routing_method = _ROUTE_NO_HYPOTHESIS
+            spec.routing_confidence = "HIGH"   # 선언 판정은 명확 — 방법 오선택 아님
+            spec.routing_alternatives = ["필요 데이터 확보 후 H1 재추출"]
+            logger.info("[hypothesis] 정량 가설 없음 선언 → 검정 생략: %s", spec.h1[:60])
+            results.append(spec)
+            continue
+
         # [B4] 사건→사건 전이 가설이 최우선 — 시장 경로 대신 지역B 이벤트로 검정
         if spec.dependent_region and spec.region_code:
             spec = await _run_event_to_event(spec)
@@ -783,6 +823,27 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             if not spec.ticker:
                 missing.append("시장 ticker")
             spec.error = f"Type A (금융 ticker): 매핑 실패 — {', '.join(missing)} 미식별"
+
+            # 시그니처가 미구현 방법(9-A/9-B) 대상이면 매핑 실패는 '오선택 의심'이 아니라
+            # '방법 미구현' — Type_B PENDING과 같은 정직 상태로 마킹한다.
+            # (실측: 20260704 eval에서 CROSS_SECTION 2건·SINGLE_SHOCK 1건이 티커 경로로
+            #  낙하해 LOW로 집계됐으나, 시그니처 판정 자체는 전부 옳았음)
+            if spec.data_signature in ("SINGLE_SHOCK", "CROSS_SECTION"):
+                _method_ko = ("이벤트스터디(9-A)" if spec.data_signature == "SINGLE_SHOCK"
+                              else "횡단/패널 회귀(9-B)")
+                spec.inference_caveat = (
+                    f"검정 불가 — 데이터 모양({spec.data_signature})에 맞는 방법인 "
+                    f"{_method_ko}가 미구현. 티커 Granger로 대체하지 않음(방법 오선택 방지). "
+                    f"현재는 서술·이론 근거만 가능."
+                )
+                spec.routing_method = _ROUTE_PENDING_METHOD
+                spec.routing_confidence = "HIGH"   # 시그니처 판정은 명확
+                spec.routing_alternatives = [f"{_method_ko} 구현 후 검정"]
+                logger.info("[hypothesis] 방법 미구현 PENDING (%s): %s",
+                            spec.data_signature, spec.h1[:60])
+                results.append(spec)
+                continue
+
             spec.inference_caveat = (
                 f"검정 불가 — {', '.join(missing)}을(를) 식별하지 못해 시계열 매핑 실패. "
                 f"종속변수를 환율·유가·주가·ETF 등 측정 가능한 시장 지표로 재정의하거나, "
