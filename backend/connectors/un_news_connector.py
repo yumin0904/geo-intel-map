@@ -15,6 +15,7 @@ UN News RSS는 토픽별 최신 30건만 제공 → 주기적 실행(일 1~2회)
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import html
 import logging
@@ -82,12 +83,40 @@ def _parse_date(raw: str) -> str:
 
 
 def _fetch_rss(url: str) -> list[dict]:
-    """RSS 피드 파싱 → 아이템 리스트."""
-    req = urllib.request.Request(url, headers={"User-Agent": "geo-intel-map/1.0"})
-    with urllib.request.urlopen(req, timeout=15) as r:
-        raw = r.read()
+    """RSS 피드 파싱 → 아이템 리스트.
 
-    root = ET.fromstring(raw)
+    일시적 응답 이상(HTML 오류 페이지·CDN 임의 gzip 등)에 대비해 1회 재시도하고,
+    파싱 실패 시 응답 앞부분을 로그에 남겨 사후 진단이 가능하게 한다
+    (배경: 2026-07-04 01:32 수집에서 'not well-formed: line 1, column 0' — 응답이
+    XML이 아니었는데 무엇이었는지 기록이 없어 원인 확정 불가였음).
+    """
+    root = None
+    for attempt in (1, 2):
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "geo-intel-map/1.0",
+            # CDN이 협상 없이 gzip을 주는 경우가 있어 명시적으로 비압축 요청
+            "Accept-Encoding": "identity",
+        })
+        with urllib.request.urlopen(req, timeout=15) as r:
+            raw = r.read()
+            ctype = r.headers.get("Content-Type", "")
+
+        # 그래도 gzip으로 오면(매직 바이트 1f 8b) 풀어서 파싱
+        if raw[:2] == b"\x1f\x8b":
+            raw = gzip.decompress(raw)
+
+        try:
+            root = ET.fromstring(raw)
+            break
+        except ET.ParseError as exc:
+            logger.warning(
+                "[un_news] XML 파싱 실패 (시도 %d/2, Content-Type=%s, 응답 앞 100B=%r): %s",
+                attempt, ctype, raw[:100], exc,
+            )
+            if attempt == 2:
+                raise
+            time.sleep(3)  # 일시적 소스 이상 대비 — 짧게 쉬고 1회만 재시도
+
     items = root.findall(".//item")
 
     results = []
