@@ -1,0 +1,238 @@
+{
+  "schema_version": "0.1",
+  "id": "somaliland-redsea-test",
+  "generated_at": "2026-07-05T08:36:58Z",
+  "engine_version": "9.18.2",
+  "query": "소말릴란드 승인 움직임이 홍해-바브엘만데브 항로 안보에 미치는 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "bab_el_mandeb"
+  ],
+  "sectors": [
+    "maritime",
+    "gray_zone"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+    "[CSIS] 아랍 걸프 국가들이 바라보는 미-이란 합의 — 안도와 우려의 혼합",
+    "[CSIS] 아프리카 합동전영역작전(JADO) 미래 시험: 드론 배틀랩 전략",
+    "[CSIS] 미국-태평양 안보 협력: 태평양의 시각 높이기"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 0,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 2766,
+    "fred": 6,
+    "wbk": 3,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 4,
+    "semi": 0,
+    "owid": 6
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수)로 middle_east ACLED 시계열은 있으나 actor_filter 기반 event study 미구현. 현재는 서술·이론 근거만 가능."
+  },
+  "result_md": "## [탐색적] 이스라엘의 소말릴란드 승인 움직임은 홍해 안보 아키텍처 재편 노력과 동반되나, 잠재적 지역 긴장과 공변한다.\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 소말릴란드 승인은 이스라엘의 홍해 접근성을 높여 지역의 안정성을 강화하고 바브엘만데브 항로의 안보를 증진할 것이다.\n[비자명기여] 기존 `SLOC 통제 이론`의 반례는 초크포인트 위협 강도 증가가 운임·유가 급등으로 자동으로 이어지지 않을 수 있음을 시사한다 (`후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025`). 소말릴란드 승인으로 인한 새로운 안보 아키텍처 구축은 단순한 '통제력 강화'를 넘어, 위협의 *행위자 유형*을 변화시켜 (예: 일반 해적/테러에서 특정 국가의 대리세력 표적화로) 기존 완충 메커니즘의 작동 방식을 교란할 수 있다. 이는 SLOC 통제 이론이 상정하는 위협의 범위 조건을 정교화한다.\n[관찰] 2025년 12월 이스라엘의 소말릴란드 최초 승인은 베르베라 항구를 통한 정보·감시·해군 접근권 확보로 이어지는 안보 아키텍처 구축과 함께 관찰되었다 ([War on the Rocks]). 이스라엘의 승인은 '미국의 승인 없이는 전체 구조가 법적으로 취약'하다고 평가된다 ([War on the Rocks]). bab_el_mandeb 지역의 ACLED 분쟁 이벤트는 총 7955건 (평균 심각도 35.2/100)으로 나타난다.\n[주장] (등급: 상관) 이스라엘의 소말릴란드 승인 움직임은 홍해-바브엘만데브 항로에 대한 특정 행위자의 해양 통제 역량을 강화하려는 구조적 재편 노력과 공변하나, 동시에 이로 인해 촉발될 수 있는 지역 내 회색지대 활동의 증가 가능성과 동조한다.\n[가설] H1: 이스라엘의 소말릴란드 승인 발표 시점(2025년 12월) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type)가 통계적으로 유의미하게 변화한다.\n[근거] \"2025년 12월 이스라엘의 소말릴란드 최초 승인\" ([War on the Rocks]). bab_el_mandeb 지역의 ACLED 분쟁 이벤트는 총 7955건 (평균 심각도 35.2/100)으로 관찰된다 ([ACLED 이벤트 통계]).\n[한계] 이 분석은 소말릴란드 승인이라는 단일 외교적 사건에 초점을 맞추고 있으며, 이 사건이 홍해 안보에 미치는 장기적이고 복합적인 영향을 완전히 포착하지 못할 수 있다. 특히, 승인에 대한 에티오피아나 후티의 반응은 다면적이며, 승인 성공 사례(이스라엘)만 기록되고 실패 사례나 유보된 사례는 과소보고될 수 있어 선택편향 가능성이 있다.\n[경쟁설명]\n마한의 해양력 이론 (Sea Power Theory):\n  예측: 해군력 투자 증가 시 SLOC 통제 범위 확대. 소말릴란드 승인은 이스라엘의 홍해 접근성 및 정보 감시 역량 강화를 통해 SLOC 통제를 확대할 것이다.\n  실측: Saudi Arabia 군비 6.4% GDP (2023) [OWID 군사력]. United States 군비 3.3% GDP (2023) [OWID 군사력]. 이스라엘의 군비 데이터는 없으며, 소말릴란드 승인이 해군력 '투자'의 직접적인 정량값은 부재. \"베르베라 항구를 통한 정보·감시·해군 접근권 확보\"는 관찰되나, 이것이 SLOC 통제 범위 확대로 직접 연결되는 정량적 실측은 부재.\n  판정: [UNVERIFIED] DV 정량값 부재 — 예측 'SLOC 통제 범위 확대' vs 실측 '정량값 부재' (앵커: [앵커 미제공])\n회색지대 전략 (Gray Zone Strategy):\n  예측: 회색지대 행동 강도 증가 시 목표국 정책 양보 증가. 소말릴란드 승인이 지역 내 회색지대 행위자(후티 등)의 반발을 유발하여 홍해에서의 회색지대 공격 빈도가 증가할 수 있으며, 이는 특정 국가의 정책 양보로 이어질 수 있다.\n  실측: bab_el_mandeb 지역 ACLED conflict 이벤트 총 7955건 (평균 심각도 35.2/100) [ACLED 이벤트 통계]. 이스라엘-소말릴란드 승인 이후 회색지대 행동 '빈도 증가'에 대한 실측은 아직 부재. HIIK 분쟁강도에서 수단 강도5, 에티오피아 강도4, 소말리아-알샤바브 강도4가 관찰되나, 이는 승인과의 직접적 연관성보다는 일반적인 지역 불안정성 지표.\n  판정: [UNVERIFIED] DV 정량값 부재 — 예측 '회색지대 행동 증가→정책 양보' vs 실측 '정량값 부재' (앵커: [앵커 미제공])\n▶ 편차 비교 (사실): 두 이론 모두 DV 실측값이 부재하여 정량적 편차 비교는 어렵다.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: 마한 이론은 주로 국가 행위자 간의 제해권 경쟁에 초점을 맞추는 반면, 회색지대 전략은 비국가 행위자의 저강도 위협에 더 적합하여, 두 이론의 적용 범위와 위협 행위자 가정이 상이하다.)\n[검증포인트]\n*   이스라엘의 소말릴란드 승인 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 건수 변화 추이(월별).\n*   베르베라 항구의 군사적 활용 현황(정찰 자산 배치, 해군 함정 입항 빈도 등)에 대한 1차 사료(위성 이미지, 국방부 보도자료, 해운 분석 보고서) 확인.\n*   에티오피아 및 후티 반군 등 지역 행위자들의 소말릴란드 승인 관련 공식 성명 및 행동 변화 분석.\n*   확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다.\n[문헌공백] 기존 `SLOC 통제 이론`은 초크포인트 위협이 자동으로 가격 충격으로 이어지지 않는 반례를 제시하며 비축유 방출·대체 운송로·완충 재고 등 완충 요인을 강조했다. 그러나 이 이론은 특정 지정학적 안보 아키텍처(이스라엘-소말릴란드 연결) 구축이 초크포인트 위협의 *성격*을 어떻게 변화시키고, 이것이 완충 요인의 효과를 어떻게 변조하는지에 대한 연구는 부족하다. 즉, 단순한 위협 강도 변화가 아니라 위협 행위자의 변화(국가 vs 비국가, 특정 국가의 대리전)가 SLOC 안보에 미치는 비선형적 영향을 다루는 문헌 공백이 존재한다.\n\n## [탐색적] 소말릴란드 승인 움직임은 미국의 대테러 역량 약화 및 이란전 발발과 공변하며, 홍해 지역 에너지 안보에 복합적 취약성을 동반할 가능성이 있다.\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: LOW\n\n[통념] 소말릴란드 승인은 이스라엘의 대이란 전략의 일환으로 홍해 지역의 안정을 가져와 에너지 흐름을 보장할 것이다.\n[비자명기여] `War on the Rocks`의 '유리 턱' 보고서는 미국의 경제적 취약성('관세가 먼저 버퍼를 소진')이 군사 전략의 상한선을 설정한다고 주장한다. 이는 `SLOC 통제 이론`의 '초크포인트 위협이 자동으로 가격 충격이 되지 않음'이라는 반례에서 제시된 완충 요인(예: 전략비축유 방출, 대체 운송로)의 효과를 약화시키는 '범위 조건'으로 작용할 수 있다. 즉, 소말릴란드 승인으로 촉발될 수 있는 홍해의 회색지대 위협은 미국의 경제적 회복탄력성 저하와 맞물려 과거보다 더 큰 에너지 가격 충격으로 전이될 수 있는 `교차도메인` 경로를 제시한다.\n[관찰] 2026년 2월 28일 미국-이스라엘 대 이란 전쟁이 개전했으며, 이란전은 헤즈볼라·후티 등 이란의 축 재가동 위험을 높인다고 CSIS 보고서는 분석했다 ([CSIS] 글로벌 테러리즘 위협 평가 2026). 이스라엘의 소말릴란드 승인 (2025.12)은 이란전 개전 약 2개월 전에 이루어졌다. 미국의 대테러 예방 예산은 2024년 $454M에서 2025년 $274M으로 40% 감소했다 ([CSIS] 글로벌 테러리즘 위협 평가 2026).\n[주장] (등급: 상관) 이스라엘의 소말릴란드 승인 움직임은 이란전 개전 및 미국의 대테러 역량 감축과 시간적으로 공변하며, 홍해-바브엘만데브 항로의 에너지 안보에 대한 복합적 위협 증가와 동조할 가능성이 있다.\n[가설] H1: 이스라엘의 소말릴란드 승인 시점(2025.12) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type)가 증가할 때 WTI 유가(USD/배럴)가 통계적으로 유의미하게 상승한다.\n[근거] WTI Crude Oil Price는 2022년 94.53 USD/barrel에서 2024년 76.96 USD/barrel로 감소했다 [FRED]. 미국의 대테러 예방 예산은 2024년 $454M에서 2025년 $274M으로 -40% 감소했다 ([CSIS] 글로벌 테러리즘 위협 평가 2026). bab_el_mandeb 해협은 글로벌 원유 해상 운송의 약 9% (6.2 Mbpd)가 통과한다 ([EIA International Energy Statistics 2023]).\n[한계] 유가는 다양한 지정학적, 경제적 요인에 의해 결정되므로, 소말릴란드 승인이나 홍해 분쟁과의 직접적인 인과관계를 단정하기 어렵다. 또한, 이 분석은 이란전 개전 시점과 소말릴란드 승인 시점의 시간적 근접성을 강조하나, 이 두 사건 간의 직접적인 인과 연결 고리는 추가 검증이 필요하다.\n[경쟁설명]\n자원무기화 (Resource Weaponization):\n  예측: 에너지 의존도 증가 시 공급 차단 위협에 대한 정치적 양보 증가. 소말릴란드 승인으로 인한 홍해 긴장 고조는 바브엘만데브를 통한 원유 공급 차단 위협을 높여, 에너지 수입국들의 양보 압력을 증가시킬 것이다.\n  실측: Brent Crude Oil Price: 80.22 USD/barrel (2024-01-01, 최근 추세 +91.7%, 사전계산) [FRED]. 에너지(HS 27) 공급망 HHI: 6689 (독과점, 최고의존쌍 SAU 수입←ARE 48.4%, 2023) [UN Comtrade]. 유가 급등과 높은 의존도는 관찰되나, 이것이 '정치적 양보'로 이어졌는지에 대한 정량 실측은 부재.\n  판정: [UNVERIFIED] DV 정량값 부재 — 예측 '의존도 증가→양보' vs 실측 '정량값 부재' (앵커: [앵커 미제공])\n회색지대 전략 (Gray Zone Strategy):\n  예측: 회색지대 행동 강도 증가 시 목표국 정책 양보 증가. 이스라엘의 소말릴란드 승인은 후티와 같은 비국가 행위자들의 홍해 회색지대 공격을 촉발할 수 있으며, 이는 특정 국가의 정책 변화를 유도할 수 있다.\n  실측: bab_el_mandeb 지역 ACLED conflict 이벤트 총 7955건 (평균 심각도 35.2/100) [ACLED 이벤트 통계]. 이스라엘-소말릴란드 승인 이후 회색지대 행동 '빈도 증가'에 대한 실측은 아직 부재.\n  판정: [UNVERIFIED] DV 정량값 부재 — 예측 '회색지대 행동 증가→정책 양보' vs 실측 '정량값 부재' (앵커: [앵커 미제공])\n▶ 편차 비교 (사실): 두 이론 모두 DV 실측값이 부재하여 정량적 편차 비교는 어렵다.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: 자원무기화 이론은 주로 국가 간의 경제적 압박에 초점을 맞추는 반면, 회색지대 전략은 비국가 행위자의 저강도 군사적 위협에 더 집중한다. 소말릴란드-홍해 맥락에서는 후티와 같은 비국가 행위자의 역할이 중요하므로, 두 이론의 행위자 범위에 대한 가정이 다르다.)\n[검증포인트]\n*   이스라엘의 소말릴란드 승인 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 건수와 WTI 유가의 시계열 데이터 간의 상관관계 분석.\n*   이란전 개전(2026.2.28) 이후 후티의 홍해 공격 빈도 및 강도 변화에 대한 CSIS/ACLED 데이터 분석.\n*   미국의 대테러 예산 삭감이 홍해 지역 해양 안보 작전(예: CMF 153)의 역량에 미친 구체적인 영향에 대한 보고서 확인.\n*   확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다.\n[문헌공백] `교차도메인 밀도` 섹션에서 회색지대(포화)와 에너지(상대 희박)를 잇는 교차도메인 인과 경로가 단일 도메인 문헌의 사각지대일 수 있다고 지적했다. 소말릴란드 승인과 같은 지정학적 재편이 회색지대 위협을 통해 에너지 시장에 미치는 영향을 분석하는 것은 이 공백을 메우는 기여가 된다. 특히, 미국의 경제적 취약성(`War on the Rocks`)이라는 거시적 배경이 회색지대-에너지 전이의 임계값을 어떻게 낮추는지에 대한 연구는 부족하다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 미식별 — 이벤트스터디 미구현, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-A 이벤트스터디 (actor_filter 기반 event study 구현 후)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "이스라엘의 소말릴란드 승인 발표 시점(2025년 12월) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type)가 통계적으로 유의미하게 변화한다.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "이스라엘의 소말릴란드 승인 발표 시점(2025년 12월) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type)가 통계적으로 유의미하게 변화한다.",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "middle_east",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수)로 middle_east ACLED 시계열은 있으나 actor_filter 기반 event study 미구현. 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=middle_east) → actor_filter 기반 event study로 검증 가능 (다음 버전 구현 예정)",
+        "data_signature": "SINGLE_SHOCK",
+        "method_result": {
+          "headline_rung": "기술적",
+          "headline_method": "none",
+          "convergence": null,
+          "convergence_note": "가정 미충족 — 모든 방법 칸 자격 박탈",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "event_study",
+              "signature": "SINGLE_SHOCK",
+              "effect_estimate": null,
+              "effect_size_label": "",
+              "significance": null,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": false,
+              "assumption_caveat": "추정 윈도우 관측값 부족(n=0<60)",
+              "reachable_rung": "준실험",
+              "actual_rung": "상관",
+              "confidence_within_rung": 0,
+              "robustness": {
+                "n_estimation": 0,
+                "r2_market_model": 0.0
+              },
+              "native_stats": {
+                "ticker": "",
+                "event_date": "2025-12-15"
+              },
+              "exploratory": false
+            },
+            {
+              "method": "granger",
+              "signature": "SINGLE_SHOCK",
+              "effect_estimate": null,
+              "effect_size_label": "측정불가",
+              "significance": null,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": false,
+              "assumption_caveat": "데이터 부족(n=0<40) · Granger 미실행",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 0,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": false,
+                "controlled": false
+              },
+              "native_stats": {
+                "granger_p": null,
+                "granger_q": null,
+                "f_statistic": null,
+                "best_lag": null,
+                "n_obs": 0
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 이스라엘의 소말릴란드 승인 시점(2025.12) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type) → WTI 유가(USD/배럴) — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "이스라엘의 소말릴란드 승인 시점(2025.12) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type)가 증가할 때 WTI 유가(USD/배럴)가 통계적으로 유의미하게 상승한다.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "이스라엘의 소말릴란드 승인 시점(2025.12) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type)",
+        "dependent_var": "WTI 유가(USD/배럴)",
+        "control_vars": [],
+        "region_code": "middle_east",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.2989) · 극단P90(p=0.3074) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.2989,
+        "granger_q": null,
+        "f_statistic": 1.209,
+        "best_lag": 2,
+        "differenced": true,
+        "n_obs": 461,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 1.209,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.2989,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 25,
+              "robustness": {
+                "extreme_p": 0.3074,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.2989,
+                "granger_q": null,
+                "f_statistic": 1.209,
+                "best_lag": 2,
+                "n_obs": 461
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": 10
+}
