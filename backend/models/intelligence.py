@@ -9,6 +9,13 @@ CLAUDE.md §15 기준:
   level_of_analysis: Waltz 3수준 (systemic/state_domestic/non_state)
   instrument_of_power: DIME 프레임워크
   strategic_posture  : Snyder 동맹 딜레마 — 현상유지 vs 현상타파
+
+⚠️ 적용 경계 (2026-07-05 확정 — geo-os/STATUS.md "알려진 불일치" 1건 해소):
+  이 모델은 **Event/GDELT 태깅 전용**이다 (cameo_mapper·gdelt_pipeline·api/layers 소비).
+  브리핑(library/07_briefings) frontmatter의 계약은 별도 —
+  shared/schemas/briefing.schema.json (asset_type/sector_tag, 6섹터: indo_pacific·cyber 포함).
+  두 체계는 이름이 비슷하지만 도메인이 다르므로 서로 정렬하지 않는다.
+  신규 브리핑 코드가 이 모델을 기반으로 하면 조용히 어긋난다 — 브리핑은 반드시 스키마 쪽.
 """
 from __future__ import annotations
 

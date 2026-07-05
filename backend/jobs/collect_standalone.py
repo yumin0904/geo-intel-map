@@ -72,6 +72,24 @@ def _rotate_launchd_log(max_bytes: int = 5 * 1024 * 1024) -> None:
         logger.warning("로그 로테이션 실패 (계속 진행): %s", e)
 
 
+def _notify_failure(failed: list[str], total: int) -> None:
+    """수집 잡 실패를 macOS 알림으로 표면화 — 로그에만 남는 침묵 실패 방지.
+
+    배경: 이 스크립트의 존재 이유였던 6/21~7/4 수집 공백도 침묵 실패였다.
+    launchd에는 알림 훅이 없으므로 잡 스스로 알린다 (실패 시에만, 최대 하루 2회).
+    """
+    import subprocess
+    msg = f"수집 실패 {len(failed)}/{total}: {', '.join(failed)}"
+    try:
+        subprocess.run(
+            ["osascript", "-e",
+             f'display notification "{msg}" with title "geo-intel 자동수집" sound name "Basso"'],
+            timeout=10, check=False,
+        )
+    except Exception as e:  # 알림 실패가 수집 결과를 바꾸면 안 된다
+        logger.warning("실패 알림 발송 불가: %s", e)
+
+
 def main() -> int:
     _rotate_launchd_log()
     _load_env()
@@ -122,6 +140,8 @@ def main() -> int:
         len(ok), len(failed), time.time() - t0,
         ("실패목록=" + ",".join(failed)) if failed else "",
     )
+    if failed:
+        _notify_failure(failed, total=len(jobs))
     return 1 if not ok else 0
 
 
