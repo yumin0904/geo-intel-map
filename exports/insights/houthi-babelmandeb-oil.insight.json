@@ -1,0 +1,217 @@
+{
+  "schema_version": "0.1",
+  "id": "houthi-babelmandeb-oil",
+  "generated_at": "2026-07-05T09:33:35Z",
+  "engine_version": "9.19.0",
+  "query": "후티의 밥엘만데브 공격 빈도와 유가 변동의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "bab_el_mandeb"
+  ],
+  "sectors": [
+    "energy",
+    "maritime",
+    "gray_zone"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+    "[RAND Europe / UK AISI] 프런티어 AI의 공세 사이버 업리프트: 인간 업리프트 실험 연구"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 0,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3239,
+    "fred": 15,
+    "wbk": 3,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 4,
+    "semi": 0,
+    "owid": 6
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.9791) · 극단P90(p=0.7487) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트)."
+  },
+  "result_md": "## [탐색적] 밥엘만데브 회색지대 공격은 초크포인트 위협 인식을 높였으나, 유가 급등으로의 전이는 외부 완충 메커니즘에 의해 제한적으로 관찰된다.\n데이터기반: 고 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 바브엘만데브와 같은 주요 해상교통로(SLOC)에서 후티와 같은 비국가 행위자의 공격 빈도 증가는 글로벌 에너지 공급망에 즉각적인 물리적 위협을 가하여 유가를 급등시킬 것이다.\n[비자명기여] 이 통념은 SLOC 통제 이론의 예측 임계 조건(비축유 방출·대체 운송로·완충 재고 부재)을 간과하며, 후티 공격으로 인한 초크포인트 위협 강도 증가에도 불구하고 유가 급등이 제한적일 수 있음을 보여줌으로써 이론의 범위 조건을 정교화한다. 특히 `SLOC 통제 이론`의 예측 임계 '초크포인트 위협 강도 증가 시 운임·유가 단기 급등'이 반례 '후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025'를 통해 전략비축유 방출, OPEC+ 여유 생산능력, 우회 항로 흡수 등의 완충재가 작동할 경우 깨짐을 밝힌다.\n[관찰] 바브엘만데브 지역에서는 총 7955건의 분쟁 이벤트가 관찰되며, 평균 심각도는 35.2/100이다 [ACLED]. 그러나 2022년 99.05 USD/배럴이던 브렌트유 가격은 2024년 80.22 USD/배럴로 하락하는 추세이며, 최근 추세는 +91.7% 상승했으나 이는 이전 하락세에 대한 반등으로 보인다 [FRED].\n[주장] (등급: 상관) 밥엘만데브 지역에서의 회색지대 분쟁 빈도 증가는 초크포인트 위협 인식을 높이는 것과 상관하지만, 유가에 대한 직접적인 급등 효과와는 제한적으로 공변한다.\n[가설] H1: 바브엘만데브 지역의 ACLED 분쟁 이벤트 월별 건수 증가가 Brent 유가(USD/배럴)의 급격한 상승과 상관하지만, 그 강도는 외부 완충 요인(전략비축유 방출, 대체 운송로 활용)의 존재에 따라 약화된다.\n[근거] 바브엘만데브 초크포인트를 통한 원유 운송량은 하루 6.2 Mbpd로 글로벌 해상 운송의 약 9%를 차지한다 [EIA International Energy Statistics 2024]. 그러나 브렌트유 가격은 2022년 99.05달러에서 2024년 80.22달러로 하락했으며, 최근 상승분(+91.7%)은 2024년 2월 28일 이란전 개전 후 중동 위협 불확실성 증대에 기인한 것으로 보인다 [CSIS, FRED].\n[한계] 본 분석은 유가 변동에 영향을 미치는 다수의 거시경제적 요인(글로벌 수요 감소, OPEC+ 생산 정책 등)을 통제하지 못하며, 후티 공격 빈도와 유가 간의 시차를 고려한 정량적 인과 관계를 확증하지 못한다. 또한, 유가 상승 제한이 '차단 성공' 사례에만 집중될 경우 선택편향(생존편향)의 위험이 있다.\n[경쟁설명]\n자원무기화 (Resource Weaponization):\n  예측: 에너지 수입 의존도 증가 시 공급 차단 위협에 대한 피의존국 정치적 양보 빈도 증가 및 에너지 가격 상승.\n  실측: Brent Crude Oil Price: 80.22 USD/barrel (2024-01-01, 최근 추세 +91.7%, 사전계산) [FRED]. 에너지(HS 27) 공급망 HHI: 6689 (독과점, 사전계산) [UN Comtrade].\n  판정: 열세 — 예측 '의존도 증가 시 가격 상승' vs 실측 '2022년 대비 유가 하락, 최근 상승은 이란전 영향' — 직접적 공격과 유가 상승 간의 일관된 방향 불일치.\n회색지대 전략 (Gray Zone Strategy):\n  예측: 회색지대 행동 강도 증가 시 목표국의 정책 양보 빈도 증가 및 경제적 비용 부과.\n  실측: ACLED bab_el_mandeb 지역 분쟁 7955건, 평균 심각도 35.2/100 [ACLED]. HIIK 분쟁강도(1~5): Sudan Civil War 강도5(전쟁, 2024) [Gray Zone 예측: 강도1~3 저강도 지속 / Hybrid 예측: 강도3~4 위기·제한전].\n  판정: 열세 — 예측 '행동 강도 증가 시 정책 양보 증가' vs 실측 '유가 상승 제한적' — 직접적인 경제적 비용 부과 효과는 약하게 관찰되며, 정책 양보에 대한 직접적인 실측 데이터 부재.\n▶ 편차 비교 (사실): 자원무기화 예측편차는 유가 하락 추세와 비교 시 방향 불일치, 회색지대 전략은 유가 상승 제한적 관찰.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 직접 판정한다. (쟁점 예: 자원무기화 이론은 장기적인 의존도 변화와 정책 양보를 예측하는 반면, 회색지대 전략은 단기적인 행동과 즉각적인 비용 부과에 초점을 맞추므로, 측정 metric이 달라 직접 비교에 주의가 필요하다.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 추가적으로 후티 공격 빈도(예: ACLED 이벤트 건수)와 글로벌 원유 재고량, 전략비축유 방출량, 주요 해운사들의 우회 항로 선택 비율 등 완충 메커니즘 지표의 시계열 데이터를 분석하여 유가에 미치는 영향을 정량적으로 검증해야 한다.\n[문헌공백] 기존 `SLOC 통제 이론`은 초크포인트 위협이 운임·유가를 단기 급등시킨다고 예측하지만, `문헌 공백 원장`의 '반례 클러스터'에 따르면 후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025년 사례는 미국 전략비축유 방출, OPEC+ 여유 생산능력, 우회 항로 흡수와 같은 완충 요인들이 위협의 가격 전이를 차단했음을 보여준다. 따라서 초크포인트 위협이 자동으로 가격 충격으로 이어지지 않는 `예측 임계` 조건을 정량적으로 식별하고, 완충 메커니즘이 작동하는 구체적인 조건을 밝히는 연구가 부재하다.\n\n---\n\n## [탐색적] 이란전 개전과 중동 내 이란 대리 세력의 활동 증가는 유가 불안정성을 높이는 것과 상관한다.\n데이터기반: 고 | 이론근거: 고 | 연쇄강도: HIGH\n\n[통념] 중동 지역의 군사적 긴장 고조는 즉각적으로 유가 상승을 유발하며, 이는 지역 내 주요 행위자들의 직접적인 군사 행동에 의해 주로 결정될 것이다.\n[비자명기여] 이 통념은 이란과 같은 국가 행위자의 직접적인 군사 행동 외에, 헤즈볼라, 후티, 이라크 PMF 등 이란의 대리 세력(proxy network) 재가동 위험이 유가 불안정성 증대에 어떻게 기여하는지에 대한 메커니즘을 정교화한다. 특히, `CSIS 글로벌 테러리즘 위협 평가 2026` 보고서의 '이란전이 중동 위협 불확실성 급확대' 주장은 이란이 실존적 위협에 직면할 경우 대리 세력을 통한 회색지대 공격이 유가에 미치는 영향이 증폭될 수 있음을 시사한다. 이는 `자원무기화` 이론이 상정하는 단일 국가 행위자를 넘어선 `복합 위협` 환경에서의 에너지 가격 변동 요인을 추가한다.\n[관찰] 2026년 2월 28일 미국-이스라엘 대(對)이란 전쟁 개전 이후 중동 위협 불확실성이 급확대되었다 [CSIS]. 이란의 대리 세력인 헤즈볼라, 후티, 이라크 PMF의 재가동 위험이 상승한 것과 함께, 브렌트유 가격의 최근 추세가 +91.7% 상승하는 것과 공변한다 [FRED].\n[주장] (등급: 상관) 이란전 개전과 그에 따른 중동 내 이란 대리 세력의 활동 증대 가능성은 글로벌 에너지 시장의 불안정성을 높이는 것과 상관한다.\n[가설] H1: 이란-미국/이스라엘 간의 군사적 긴장 고조(예: 이란전 개전)가 중동 지역 ACLED 분쟁 이벤트 건수를 증가시키고, 이는 Brent 유가(USD/배럴)의 변동성 증가와 통계적으로 유의하게 상관한다.\n[근거] 2026년 2월 28일 미국-이스라엘 대 이란 전쟁 개전은 이란의 실존적 위협에 직면하게 했으며, 이는 과거 자제하던 미국 본토 테러 공격 가능성 및 헤즈볼라, 후티, 이라크 PMF 등 이란의 대리 세력 재가동 위험을 높였다 [CSIS]. 이 시점 전후로 브렌트유 가격의 최근 추세가 +91.7% 상승하는 것이 관찰된다 [FRED].\n[한계] 본 분석은 이란전 개전이라는 단일 사건과 유가 변동 간의 상관성을 제시하며, 유가 변동에 영향을 미치는 다른 거시경제적 요인(예: 글로벌 경기 침체, 주요 산유국의 생산량 조절)을 충분히 통제하지 못한다. 또한, 이란 대리 세력의 활동 증가가 유가에 미치는 영향에 대한 정량적 증거가 부족하며, '이란전'이라는 특정 시점의 사건에 과도하게 의존하여 일반화하기 어렵다는 선택편향(생존편향)의 위험이 있다.\n[경쟁설명]\n자원무기화 (Resource Weaponization):\n  예측: 에너지·원자재 수입 의존도 증가 시 공급 차단 위협에 대한 피의존국 정치적 양보 빈도 증가 및 에너지 가격 상승.\n  실측: Brent Crude Oil Price: 80.22 USD/barrel (2024-01-01, 최근 추세 +91.7%, 사전계산) [FRED]. 에너지(HS 27) 공급망 HHI: 6689 (독과점, 사전계산) [UN Comtrade].\n  판정: 우세 — 예측 '공급 위협 시 가격 상승' vs 실측 '최근 유가 +91.7% 상승' — 방향 일치.\n상호의존의 무기화 (Weaponized Interdependence):\n  예측: 공급망 집중도 증가 시 피의존국 외교 양보 빈도 증가 및 정책 변화율.\n  실측: 에너지(HS 27) 공급망 HHI: 6689 (독과점, 사전계산) [UN Comtrade]. 앵커(IV 전제조건) — 공급망 HHI 독과점 임계(美 DOJ 2500): 실측 6689.0 vs 임계 2500 (편차 +4189.0, 사전계산) → 전제 충족: 초과 → 비대칭 의존 구조 성립, Farrell&Newman 레버리지 예측 적용 가능.\n  판정: 우세 — 예측 '공급망 집중 시 외교 양보/정책 변화' vs 실측 'HHI 임계 초과, 이란전 개전 후 유가 상승' — 비대칭 의존 구조가 유가 불안정성에 기여할 가능성을 시사.\n▶ 편차 비교 (사실): 자원무기화 예측편차는 유가 상승과 방향 일치, 상호의존의 무기화는 HHI 임계 초과로 비대칭 의존 구조 성립.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 직접 판정한다. (쟁점 예: 자원무기화는 직접적인 공급 위협의 가격 전이를 설명하는 반면, 상호의존의 무기화는 근본적인 공급망 구조가 위협의 효과를 증폭시키는 방식을 설명한다. 두 이론은 상호 배타적이라기보다는 상호 보완적일 수 있다.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 이란 대리 세력(헤즈볼라, 후티, PMF)의 특정 공격 사건(ACLED)과 유가 변동(WTI, Brent) 간의 시계열 분석을 통해 구체적인 인과 경로와 전이 속도를 측정해야 한다. 또한, 이란전 개전 이후 중동 지역의 해상 보험료 변화와 선박 운항 경로 변화 데이터를 함께 분석하여 위험 인식이 유가에 미치는 영향을 정량화해야 한다.\n[문헌공백] `문헌 공백 원장`의 '교차도메인 밀도' 섹터 분석에 따르면, 에너지 섹터는 라이브러리 주장 건수가 1건에 불과하여 희박 섹터로 분류된다. 반면 회색지대와 해양 섹터는 주장 건수가 많다. 이는 기존 문헌이 '에너지' 도메인에 대한 연구가 상대적으로 적음을 의미하며, 특히 이란전 개전과 같은 `군사적·정치적 위협`이 `회색지대 행위자`를 통해 `에너지 시장`에 미치는 `교차도메인` 인과 경로에 대한 통합적이고 심층적인 분석이 부족하다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 바브엘만데브 지역의 ACLED 분쟁 이벤트 월별 건수 증가가 Brent 유가(USD/배럴)의 급격한 상승과 상관하지만, 그 강도는 외부 완충 요인(전략비축유 방출, 대체 운송로 활용)의 존재에 따라 약화된다. → 미식별 — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "바브엘만데브 지역의 ACLED 분쟁 이벤트 월별 건수 증가가 Brent 유가(USD/배럴)의 급격한 상승과 상관하지만, 그 강도는 외부 완충 요인(전략비축유 방출, 대체 운송로 활용)의 존재에 따라 약화된다.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "바브엘만데브 지역의 ACLED 분쟁 이벤트 월별 건수 증가가 Brent 유가(USD/배럴)의 급격한 상승과 상관하지만, 그 강도는 외부 완충 요인(전략비축유 방출, 대체 운송로 활용)의 존재에 따라 약화된다.",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": "BZ=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.9791) · 극단P90(p=0.7487) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.9791,
+        "granger_q": 0.9791,
+        "f_statistic": 0.11,
+        "best_lag": 4,
+        "differenced": true,
+        "n_obs": 461,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.11,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.9791,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": 0.7487,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.9791,
+                "granger_q": 0.9791,
+                "f_statistic": 0.11,
+                "best_lag": 4,
+                "n_obs": 461
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 이란-미국/이스라엘 간의 군사적 긴장 고조(예: 이란전 개전)가 중동 지역 ACLED 분쟁 이벤트 건수를 → 키고, 이는 Brent 유가(USD/배럴)의 변동성 — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "이란-미국/이스라엘 간의 군사적 긴장 고조(예: 이란전 개전)가 중동 지역 ACLED 분쟁 이벤트 건수를 증가시키고, 이는 Brent 유가(USD/배럴)의 변동성 증가와 통계적으로 유의하게 상관한다.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "이란-미국/이스라엘 간의 군사적 긴장 고조(예: 이란전 개전)가 중동 지역 ACLED 분쟁 이벤트 건수를",
+        "dependent_var": "키고, 이는 Brent 유가(USD/배럴)의 변동성",
+        "control_vars": [],
+        "region_code": "hormuz",
+        "dependent_region": null,
+        "ticker": "BZ=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.9002,
+        "granger_q": 0.9791,
+        "f_statistic": 0.016,
+        "best_lag": 1,
+        "differenced": false,
+        "n_obs": 462,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.016,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.9002,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": false,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.9002,
+                "granger_q": 0.9791,
+                "f_statistic": 0.016,
+                "best_lag": 1,
+                "n_obs": 462
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": 13
+}

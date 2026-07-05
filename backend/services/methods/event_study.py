@@ -75,6 +75,11 @@ def from_spec(spec) -> MethodResult:
     spec은 hypothesis_verifier가 완성한 상태 (ticker, h1, h0 등 채워진 후).
     """
     ticker = getattr(spec, "ticker", None) or ""
+    # ticker 없이는 종속변수 시계열을 로드할 수 없어 이벤트스터디가 성립하지 않는다.
+    # verifier가 매핑 실패 spec을 미리 걸러내지만, 다른 호출자 대비 이중 방어 —
+    # 껍데기(effect=None) MethodResult를 만들지 않고 assumptions_met=False로 정직 반환.
+    if not ticker:
+        return _no_ticker_result()
     h1_text = f"{getattr(spec, 'h1', '')} {getattr(spec, 'h0', '')}"
 
     # ── 1. 이벤트 날짜 식별 ────────────────────────────────────────────────
@@ -389,6 +394,19 @@ def _no_date_result(ticker: str) -> MethodResult:
         reachable_rung=RUNG_QUASI_EXP,
         actual_rung=RUNG_DESCRIPTIVE,
         native_stats={"ticker": ticker},
+    )
+
+
+def _no_ticker_result() -> MethodResult:
+    """종속변수 ticker 미식별 → 이벤트스터디 성립 불가, assumptions_met=False."""
+    return MethodResult(
+        method="event_study",
+        signature="SINGLE_SHOCK",
+        assumptions_met=False,
+        assumption_caveat="종속변수 ticker 미식별 — 시장 시계열 로드 불가로 이벤트스터디 성립 안 함",
+        reachable_rung=RUNG_QUASI_EXP,
+        actual_rung=RUNG_DESCRIPTIVE,
+        native_stats={"ticker": ""},
     )
 
 

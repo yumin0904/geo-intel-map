@@ -1,0 +1,418 @@
+{
+  "schema_version": "0.1",
+  "id": "nk-provocation-defense-stocks",
+  "generated_at": "2026-07-05T09:32:35Z",
+  "engine_version": "9.19.0",
+  "query": "북한 미사일 도발 빈도 증가가 한국 방위산업 주가에 미치는 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula"
+  ],
+  "sectors": [
+    "indo_pacific"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[INSS] 시진핑 방북 가능성 및 북중 정상회담의 전략적 함의 (이슈브리프 848호)",
+    "[War on the Rocks] 어둠 속 지휘: 잠수함 지휘관이 불확실성 하에서 생각하는 법"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 2,
+    "sipri_countries": 3,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 4,
+    "vdem_entries": 2,
+    "cow_wars": 2,
+    "ifans_pubs": 5,
+    "theory_cmp_chars": 3063,
+    "fred": 6,
+    "wbk": 2,
+    "polity5": 2,
+    "itu": 2,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 6
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)"
+  },
+  "result_md": "## 분석 보고서: 북한 미사일 도발 빈도 증가가 한국 방위산업 주가에 미치는 영향\n\n---\n\n### 인사이트 카드 1: 북한 도발과 한국 금융 시장의 민감성\n\n[헤드라인] `[탐색적]` 북한의 한반도 긴장 유발 활동은 원/달러 환율 상승 및 KOSPI 하락과 공변하는 경향이 관찰된다.\n데이터기반: 고 | 이론근거: 고 | 연쇄강도: HIGH\n\n[통념] 북한의 미사일 도발은 한국 경제에 부정적인 영향을 미치며, 특히 금융 시장 불안정을 야기한다.\n\n[비자명기여] 이 통념은 일반적으로 알려져 있으나, 지정학적 충격이 항상 즉각적으로 시장 전이되지 않는다는 점([문헌 공백 원장]의 〈Granger 인과분석〉 반례)을 고려할 때, 한반도 긴장과 한국 금융 시장 지표 간의 상관관계가 특정 임계값 또는 조건(예: 도발의 강도, 핵 위협 수위)에서 비선형적으로 증폭되거나 감쇠하는 범위 조건이 존재할 가능성을 제시한다.\n↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 범위조건으로 쓰라]\n• 〈Granger 인과분석 (Granger Causality)〉 예측 임계: 지정학 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화 (p<0.05) → 반례: 한반도 긴장 → KRW 환율 인과는 VERIFIED(p=0.048)이지만 대만해협 → TSMC는 PARTIAL(p=0.067…\n\n[관찰]\n*   ACLED `korean_peninsula` 지역에서는 총 4758건의 `conflict` 유형 이벤트가 발생했으며, 평균 심각도는 15.9/100이다.\n*   HIIK Conflict Barometer에 따르면 2024년 한반도 긴장은 강도 2 [Non-violent Crisis]로 분류된다.\n*   Cascade 인과 룰은 \"한반도 긴장 → 원/달러 환율 상승(원화 약세)\" 및 \"한반도 긴장 → KOSPI 하락\"이 룰매칭강도 0.78로 발화하고 있음을 보여준다.\n\n[주장] (등급: 상관) ACLED가 기록하는 한반도 분쟁 이벤트의 빈도 증가는 원/달러 환율 상승 및 KOSPI 하락과 공변한다.\n\n[가설] H1: ACLED korean_peninsula conflict 이벤트 월별 건수가 증가할 때 원/달러 환율(KRW/USD)이 통계적으로 유의하게 상승한다.\n\n[근거]\n*   ACLED `korean_peninsula` 지역 총 4758건의 `conflict` 이벤트 기록.\n*   Cascade 인과 룰: \"한반도 긴장 → 원/달러 환율 상승(원화 약세)\" 룰매칭강도 0.78 (1단계).\n*   Cascade 인과 룰: \"한반도 긴장 → KOSPI 하락\" 룰매칭강도 0.78 (1단계).\n\n[한계]\n*   `ACLED conflict` 이벤트가 북한의 '미사일 도발'만을 특정하지 않고 한반도 전반의 긴장을 포괄하므로, 특정 유형의 도발에 대한 시장 반응 분석에는 한계가 있다.\n*   [선택편향(생존편향)]: Cascade 룰 발화는 관찰된 패턴에 기반하므로, 규칙에 포착되지 않은 다른 시장 반응이나 교란 변수의 영향을 간과할 수 있다.\n\n[경쟁설명]\n대안 이론 A (동맹 이론): 동맹 약속 강도 변화에 따른 방기/연루 위험이 시장 불안정으로 이어질 수 있다.\n예측: 동맹 약속 강도 증가 시 방기 위험 감소, 연루 위험 증가.\n실측: 미국 ↔ 한국은 방위조약(Defense Pact)으로 묶여 있으며, 미국은 한국에 F-35A를 공급(2022년 TIV 520.0mn)하는 등 약속을 이행하고 있다. [UNVERIFIED] 약속 강도 변화량 부재.\n판정: 열세 — 예측 '약속 강도 증가 시 연루 위험 증가' vs 실측 '미-한 동맹 유지 및 무기 공급' — 동맹 약속 강도가 일정하게 유지되고 있지만, 시장 불안정은 지속적으로 관찰되어 약속 강도만으로 연루 위험을 설명하기에는 한계가 있다. (앵커: [앵커 미제공])\n\n대안 이론 B (공격적 현실주의): 권력 격차 감소 시 강대국 간 갈등 빈도 증가. 한반도 내 강대국과 역내 행위자 간 권력 격차 변화는 군비 경쟁을 유발하고 갈등 빈도를 증가시켜 시장 불안정을 초래할 수 있다.\n예측: 권력 격차 감소 시 강대국 간 갈등 빈도 증가.\n실측: PRK 핵탄두 30기 (2023) vs KOR 국방비 GDP 2.8% (2023), USA 핵탄두 3748기 (2023), China 핵탄두 410기 (2023). [UNVERIFIED] 권력 격차 변화량 부재.\n판정: 우세 — 예측 '권력 격차 유지 시 군비 경쟁 지속' vs 실측 'PRK 핵 능력 유지, KOR 방위비 유지' — PRK의 군사력 강화에도 불구하고 KOR의 방위비는 GDP 2.8%로 유지되는 등 강대국 권력 격차 감소와 갈등 빈도 증가 예측이 시장 불안정을 설명하는 데 더 부합한다. (앵커: [앵커 미제공])\n\n▶ 편차 비교 (사실): 동맹 이론은 약속 강도 변화에 대한 실측이 부족하며, 공격적 현실주의는 PRK의 군사력 증강과 KOR의 방위비 유지라는 실측과 더 잘 부합한다.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: 동맹 이론은 동맹의 내부 역학에 초점을 맞추는 반면, 공격적 현실주의는 국가 간 상대적 힘의 분포를 강조하여 시장 반응을 설명하는 데 더 거시적인 관점을 제공한다.)\n\n[검증포인트]\n*   북한 미사일 도발의 구체적인 유형(ICBM, SLBM, 전술핵)별 빈도 데이터 (ACLED, NTI 미사일 데이터베이스).\n*   각 도발 이벤트 발생 전후 24시간, 48시간, 72시간 동안의 KOSPI 및 원/달러 환율 변동률 데이터.\n*   확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다.\n\n[문헌공백] 기존 문헌은 한반도 긴장과 시장 지표 간의 상관관계를 다루지만, [문헌 공백 원장]의 〈Granger 인과분석〉 반례에서 보듯이 지정학적 충격이 항상 즉각적으로 시장에 전이되지 않는다는 점에서, 북한의 미사일 도발 빈도 증가가 특정 임계값(예: 핵실험, ICBM 발사 성공)을 넘을 때 시장 반응이 비선형적으로 증폭되는 '범위 조건'에 대한 연구가 부족하다. 본 분석은 이러한 범위 조건의 존재 가능성을 탐색한다.\n\n---\n\n### 인사이트 카드 2: 북한 위협과 한국 방위산업의 구조적 동인\n\n[헤드라인] `[탐색적]` 북한의 핵·미사일 능력 고도화는 한국의 지속적인 방위비 지출 및 역내 방산 수출 기회 증가와 동반된다.\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 북한의 군사적 위협 증가는 한국의 안보 불안정을 심화시키며, 이는 방위비 증가와 국내 방위산업 강화로 이어진다.\n\n[비자명기여] 통념은 위협 증가가 국내 방위비 증가로 이어진다고 보지만, 본 분석은 북한의 핵·미사일 능력 고도화가 단순히 국내 방위비 지출을 유지시키는 것을 넘어, 한국 방위산업의 기술력 및 생산 능력에 대한 역내(특히 동유럽, 동남아시아) 수요를 자극하여 수출 기회를 확대하는 '교차도메인' 효과를 제시한다. 이는 [문헌 공백 원장]의 '교차도메인 밀도'에서 에너지 섹터가 희박한 것과 유사하게, 안보 위협이 특정 시장(방산 수출)에 미치는 영향에 대한 심층 연구가 부족함을 시사한다.\n↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 교차도메인 밀도로 쓰라]\n• 〈교차도메인 밀도〉 분포: 인도태평양 6건, 회색지대 3건, 해양 2건, 에너지 1건 → 인도태평양(포화) ↔ 에너지(상대 희박)을 잇는 교차도메인 인과 경로가 단일도메인 문헌의 사각지대일 수 있음.\n\n[관찰]\n*   PRK는 핵탄두 30기(2023)를 보유하며 화성-17·18형 ICBM 고도화 및 전술핵 다종화를 추진하고 있다.\n*   KOR은 2019년부터 2023년까지 GDP 대비 2.8%의 방위비를 지속적으로 지출하고 있다.\n*   한국은 2022년 폴란드에 K2 흑표 전차 180대(TIV 2100.0mn)와 K9 천둥 자주포 212문(TIV 2100.0mn), 2023년 폴란드에 FA-50 항공기 12대(TIV 890.0mn)를 수출하는 등 활발한 방산 수출 활동을 보였다. 호주에도 K9 자주포 30문(TIV 340.0mn)을 수출했다.\n\n[주장] (등급: 기술적) 북한의 핵·미사일 능력 고도화는 한국의 GDP 대비 방위비 지출을 지속적으로 유지하는 현상과 동반되며, 이는 한국 방위산업의 역내 수출 기회 증가와 함께 관찰된다.\n\n[가설] 현 데이터로 검증 가능한 정량 가설 없음.\n\n[근거]\n*   PRK 핵탄두 보유량 30기 (2023, Our World in Data).\n*   KOR 국방비 추이 2019-2023년 GDP 2.8% (SIPRI).\n*   KOR 방산 수출 (SIPRI Arms Transfers Database): 2022년 폴란드 K2/K9, 2023년 폴란드 FA-50, 2022년 호주 K9.\n\n[한계]\n*   '북한 미사일 도발 빈도 증가'와 '핵·미사일 능력 고도화'는 유사하지만 정확히 일치하지 않는 개념이다.\n*   한국 방위산업 주가에 대한 직접적인 측정 지표가 없어 정량적 H1 검증이 불가능하다.\n*   방산 수출은 복합적인 요인(가격 경쟁력, 기술력, 외교 관계 등)에 의해 결정되므로, 북한 위협만을 유일한 원인으로 단정하기 어렵다.\n\n[경쟁설명]\n대안 이론 A (동맹 비용분담 이론): 패권국(미국) 방위비 증가 시 동맹 소국(한국)의 방위비 비율 감소(무임승차). 북한 위협 증가 시에도 동맹 내에서 한국의 방위비 지출은 감소할 수 있다.\n예측: 패권국 방위비 GDP 비율 증가 시 동맹 소국의 GDP 대비 방위비 비율 통계적 유의 감소.\n실측: 한국의 GDP 대비 방위비 비율은 2.8% (2023). 동맹 최저 방위비(NATO 2% GDP 가이드라인) 실측은 2.8% vs 임계 2.0% (편차 +0.8%, 사전계산).\n판정: 열세 — 예측 '패권국 방위비 증가 시 소국 방위비 감소' vs 실측 '한국 방위비 2.8% 유지 (2% 가이드라인 상회)' — 한국의 방위비가 2% 이상으로 꾸준히 유지되는 것은 무임승차 예측과 일치하지 않는다. (앵커: 동맹 최저 방위비: 실측 2.8% vs 임계 2.0% (편차 +0.8%, 사전계산), 전제 미충족: 최저 동맹이 2% 미만 → 무임승차 징후, Olson-Zeckhauser 예측 부합 / 2%↑면 반례)\n\n대안 이론 B (공격적 현실주의): 국가는 생존을 위해 권력을 극대화하려 하며, 이는 군비 증강으로 이어진다. 북한의 위협 고도화는 한국의 군비 경쟁 강도를 높이고 방위산업을 강화시킨다.\n예측: 권력 격차 감소 시 강대국 간 갈등 빈도 증가.\n실측: PRK 핵탄두 30기 (2023), KOR 국방비 GDP 2.8% (2023).\n판정: 우세 — 예측 '위협 증가 시 군비 증강' vs 실측 'PRK 핵 능력 고도화, KOR 방위비 2.8% 유지' — 북한의 위협 고도화에 맞서 한국이 GDP 대비 2.8%의 방위비를 유지하는 것은 권력 극대화 및 안보 추구라는 공격적 현실주의 예측과 부합한다. (앵커: [앵커 미제공])\n\n▶ 편차 비교 (사실): 동맹 비용분담 이론은 한국의 방위비 지출이 2% 가이드라인을 상회하여 예측과 불일치하는 반면, 공격적 현실주의는 북한의 위협과 한국의 방위비 유지 간의 관계를 더 잘 설명한다.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: 동맹 비용분담 이론은 동맹 내부의 경제적 합리성에 초점을 맞추는 반면, 공격적 현실주의는 국가의 생존이라는 더 근본적인 안보 동기를 강조하여 한국의 일관된 방위비 지출을 설명할 수 있다.)\n\n[검증포인트]\n*   북한의 핵·미사일 기술 발전 단계별(예: 핵실험, ICBM 발사 성공) 한국 방위산업 기업들의 주가 및 수출 계약 변화 추이.\n*   한국의 방위산업 기술력 및 생산 능력에 대한 국제 시장의 평가 지표 (예: 국제 방산 박람회 계약 규모, 기술 수출 계약 건수).\n*   확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다.\n\n[문헌공백] 기존 문헌은 국가의 안보 위협이 국내 방위비 지출에 미치는 영향을 주로 다루지만, [문헌 공백 원장]의 '③ 교차도메인 밀도'가 보여주듯이 '안보 위협' 도메인(인도태평양)이 '방위산업 수출' 도메인(경제)에 미치는 '교차도메인' 인과 경로에 대한 연구는 상대적으로 희박하다. 본 분석은 북한 위협이 한국 방위산업의 대외 경쟁력을 간접적으로 강화하는 메커니즘을 탐색하여 이러한 문헌 공백을 메우는 데 기여한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] ACLED korean_peninsula conflict 이벤트 월별 건수 → 원/달러 환율(KRW/USD) 경향성 (p=0.064)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "ACLED korean_peninsula conflict 이벤트 월별 건수가 증가할 때 원/달러 환율(KRW/USD)이 통계적으로 유의하게 상승한다.",
+        "h0": "ACLED korean_peninsula conflict 이벤트 월별 건수가 증가할 때 원/달러 환율(KRW/USD)이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "ACLED korean_peninsula conflict 이벤트 월별 건수",
+        "dependent_var": "원/달러 환율(KRW/USD)",
+        "control_vars": [],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "KRW=X",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PARTIAL",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0637,
+        "granger_q": null,
+        "f_statistic": 2.23,
+        "best_lag": 4,
+        "differenced": true,
+        "n_obs": 465,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.23,
+              "effect_size_label": "작음",
+              "significance": 0.0637,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 75,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0637,
+                "granger_q": null,
+                "f_statistic": 2.23,
+                "best_lag": 4,
+                "n_obs": 465
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [가설없음] 검증 가능한 정량 가설 없음 — 검정 생략, 서술·이론 근거만",
+        "confidence_word": "검정불가",
+        "routing_method": "no_quantitative_hypothesis",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "필요 데이터 확보 후 H1 재추출"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "현 데이터로 검증 가능한 정량 가설 없음.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "현 데이터로 검증 가능한 정량 가설 없음.",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 대상 아님 — 추출기가 '검증 가능한 정량 가설 없음'을 선언. 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "정량 가설 없음 선언 — 검정 미실행",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "현 데이터로 검증 가능한 정량 가설 없음.",
+                "region": "korean_peninsula",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] South Korea: POLICE vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Hangang, Kangwon-do, South Korea: 미상 세력 vs JUDGE (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Hangang, Kangwon-do, South Korea: 미상 세력 vs SOUTH KOREA (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gwangju, Kwangju-gwangyoksi, South Korea: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Nodeul, Ch'ungch'ong-bukto, South Korea: JUDGE vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "박윤주 외교부 제1차관, 한미 JFS 이행 협의를 위한 美 국무부‧NSC 인사 면담 결과",
+                        "date": "2026-05-20",
+                        "creator": "북미국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제11차 NPT 평가회의 계기 북핵 부대행사 개최",
+                        "date": "2026-05-06",
+                        "creator": "국제안보국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "박윤주 외교부 제1차관, 한미 JFS 이행 협의를 위한 美 국무부‧NSC 인사 면담 결과",
+                        "date": "2026-05-20",
+                        "creator": "북미국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제11차 NPT 평가회의 계기 북핵 부대행사 개최",
+                        "date": "2026-05-06",
+                        "creator": "국제안보국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "임갑수 한미 원자력협력 정부대표, 「제2차 원자력 에너지 정상회의」 참석",
+                        "date": "2026-04-30",
+                        "creator": "국제기구·원자력국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "정연두 외교전략정보본부장, James Heller 주한미국대사대리 접견",
+                        "date": "2026-04-30",
+                        "creator": "한반도정책국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부, 한미원자력협력 범정부협의체(TF) 출범",
+                        "date": "2026-04-27",
+                        "creator": "국제기구·원자력국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "What Draws Trump to Kim Jong Un? The Answer Is Personal",
+                        "date": "2026-07-01",
+                        "source_db": "38North",
+                        "description": "Why is the president of the United States courting a meeting with North Korea? Donald Trump has ... The post What Draws "
+                      },
+                      {
+                        "title": "Opening of New Road Link With Russia Unlikely in Near-Term",
+                        "date": "2026-06-30",
+                        "source_db": "38North",
+                        "description": "While the new road bridge between Russia and North Korea targeted a mid-June opening, the ... The post Opening of New Ro"
+                      },
+                      {
+                        "title": "Vietnam’s Potential Economic Lessons for North Korea",
+                        "date": "2026-06-29",
+                        "source_db": "38North",
+                        "description": "In the last twelve months, Vietnam has met with North Korea (Democratic People’s Republic of ... The post Vietnam’s Pote"
+                      },
+                      {
+                        "title": "Why North Korea Got the Bomb (And Iran Did Not, for Now)",
+                        "date": "2026-06-22",
+                        "source_db": "38North",
+                        "description": "Why did North Korea get nuclear weapons when other states with similar nuclear ambitions like ... The post Why North Kor"
+                      },
+                      {
+                        "title": "To stop Chinese dual-use battery dominance, the United States and South Korea need to team up",
+                        "date": "Thu, 11 Jun 2026 17:36:05 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Should China establish a global monopoly across battery supply chains, the military, strategic, and commercial implic"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 + NK 전문소스 4건 + Atlantic Council/ACA 1건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] South Korea: POLICE vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Hangang, Kangwon-do, South Korea: 미상 세력 vs JUDGE (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Hangang, Kangwon-do, South Korea: 미상 세력 vs SOUTH KOREA (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gwangju, Kwangju-gwangyoksi, South Korea: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Nodeul, Ch'ungch'ong-bukto, South Korea: JUDGE vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-17",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Remarks on Rainforest Conservation Efforts in Manaus, Brazil",
+                        "date": "2024-11-17",
+                        "source_db": "CPD (White House)",
+                        "description": "The United States would relieve other countries of debts owed to us if they commit to protecting their own forest. These"
+                      },
+                      {
+                        "title": "Remarks in a Meeting With President Xi Jinping of China in Lima, Peru",
+                        "date": "2024-11-16",
+                        "source_db": "CPD (White House)",
+                        "description": "The United States has recently concluded its elections. China s goal of a stable, healthy, and sustainable China-U.S. re"
+                      },
+                      {
+                        "title": "Remarks Prior to a Meeting With President Yoon Suk Yeol of South Korea and Prime Minister Shigeru Ishiba of Japan in Lima, Peru",
+                        "date": "2024-11-15",
+                        "source_db": "CPD (White House)",
+                        "description": "I am pleased that we are delivering on the agreement today with President Biden and with new Prime Minister Ishiba. Toda"
+                      }
+                    ],
+                    "evidence_note": "CPD 대통령 성명 3건(★★★★★) — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": 11
+}

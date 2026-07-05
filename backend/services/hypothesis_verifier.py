@@ -920,7 +920,17 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         from services.methods.process_tracing import process_tracing_adapt as _pt_adapt  # [9-Q 우선순위 3]
         from services.methods.grader import grade as triangulate
 
+        # 검정을 실제로 수행하지 않은 상태(매핑 실패·방법 미구현·가설 없음)는 어댑터를
+        # 호출하지 않는다. 호출하면 event_study 등이 ticker 없는 spec에 effect=None 껍데기
+        # MethodResult를 만들어 소비자(export_insight 등)가 '결과 있음'으로 오독한다.
+        # PENDING이면 method_result는 검정 결과를 담지 않는다 (2026-07-05 엔진 위원회 C-4
+        # — method_result null 불변식). skipped 마커로 '검정 안 함'을 명시적으로 남긴다.
+        _NO_TEST_ROUTES = {_ROUTE_PENDING_METHOD, _ROUTE_PENDING_A, _ROUTE_NO_HYPOTHESIS}
+
         for s in results:
+            if getattr(s, "routing_method", "") in _NO_TEST_ROUTES:
+                s.method_result = {"skipped": True, "skip_reason": s.routing_method}
+                continue
             # 시그니처 결정: 원본 쿼리 + h1 + h0 합산 — 원본에만 있는 "이벤트스터디", "패널 분석" 등 보완
             query_text = f"{getattr(s, 'source_query', '')} {s.h1} {s.h0}"
             lt = getattr(s, "linear_testable", True)

@@ -1,0 +1,408 @@
+{
+  "schema_version": "0.1",
+  "id": "taiwan-tension-semiconductor",
+  "generated_at": "2026-07-05T09:33:12Z",
+  "engine_version": "9.19.0",
+  "query": "대만해협 군사 긴장 고조가 반도체 지수 변동에 미치는 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "taiwan_strait"
+  ],
+  "sectors": [
+    "maritime",
+    "techno",
+    "indo_pacific"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 2,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 1,
+    "csis_incidents": 15,
+    "sipri_arms": 3,
+    "vdem_entries": 0,
+    "cow_wars": 0,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 2836,
+    "fred": 9,
+    "wbk": 2,
+    "polity5": 0,
+    "itu": 5,
+    "hiik": 2,
+    "semi": 50,
+    "owid": 6
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.8236) · 극단P90(p=0.3834) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트)."
+  },
+  "result_md": "[탐색적] 대만해협의 군사적 긴장 고조는 개별 기업을 넘어 반도체 섹터 전체 지수 하락과 직접 공변하는 경향\n데이터기반: 고 | 이론근거: 고 | 연쇄강도: HIGH\n\n[통념] 대만해협의 군사적 긴장은 주로 TSMC와 같은 개별 기업의 주가에 영향을 미치며, 그 영향은 공급망을 통해 점진적으로 반도체 섹터 전체로 확산될 것이다.\n[비자명기여] 이 분석은 대만해협의 군사적 긴장이 개별 기업 주가 변동을 경유하는 간접적이고 느린 경로 외에, 반도체 섹터 전체(SOXX)로 직접적이고 빠르게 충격이 전달되는 '단락(short-circuit)' 경로가 존재하며, 이는 기존 문헌에서 '지정학 충격이 항상 즉각 시장 전이되지 않음'을 지적한 〈Granger 인과분석〉의 예측 임계(p<0.05)를 정교화한다. 즉, 특정 '허브 의존성(hub dependence)'이 높은 섹터에서는 임계값을 넘어 즉각적인 시장 전이가 관찰될 수 있는 범위조건을 제시한다.\n[관찰] 대만해협에서 ACLED 분쟁 이벤트 발생 후 1일 내 반도체 ETF(SOXX)가 극단 이벤트 시 -0.14%, 일반 이벤트 시 +0.03%의 변화를 보였으며, 이는 총 -0.17%의 실측 편차(Δ=-0.17%)를 나타낸다.\n[주장] (등급: 상관) 대만해협 내 군사적 긴장 고조는 개별 기업 주가를 경유하지 않고 반도체 섹터 전체의 지수 하락과 직접적으로 공변하며, 이는 시장이 대만 의존도 리스크를 빠르게 재평가하는 현상과 동조한다.\n[가설] H1: 대만해협 ACLED 분쟁 이벤트 건수가 증가할 때 반도체 ETF(SOXX) 주가(USD)가 통계적으로 유의하게 하락한다.\n[근거] 대만해협 분쟁(ACLED) → 반도체 ETF(SOXX) 직접 하락 룰매칭강도 0.67 (1단계), P4-4 Granger 검증 결과 (2026-05-30, p=0.030). 실증 데이터: ACLED 극단 이벤트 발생 후 1일 내 SOXX -0.14%, 일반 이벤트 +0.03% (Δ=-0.17%).\n[한계] 이 분석은 대만해협 ACLED 이벤트와 SOXX 지수 변동 간의 상관관계를 관찰했지만, 교란 변수 통제 및 인과 관계의 방향성을 확증하기 위한 추가적인 통계 분석이 필요하다. 또한, 관찰된 시장 반응이 특정 기간의 데이터에 의존하므로, 미래에도 동일한 패턴이 반복될 것이라고 단정하기 어렵다.\n[경쟁설명]\n공격적 현실주의 (Mearsheimer):\n  예측: 강대국(중국)과 잠재적 경쟁자(대만) 간 권력 격차 감소 시 군사적 갈등 빈도 증가 및 이에 따른 경제적 불안정 심화.\n  실측: OWID 군사력 격차 (2023): China 1.6%GDP 핵410기 | Taiwan 2.2%GDP | United States 3.3%GDP 핵3748기. 대만해협 ACLED 분쟁 총 1211건.\n  판정: 우세 — 예측 '권력 격차 존재 시 갈등 빈도 증가' vs 실측 'ACLED 분쟁 1211건, SOXX 하락' — 방향 일치. (앵커: [앵커 미제공])\n자유주의 제도론 (Keohane):\n  예측: 국제 제도 참여 밀도 증가 시 국가 간 협력 이행률 증가 및 분쟁 발생 확률 감소. 무역 상호의존이 분쟁을 억제.\n  실측: 무역 상호의존 집중도(HHI, 의존 강도 proxy): 실측 25449.0 vs 임계 2500 (편차 +22949.0, 사전계산). 대만해협 ACLED 분쟁 총 1211건.\n  판정: 열세 — 예측 '높은 상호의존 시 분쟁 억제' vs 실측 '높은 상호의존(HHI 25449.0)에도 분쟁(1211건) 발생 및 SOXX 하락' — 방향 불일치. (앵커: 무역 상호의존 집중도(HHI) 25449.0, 전제 충족, 사전계산)\n▶ 편차 비교 (사실): 공격적 현실주의는 예측과 실측 방향이 일치하는 반면, 자유주의 제도론은 예측과 실측 방향이 불일치. 자유주의 제도론의 앵커(HHI)는 전제 조건을 충족했으나 DV에서 반대 방향을 보임.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 직접 판정한다. (쟁점 예: 공격적 현실주의는 군사적 긴장 발생 자체를 예측하는 데 강점을 보이지만, 그 경제적 파급 효과의 메커니즘을 상세히 설명하지는 못한다. 반면 자유주의 제도론은 상호의존이 분쟁을 억제한다는 예측이 실측과 불일치하며, 이는 '무기화된 상호의존'과 같이 상호의존의 비대칭성을 고려하지 못하는 한계를 시사할 수 있다.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 추가적으로, 대만해협 ACLED 분쟁 이벤트 발생 시 주요 언론의 보도 내용과 시장 분석 보고서(예: 블룸버그, 로이터)를 교차 확인하여 시장 반응의 심리적 요인을 분석할 수 있다.\n[문헌공백] 기존 문헌은 〈Granger 인과분석〉의 예측 임계(지정학 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화, p<0.05)가 '한반도 긴장 → KRW 환율 인과는 VERIFIED(p=0.048)이지만 대만해협 → TSMC는 PARTIAL(p=0.067)'임을 반례로 들어 지정학 충격이 항상 즉각 시장 전이되지 않음을 지적한다. 그러나 이 분석은 대만해협의 군사적 긴장이 반도체 ETF(SOXX)에 직접적이고 즉각적인 영향을 미치는 경로를 보여줌으로써, 특정 '허브 의존성'이 높은 섹터에서는 시장 전이의 임계값이 낮아지거나 전이 속도가 빨라지는 범위 조건을 탐색한다.\n\n---\n\n[탐색적] 중국의 핵심 광물 공급망 통제 전략은 미국의 반도체 산업 취약성을 심화시키는 잠재적 배경 조건과 공변하는 경향\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 대만해협의 군사적 긴장은 주로 반도체 팹의 물리적 위협이나 단기 공급망 교란을 통해 반도체 산업에 영향을 미친다.\n[비자명기여] 이 분석은 대만해협의 단기 군사적 긴장 외에, 중국이 '소유 없는 통제' 방식을 통해 인도네시아 등지에서 핵심 광물 공급망을 장기적으로 구조화하고, 이로 인해 미국의 반도체 산업이 점진적으로 비용 우위에서 뒤처지거나 필수 투입재 확보에 어려움을 겪는 교차도메인(경제·광물 → 기술패권) 메커니즘과 공변한다는 점을 탐색한다. 이는 〈SLOC 통제 이론〉이 초크포인트 위협이 자동으로 가격 충격이 되지 않음을 지적한 반례(후티 홍해 공격에도 유가 급등 제한적)와 함께, 물리적 통제가 아닌 '느리고 조용한 비용 우위 구조화'가 더 큰 전략적 위협이 될 수 있다는 범위조건을 추가한다.\n[관찰] 인도네시아는 세계 니켈 매장량의 약 45%를 보유하고 있으며, 중국 기업들은 당-기업 네트워크를 통해 광석 구매가 25~30% 할인, 석탄 국내 의무 판매가 25~30% 할인 등으로 전체 생산 비용을 최대 50% 절감하고 있다. 반면 미국은 CHIPS법으로 반도체 팹에 $2,800억을 투자했으나 광물 투입재는 지원하지 않아 IRA 45X 규정 오류로 팔라듐 광산에서 680명이 해고되는 등 파편화된 대응을 보인다.\n[주장] (등급: 상관) 대만해협 군사 긴장 고조는 표면적인 위협이지만, 그 배경에는 중국의 핵심 광물 공급망 통제 전략이 미국의 반도체 산업 경쟁력을 점진적으로 약화시키는 구조적 조건과 공변하며, 이는 장기적으로 미국의 기술패권 취약성을 심화시키는 경향이 있다.\n[가설] H1: 현 데이터로 검증 가능한 정량 가설 없음. (종속변수로 직접 측정 가능한 광물 공급망 통제 지표나 중국의 비용 우위로 인한 미국의 반도체 산업 경쟁력 지표가 context에 제시되지 않음.)\n[근거] [War on the Rocks] '소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법' 보고서의 중국 기업의 광석 구매가 할인율 25~30%, 전체 생산 비용 절감 효과 최대 50%, 인도네시아 세계 니켈 매장량 비중 약 45%. [War on the Rocks] '유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다'에서 트럼프 관세 정책과 이란전 유가 충격이 복합 위기를 형성했음을 언급.\n[한계] 이 분석은 중국의 광물 공급망 통제가 미국의 반도체 산업에 미치는 장기적이고 구조적인 영향에 대한 정성적 연관성을 제시하지만, 이를 직접적인 통계적 인과관계로 입증하기 위한 정량적 데이터(예: 중국의 광물 통제 지수와 미국 반도체 생산 비용/시장 점유율 간의 시계열 데이터)가 부재하다. 또한, 대만해협 군사 긴장 고조와 중국의 광물 전략 간의 직접적인 인과 고리보다는 공통된 지정학적 경쟁 환경이라는 배경 조건을 통해 연결된다는 한계가 있다. 선택편향이 존재할 수 있는데, 중국의 성공적인 광물 통제 사례만 부각되고 실패하거나 비효율적인 사례는 과소 보고될 수 있다.\n[경쟁설명]\n공격적 현실주의 (Mearsheimer):\n  예측: 강대국(중국)은 권력 극대화를 위해 주변국(대만)에 대한 영향력을 확대하고 핵심 자원(광물) 통제를 추구하여 군사적·경제적 충돌 가능성을 높인다.\n  실측: OWID 군사력 격차(2023): China 1.6%GDP 핵410기 | Taiwan 2.2%GDP | United States 3.3%GDP 핵3748기. 중국 제1중공업의 PT Virtue Dragon 과반 주주 (2024 델롱 파산 후). 인도네시아 니켈 매장량 45%에 대한 중국 기업의 통제력 강화.\n  판정: 우세 — 예측 '강대국의 권력 극대화 및 자원 통제 추구' vs 실측 '중국의 핵심 광물 공급망 통제 강화 및 군사 연계' — 방향 일치. (앵커: [앵커 미제공])\n자유주의 제도론 (Keohane):\n  예측: 국제 제도 및 상호의존 증가는 국가 간 협력을 증진하고 분쟁을 억제하며, 경제적 이익이 국가 행동을 합리적으로 유도한다.\n  실측: 무역 상호의존 집중도(HHI, 의존 강도 proxy): 실측 25449.0 vs 임계 2500 (편차 +22949.0, 사전계산). 중국의 광물 공급망 통제 강화를 통한 비용 우위 확보는 국제 무역 규범 및 제도적 협력보다는 자국 이익 극대화를 우선시하는 경향을 보여준다.\n  판정: 열세 — 예측 '제도와 상호의존을 통한 협력 증진' vs 실측 '중국의 일방적 공급망 통제 및 비용 우위 확보' — 방향 불일치. (앵커: 무역 상호의존 집중도(HHI) 25449.0, 전제 충족, 사전계산)\n▶ 편차 비교 (사실): 공격적 현실주의는 예측과 실측 방향이 일치하는 반면, 자유주의 제도론은 예측과 실측 방향이 불일치. 자유주의 제도론의 앵커(HHI)는 전제 조건을 충족했으나 DV에서 반대 방향을 보임.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 직접 판정한다. (쟁점 예: 공격적 현실주의는 중국의 행동을 잘 설명하지만, 광물 공급망 통제라는 비전통적 수단을 통한 권력 확장을 충분히 포괄하는지는 추가 논의가 필요하다. 자유주의 제도론은 상호의존의 '무기화' 가능성을 간과하여 중국의 전략을 설명하는 데 한계가 있다.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 중국의 광물 공급망 통제 강도가 미국의 반도체 생산 비용 또는 특정 첨단 반도체 소재의 수입 가격에 미치는 영향에 대한 시계열 데이터를 수집하여 정량적 분석을 수행할 수 있다. 또한, 미국 국방생산법(DPA) 기반의 특수목적법인(SPV) 모델 도입이 광물 공급망 취약성 해소에 미치는 효과를 추적 관찰할 필요가 있다.\n[문헌공백] 기존 문헌은 〈SLOC 통제 이론〉의 예측 임계(초크포인트 위협 강도 증가 시 운임·유가 단기 급등)가 '후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025'임을 반례로 들어 초크포인트 위협이 자동으로 가격 충격이 되지 않음을 지적한다. 이 분석은 물리적 초크포인트 통제 위협뿐 아니라 '느리고 조용한 비용 우위 구조화'를 통한 자원 무기화가 장기적인 공급망 취약성을 야기하며, 이것이 미국의 반도체 산업에 미치는 교차도메인(경제-기술패권) 효과를 탐색함으로써 기존 문헌의 공백을 메운다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 대만해협 ACLED 분쟁 이벤트 건수 → 반도체 ETF(SOXX) 주가(USD) — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "대만해협 ACLED 분쟁 이벤트 건수가 증가할 때 반도체 ETF(SOXX) 주가(USD)가 통계적으로 유의하게 하락한다.",
+        "h0": "대만해협 ACLED 분쟁 이벤트 건수가 증가할 때 반도체 ETF(SOXX) 주가(USD)가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "대만해협 ACLED 분쟁 이벤트 건수",
+        "dependent_var": "반도체 ETF(SOXX) 주가(USD)",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": "TSM",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.8236) · 극단P90(p=0.3834) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.8236,
+        "granger_q": null,
+        "f_statistic": 0.436,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 469,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.436,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.8236,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": 0.3834,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.8236,
+                "granger_q": null,
+                "f_statistic": 0.436,
+                "best_lag": 5,
+                "n_obs": 469
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [가설없음] 검증 가능한 정량 가설 없음 — 검정 생략, 서술·이론 근거만",
+        "confidence_word": "검정불가",
+        "routing_method": "no_quantitative_hypothesis",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "필요 데이터 확보 후 H1 재추출"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "현 데이터로 검증 가능한 정량 가설 없음. (종속변수로 직접 측정 가능한 광물 공급망 통제 지표나 중국의 비용 우위로 인한 미국의 반도체 산업 경쟁력 지표가 context에 제시되지 않음.)",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "현 데이터로 검증 가능한 정량 가설 없음. (종속변수로 직접 측정 가능한 광물 공급망 통제 지표나 중국의 비용 우위로 인한 미국의 반도체 산업 경쟁력 지표가 context에 제시되지 않음.)",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": "TSM",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 대상 아님 — 추출기가 '검증 가능한 정량 가설 없음'을 선언. 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "정량 가설 없음 선언 — 검정 미실행",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "현 데이터로 검증 가능한 정량 가설 없음. (종속변수로 직접 측정 가능한 광물 공급망 통제 지표나 중국의 비용 우위로 인한 미국의 반도체 산업 경쟁력 지표가 context에 제시되지 않음.)",
+                "region": "taiwan_strait",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs MILITARY (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: MILITARY vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taipei, T'ai-pei, Taiwan: ARMED FORCES vs ORGANIZED CRIME (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taipei, T'ai-pei, Taiwan: GOVERNMENT vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 82,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: ARGENTINA vs UNITED STATES (물리적 충돌)",
+                        "date": "2026-06-16",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "제5차 한-중국 기후변화 협력 공동위원회 개최",
+                        "date": "2026-04-30",
+                        "creator": "기후환경과학외교국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부, 중국어선 불법조업 문제 대응을 위한 관계부처회의 개최",
+                        "date": "2026-03-16",
+                        "creator": "동북·중앙아시아국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "제5차 한-중국 기후변화 협력 공동위원회 개최",
+                        "date": "2026-04-30",
+                        "creator": "기후환경과학외교국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부, 중국어선 불법조업 문제 대응을 위한 관계부처회의 개최",
+                        "date": "2026-03-16",
+                        "creator": "동북·중앙아시아국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부 수입규제대책반 『알기쉬운 중국의 수입규제』 발간",
+                        "date": "2026-03-04",
+                        "creator": "양자경제외교국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "「중국지역 역사·사적지 담당관 회의 개최」",
+                        "date": "2025-11-12",
+                        "creator": "동북·중앙아시아국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "중국 단체관광객 한시 무사증 시행계획 발표",
+                        "date": "2025-09-07",
+                        "creator": "동북·중앙아시아국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs MILITARY (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: MILITARY vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taipei, T'ai-pei, Taiwan: ARMED FORCES vs ORGANIZED CRIME (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taipei, T'ai-pei, Taiwan: GOVERNMENT vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 82,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: ARGENTINA vs UNITED STATES (물리적 충돌)",
+                        "date": "2026-06-16",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "An act to authorize appropriations for fiscal year 2024 for military activities of the Department of Defense and for military construction, and for defense activities of the Department of Energy, to prescribe military personnel strengths for such fiscal year, and for other purposes",
+                        "date": "2023-12-22",
+                        "source_db": "CPD (White House)",
+                        "description": ""
+                      },
+                      {
+                        "title": "An act to authorize appropriations for fiscal year 2023 for military activities of the Department of Defense, for military construction, and for defense activities of the Department of Energy, to prescribe military personnel strengths for such fiscal year, and for other purposes",
+                        "date": "2022-12-23",
+                        "source_db": "CPD (White House)",
+                        "description": ""
+                      },
+                      {
+                        "title": "James M. Inhofe National Defense Authorization Act for Fiscal Year 2023",
+                        "date": "2022-12-23",
+                        "source_db": "CPD (White House)",
+                        "description": "The United States Geological Survey. (D) Any other relevant Federal or State agencies the Secretary considers appropriat"
+                      },
+                      {
+                        "title": "Security Council LIVE: Emergency meeting on Iranian attack in Bahrain",
+                        "date": "2026-07-02",
+                        "source_db": "UN News",
+                        "description": "The 15-member Security Council is meeting in emergency session on Thursday morning to address the escalating tensions in"
+                      },
+                      {
+                        "title": "Expanding areas under Israeli control in Gaza increase risks to civilians, UN warns",
+                        "date": "2026-07-01",
+                        "source_db": "UN News",
+                        "description": "The continued expansion of areas under Israeli control in Gaza since October’s ceasefire agreement is placing civilians "
+                      },
+                      {
+                        "title": "Strait of Hormuz: Gradual re-opening is no quick fix for developing nations, UN warns",
+                        "date": "2026-06-30",
+                        "source_db": "UN News",
+                        "description": "Re-opening the Strait of Hormuz would bring vital relief for many economies, but developing countries will continue to g"
+                      }
+                    ],
+                    "evidence_note": "CPD 대통령 성명 3건(★★★★★) + UN News 3건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": 12
+}
