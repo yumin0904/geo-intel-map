@@ -54,7 +54,26 @@ def _load_env() -> None:
         os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
 
 
+def _rotate_launchd_log(max_bytes: int = 5 * 1024 * 1024) -> None:
+    """launchd StandardOutPath 로그(append 전용, 로테이션 없음)의 무한 증가 방지.
+
+    실행 시작 시 5MB 초과면 .1로 밀어낸다 (백업 1개 유지). 현재 실행분은 이미 열린
+    fd를 따라 .1 쪽에 이어 쓰이고, 다음 실행부터 새 파일이 시작된다 — 상한만 보장.
+    """
+    log = _BACKEND / "logs" / "collect_launchd.log"
+    try:
+        if log.exists() and log.stat().st_size > max_bytes:
+            backup = log.with_suffix(".log.1")
+            backup.unlink(missing_ok=True)
+            log.rename(backup)
+            logger.info("로그 로테이션: %s → %s (%.1fMB)", log.name, backup.name,
+                        backup.stat().st_size / 1024 / 1024)
+    except OSError as e:
+        logger.warning("로그 로테이션 실패 (계속 진행): %s", e)
+
+
 def main() -> int:
+    _rotate_launchd_log()
     _load_env()
 
     # import는 .env 로드 후에 (모듈 상단에서 os.getenv 하는 코드 대비)
