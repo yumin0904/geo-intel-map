@@ -353,9 +353,13 @@ def _check_methodological_integrity(
 
     # 탐색형 캡 상한이 "상관"이므로 "상관" 자체는 누출 아님 — 캡 위 등급만 누출로 판정
     _CAUSAL_RUNGS = {"선행성", "준실험"}
+    # construct 무효 IV는 상관조차 자격 없음 — 상관 포함 더 엄격한 집합.
+    _ANY_CAUSAL_RUNG = {"상관", "선행성", "준실험"}
     routing_low = []
     laundering  = []
     expl_leak   = []
+    construct_launder = []   # construct_validity_fail인데 인과 주장 유지 = 게이트 우회
+    construct_fail_cases = []
     confirm_label_violations = []
     tria_violations = []   # [9-G] 자격 방법 2+인데 수렴/발산 미보고 (정직성 위반)
     n_triangulated = 0
@@ -399,6 +403,17 @@ def _check_methodological_integrity(
         if h.get("any_exploratory") and h.get("headline_rung", "") in _CAUSAL_RUNGS:
             expl_leak.append(h.get("h1", "")[:50])
 
+        # (6) construct_launder: construct_validity_fail은 IV가 질문을 못 측정한다는 뜻이라
+        # 서술등급으로 강등돼야 정상(verifier가 그렇게 함). 그런데도 상관+ 인과칸이나 검증
+        # 상태를 달고 나오면 게이트를 우회한 허위 인과 주장 = FAIL. (위원회 2026-07-06 Lock 1:
+        # 현재는 공허참이나, 누군가 게이트를 약화시키면 이 불변식이 회귀를 잡는다.)
+        if h.get("routing_method") == "construct_validity_fail":
+            construct_fail_cases.append(h.get("h1", "")[:50])
+            if (h.get("inference_grade", "") in _ANY_CAUSAL_RUNG
+                    or h.get("headline_rung", "") in _ANY_CAUSAL_RUNG
+                    or h.get("status") in ("VERIFIED", "PARTIAL")):
+                construct_launder.append(h.get("h1", "")[:50])
+
         # (5) [3-2 발견3] confirmatory_label: verify 모드인데 [탐색적] 라벨 — 캡이 잘못 적용된 것
         # verify = 확증형이므로 surface에 [확증] 라벨이 붙어야 하고 [탐색적]은 위반.
         if _is_verify and "[탐색적]" in h.get("surface_summary", ""):
@@ -409,6 +424,7 @@ def _check_methodological_integrity(
 
     routing_ok = len(routing_low) == 0
     no_laundering = len(laundering) == 0
+    no_construct_launder = len(construct_launder) == 0
     no_expl_leak = len(expl_leak) == 0
     confirm_label_ok = (len(confirm_label_violations) == 0) if _is_verify else None
     # 자격 방법 2+ 케이스가 있을 때만 의미 — 없으면 N/A(True), 있으면 수렴/발산 보고 여부로 판정
@@ -424,11 +440,14 @@ def _check_methodological_integrity(
     return {
         "routing_ok":           routing_ok,
         "no_laundering":        no_laundering,
+        "no_construct_launder": no_construct_launder,
         "triangulation_ok":     triangulation_ok,
         "no_exploratory_leak":  no_expl_leak,
         "confirmatory_label_ok": confirm_label_ok,
         "routing_low_cases":    routing_low,
         "laundering_cases":     laundering,
+        "construct_launder_cases": construct_launder,
+        "construct_fail_cases": construct_fail_cases,
         "exploratory_leak_cases": expl_leak,
         "confirmatory_label_violations": confirm_label_violations,
         "triangulation_violations": tria_violations,
@@ -607,10 +626,22 @@ def evaluate_case(
     missing_tags     = [t for t, ok in tag_check.items() if not ok]
 
     # 통과/실패 판정
+    # [위원회 2026-07-06 채택 ①] 이미 계산되나 방치되던 정직성 감사를 성적에 배선한다.
+    # 이전엔 게이트가 일해도(laundering·누출·construct 우회 검출) passed가 안 변해 개선 압력 0.
+    # 이제 정직성 위반은 케이스를 FAIL시킨다. (None=N/A는 통과 — `is not False`로 null-safe.)
+    # 주의: construct_validity_fail 자체는 FAIL 사유가 아니다 — 그건 "데이터 없어 못 측정"이라는
+    # 정직한 한계 고백이라 처벌하면 정직성 역행. 여기서 잡는 건 그 무효 IV가 인과 주장을
+    # 세탁하는 경우(construct_launder)뿐. 데이터부재 vs 오라우팅 판정은 [판단필요] 이관.
+    _integrity_ok = (
+        method_integrity.get("no_laundering") is not False
+        and method_integrity.get("no_exploratory_leak") is not False
+        and method_integrity.get("no_construct_launder") is not False
+    )
     passed = (
         confidence >= exp_score
         and completeness >= 0.875   # 7/8 이상
         and (not exp_h1 or has_h1)
+        and _integrity_ok
     )
 
     # 터미널 출력
