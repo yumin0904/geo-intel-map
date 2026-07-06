@@ -260,8 +260,27 @@ def _load_event_series(region: str, start: date, end: date,
     series = df.set_index("day")["sev_sum"].reindex(idx, fill_value=0.0)
     series.name = "event_severity"
 
-    # sparse 지역 (비제로 일수 < 10): 주간 집계로 자동 전환해 Granger 분산 확보
     nonzero = int((series > 0).sum())
+
+    # ── stale vs sparse 진단 (평가 위원회 2026-07-06) ──────────────────────────
+    # 낮은 n의 원인을 구별한다: 이벤트가 실제로 드문가(sparse), 아니면 소스가 낡아
+    # 창의 최근 구간이 통째로 비었나(stale)? reindex fill_value=0.0이 데이터 공백을
+    # "이벤트 없음"으로 위조하므로, today() 앵커 창에서 stale이 sparse로 오진될 수 있다
+    # (미사일: CNS 소스 2024-11 정체 → 24mo 창의 83%가 데이터 공백). 오진 시 처방이
+    # 갈린다 — sparse는 방법(주간전환·구조적 라우팅), stale은 소스 최신화가 답이다.
+    last_data = df["day"].max().date()
+    stale_gap_days = (end - last_data).days
+    if nonzero < 10 and stale_gap_days > 90:
+        logger.warning(
+            "[stale] region=%s: 최신 데이터 %s, 창 종료 %s → 최근 %d일 데이터 공백. "
+            "낮은 n(비제로 %d일)은 sparse가 아니라 stale — lookback 확대 아닌 소스 최신화 대상.",
+            region, last_data, end, stale_gap_days, nonzero,
+        )
+
+    # sparse 지역 (비제로 일수 < 10): 주간 집계로 자동 전환해 Granger 분산 확보.
+    # ⚠️ 이 스위치는 lookback 종속이다 — 창을 넓히면 비제로일이 임계 10을 넘겨 조용히
+    #    꺼지고, 대부분이 0인 일별 계열에 Granger가 돌아 식별이 오히려 약해진다. lookback
+    #    확대 논의 시 이 결합을 반드시 함께 검토할 것(위원회 2026-07-06, granger_thresholds.yaml).
     if nonzero < 10:
         series = series.resample("W").sum()
         series.name = "event_severity_weekly"

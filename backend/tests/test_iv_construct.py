@@ -85,8 +85,10 @@ def _check_integration() -> list[str]:
         var_type="Type_A",
     )
     # 게이트/검정이 실제로 쓰는 기간(_get_date_range = 최근 _LOOKBACK_MONTHS)의 북한 건수로
-    # 판정한다. 미사일은 sparse(24개월 lookback에 ~7건)라, 현 lookback에선 폐기가 정상.
-    # lookback 확대(방법론 결정)나 CNS 최신화 후에야 필터 검정이 성립 → 그때 이 분기가 뒤집힌다.
+    # 판정한다. 미사일은 창에 ~7건뿐이라 현 lookback에선 폐기가 정상.
+    # ⚠️ 원인은 sparse가 아니라 stale: CNS 소스가 2024-11에서 멈춰 창의 최근 구간이 공백이다
+    # (평가 위원회 2026-07-06). lookback 확대는 기각(granger_thresholds.yaml) — 이 분기를
+    # 뒤집는 정직한 길은 CNS 최신화 또는 미사일 가설의 구조적 논증 라우팅이다.
     from services.hypothesis_verifier import _get_date_range
     gs, ge = _get_date_range()
     nk_n = _nk_count(gs, ge)
