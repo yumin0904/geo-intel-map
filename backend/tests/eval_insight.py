@@ -132,9 +132,13 @@ def _judge_via_nim(prompt: str) -> str | None:
         r = httpx.post(
             f"{base}/chat/completions",
             headers={"Authorization": f"Bearer {key}"},
+            # max_tokens 4000: deepseek-v4-pro는 추론모델이라 <think>가 예산을 먼저
+            # 소진한다. 800이면 사고 후 최종 JSON을 못 뱉어 채점이 None으로 떨어지고
+            # (위원회 2026-07-06: judged 12/33 = 절단 로터리), 어느 케이스가 채점될지
+            # 통제 불가해진다. 4000으로 <think>+답변 예산 확보 → 커버리지 안정화.
             json={"model": _JUDGE_MODEL,
                   "messages": [{"role": "user", "content": prompt}],
-                  "temperature": 0.2, "max_tokens": 800},
+                  "temperature": 0.2, "max_tokens": 4000},
             timeout=180,
         )
         if r.status_code != 200:
@@ -1059,6 +1063,10 @@ def main() -> None:
     report = {
         "timestamp": timestamp,
         "server": BASE_URL,
+        # judge 계측기 신원을 아티팩트에 박는다 — 이게 없으면 judge 교체발 점수 변화를
+        # 엔진 개선으로 오독하고, 파일 안에 정정할 근거조차 없다(위원회 2026-07-06).
+        "judge_provider": _JUDGE_PROVIDER,
+        "judge_model": _JUDGE_MODEL,
         "total": len(results),
         "passed": sum(1 for r in results if r.get("passed")),
         "results": results,
