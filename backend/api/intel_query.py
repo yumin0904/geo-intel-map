@@ -100,6 +100,15 @@ _OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 _OLLAMA_COMPACT   = os.getenv("OLLAMA_COMPACT", "1").strip() == "1"
 _USE_COMPACT_CARD = (_LLM_PROVIDER == "ollama" and _OLLAMA_COMPACT)
 
+# ── NVIDIA NIM (OpenAI 호환) — Ollama 대체 클라우드 생성 provider ──────────────
+#   왜: 로컬 Ollama(3~7b)는 카드 품질이 낮고, Gemini는 503 과부하·무료티어 한도가 있음.
+#   NIM은 무료(build.nvidia.com)·OpenAI 호환·대형 모델(70b급)이라 생성 품질과 가용성을
+#   동시에 얻는다. 산술·통계·구성타당도 게이트는 여전히 Token-Zero 파이썬 — NIM은 서술만.
+#   NIM은 대형 모델이라 압축 카드가 아니라 Gemini와 동일한 풀 11섹션 프롬프트를 받는다.
+_NIM_KEY   = os.getenv("NVIDIA_API_KEY")
+_NIM_BASE  = os.getenv("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1").rstrip("/")
+_NIM_MODEL = os.getenv("NIM_MODEL", "meta/llama-3.3-70b-instruct")
+
 # ── 요청 스키마 ───────────────────────────────────────────────────────────
 
 class IntelQueryRequest(BaseModel):
@@ -524,6 +533,58 @@ def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
+async def _nim_stream_text(prompt: str) -> AsyncGenerator[str, None]:
+    """NVIDIA NIM (OpenAI 호환 /chat/completions) SSE 스트리밍 → 텍스트 청크만 yield.
+
+    SSE 형식: 'data: {"choices":[{"delta":{"content":"..."}}]}' — delta.content가 부분 텍스트.
+    오류·미연결 시 '⚠️' 경고 텍스트를 yield (SSE 흐름 유지 — 상위가 실패로 판정).
+    """
+    if not _NIM_KEY:
+        yield "⚠️ NVIDIA_API_KEY가 설정되지 않았습니다."
+        return
+    body = {
+        "model":       _NIM_MODEL,
+        "messages":    [{"role": "user", "content": prompt}],
+        "stream":      True,
+        "temperature": 0.6,
+        # 한국어 11섹션 카드는 토큰 소모가 크다(한국어 토큰 효율 낮음). Gemini(16384) 수준으로
+        # 상향해 [관찰]~[문헌공백] 전 섹션이 잘리지 않게 한다(4096은 중간 절단 실측).
+        "max_tokens":  8192,
+    }
+    try:
+        async with httpx.AsyncClient(timeout=300) as client:
+            async with client.stream(
+                "POST", f"{_NIM_BASE}/chat/completions",
+                headers={"Authorization": f"Bearer {_NIM_KEY}"}, json=body,
+            ) as resp:
+                if resp.status_code != 200:
+                    err = await resp.aread()
+                    logger.error("[intel] NIM %d: %s", resp.status_code, err[:200])
+                    yield f"⚠️ NIM 오류 ({resp.status_code}) — 키·모델·rate limit 확인"
+                    return
+                async for raw_line in resp.aiter_lines():
+                    if not raw_line.startswith("data: "):
+                        continue
+                    payload = raw_line[6:].strip()
+                    if payload in ("[DONE]", ""):
+                        continue
+                    try:
+                        chunk = json.loads(payload)
+                        delta = chunk["choices"][0].get("delta", {})
+                        text  = delta.get("content", "")
+                        if text:
+                            yield text
+                    except (json.JSONDecodeError, KeyError, IndexError):
+                        continue
+    except httpx.ConnectError:
+        yield f"⚠️ NIM 서버에 연결할 수 없습니다 (base={_NIM_BASE})."
+    except httpx.TimeoutException:
+        yield "\n\n⚠️ NIM 응답 시간 초과. 다시 시도해주세요."
+    except Exception as e:  # noqa: BLE001
+        logger.exception("[intel] NIM 스트리밍 예외: %s", e)
+        yield f"\n\n⚠️ NIM 오류: {e}"
+
+
 async def _ollama_stream_text(prompt: str) -> AsyncGenerator[str, None]:
     """로컬 Ollama(/api/generate) 스트리밍 → 텍스트 청크만 yield.
 
@@ -827,6 +888,15 @@ async def _stream_gemini(
 
     # === provider 분기: 로컬 Ollama vs 클라우드 Gemini ===
     #   Ollama 경로는 503/thinking 재시도가 불필요(로컬) → 단순 스트림 + 동일 _finalize.
+    if _LLM_PROVIDER == "nim":
+        _ft = ""
+        async for _t in _nim_stream_text(prompt):
+            _ft += _t
+            yield _sse({"text": _t, "done": False})
+        async for _ev in _finalize(_ft):
+            yield _ev
+        return
+
     if _LLM_PROVIDER == "ollama":
         _ft = ""
         async for _t in _ollama_stream_text(prompt):

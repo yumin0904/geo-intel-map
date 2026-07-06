@@ -137,9 +137,9 @@ def main() -> int:
     ap.add_argument("--save", action="store_true",
                     help="완결성 통과 시 intel_analyses에도 저장")
     ap.add_argument("--out", default=str(_DEFAULT_OUT), help="출력 디렉토리")
-    ap.add_argument("--provider", choices=["gemini", "ollama"], default="gemini",
-                    help="LLM provider — 발행용 export는 gemini 고정 권장 "
-                         "(.env의 개발용 ollama 설정보다 우선)")
+    ap.add_argument("--provider", choices=["gemini", "ollama", "nim"], default="gemini",
+                    help="LLM provider — nim(NVIDIA 무료·OpenAI 호환·70b급)이 Gemini 503·"
+                         "Ollama 저품질을 대체. 발행용은 nim 또는 gemini 권장(.env 설정보다 우선)")
     args = ap.parse_args()
 
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args.id):
