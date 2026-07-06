@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -87,18 +88,21 @@ _JUDGE_RUBRIC = """당신은 국제정치학 박사학위 논문 심사위원입
 """
 
 
-def _judge_quality(full_text: str) -> dict | None:
-    """Gemini로 분석 텍스트를 4축 루브릭 채점한다. 실패 시 None."""
+# judge provider — 기본 nim(비용 0). JUDGE_PROVIDER=gemini로 과거 baseline 재현 가능.
+# 주의: judge를 NIM으로 바꾸면 과거 Gemini judge 점수와 절대 비교 불가 → NIM으로 새 baseline
+# 재설정 후 그 기준선끼리 비교한다(측정 일관성은 유지, 과거값과의 절대 비교만 포기).
+_JUDGE_PROVIDER = os.getenv("JUDGE_PROVIDER", "nim").strip().lower()
+_JUDGE_MODEL    = os.getenv("JUDGE_MODEL", "deepseek-ai/deepseek-v4-pro")
+
+
+def _judge_via_gemini(prompt: str) -> str | None:
     key = _resolve_gemini_key()
-    if not key or not full_text:
+    if not key:
         return None
     url = ("https://generativelanguage.googleapis.com/v1beta/models/"
            f"gemini-2.5-flash:generateContent?key={key}")
-    # [AR-3] 절단 한도 6000→12000: 인사이트 평균 5960자·최대 11051자(2장 구조).
-    # 6000자 절단 시 ~31% 케이스에서 늦게 나오는 [경쟁설명]·[문헌공백]이 잘려
-    # 체계적 저평가 + 노이즈 유발 → 전문을 심판에 전달.
     body = {
-        "contents": [{"parts": [{"text": _JUDGE_RUBRIC + full_text[:12000]}], "role": "user"}],
+        "contents": [{"parts": [{"text": prompt}], "role": "user"}],
         "generationConfig": {"temperature": 0.2, "maxOutputTokens": 400,
                              "thinkingConfig": {"thinkingBudget": 0}},
     }
@@ -106,19 +110,58 @@ def _judge_quality(full_text: str) -> dict | None:
         r = httpx.post(url, json=body, timeout=60)
         if r.status_code != 200:
             return None
-        txt = (r.json()["candidates"][0]["content"]["parts"][0]["text"])
-        m = re.search(r"\{.*\}", txt, re.DOTALL)
-        if not m:
-            return None
-        data = json.loads(m.group())
-        # 1~5 정수 검증
-        for k in ("non_obviousness", "inference_honesty", "competing_rigor", "falsifiability"):
-            v = data.get(k)
-            if not isinstance(v, (int, float)) or not (1 <= v <= 5):
-                return None
-        return data
+        return r.json()["candidates"][0]["content"]["parts"][0]["text"]
     except Exception:
         return None
+
+
+def _judge_via_nim(prompt: str) -> str | None:
+    key  = os.getenv("NVIDIA_API_KEY")
+    base = os.getenv("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1").rstrip("/")
+    if not key:
+        return None
+    try:
+        r = httpx.post(
+            f"{base}/chat/completions",
+            headers={"Authorization": f"Bearer {key}"},
+            json={"model": _JUDGE_MODEL,
+                  "messages": [{"role": "user", "content": prompt}],
+                  "temperature": 0.2, "max_tokens": 800},
+            timeout=180,
+        )
+        if r.status_code != 200:
+            return None
+        return r.json()["choices"][0]["message"]["content"]
+    except Exception:
+        return None
+
+
+def _judge_quality(full_text: str) -> dict | None:
+    """분석 텍스트를 4축 루브릭 채점한다(provider=JUDGE_PROVIDER). 실패 시 None.
+
+    [AR-3] 절단 한도 12000: 인사이트 평균 5960자·최대 11051자. 6000자 절단 시 늦게 나오는
+    [경쟁설명]·[문헌공백]이 잘려 체계적 저평가 → 전문(12000자)을 심판에 전달.
+    """
+    if not full_text:
+        return None
+    prompt = _JUDGE_RUBRIC + full_text[:12000]
+    txt = _judge_via_nim(prompt) if _JUDGE_PROVIDER == "nim" else _judge_via_gemini(prompt)
+    if not txt:
+        return None
+    # reasoning 모델이 <think>...</think>를 앞에 붙이면 그 안의 {}에 오염될 수 있어
+    # '마지막' JSON 객체를 잡는다(그리디 대신 뒤에서부터).
+    matches = re.findall(r"\{[^{}]*\}", txt, re.DOTALL)
+    if not matches:
+        return None
+    try:
+        data = json.loads(matches[-1])
+    except Exception:
+        return None
+    for k in ("non_obviousness", "inference_honesty", "competing_rigor", "falsifiability"):
+        v = data.get(k)
+        if not isinstance(v, (int, float)) or not (1 <= v <= 5):
+            return None
+    return data
 
 
 # ── 필수 섹션 기본값 (모드별) ─────────────────────────────────────────────
