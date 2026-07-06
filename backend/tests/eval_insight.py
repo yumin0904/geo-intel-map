@@ -27,6 +27,14 @@ from pathlib import Path
 import httpx
 import yaml
 
+# judge(NIM)·기타 키를 .env에서 로드 — eval은 서버와 별도 프로세스라 명시 로드 필요
+# (없으면 _judge_via_nim의 NVIDIA_API_KEY가 None → judge 전건 실패).
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+except ImportError:
+    pass
+
 # ── 경로 설정 ─────────────────────────────────────────────────────────────
 _ROOT    = Path(__file__).resolve().parents[1]  # backend/
 _CASES   = Path(__file__).parent / "eval_cases.yaml"
@@ -971,6 +979,8 @@ def main() -> None:
                         help="골드셋(gold: true) 케이스만 실행 — 30→15개, 시간·비용 절반")
     parser.add_argument("--fast", action="store_true",
                         help="대기 시간 단축 — 케이스간격 5s→2s, 재시도 15/40s→5/15s")
+    parser.add_argument("--parallel", type=int, default=1,
+                        help="동시 실행 케이스 수 (I/O 바운드 — 4~5 권장. NIM RPM·yfinance 한도 고려)")
     args = parser.parse_args()
 
     global _JUDGE_ENABLED
@@ -1015,14 +1025,28 @@ def main() -> None:
     print(f"⏱️  예상 소요: ~{est_min}분 (재시도 없을 때)")
 
     results = []
-    for i, case in enumerate(cases):
-        if i > 0:
-            time.sleep(case_interval)
-        # --fast 모드: 재시도 대기 단축을 evaluate_case에 전달
-        res = evaluate_case(case, retry_waits=retry_waits, timeout=query_timeout)
-        if args.no_save_text:
-            res.pop("full_text", None)
-        results.append(res)
+    if args.parallel > 1:
+        # I/O 바운드(NIM 생성·yfinance·judge 네트워크 대기)라 스레드 병렬로 큰 이득.
+        # evaluate_case는 케이스별 독립(공유 상태 없음) — 스레드 안전. 순서는 무관(집계).
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        print(f"⚡ 병렬 실행: 동시 {args.parallel}개")
+        with ThreadPoolExecutor(max_workers=args.parallel) as ex:
+            futs = {ex.submit(evaluate_case, case, retry_waits=retry_waits,
+                              timeout=query_timeout): case for case in cases}
+            for fut in as_completed(futs):
+                res = fut.result()
+                if args.no_save_text:
+                    res.pop("full_text", None)
+                results.append(res)
+    else:
+        for i, case in enumerate(cases):
+            if i > 0:
+                time.sleep(case_interval)
+            # --fast 모드: 재시도 대기 단축을 evaluate_case에 전달
+            res = evaluate_case(case, retry_waits=retry_waits, timeout=query_timeout)
+            if args.no_save_text:
+                res.pop("full_text", None)
+            results.append(res)
 
     _print_summary(results)
 
