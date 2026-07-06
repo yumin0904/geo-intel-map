@@ -39,6 +39,15 @@ _INTEL_DB = _BACKEND / "db" / "intel.db"
 _VERSION = json.loads((_BACKEND / "config" / "version.json").read_text())["version"]
 
 
+def _strip_code_fence(text: str) -> str:
+    """NIM 일부 모델(Qwen 등)이 카드 전체를 ```로 감싸는 경우 코드펜스를 제거한다.
+    (완결성 검사가 마지막 ```를 '미완성 문장'으로 오판하는 것 방지.)"""
+    t = (text or "").strip()
+    t = re.sub(r"^```[a-zA-Z]*\s*\n", "", t)
+    t = re.sub(r"\n```\s*$", "", t)
+    return t.strip()
+
+
 def _parse_sse(chunk: str) -> list[dict]:
     """_sse()가 만든 'data: {...}\\n\\n' 문자열 → 이벤트 dict 목록."""
     events = []
@@ -140,6 +149,8 @@ def main() -> int:
     ap.add_argument("--provider", choices=["gemini", "ollama", "nim"], default="gemini",
                     help="LLM provider — nim(NVIDIA 무료·OpenAI 호환·70b급)이 Gemini 503·"
                          "Ollama 저품질을 대체. 발행용은 nim 또는 gemini 권장(.env 설정보다 우선)")
+    ap.add_argument("--model", default="",
+                    help="NIM 모델 오버라이드 (provider=nim, 예: qwen/qwen3-next-80b-a3b-instruct)")
     args = ap.parse_args()
 
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args.id):
@@ -150,6 +161,8 @@ def main() -> int:
     import os
     from dotenv import load_dotenv
     os.environ["LLM_PROVIDER"] = args.provider
+    if args.model:
+        os.environ["NIM_MODEL"] = args.model  # load_dotenv 전 설정 → .env보다 우선
     load_dotenv(_BACKEND / ".env")
 
     from services.confidence_scorer import validate_insight_completeness
@@ -158,7 +171,7 @@ def main() -> int:
     sectors = [s.strip() for s in args.sectors.split(",") if s.strip()]
 
     run = asyncio.run(run_analysis(args.query, regions, sectors))
-    result_md = run["result_md"]
+    result_md = _strip_code_fence(run["result_md"])
 
     if not result_md or result_md.lstrip().startswith("⚠️"):
         print(f"❌ 분석 실패 — 엔진 응답: {result_md[:200]}")
