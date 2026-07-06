@@ -182,6 +182,7 @@ _ROUTE_PENDING_A     = "pending_typeA_no_mapping" # Type_A 매핑 실패
 _ROUTE_GRANGER_A     = "granger_typeA"           # Type_A 정상: 금융 ticker Granger
 _ROUTE_NO_HYPOTHESIS = "no_quantitative_hypothesis"    # H1이 '정량 가설 없음' 선언문 — 검정 대상 아님
 _ROUTE_PENDING_METHOD = "pending_method_unimplemented" # 시그니처 판정 명확, 해당 방법(9-A/9-B) 미구현
+_ROUTE_CONSTRUCT_FAIL = "construct_validity_fail"       # IV가 질문 대상을 측정 못함 — 검정 미수행(2026-07-05)
 
 # 추출기가 검정 불가를 정직하게 선언한 문장 패턴 (H1 자리에 선언문이 오는 실측 형태 2종).
 # 이 선언문이 Type_A/C로 오분류되면 섹터 proxy Granger까지 흘러가 유의 결과로 '세탁'될 수 있어
@@ -626,6 +627,38 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     from services.methods.router import unquantifiable_question_reason as _unq_reason
 
     for spec in specs:
+        # ── [구성타당도 게이트] 라우팅에 앞서 공통 적용 — Granger·과정추적 등 모든 event-IV
+        # 경로를 차단한다. IV가 특정 국가를 지목하는데 실제 이벤트 표본에 그 국가가 거의 없으면
+        # (질문 대상 미측정) 검정을 진행하지 않는다. 예: "북한 도발" IV인데 korean_peninsula
+        # 표본은 South Korea 98%·North Korea 0건(ACLED 폐쇄국가 미커버) → 큰 표본의 가짜 유의 방지.
+        # (2026-07-05 목표 '확실한 변수' — geo-os/docs/ENGINE_CONSTRUCT_VALIDITY.md)
+        if spec.region_code:
+            try:
+                from services.methods.iv_construct import probe_event_iv, assess_construct
+                _cv = assess_construct(
+                    getattr(spec, "independent_var", "") or spec.h1,
+                    probe_event_iv(spec.region_code, start, end),
+                )
+            except Exception as _cv_exc:  # noqa: BLE001
+                logger.warning("[구성타당도] 프로브 실패(무시): %s", _cv_exc)
+                _cv = None
+            if _cv is not None:
+                # 감사 가능성(축 2): 무엇을 셌는지 항상 남긴다.
+                spec.method_result = {**(spec.method_result or {}), "iv_construct": _cv.meta}
+                if not _cv.ok:
+                    spec.inference_grade = _LADDER_DESCRIPTIVE
+                    spec.verification_status = "PENDING"
+                    spec.error = _cv.reason
+                    spec.inference_caveat = _cv.reason
+                    spec.routing_method = _ROUTE_CONSTRUCT_FAIL
+                    spec.routing_confidence = "HIGH"  # 표본에 대상 부재 — 판정 명확
+                    spec.routing_alternatives = ["질문 대상을 커버하는 데이터 확보 후 재검정"]
+                    logger.info("[구성타당도] 검정 미수행: %s (대상 %s share=%.2f)",
+                                spec.h1[:50], _cv.meta.get("named_countries"),
+                                _cv.meta.get("named_share", 0.0))
+                    results.append(spec)
+                    continue
+
         # ── [9-Q] 쿼리-우선 veto — spec.linear_testable을 쿼리 형태로 선행 무효화 ──
         _reason = _unq_reason(getattr(spec, "source_query", ""))
         if spec.linear_testable and _reason:
@@ -925,11 +958,17 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         # MethodResult를 만들어 소비자(export_insight 등)가 '결과 있음'으로 오독한다.
         # PENDING이면 method_result는 검정 결과를 담지 않는다 (2026-07-05 엔진 위원회 C-4
         # — method_result null 불변식). skipped 마커로 '검정 안 함'을 명시적으로 남긴다.
-        _NO_TEST_ROUTES = {_ROUTE_PENDING_METHOD, _ROUTE_PENDING_A, _ROUTE_NO_HYPOTHESIS}
+        _NO_TEST_ROUTES = {_ROUTE_PENDING_METHOD, _ROUTE_PENDING_A, _ROUTE_NO_HYPOTHESIS,
+                           _ROUTE_CONSTRUCT_FAIL}
 
         for s in results:
             if getattr(s, "routing_method", "") in _NO_TEST_ROUTES:
-                s.method_result = {"skipped": True, "skip_reason": s.routing_method}
+                mr = {"skipped": True, "skip_reason": s.routing_method}
+                # 구성타당도 프로브 결과(무엇을 셌는지)는 감사용으로 보존한다(축 2).
+                _prev = s.method_result or {}
+                if "iv_construct" in _prev:
+                    mr["iv_construct"] = _prev["iv_construct"]
+                s.method_result = mr
                 continue
             # 시그니처 결정: 원본 쿼리 + h1 + h0 합산 — 원본에만 있는 "이벤트스터디", "패널 분석" 등 보완
             query_text = f"{getattr(s, 'source_query', '')} {s.h1} {s.h0}"
