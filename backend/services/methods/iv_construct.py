@@ -22,7 +22,9 @@ _DB_PATH = Path(__file__).resolve().parents[2] / "db" / "intel.db"
 
 # 명시된 대상이 실제 이벤트 표본에서 이 비율 미만이면 '질문 대상 미측정'으로 판정.
 # 보수적 하한 — 대상이 10%도 안 되면 그 대상에 대한 검정이라 볼 수 없다. (2단계 config화 대상)
-_MIN_TARGET_SHARE = 0.10
+_MIN_TARGET_SHARE = 0.10   # (참고값) 표본 오염도 — meta에만 보존, 판정은 절대량 기준
+# 필터 후 검정 가능한 최소 대상 이벤트 수. 이 이상이면 country 필터로 순수 시계열을 뽑는다.
+_MIN_TARGET_N = 30
 
 # 국가 별칭 사전 — canonical은 event_archive payload의 country 표기와 동일하게 맞춘다.
 # 한국어 별칭과 영문 '완전형'만 사용: 부분문자열 오염 방지(예: 'korea'만 쓰면
@@ -43,10 +45,13 @@ _COUNTRY_ALIASES: dict[str, list[str]] = {
 
 @dataclass
 class ConstructVerdict:
-    """구성타당도 판정. ok=False면 검정을 진행하지 않는다."""
+    """구성타당도 판정. ok=False면 검정을 진행하지 않는다.
+    filter_country: ok=True이고 단일 국가 지목 시, 검정에서 그 국가만 필터하라는 지시
+    (A-1 — 순수 대상 시계열). None이면 필터 없이 region 전체."""
     ok: bool
     reason: str = ""
     meta: dict = field(default_factory=dict)
+    filter_country: str | None = None
 
 
 def probe_event_iv(region: str, start: date, end: date) -> dict | None:
@@ -121,22 +126,31 @@ def assess_construct(iv_text: str, probe: dict | None) -> ConstructVerdict | Non
     top_country = max(dist, key=dist.get)
     top_share = dist[top_country] / total if total else 0.0
 
+    # 단일 국가 지목이면 그 국가만 필터해 순수 시계열을 뽑을 수 있다(A-1).
+    filter_country = named[0] if len(named) == 1 else None
+
     meta = {
         "named_countries": named,
         "named_share": round(share, 3),
+        "named_n": named_n,
         "top_country": top_country,
         "top_share": round(top_share, 3),
         "n_events": total,
         "country_dist": dist,
+        "filter_country": filter_country,
     }
 
-    if share < _MIN_TARGET_SHARE:
+    # 판정 기준: share가 아니라 '필터 후 절대량'. 대상 이벤트가 검정할 만큼(≥_MIN_TARGET_N)
+    # 있으면, 표본에 다른 국가가 섞여 있어도 country 필터로 순수 시계열을 뽑아 검정한다.
+    # 부족하면(수집 안 됨) 검정 미수행 — 데이터 갭. (share는 오염도 참고값으로만 meta에 보존.)
+    # 배경: 7호는 North Korea 0건이라 FAIL이었으나, CNS 미사일 DB 적재 후 185건 → PASS.
+    if named_n < _MIN_TARGET_N:
         reason = (
-            f"[구성타당도] IV가 지목한 대상({'·'.join(named)})이 실제 이벤트 표본의 "
-            f"{share:.0%}에 불과 — 표본 최다는 {top_country}({top_share:.0%}). "
-            f"질문 대상을 측정하지 못하는 IV로 검정 미수행. "
-            f"(데이터 커버리지 한계: 예) ACLED는 폐쇄국가 내부 이벤트를 수집하지 못함)"
+            f"[구성타당도] IV 지목 대상({'·'.join(named)}) 이벤트 {named_n}건 < {_MIN_TARGET_N} — "
+            f"검정 표본 부족(데이터 미수집). 표본 최다는 {top_country}({top_share:.0%}). "
+            f"필터해도 순수 시계열이 안 나옴 → 해당 대상 소스 수집 필요(data_gap)."
         )
-        return ConstructVerdict(ok=False, reason=reason, meta=meta)
+        return ConstructVerdict(ok=False, reason=reason, meta=meta, filter_country=None)
 
-    return ConstructVerdict(ok=True, reason="", meta=meta)
+    # 충분 — filter_country로 순수 검정. 표본 오염(share 낮음)은 필터로 해소되므로 통과.
+    return ConstructVerdict(ok=True, reason="", meta=meta, filter_country=filter_country)

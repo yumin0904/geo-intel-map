@@ -221,23 +221,34 @@ _REGION_ALIAS: dict[str, str] = {
 }
 
 
-def _load_event_series(region: str, start: date, end: date) -> pd.Series:
-    """event_archive에서 region별 일별 severity 합산 시계열을 반환한다."""
+def _load_event_series(region: str, start: date, end: date,
+                       country: str | None = None) -> pd.Series:
+    """event_archive에서 region별 일별 severity 합산 시계열을 반환한다.
+
+    country: 지정 시 payload.country가 그 국가인 이벤트만 집계(A-1 필터). IV가 특정 국가를
+        지목한 경우 구성타당도 게이트가 결정 — region에 섞인 타국 이벤트를 배제해 순수
+        대상 시계열을 뽑는다. 예: "북한 도발"→country="North Korea"면 korean_peninsula의
+        남한 시위를 배제하고 북한 미사일만 센다.
+    """
     region = _REGION_ALIAS.get(region, region)  # 별칭 보정
     con = sqlite3.connect(_DB_PATH)
+    where = "region_code = ? AND DATE(timestamp) BETWEEN ? AND ?"
+    params: list = [region, start.isoformat(), end.isoformat()]
+    if country:
+        where += " AND json_extract(payload, '$.country') = ?"
+        params.append(country)
     df = pd.read_sql_query(
-        """
+        f"""
         SELECT DATE(timestamp) AS day,
                SUM(severity)   AS sev_sum,
                COUNT(*)        AS cnt
         FROM event_archive
-        WHERE region_code = ?
-          AND DATE(timestamp) BETWEEN ? AND ?
+        WHERE {where}
         GROUP BY day
         ORDER BY day
         """,
         con,
-        params=(region, start.isoformat(), end.isoformat()),
+        params=tuple(params),
         parse_dates=["day"],
     )
     con.close()

@@ -374,7 +374,9 @@ async def _run_granger_for_spec(
         return spec
 
     try:
-        event_series = load_event_series(spec.region_code, start, end)
+        # [A-1] 게이트가 단일 국가를 지목했으면 그 국가만 필터(순수 대상 시계열)
+        _fc = getattr(spec, "_filter_country", None)
+        event_series = load_event_series(spec.region_code, start, end, country=_fc)
         if event_series is None or len(event_series) < _MIN_EVENT_OBS:
             spec.error = (
                 f"이벤트 데이터 부족 ({len(event_series) if event_series is not None else 0}건)"
@@ -658,6 +660,12 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                                 _cv.meta.get("named_share", 0.0))
                     results.append(spec)
                     continue
+                # [A-1] 통과 + 단일 국가 지목 → 검정에서 그 국가만 필터(순수 대상 시계열).
+                # region에 섞인 타국 이벤트(예: korean_peninsula의 남한 시위) 배제.
+                if _cv.filter_country:
+                    spec._filter_country = _cv.filter_country
+                    logger.info("[A-1] IV 국가 필터 적용: %s → country=%s (%d건)",
+                                spec.h1[:40], _cv.filter_country, _cv.meta.get("named_n", 0))
 
         # ── [9-Q] 쿼리-우선 veto — spec.linear_testable을 쿼리 형태로 선행 무효화 ──
         _reason = _unq_reason(getattr(spec, "source_query", ""))

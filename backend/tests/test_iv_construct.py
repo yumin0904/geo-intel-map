@@ -36,20 +36,36 @@ def _check_keyword_matching() -> list[str]:
     return fails
 
 
+def _nk_count(start=date(2018, 1, 1), end=date(2026, 12, 31)) -> int:
+    p = probe_event_iv("korean_peninsula", start, end) or {}
+    return p.get("country_dist", {}).get("North Korea", 0)
+
+
 def _check_probe_and_assess() -> list[str]:
-    """7호 케이스: korean_peninsula 표본에 북한이 거의 없음 → FAIL, 국가 미특정 → None."""
+    """게이트는 '필터 후 절대량' 기준. 북한 데이터(CNS 미사일)가 ≥30이면 PASS+필터,
+    없으면 FAIL. 데이터 없는 대상(이란)은 FAIL, 국가 미특정 IV는 None(게이트 미적용)."""
     fails = []
     probe = probe_event_iv("korean_peninsula", date(2018, 1, 1), date(2026, 12, 31))
     if not probe or probe["n_events"] == 0:
         return ["korean_peninsula probe 비어있음 — DB(event_archive) 확인 필요"]
-    nk_share = probe["country_dist"].get("North Korea", 0) / probe["n_events"]
-    if nk_share >= 0.10:
-        fails.append(f"실측 전제 붕괴 — 북한 이벤트 share={nk_share:.2%}(≥10%). 데이터 변동 확인")
+    dist = probe["country_dist"]
 
+    nk_n = dist.get("North Korea", 0)
     v = assess_construct("북한의 미사일 도발 빈도 증가", probe)
-    if v is None or v.ok:
-        fails.append(f"북한 IV가 구성타당도 FAIL이 아님: {v}")
+    if nk_n >= 30:  # CNS 미사일 적재됨 → 필터로 순수 검정 가능
+        if v is None or not v.ok or v.filter_country != "North Korea":
+            fails.append(f"북한 데이터 {nk_n}건인데 PASS+필터(North Korea) 아님: {v}")
+    else:  # 데이터 없음 → 정직한 폐기
+        if v is None or v.ok:
+            fails.append(f"북한 데이터 부족({nk_n})인데 FAIL 아님: {v}")
 
+    # 데이터 없는 대상(korean_peninsula에 이란 이벤트 거의 없음) → FAIL
+    if dist.get("Iran", 0) < 30:
+        vi = assess_construct("이란 핵 프로그램 활동 빈도", probe)
+        if vi is None or vi.ok:
+            fails.append(f"이란 데이터 부족인데 FAIL 아님: {vi}")
+
+    # 국가 미특정 IV → None (게이트 미적용, 오탐 방지)
     v2 = assess_construct("ACLED korean_peninsula 지역의 월별 conflict 이벤트 건수", probe)
     if v2 is not None:
         fails.append(f"국가 미특정 IV가 게이트에 걸림(오탐): {v2}")
@@ -57,10 +73,8 @@ def _check_probe_and_assess() -> list[str]:
 
 
 def _check_integration() -> list[str]:
-    """통합: 북한 IV spec → verify_hypotheses가 검정 미수행 + 감사 메타 보존."""
+    """통합: 북한 IV spec → 데이터 있으면 A-1 필터로 검정, 없으면 폐기. 감사 메타 보존."""
     fails = []
-    # 실제 7호 경로: 이벤트(korean_peninsula)를 IV로, 시장지표(KRW=X)를 DV로 쓰는 Type_A.
-    # (Type_B는 별개로 이미 actor_filter 미구현 PENDING 처리 — 검정 안 함.)
     spec = HypothesisSpec(
         h1="북한의 미사일 도발이 증가할 때 원/달러 환율이 유의하게 상승한다",
         h0="관계 없음",
@@ -70,14 +84,24 @@ def _check_integration() -> list[str]:
         ticker="KRW=X",
         var_type="Type_A",
     )
+    # 게이트/검정이 실제로 쓰는 기간(_get_date_range = 최근 _LOOKBACK_MONTHS)의 북한 건수로
+    # 판정한다. 미사일은 sparse(24개월 lookback에 ~7건)라, 현 lookback에선 폐기가 정상.
+    # lookback 확대(방법론 결정)나 CNS 최신화 후에야 필터 검정이 성립 → 그때 이 분기가 뒤집힌다.
+    from services.hypothesis_verifier import _get_date_range
+    gs, ge = _get_date_range()
+    nk_n = _nk_count(gs, ge)
     r = asyncio.run(verify_hypotheses([spec]))[0]
-    if r.routing_method != "construct_validity_fail":
-        fails.append(f"routing_method가 construct_validity_fail 아님: {r.routing_method}")
-    if r.granger_p is not None:
-        fails.append(f"검정이 수행됨(granger_p={r.granger_p}) — 게이트 미작동")
-    mr = r.method_result or {}
-    if not mr.get("iv_construct"):
-        fails.append(f"감사 메타(iv_construct) 미보존: {mr}")
+    if not (r.method_result or {}).get("iv_construct"):
+        fails.append(f"감사 메타(iv_construct) 미보존: {r.method_result}")
+
+    if nk_n >= 30:  # 필터로 검정 — 폐기 아님, filter_country 적용
+        if r.routing_method == "construct_validity_fail":
+            fails.append(f"북한 데이터 {nk_n}건인데 construct_fail 폐기됨")
+        if getattr(r, "_filter_country", None) != "North Korea":
+            fails.append(f"A-1 필터 국가 미적용: {getattr(r, '_filter_country', None)}")
+    else:  # 현 lookback에 데이터 부족 → 정직한 폐기
+        if r.routing_method != "construct_validity_fail":
+            fails.append(f"북한 데이터 부족({nk_n})인데 폐기 안 됨: {r.routing_method}")
     return fails
 
 
