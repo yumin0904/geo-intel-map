@@ -55,3 +55,11 @@
   (test_routing_paths.py — '무기 수출'→ITA를 0.1초 검출) / 복수 정직 경로=any-of 리스트.
 - **최종**: v2 13/13 PASS (dormant 2 제외). latest.json은 33케이스 v9.28.0 스냅샷 유지 —
   차기 48케이스 풀런이 새 combined baseline.
+
+## 2026-07-08 — 첫 combined 풀런 (48케이스 체제, run 20260708 후반)
+
+- **46/47 PASS · FAIL 0**: legacy 33/33(공격적 변경에도 전원 생존) + v2 13/13. 오류 1=absent_dormant 타임아웃(미집계).
+- **비대칭 위반 0/48** — 위조 판정 클래스 풀 스케일 소멸 확정 (궤적 5→2→0→0).
+- **judge 인라인 전멸 재발(0/48) → 구조 확정**: 재시도로도 불가 — 병렬 생성이 NIM 포화.
+  하네스 영구 수정: 병렬 모드 judge는 생성 완료 후 **순차 후처리**(EVAL_SKIP_JUDGE 게이트).
+  이번 런 정성 지표는 tests/judge_backfill.py로 백필 — 완료 시 이 항목에 수치 추기.

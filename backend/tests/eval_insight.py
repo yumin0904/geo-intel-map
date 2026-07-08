@@ -626,7 +626,8 @@ def evaluate_case(
 
     if sse["error"]:
         print(f"  ❌ 오류: {sse['error']}")
-        return {"id": cid, "name": name, "error": sse["error"], "elapsed": sse["elapsed"]}
+        return {"id": cid, "name": name, "error": sse["error"], "elapsed": sse["elapsed"],
+                "block": case.get("block"), "dormant": case.get("dormant", False)}
 
     text       = sse["full_text"]
     hyp_events = sse["hypothesis_events"]
@@ -781,8 +782,10 @@ def evaluate_case(
             print(f"  🔍 방법론 정직성: {' · '.join(parts)} · 삼각측량={tcount}건")
 
     # [C1] 질적 평가 (LLM 심판) — 형식이 아닌 내용 채점
+    # EVAL_SKIP_JUDGE: 병렬 모드에선 인라인 채점 금지 — 생성 스트림이 NIM을 포화시켜
+    # judge 전멸(실측 0/48, 재시도 배선 후에도). main()이 생성 완료 후 순차 후처리.
     quality = None
-    if _JUDGE_ENABLED and text:
+    if _JUDGE_ENABLED and text and not os.getenv("EVAL_SKIP_JUDGE"):
         quality = _judge_quality(text)
         if quality:
             q4 = (quality["non_obviousness"] + quality["inference_honesty"]
@@ -1169,15 +1172,30 @@ def main() -> None:
         # I/O 바운드(NIM 생성·yfinance·judge 네트워크 대기)라 스레드 병렬로 큰 이득.
         # evaluate_case는 케이스별 독립(공유 상태 없음) — 스레드 안전. 순서는 무관(집계).
         from concurrent.futures import ThreadPoolExecutor, as_completed
-        print(f"⚡ 병렬 실행: 동시 {args.parallel}개")
+        print(f"⚡ 병렬 실행: 동시 {args.parallel}개 (judge는 생성 완료 후 순차 후처리)")
+        # judge 인라인 금지: 병렬 생성 스트림이 NIM을 포화시켜 judge가 전멸한다
+        # (실측 2026-07-08: 재시도 3회 배선 후에도 풀런 judged 0/48 — 인라인 자체가 문제).
+        # 생성 전부 완료 후 순차 채점 = 백필이 항상 성공했던 구조를 정규화.
+        import os as _os
+        _os.environ["EVAL_SKIP_JUDGE"] = "1"
         with ThreadPoolExecutor(max_workers=args.parallel) as ex:
             futs = {ex.submit(evaluate_case, case, retry_waits=retry_waits,
                               timeout=query_timeout): case for case in cases}
             for fut in as_completed(futs):
                 res = fut.result()
-                if args.no_save_text:
-                    res.pop("full_text", None)
                 results.append(res)
+        _os.environ.pop("EVAL_SKIP_JUDGE", None)
+        print("⚖️  judge 순차 후처리 시작…")
+        for res in results:
+            if res.get("full_text") and not res.get("error"):
+                q = _judge_quality(res["full_text"])
+                if q:
+                    res["quality"] = q
+        judged = sum(1 for r in results if r.get("quality"))
+        print(f"⚖️  judge 완료: {judged}/{len(results)}")
+        if args.no_save_text:
+            for res in results:
+                res.pop("full_text", None)
     else:
         for i, case in enumerate(cases):
             if i > 0:
