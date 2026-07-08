@@ -111,6 +111,28 @@ def probe_event_iv(region: str, start: date, end: date) -> dict | None:
             "event_type_dist": etype_dist, "country_srctype": country_srctype}
 
 
+def _probe_global_named_n(countries: list[str], start: date, end: date) -> int | None:
+    """창 내 '전체' event_archive에서 대상국 이벤트 수 — region 무관 (A/B 진단용).
+
+    construct_fail의 원인을 가른다: 대상 데이터가 다른 region엔 있으면 IV_MISROUTE
+    (region/IV 선택 오류 — 라우팅으로 해소 가능), 어디에도 없으면 DATA_ABSENT
+    (정직한 한계 — 수집만이 해소). 처방이 정반대라 구별 없이는 오진 (위원회 2026-07-08)."""
+    if not countries:
+        return None
+    try:
+        con = sqlite3.connect(_DB_PATH)
+        q = (
+            "SELECT COUNT(*) FROM event_archive "
+            "WHERE DATE(timestamp) BETWEEN ? AND ? "
+            f"AND json_extract(payload, '$.country') IN ({','.join('?' * len(countries))})"
+        )
+        n = con.execute(q, (start.isoformat(), end.isoformat(), *countries)).fetchone()[0]
+        con.close()
+        return int(n)
+    except Exception:
+        return None
+
+
 def _named_countries(iv_text: str) -> list[str]:
     """IV 텍스트가 명시적으로 지목한 국가(canonical) 목록. 한국어·영문 완전형 매칭."""
     low = iv_text.lower()
@@ -121,7 +143,8 @@ def _named_countries(iv_text: str) -> list[str]:
     return named
 
 
-def assess_construct(iv_text: str, probe: dict | None) -> ConstructVerdict | None:
+def assess_construct(iv_text: str, probe: dict | None,
+                     start: date | None = None, end: date | None = None) -> ConstructVerdict | None:
     """
     IV가 명시한 대상 국가가 실제 이벤트 표본에 충분히 있는지 판정.
 
@@ -167,9 +190,28 @@ def assess_construct(iv_text: str, probe: dict | None) -> ConstructVerdict | Non
     if named_n < _MIN_TARGET_N:
         reason = (
             f"[구성타당도] IV 지목 대상({'·'.join(named)}) 이벤트 {named_n}건 < {_MIN_TARGET_N} — "
-            f"검정 표본 부족(데이터 미수집). 표본 최다는 {top_country}({top_share:.0%}). "
-            f"필터해도 순수 시계열이 안 나옴 → 해당 대상 소스 수집 필요(data_gap)."
+            f"검정 표본 부족. 표본 최다는 {top_country}({top_share:.0%})."
         )
+        # ── A/B 진단 (위원회 2026-07-08): 데이터부재 vs 오라우팅 — 처방이 정반대 ──
+        fail_kind = None
+        if start and end:
+            g = _probe_global_named_n(named, start, end)
+            if g is not None:
+                meta["global_named_n"] = g
+                fail_kind = "IV_MISROUTE" if g >= _MIN_TARGET_N else "DATA_ABSENT"
+        meta["fail_kind"] = fail_kind
+        if fail_kind == "IV_MISROUTE":
+            reason += (
+                f" [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 {meta['global_named_n']}건 실재. "
+                f"데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]"
+            )
+        elif fail_kind == "DATA_ABSENT":
+            reason += (
+                " [진단: DATA_ABSENT — 창 내 전 지역에도 대상 데이터 없음. "
+                "정직한 한계(감점 대상 아님) → 소스 수집(data_gap)이 유일한 해소]"
+            )
+        else:
+            reason += " → 해당 대상 소스 수집 필요(data_gap)."
         return ConstructVerdict(ok=False, reason=reason, meta=meta, filter_country=None)
 
     # 충분 — filter_country로 순수 검정. 표본 오염(share 낮음)은 필터로 해소되므로 통과.

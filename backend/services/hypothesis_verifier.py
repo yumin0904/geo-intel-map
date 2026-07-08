@@ -640,6 +640,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 _cv = assess_construct(
                     getattr(spec, "independent_var", "") or spec.h1,
                     probe_event_iv(spec.region_code, start, end),
+                    start=start, end=end,  # A/B 진단(DATA_ABSENT vs IV_MISROUTE)용 창
                 )
             except Exception as _cv_exc:  # noqa: BLE001
                 logger.warning("[구성타당도] 프로브 실패(무시): %s", _cv_exc)
