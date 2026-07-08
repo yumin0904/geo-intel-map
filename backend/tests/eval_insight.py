@@ -546,6 +546,45 @@ def _is_retryable(sse: dict, required: list[str]) -> tuple[bool, str]:
     return False, ""
 
 
+# ── [골드셋 v2 — Lock 2 케이스판] 결정론 골드라벨 검사 3종 (검수 위원회 스펙) ──────
+def _check_construct_routing(hyp_summary: list[dict], expected_construct: str | None):
+    """expected_construct(valid_filter|DATA_ABSENT|IV_MISROUTE) vs 실측 대조. None=미라벨."""
+    if not expected_construct:
+        return None
+    observed = []
+    for h in hyp_summary:
+        ivc = (h.get("method_result") or {}).get("iv_construct")
+        if h.get("routing_method") == "construct_validity_fail":
+            observed.append((ivc or {}).get("fail_kind"))
+        elif ivc and ivc.get("filter_country"):
+            observed.append("valid_filter")
+    return expected_construct in observed
+
+
+def _check_expected_routing(hyp_summary: list[dict], expected_routing):
+    """str 또는 list(any-of). 리스트 허용 근거: 체제형 쿼리처럼 생성 문구에 따라
+    엔진이 '둘 다 정직한' 서로 다른 경로(8-gate structural vs 9-C pending)를 타는
+    케이스가 실측됨 — 단일값 골드가 오답이었다 (3차 검증 런)."""
+    if not expected_routing:
+        return None
+    allowed = expected_routing if isinstance(expected_routing, list) else [expected_routing]
+    routes = [h.get("routing_method") for h in hyp_summary]
+    return any(r in routes for r in allowed)
+
+
+def _check_expected_rival(rival_check: dict, expected_rival: dict | None):
+    """expected_rival 스펙(케이스 YAML) vs rival_check 실측 — C블록 기계화."""
+    if not expected_rival:
+        return None
+    for k, want in expected_rival.items():
+        if k == "theory_mentions_min":
+            if rival_check.get("theory_mentions", 0) < want:
+                return False
+        elif rival_check.get(k) != want:
+            return False
+    return True
+
+
 def evaluate_case(
     case: dict,
     retry_waits: tuple[int, int] = (15, 40),
@@ -561,6 +600,11 @@ def evaluate_case(
     exp_tags = expect.get("tags", [])
     exp_score = expect.get("min_score", 60)
     exp_h1    = expect.get("h1", False)
+    # [골드셋 v2] 신규 골드라벨 필드
+    exp_construct = case.get("expected_construct")
+    exp_routing   = case.get("expected_routing")
+    soft_routing  = case.get("soft_routing", False)   # True면 진단만, passed 미반영 (비결정론 경로)
+    exp_rival     = case.get("expected_rival")
 
     print(f"\n{'='*60}")
     print(f"▶ [{cid}] {name}")
@@ -661,11 +705,23 @@ def evaluate_case(
         # 프롬프트 재유도(comparator·intel_query)와 짝: 게이트가 막았어야 할 위반을 채점.
         and rival_check.get("no_verdict_on_unverified") is not False
     )
+    # [골드셋 v2 — Lock 2] 골드라벨 검사: None=미라벨(통과), False=골드 불일치(FAIL).
+    # A블록 거부-정답 케이스는 min_score:0이라 이 검사들이 유일한 실질 게이트다
+    # (검수 지적: 배선 없으면 엔진이 거부 안 해도 통과하는 false comfort).
+    construct_gold = _check_construct_routing(hyp_summary, exp_construct)
+    routing_gold   = _check_expected_routing(hyp_summary, exp_routing)
+    rival_gold     = _check_expected_rival(rival_check, exp_rival)
+    _gold_ok = (
+        construct_gold is not False
+        and (routing_gold is not False or soft_routing)   # soft: 진단만
+        and rival_gold is not False
+    )
     passed = (
         confidence >= exp_score
         and completeness >= 0.875   # 7/8 이상
         and (not exp_h1 or has_h1)
         and _integrity_ok
+        and _gold_ok
     )
 
     # 터미널 출력
@@ -740,6 +796,14 @@ def evaluate_case(
         "name": name,
         "mode": mode,
         "passed": passed,
+        # [골드셋 v2] 케이스 메타 + 골드 검사 결과 (legacy 분리 보고·RELABEL 감시용)
+        "block": case.get("block"),
+        "dormant": case.get("dormant", False),
+        "construct_gold": construct_gold,
+        "routing_gold": routing_gold,
+        "rival_gold": rival_gold,
+        "relabel_due": bool(case.get("label_asof")) and (
+            construct_gold is False or (routing_gold is False and not soft_routing)),
         "elapsed": sse["elapsed"],
         "confidence": confidence,
         "inference_grade": inference_grade,
@@ -763,14 +827,31 @@ def evaluate_case(
 # ── 종합 리포트 ───────────────────────────────────────────────────────────
 
 def _print_summary(results: list[dict]) -> None:
-    ok = [r for r in results if r.get("passed")]
-    fail = [r for r in results if not r.get("passed") and not r.get("error")]
-    err  = [r for r in results if r.get("error")]
+    # [골드셋 v2] dormant는 집계 제외 · legacy/v2 분리 보고 (계측 연속성 — DeepSeek 판례 규율)
+    active = [r for r in results if not r.get("dormant")]
+    dormant = [r for r in results if r.get("dormant")]
+    ok = [r for r in active if r.get("passed")]
+    fail = [r for r in active if not r.get("passed") and not r.get("error")]
+    err  = [r for r in active if r.get("error")]
 
-    total = len(results)
+    total = len(active)
     print(f"\n{'='*60}")
     print(f"📊 종합 결과: {len(ok)}/{total} PASS")
     print(f"  ✅ 통과: {len(ok)}  ❌ 실패: {len(fail)}  🔌 오류: {len(err)}")
+    legacy = [r for r in active if not r.get("block")]
+    v2     = [r for r in active if r.get("block")]
+    if v2:
+        lp = sum(1 for r in legacy if r.get("passed"))
+        vp = sum(1 for r in v2 if r.get("passed"))
+        print(f"  📐 legacy core: {lp}/{len(legacy)} | 골드셋 v2: {vp}/{len(v2)} "
+              f"(블록별: " + " ".join(
+                  f"{b}={sum(1 for r in v2 if r.get('block')==b and r.get('passed'))}/"
+                  f"{sum(1 for r in v2 if r.get('block')==b)}" for b in sorted({r['block'] for r in v2})) + ")")
+    if dormant:
+        print(f"  🌙 dormant(미집계): " + ", ".join(r["id"] for r in dormant))
+    relabel = [r for r in results if r.get("relabel_due")]
+    if relabel:
+        print(f"  ⚠️  RELABEL DUE (골드라벨 stale 의심): " + ", ".join(r["id"] for r in relabel))
 
     if fail:
         print("\n실패 케이스 요약:")
@@ -1123,7 +1204,8 @@ def main() -> None:
         "judge_provider": _JUDGE_PROVIDER,
         "judge_model": _JUDGE_MODEL,
         "total": len(results),
-        "passed": sum(1 for r in results if r.get("passed")),
+        "passed": sum(1 for r in results if r.get("passed") and not r.get("dormant")),
+        "total_active": sum(1 for r in results if not r.get("dormant")),   # dormant 제외 분모
         "results": results,
         "diagnosis": diagnosis,
     }
@@ -1136,7 +1218,7 @@ def main() -> None:
     print(f"💾 최신: {_OUT_DIR / 'latest.json'}")
 
     # 실패 케이스가 있으면 종료 코드 1 (CI 대응)
-    failed = sum(1 for r in results if not r.get("passed") and not r.get("error"))
+    failed = sum(1 for r in results if not r.get("passed") and not r.get("error") and not r.get("dormant"))
     sys.exit(1 if failed else 0)
 
 

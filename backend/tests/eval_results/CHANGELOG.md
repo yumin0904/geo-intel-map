@@ -39,3 +39,19 @@
   한 줄 공존" 하이브리드. 프롬프트 세칙 추가(정성 반대증거는 별도 기재 허용, 수치 변환·판정 근거 사용 금지)
   후 2케이스 재검 **2/2 PASS·위반 0**. 비대칭 위반 클래스 5→2→0 소멸. latest.json은 v9.28.0 정직
   스냅샷(31/33) 유지 — 혼합 런 프랑켄슈타인 방지. 차기 풀런에서 33/33 + 게이트 유지 기대.
+
+## 2026-07-08 — 골드셋 v2 (+15케이스, 48케이스 체제) 및 검증 4런 (v9.29.0)
+
+- **증설**: legacy 33 불변 + v2 15 (A 게이트정답 5 · B 준실험 4 · C 비대칭양면 3 · D 체제 3, dormant 2).
+  신규 골드필드: expected_construct/expected_routing(any-of)/expected_rival/soft_routing/label_asof/dormant.
+  하네스: Lock 2 골드검사 3종 → passed 배선, legacy/v2 분리 보고, dormant 미집계, RELABEL DUE 감시.
+- **검증 4런이 잡은 실결함 5종**:
+  1. 시그니처 사후계산화로 9-A/9-B 미구현 마킹 **dead code**(v9.18.2의 조용한 회귀) → 선분류 부활
+  2. NONLINEAR·COUNTERFACTUAL의 **granger 방법 치환** → 9-C/9-E 정직 PENDING (legacy 영향 0 실측)
+  3. 게이트 **자연 우회**: 생성이 IV에서 국가명 패러프레이즈 소실 → 국가추출 원 쿼리 확장(쿼리-우선)
+  4. verify [단계4] 템플릿 비대칭 세칙 누락(3번째 판정 형식) → 정합
+  5. '남한' region 미매핑·KOSPI 티커 부재 → 추가
+- **분업 원칙**: 문구 안정=e2e 골드 / 문구 민감(티커·강등)=고정 텍스트 단위테스트
+  (test_routing_paths.py — '무기 수출'→ITA를 0.1초 검출) / 복수 정직 경로=any-of 리스트.
+- **최종**: v2 13/13 PASS (dormant 2 제외). latest.json은 33케이스 v9.28.0 스냅샷 유지 —
+  차기 48케이스 풀런이 새 combined baseline.

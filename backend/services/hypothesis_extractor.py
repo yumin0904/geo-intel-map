@@ -229,7 +229,7 @@ _REGION_MAP: list[tuple[list[str], str]] = [
     (["우크라이나", "ukraine", "러시아", "russia", "동유럽", "eastern europe"], "eastern_europe"),
     (["대만", "taiwan", "남중국해", "south china", "반도체", "tsmc"], "taiwan_strait"),
     (["호르무즈", "hormuz", "이란", "iran", "걸프", "gulf", "페르시아"], "hormuz"),
-    (["한반도", "korean", "북한", "dprk", "조선"], "korean_peninsula"),
+    (["한반도", "korean", "북한", "dprk", "조선", "남한", "south korea"], "korean_peninsula"),  # 남한: 골드셋 v2가 검출한 공백
     (["동중국해", "east china", "센카쿠", "senkaku", "일본", "japan", "자위대", "jsdf"], "east_china_sea"),
     (["홍해", "red sea", "바브엘만데브", "bab el", "예멘", "후티", "houthi"], "bab_el_mandeb"),
     (["수에즈", "suez", "이집트", "egypt"], "suez"),
@@ -245,6 +245,7 @@ _TICKER_MAP: list[tuple[list[str], str, str]] = [
     # (키워드 목록, ticker, 설명)
     # AR-2: 구체 종속변수 우선 매칭 — 일반 'oil'보다 먼저 배치 (first-match)
     (["brent", "브렌트"], "BZ=F", "Brent 원유 선물"),
+    (["kospi", "코스피"], "^KS11", "KOSPI 지수"),  # 골드셋 v2 A4 — 한국 중심 엔진의 기본 DV
     (["대만 달러", "대만달러", "타이완 달러", "twd", "usd/twd", "신타이완달러"], "TWD=X", "대만 달러 환율"),
     (["위안", "위안화", "cny", "rmb", "런민비", "인민폐"], "CNY=X", "위안/달러 환율"),
     (["엔화", "엔/달러", "jpy", "달러엔", "엔달러"], "JPY=X", "엔/달러 환율"),

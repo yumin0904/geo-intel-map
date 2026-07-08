@@ -637,8 +637,13 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         if spec.region_code:
             try:
                 from services.methods.iv_construct import probe_event_iv, assess_construct
+                # 국가 추출은 IV 텍스트 + '원 쿼리'를 함께 본다 (v9.29.0 — 골드셋 검증 런 검출):
+                # 생성이 IV를 "한반도 이벤트"로 패러프레이즈하면 '북한'이 IV에서 사라져
+                # 게이트가 조용히 미적용되는 자연 발생 우회가 실측됨. 질문이 지목한 대상이
+                # 구성타당도의 기준이다 (9-Q 쿼리-우선 원칙의 게이트판).
                 _cv = assess_construct(
-                    getattr(spec, "independent_var", "") or spec.h1,
+                    f"{getattr(spec, 'independent_var', '') or spec.h1} "
+                    f"{getattr(spec, 'source_query', '') or ''}",
                     probe_event_iv(spec.region_code, start, end),
                     start=start, end=end,  # A/B 진단(DATA_ABSENT vs IV_MISROUTE)용 창
                 )
@@ -722,6 +727,37 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             spec.routing_confidence = "HIGH"   # 선언 판정은 명확 — 방법 오선택 아님
             spec.routing_alternatives = ["필요 데이터 확보 후 H1 재추출"]
             logger.info("[hypothesis] 정량 가설 없음 선언 → 검정 생략: %s", spec.h1[:60])
+            results.append(spec)
+            continue
+
+        # ── [v9.29.0 시그니처 선분류] 골드셋 v2 검증 런이 회귀 검출: 시그니처 할당이
+        # 사후 계산(결과 재구성 단계)뿐이라 라우팅 중 참조하는 9-A/9-B 미구현 마킹이
+        # dead code였다. 방법 선택 '전에' 데이터 모양을 알도록 여기서 선계산한다
+        # (classify의 has_ts 인자는 PAIRED 꼬리에만 영향 — 선계산 안전 확인됨).
+        from services.methods.router import classify_signature as _classify_sig
+        spec.data_signature = _classify_sig(
+            f"{getattr(spec, 'source_query', '')} {spec.h1} {spec.h0}",
+            linear_testable=spec.linear_testable,
+        )
+        # 9-C/9-E 미구현 시그니처 — 티커 성사 여부와 '무관하게' granger 대체 금지.
+        # 반사실(COUNTERFACTUAL)·임계전환(NONLINEAR) 질문을 쌍별 granger로 답하는 것은
+        # 방법 치환(질문이 바뀐 채 검정) — 정직한 미구현 선언이 옳은 행동 (골드 D블록).
+        # legacy 영향 0건 실측 (직전 33케이스 baseline에 두 시그니처 부재).
+        if spec.data_signature in ("NONLINEAR", "COUNTERFACTUAL"):
+            _mk = ("임계회귀·체제전환(9-C)" if spec.data_signature == "NONLINEAR"
+                   else "합성통제(9-E)")
+            spec.inference_grade = _LADDER_DESCRIPTIVE
+            spec.verification_status = "PENDING"
+            spec.inference_caveat = (
+                f"검정 불가 — 데이터 모양({spec.data_signature})의 전용 방법 {_mk}가 "
+                f"미구현. Granger로 대체하지 않음(방법 치환 방지). 서술·이론 근거만 가능."
+            )
+            spec.error = f"{spec.data_signature} 전용 방법 미구현 — 검정 보류"
+            spec.routing_method = _ROUTE_PENDING_METHOD
+            spec.routing_confidence = "HIGH"
+            spec.routing_alternatives = [f"{_mk} 구현 후 검정"]
+            logger.info("[hypothesis] 방법 미구현 PENDING (%s): %s",
+                        spec.data_signature, spec.h1[:60])
             results.append(spec)
             continue
 
@@ -1027,8 +1063,12 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             # 삼각측량 (단일 방법이면 convergence=None)
             tri = triangulate(method_results)
 
-            # 결과를 spec에 저장 (SSE에서 사용)
+            # 결과를 spec에 저장 (SSE에서 사용) — iv_construct 감사흔적 보존:
+            # 골드셋 v2의 valid_filter 관측(Lock 2)이 이 키에 의존한다 (검수 위원 지적:
+            # 기존엔 NO_TEST 경로만 보존돼 정상검정 케이스의 게이트 흔적이 소실됐음).
+            _prev_ivc = (s.method_result or {}).get("iv_construct")
             s.method_result = {
+                "iv_construct":     _prev_ivc,
                 "headline_rung":    tri.headline_rung,
                 "headline_method":  tri.headline_method,
                 "convergence":      tri.convergence,
