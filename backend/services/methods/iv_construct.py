@@ -18,7 +18,15 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
+import yaml
+
 _DB_PATH = Path(__file__).resolve().parents[2] / "db" / "intel.db"
+
+# episodic 정책계열 판정 임계 — granger_thresholds.yaml 단일 출처 (매직넘버 금지)
+_THR_PATH = Path(__file__).resolve().parents[2] / "config" / "granger_thresholds.yaml"
+_THR: dict = yaml.safe_load(_THR_PATH.read_text(encoding="utf-8"))
+_EPISODIC_TYPES: set[str] = set(_THR.get("episodic_policy_source_types", []))
+_EPISODIC_RATIO: float = _THR.get("episodic_dominance_ratio", 0.8)
 
 # 명시된 대상이 실제 이벤트 표본에서 이 비율 미만이면 '질문 대상 미측정'으로 판정.
 # 보수적 하한 — 대상이 10%도 안 되면 그 대상에 대한 검정이라 볼 수 없다. (2단계 config화 대상)
@@ -52,6 +60,11 @@ class ConstructVerdict:
     reason: str = ""
     meta: dict = field(default_factory=dict)
     filter_country: str | None = None
+    # episodic 정책계열(미사일 발사 등 의도적 단일행위자 정책 행위)이면 True.
+    # ok=True(데이터 충분)와 직교 — 데이터는 있으나 선형 Granger가 부적합하다는 뜻.
+    # construct_fail(데이터 문제)과 반드시 구별할 것: 이건 방법 문제다 (lookback 판례).
+    episodic_policy: bool = False
+    episodic_reason: str = ""
 
 
 def probe_event_iv(region: str, start: date, end: date) -> dict | None:
@@ -64,11 +77,12 @@ def probe_event_iv(region: str, start: date, end: date) -> dict | None:
             """
             SELECT json_extract(payload, '$.country')    AS country,
                    json_extract(payload, '$.event_type') AS etype,
+                   source_type                            AS stype,
                    COUNT(*)                               AS n
             FROM event_archive
             WHERE region_code = ?
               AND DATE(timestamp) BETWEEN ? AND ?
-            GROUP BY country, etype
+            GROUP BY country, etype, stype
             """,
             (region, start.isoformat(), end.isoformat()),
         ).fetchall()
@@ -78,17 +92,23 @@ def probe_event_iv(region: str, start: date, end: date) -> dict | None:
 
     country_dist: dict[str, int] = {}
     etype_dist: dict[str, int] = {}
+    # 국가별 source_type 구성 — episodic 정책계열 판정용 (예: North Korea → missile_test 97건)
+    country_srctype: dict[str, dict[str, int]] = {}
     total = 0
-    for country, etype, n in rows:
+    for country, etype, stype, n in rows:
         total += n
         key_c = country if country else "(미상)"
         country_dist[key_c] = country_dist.get(key_c, 0) + n
         key_e = etype if etype else "(미상)"
         etype_dist[key_e] = etype_dist.get(key_e, 0) + n
+        key_s = stype if stype else "(미상)"
+        country_srctype.setdefault(key_c, {})[key_s] = \
+            country_srctype.setdefault(key_c, {}).get(key_s, 0) + n
 
     if total == 0:
         return None
-    return {"n_events": total, "country_dist": country_dist, "event_type_dist": etype_dist}
+    return {"n_events": total, "country_dist": country_dist,
+            "event_type_dist": etype_dist, "country_srctype": country_srctype}
 
 
 def _named_countries(iv_text: str) -> list[str]:
@@ -153,4 +173,25 @@ def assess_construct(iv_text: str, probe: dict | None) -> ConstructVerdict | Non
         return ConstructVerdict(ok=False, reason=reason, meta=meta, filter_country=None)
 
     # 충분 — filter_country로 순수 검정. 표본 오염(share 낮음)은 필터로 해소되므로 통과.
-    return ConstructVerdict(ok=True, reason="", meta=meta, filter_country=filter_country)
+    # ── episodic 정책계열 판정 (위원회 2026-07-08) ──────────────────────────────
+    # 필터 후 표본이 의도적 정책행위 이벤트(missile_test 등)로 지배되면, 데이터는 충분해도
+    # 선형 Granger는 부적합하다 — 정책 주도 카운트는 체제변수(2018=0·2022=69 급변)라
+    # 8-gate 원칙상 구조적 논증/비선형 검정 대상. lookback 판례의 코드화:
+    # "낮은 검정력의 원인이 sparse(방법)인가 stale(데이터)인가 먼저 갈라라".
+    episodic_policy = False
+    episodic_reason = ""
+    if filter_country and _EPISODIC_TYPES:
+        stype_dist = probe.get("country_srctype", {}).get(filter_country, {})
+        ep_n = sum(n for s, n in stype_dist.items() if s in _EPISODIC_TYPES)
+        ep_share = ep_n / named_n if named_n else 0.0
+        meta["episodic_share"] = round(ep_share, 3)
+        if ep_share >= _EPISODIC_RATIO:
+            episodic_policy = True
+            ep_types = "·".join(sorted(s for s in stype_dist if s in _EPISODIC_TYPES))
+            episodic_reason = (
+                f"IV가 의도적 정책행위 계열(source_type={ep_types}, {ep_n}건/{named_n}건="
+                f"{ep_share:.0%}) — 데이터는 충분하나 정책 주도 episodic 카운트는 체제변수라 "
+                f"선형 Granger 부적합(방법 문제, 데이터 문제 아님)"
+            )
+    return ConstructVerdict(ok=True, reason="", meta=meta, filter_country=filter_country,
+                            episodic_policy=episodic_policy, episodic_reason=episodic_reason)

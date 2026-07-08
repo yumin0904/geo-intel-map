@@ -299,10 +299,23 @@ def _check_rival_comparison(text: str) -> dict:
         rival_section, re.IGNORECASE
     ))
     has_numbers = bool(re.search(r"\d+[\.\d]*\s*(%|Mbpd|bn|억|조|건|회|달러|USD)", rival_section))
+    # [채택② 2026-07-08] '전제충족(DV 미검증)'을 정직한 종결로 인정 — 정직 표기가
+    # comparative 채점에서 감점되던 구조(정직성 처벌)를 제거.
     has_rejection = bool(re.search(
-        r"(기각|우세|열세|설명력|반례|한계|부분적|불충분|초과|미달|더 높|더 낮)", rival_section
+        r"(기각|우세|열세|설명력|반례|한계|부분적|불충분|초과|미달|더 높|더 낮"
+        r"|전제\s*충족|DV\s*미검증)", rival_section
     ))
     comparative = theory_mentions >= 2 and (has_numbers or has_rejection)
+
+    # [채택② 2026-07-08] 비대칭 검출 — DV 부재([UNVERIFIED]·정량값 부재)인 이론 블록에
+    # 우세/열세 판정이 찍히면 위반: context 침묵을 실측값으로 위조한 비교 층
+    # affirming-the-null (실측: us_china rival이 [UNVERIFIED] 표기 옆에 '차질 없음'을
+    # 발명해 열세 판정 — 태그와 판정이 공존해 기존 렌즈를 모두 통과하던 패턴).
+    verdict_on_unverified: list[str] = []
+    for chunk in re.split(r"\n\s*\n", rival_section):
+        if re.search(r"\[UNVERIFIED\]|정량값\s*부재|DV\s*부재", chunk) and \
+           re.search(r"판정\s*:[^\n]*(우세|열세)", chunk):
+            verdict_on_unverified.append(chunk.strip()[:60])
 
     quantitative = has_prediction and has_measured
     return {
@@ -313,6 +326,8 @@ def _check_rival_comparison(text: str) -> dict:
         "has_numbers_in_rival": has_numbers,
         "quantitative_comparison": quantitative,
         "comparative_comparison": comparative,   # 완화 기준
+        "no_verdict_on_unverified": len(verdict_on_unverified) == 0,
+        "verdict_on_unverified_cases": verdict_on_unverified,
     }
 
 
@@ -636,6 +651,9 @@ def evaluate_case(
         method_integrity.get("no_laundering") is not False
         and method_integrity.get("no_exploratory_leak") is not False
         and method_integrity.get("no_construct_launder") is not False
+        # [채택②] DV 부재 이론에 우세/열세 판정 = 침묵의 실측 위조 — FAIL.
+        # 프롬프트 재유도(comparator·intel_query)와 짝: 게이트가 막았어야 할 위반을 채점.
+        and rival_check.get("no_verdict_on_unverified") is not False
     )
     passed = (
         confidence >= exp_score

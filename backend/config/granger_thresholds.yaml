@@ -13,6 +13,14 @@ p_verified: 0.05    # VERIFIED (선행성) 판정 상한
 p_partial: 0.15     # PARTIAL (상관·경향성) 판정 상한
 p_extreme_verified: 0.05   # 극단(P90) 검정 유의 임계
 
+# episodic 정책행위 계열 — 선형 Granger 부적합 판정 (위원회 2026-07-08)
+# 판정 신호는 source_type(데이터 소스 설계 시점에 선언되는 이벤트 클래스)이다.
+# 형태 프로브(과분산·0-달 비율)는 캘리브레이션에서 기각됨: ACLED 계열이 수집 배치
+# 아티팩트 탓에 미사일보다 과분산(var/mean 200~3747 vs 6.1) — 판별력 없음.
+# 의미론 판정은 쿼리별 튜닝이 불가능한 사전선언(북한 특례 아님 — 어느 나라든 적용).
+episodic_policy_source_types: ["missile_test"]  # 단일 행위자의 의도적 정책 행위 계열
+episodic_dominance_ratio: 0.8   # A-1 필터 후 표본에서 이 비율 이상이면 episodic 판정
+
 # 분석 기간
 lookback_months: 24        # Granger 이벤트 시계열 조회 기간 (개월)
 # ⚠️ 확대 금지 (평가 위원회 2026-07-06, 3위원 만장 기각). 북한 미사일 sparse 검정을

@@ -10,6 +10,7 @@ Token-Zero 원칙: LLM 없이 정규식+키워드 매핑만 사용.
 """
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -260,6 +261,37 @@ _TICKER_MAP: list[tuple[list[str], str, str]] = [
 
 # ── 정규식 ────────────────────────────────────────────────────────────────────
 
+logger = logging.getLogger(__name__)
+
+# ── [채택③ 2026-07-08] 논평 분리 — 자기비평 섹션·메타판정 문장은 가설이 아니다 ──
+# 실측(latest.json 65가설): 12건이 '### [동사 자기검열]' 섹션의 "- H1: ... → 판정" 재인용
+# 불릿에서 유령 포집됨(그중 1건은 VERIFIED 등급까지 취득 = 등급 세탁). 실 H1은 [가설] 블록에
+# 별도로 살아 있어 섹션 제거는 손실 0·오탐 0 (정상 53건 전부 비-자기검열 유래 실증).
+_RE_SECTION_HEADER = re.compile(r'^#{1,6}\s')
+_RE_BLOCK_BOUNDARY = re.compile(r'^(#{1,6}\s|\[[가-힣]+\s*\d*\]|---)')
+# 심층방어 가드 — 화살표+메타판정 어휘 '동시' 존재만 기각 (단독 신호 금지:
+# 실측에서 '**'·'수준' 단독 필터는 정상 H1을 오탐했다 — 위원회 오탐 0 조건).
+_RE_META_COMMENTARY = re.compile(
+    r'인과 동사|상관 수준|선행성 수준|표현으로|동사[는가]|사용 불가|정당함|자기검열'
+    r'|상관적|인과적 표현|수준에 부합|표현.{0,4}적절|언어로')
+
+
+def _strip_self_censor_sections(text: str) -> str:
+    """'### [동사 자기검열]' 류 자기비평 섹션을 통째 제거 — H1 재인용 유령 포집 원천 차단."""
+    out, skip = [], False
+    for ln in text.split('\n'):
+        if skip:
+            if _RE_BLOCK_BOUNDARY.match(ln) and '자기검열' not in ln:
+                skip = False
+            else:
+                continue
+        if _RE_SECTION_HEADER.match(ln) and '자기검열' in ln:
+            skip = True
+            continue
+        out.append(ln)
+    return '\n'.join(out)
+
+
 # H1 가설 추출 패턴 — insight/verify 모드 모두 지원
 # 예1: [가설] H1: "X가 증가할 때..."             (insight 모드, 같은 줄)
 # 예2: [가설]\nH1: "X가 증가할 때..."             (insight 모드, 다음 줄)
@@ -411,9 +443,18 @@ def extract_hypotheses(
     specs: list[HypothesisSpec] = []
     _default_region = default_regions[0] if default_regions else None
 
+    # [채택③] 1차: 자기비평 섹션 구조 스트립 (노이즈 출처 정면 타격, 오탐 0 실증)
+    text = _strip_self_censor_sections(text)
+
     for m in _RE_H1.finditer(text):
         h1_raw = m.group(1).strip()
         if not h1_raw or len(h1_raw) < 10:
+            continue
+
+        # [채택③] 2차 가드(심층방어): 섹션 밖으로 샌 논평 대비 — 복합 AND 신호만 기각.
+        # 폐기는 반드시 로깅: 필터가 실 H1을 잡아먹지 않는지 감사 가능해야 한다.
+        if '→' in h1_raw and _RE_META_COMMENTARY.search(h1_raw):
+            logger.info("[extract] 논평 폐기(비가설): %s", h1_raw[:60])
             continue
 
         # 통제변수 추출 (H1 텍스트 내 또는 인근 줄)

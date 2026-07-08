@@ -666,6 +666,15 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     spec._filter_country = _cv.filter_country
                     logger.info("[A-1] IV 국가 필터 적용: %s → country=%s (%d건)",
                                 spec.h1[:40], _cv.filter_country, _cv.meta.get("named_n", 0))
+                # [episodic 정책계열 — 위원회 2026-07-08] 필터 대상이 의도적 정책행위
+                # 이벤트(missile_test 등)로 구성되면 선형 Granger 부적합 — linear_testable을
+                # 꺼서 아래 8-gate 경로로 구조적 논증에 보낸다. construct_fail(데이터 부족)과
+                # 구별되는 방법 문제: reason에 "데이터는 충분"이 명시돼 표면에서 갈린다.
+                if _cv.episodic_policy and spec.linear_testable:
+                    spec.linear_testable = False
+                    spec.testability_reason = _cv.episodic_reason
+                    logger.info("[episodic] 선형검정 제외(데이터 충분·방법 부적합): %s",
+                                spec.h1[:50])
 
         # ── [9-Q] 쿼리-우선 veto — spec.linear_testable을 쿼리 형태로 선행 무효화 ──
         _reason = _unq_reason(getattr(spec, "source_query", ""))
