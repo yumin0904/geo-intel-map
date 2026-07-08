@@ -59,7 +59,7 @@
 
 ## (B) 질적·보고서 (분석에 인용 시 개별 서지 표기)
 
-2차 가공·해석이 포함된 자료는 사용할 때마다 **개별 APA7 서지**로 표기한다(예: 본 발표의 CSIS·War on the Rocks 보고서 → `presentation_russia_ukraine.md` 참고문헌 절). 데이터셋 단위로 일괄 인용하지 않는다.
+2차 가공·해석이 포함된 자료는 사용할 때마다 **개별 APA7 서지**로 표기한다(예: 본 발표의 CSIS·War on the Rocks 보고서 → `presentation/presentation_russia_ukraine.md` 참고문헌 절). 데이터셋 단위로 일괄 인용하지 않는다.
 
 ---
 

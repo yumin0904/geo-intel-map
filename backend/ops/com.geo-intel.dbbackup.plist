@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.geo-intel.dbbackup</string>
+
+    <!-- 주 1회 일요일 22:00. collect 잡(09/21시)과 안 겹치는 시각.
+         Mac이 잠자던 시각의 실행은 깨어날 때 1회 보충됨 (Weekday 0 = 일요일) -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>0</integer>
+        <key>Hour</key><integer>22</integer>
+        <key>Minute</key><integer>0</integer>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/kang-yumin/Projects/geo-intel-map/backend/ops/db_backup.sh</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend/logs/dbbackup_launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend/logs/dbbackup_launchd.log</string>
+
+    <!-- 등록 직후 자동 1회 실행은 하지 않음 (검증은 launchctl kickstart로 수동) -->
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
