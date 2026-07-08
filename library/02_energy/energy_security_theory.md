@@ -32,6 +32,10 @@ rival_theories:
   - "Resource Weaponization (Hirschman) — 에너지는 공급자의 정치적 무기, 단순 안보 이상"
   - "Rentier State Theory — 에너지 안보의 공급측 행위자(렌티어 국가)의 정치 논리"
   - "Weaponized Interdependence (Farrell & Newman) — 에너지 의존이 강압 취약성"
+related:
+  - "[[resource_weaponization]]"
+  - "[[weaponized_interdependence]]"
+  - "[[rentier_state_theory]]"
 ---
 
 ## 핵심 주장

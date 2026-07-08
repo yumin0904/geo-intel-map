@@ -19,6 +19,9 @@ theorists:
 theory_id: sanction_un_sc_mali
 title: '제재: 말리 (UN, EU, US)'
 year: 2017
+related:
+  - "[[proxy_war_theory]]"
+  - "[[gray_zone_strategy]]"
 ---
 
 ## 개요

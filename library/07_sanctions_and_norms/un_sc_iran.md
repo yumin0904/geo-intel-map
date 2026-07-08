@@ -21,6 +21,10 @@ theorists:
 theory_id: sanction_un_sc_iran
 title: '제재: 이란 (UN, US, EU, UK)'
 year: 2006
+related:
+  - "[[resource_weaponization]]"
+  - "[[chokepoint_sloc]]"
+  - "[[nuclear_nonproliferation_theory]]"
 ---
 
 ## 개요

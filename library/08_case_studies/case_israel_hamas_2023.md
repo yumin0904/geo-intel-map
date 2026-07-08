@@ -19,6 +19,10 @@ regions:
 - middle_east
 - hormuz
 - bab_el_mandeb
+related:
+  - "[[prospect_theory_ir]]"
+  - "[[proxy_war_theory]]"
+  - "[[case_houthi_red_sea_2023]]"
 ---
 
 ## 사건 개요

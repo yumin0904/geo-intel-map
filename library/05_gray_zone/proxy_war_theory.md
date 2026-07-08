@@ -32,6 +32,10 @@ rival_theories:
   - "Gray Zone Strategy (Mazarr) — 프록시는 회색지대의 한 도구, 전략 전체가 아님"
   - "Hybrid Warfare (Hoffman) — 정규·비정규 동시 사용, 프록시는 비정규의 부분집합"
   - "Coercive Diplomacy (Schelling) — 직접 위협이 더 신뢰성 높은 강압 수단"
+related:
+  - "[[hybrid_warfare]]"
+  - "[[gray_zone_strategy]]"
+  - "[[case_houthi_red_sea_2023]]"
 ---
 
 ## 핵심 주장

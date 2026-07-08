@@ -31,6 +31,11 @@ rival_theories:
   - "Techno-Globalism (기술은 본질적으로 초국경 — 봉쇄 불가능)"
   - "Weaponized Interdependence (자립이 아니라 초크포인트 활용이 핵심 레버)"
   - "Digital Iron Curtain (분절은 기술이 아니라 정치 진영화의 결과)"
+related:
+  - "[[techno_globalism]]"
+  - "[[dual_use_technology]]"
+  - "[[semiconductor_supply_chain]]"
+  - "[[case_chips_act_2022]]"
 ---
 
 ## 핵심 주장

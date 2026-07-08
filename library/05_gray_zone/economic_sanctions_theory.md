@@ -32,6 +32,10 @@ rival_theories:
   - "Coercive Diplomacy (Schelling/George) — 군사 위협이 경제 제재보다 신뢰성 높은 강압"
   - "Liberal Institutionalism (Keohane) — 제재보다 제도적 협상이 더 효과적 정책 변화 유도"
   - "Weaponized Interdependence (Farrell & Newman) — 제재는 상호의존 무기화의 하위 사례"
+related:
+  - "[[resource_weaponization]]"
+  - "[[weaponized_interdependence]]"
+  - "[[coercive_diplomacy]]"
 ---
 
 ## 핵심 주장

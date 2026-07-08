@@ -32,6 +32,10 @@ rival_theories:
   - "Cyber Deterrence Theory (Libicki) — 귀속보다 전반적 억지 체계가 우선"
   - "Cyber Offense-Defense Balance (Lynn) — 귀속 자체가 공격자의 비용 구조를 바꾸지 못함"
   - "Cognitive Warfare — 귀속 의도가 기술 특정보다 내러티브 구성에 있음"
+related:
+  - "[[libicki_cyber_deterrence]]"
+  - "[[cyber_offense_defense_balance]]"
+  - "[[cognitive_warfare]]"
 ---
 
 ## 핵심 주장

@@ -33,6 +33,11 @@ rival_theories:
   - "Conventional Deterrence Theory"
   - "Gray Zone Strategy (Mazarr)"
   - "Coercive Diplomacy"
+related:
+  - "[[gray_zone_strategy]]"
+  - "[[proxy_war_theory]]"
+  - "[[information_warfare]]"
+  - "[[case_ukraine_invasion_2022]]"
 ---
 
 ## 핵심 주장

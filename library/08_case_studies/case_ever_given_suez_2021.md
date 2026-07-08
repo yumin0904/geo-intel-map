@@ -18,6 +18,10 @@ regions:
 - suez
 - bab_el_mandeb
 - red_sea
+related:
+  - "[[chokepoint_sloc]]"
+  - "[[mahan_sea_power]]"
+  - "[[case_houthi_red_sea_2023]]"
 ---
 
 ## 사건 개요

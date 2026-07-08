@@ -32,6 +32,10 @@ rival_theories:
   - "Hegemonic Stability Theory (Kindleberger)"
   - "Balance of Threat Theory (Walt)"
   - "Nuclear Deterrence Theory"
+related:
+  - "[[burden_sharing_theory]]"
+  - "[[extended_deterrence]]"
+  - "[[offshore_balancing]]"
 ---
 
 ## 핵심 주장

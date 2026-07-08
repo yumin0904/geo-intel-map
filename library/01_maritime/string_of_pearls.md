@@ -31,6 +31,10 @@ rival_theories:
   - "Debt-Trap Diplomacy (목적은 군사 거점이 아니라 경제적 영향력)"
   - "Commercial Logic (순수 무역 인프라 — 안보 해석은 과잉 위협 인식)"
   - "Place-not-Base (거점은 '기지'가 아닌 '기항지'에 그침)"
+related:
+  - "[[mahan_sea_power]]"
+  - "[[chokepoint_sloc]]"
+  - "[[resource_weaponization]]"
 ---
 
 ## 핵심 주장

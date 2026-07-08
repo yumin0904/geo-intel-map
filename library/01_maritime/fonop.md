@@ -30,6 +30,10 @@ rival_theories:
   - "Gray Zone Strategy (FONOP은 무력충돌 임계 이하라 억지 효과 없음)"
   - "Lawfare (실제 통제는 항행이 아니라 법적 주장 경쟁이 결정)"
   - "Sea Control (실효 지배가 통항 시위보다 우선)"
+related:
+  - "[[gray_zone_strategy]]"
+  - "[[lawfare]]"
+  - "[[salami_slicing]]"
 ---
 
 ## 핵심 주장

@@ -32,6 +32,10 @@ rival_theories:
   - "Resource Weaponization (Hirschman) — 광물은 에너지와 동일한 자원 무기화 메커니즘 적용"
   - "Techno-Globalism (Rosecrance) — 시장이 대체·혁신으로 공급 위기 자체 해결"
   - "Techno-Nationalism — 핵심 광물 자급화가 가능·필요한 전략 목표"
+related:
+  - "[[resource_weaponization]]"
+  - "[[semiconductor_supply_chain]]"
+  - "[[techno_nationalism]]"
 ---
 
 ## 핵심 주장

@@ -30,6 +30,10 @@ rival_theories:
   - "Offensive Realism (Mearsheimer)"
   - "Balance of Threat Theory (Walt)"
   - "Hegemonic Stability Theory (Kindleberger)"
+related:
+  - "[[mearsheimer_offensive_realism]]"
+  - "[[security_dilemma]]"
+  - "[[alliance_theory]]"
 ---
 
 ## 핵심 주장

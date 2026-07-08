@@ -29,6 +29,9 @@ rival_theories:
   - "Efficient Market (디스카운트는 합리적 리스크 반영 — 비효율 아님)"
   - "Corporate Governance Theory (지정학보다 지배구조가 주원인)"
   - "Sectoral Composition (저PBR 산업 구성 효과 — 지정학과 무관)"
+related:
+  - "[[extended_deterrence]]"
+  - "[[granger_causality]]"
 ---
 
 ## 핵심 주장

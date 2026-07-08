@@ -20,6 +20,11 @@ regions:
 - suez
 - hormuz
 - red_sea
+related:
+  - "[[chokepoint_sloc]]"
+  - "[[gray_zone_strategy]]"
+  - "[[proxy_war_theory]]"
+  - "[[un_sc_houthis_yemen]]"
 ---
 
 ## 사건 개요

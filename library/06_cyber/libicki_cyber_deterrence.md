@@ -32,6 +32,10 @@ rival_theories:
   - "Nuclear Deterrence (classical)"
   - "Cyber Offense-Defense Balance Theory"
   - "Digital Iron Curtain"
+related:
+  - "[[apt_attribution_theory]]"
+  - "[[cyber_offense_defense_balance]]"
+  - "[[nuclear_taboo_theory]]"
 ---
 
 ## 핵심 주장

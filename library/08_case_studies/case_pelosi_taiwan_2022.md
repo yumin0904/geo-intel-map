@@ -18,6 +18,10 @@ year: 2022
 regions:
 - taiwan_strait
 - south_china_sea
+related:
+  - "[[semiconductor_supply_chain]]"
+  - "[[alliance_theory]]"
+  - "[[case_joint_sword_2023]]"
 ---
 
 ## 사건 개요

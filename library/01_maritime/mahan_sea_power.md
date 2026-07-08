@@ -31,6 +31,10 @@ rival_theories:
   - "Mackinder Land Power Theory"
   - "A2/AD Strategy"
   - "Corbett Limited Sea Control"
+related:
+  - "[[string_of_pearls]]"
+  - "[[chokepoint_sloc]]"
+  - "[[corbett_sea_control]]"
 ---
 
 ## 핵심 주장

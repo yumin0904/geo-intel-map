@@ -32,6 +32,10 @@ rival_theories:
   - "Gray Zone Strategy (Mazarr) — 살라미는 회색지대 전략의 하위 전술"
   - "Coercive Diplomacy (Schelling) — 가시적 위협이 점진적 침식보다 효과적 강압"
   - "FONOP / Sea Control — 항행의 자유로 살라미를 역전 가능 (논쟁)"
+related:
+  - "[[gray_zone_strategy]]"
+  - "[[fonop]]"
+  - "[[lawfare]]"
 ---
 
 ## 핵심 주장

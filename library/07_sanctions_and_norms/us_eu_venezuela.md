@@ -19,6 +19,8 @@ theorists:
 theory_id: sanction_us_eu_venezuela
 title: '제재: 베네수엘라 (US, EU, CA)'
 year: 2015
+related:
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

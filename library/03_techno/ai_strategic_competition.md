@@ -31,6 +31,10 @@ rival_theories:
   - "Techno-Globalism (Rosecrance) — AI는 협력 플랫폼, 봉쇄보다 공유가 혁신 가속"
   - "Digital Iron Curtain — 국가별 AI 생태계 분절화가 양방향 기술 이전 차단"
   - "Dual-Use Technology Control — AI 모델보다 칩 수출 통제가 더 실효적 레버"
+related:
+  - "[[semiconductor_supply_chain]]"
+  - "[[dual_use_technology]]"
+  - "[[techno_globalism]]"
 ---
 
 ## 핵심 주장

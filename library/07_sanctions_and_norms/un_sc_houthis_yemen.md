@@ -21,6 +21,11 @@ theorists:
 theory_id: sanction_un_sc_houthis_yemen
 title: '제재: 후티 (예멘) (US, UK, UN)'
 year: 2024
+related:
+  - "[[chokepoint_sloc]]"
+  - "[[gray_zone_strategy]]"
+  - "[[proxy_war_theory]]"
+  - "[[case_houthi_red_sea_2023]]"
 ---
 
 ## 개요

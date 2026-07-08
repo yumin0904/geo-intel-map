@@ -20,6 +20,8 @@ theorists:
 theory_id: sanction_us_eu_myanmar
 title: '제재: 미얀마 (군사정권) (US, EU, UK, CA)'
 year: 2021
+related:
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

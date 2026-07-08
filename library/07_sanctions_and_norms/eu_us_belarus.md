@@ -20,6 +20,9 @@ theorists:
 theory_id: sanction_eu_us_belarus
 title: '제재: 벨라루스 (EU, US, UK, CA)'
 year: 2020
+related:
+  - "[[hybrid_warfare]]"
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

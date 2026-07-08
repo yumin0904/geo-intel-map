@@ -32,6 +32,10 @@ rival_theories:
   - "Cyberwar 회의론 (Rid — 정보전은 새 전쟁이 아니라 첩보·전복의 디지털 연장)"
   - "Propaganda Theory (전통 선전과 본질적 차이 없음 — 매체만 변화)"
   - "Resilience Theory (효과는 공격 강도가 아니라 표적 사회 회복력이 결정)"
+related:
+  - "[[cognitive_warfare]]"
+  - "[[hybrid_warfare]]"
+  - "[[case_ukraine_invasion_2022]]"
 ---
 
 ## 핵심 주장

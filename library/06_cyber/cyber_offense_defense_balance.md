@@ -33,6 +33,10 @@ rival_theories:
   - "Cyber Deterrence Theory (Libicki) — 귀속 명확화로 억지 가능"
   - "Digital Iron Curtain — 네트워크 분절화로 공격 면적 축소"
   - "Security Dilemma in Cyberspace — 방어 투자가 공격 역량으로 오인"
+related:
+  - "[[libicki_cyber_deterrence]]"
+  - "[[apt_attribution_theory]]"
+  - "[[digital_iron_curtain]]"
 ---
 
 ## 핵심 주장

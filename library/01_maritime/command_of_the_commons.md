@@ -32,6 +32,11 @@ rival_theories:
   - "Offshore Balancing — 공유지 지배는 과잉 팽창, 역외균형으로 충분"
   - "A2/AD Strategy — 도전국의 공유지 거부 전략이 공유지 지배를 형해화"
   - "Corbett Limited Sea Control — 완전 제해권보다 제한적 통제가 비용 효율적"
+related:
+  - "[[mahan_sea_power]]"
+  - "[[a2ad_strategy]]"
+  - "[[offshore_balancing]]"
+  - "[[corbett_sea_control]]"
 ---
 
 ## 핵심 주장

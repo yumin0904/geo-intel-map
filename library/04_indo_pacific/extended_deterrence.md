@@ -30,6 +30,10 @@ rival_theories:
   - "Proliferation Optimism (Waltz — 동맹국 자체 핵이 오히려 안정적)"
   - "Alliance Reassurance Theory (공약보다 제도화·핵공유가 안심을 결정)"
   - "Security Dilemma (억제 강화가 오히려 군비경쟁·긴장 유발)"
+related:
+  - "[[alliance_theory]]"
+  - "[[nuclear_nonproliferation_theory]]"
+  - "[[korea_discount]]"
 ---
 
 ## 핵심 주장

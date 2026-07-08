@@ -33,6 +33,11 @@ rival_theories:
   - "Resource Weaponization (초크포인트는 물리 통제가 아니라 자원 무기화 수단)"
   - "Command of the Commons (미 해군의 압도적 제해권이 초크포인트 봉쇄를 무력화)"
   - "Self-deterrence / Insurance Markets (실제 봉쇄보다 보험·자기억지 인식이 교란을 결정)"
+related:
+  - "[[mahan_sea_power]]"
+  - "[[command_of_the_commons]]"
+  - "[[resource_weaponization]]"
+  - "[[corbett_sea_control]]"
 ---
 
 ## 핵심 주장

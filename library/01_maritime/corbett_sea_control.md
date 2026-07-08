@@ -32,6 +32,10 @@ rival_theories:
   - "Mahan Sea Power (결전·제해권 절대 장악 우선)"
   - "Command of the Commons (미 해군 압도적 우위로 Corbett 전략 무력화)"
   - "A2/AD Strategy — Corbett 해양거부의 현대 기술 버전"
+related:
+  - "[[mahan_sea_power]]"
+  - "[[a2ad_strategy]]"
+  - "[[command_of_the_commons]]"
 ---
 
 ## 핵심 주장

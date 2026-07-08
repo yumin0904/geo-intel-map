@@ -32,6 +32,10 @@ rival_theories:
   - "Power Transition Theory (Organski) — 패권이 아닌 전이 시점이 결정적"
   - "Liberal Institutionalism (Keohane & Nye) — 제도가 패권 없이 질서 유지"
   - "Balance of Power (Waltz) — 단극이 아닌 다극 균형이 안정"
+related:
+  - "[[power_transition_theory]]"
+  - "[[liberal_institutionalism]]"
+  - "[[burden_sharing_theory]]"
 ---
 
 ## 핵심 주장

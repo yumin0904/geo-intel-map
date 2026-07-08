@@ -31,6 +31,10 @@ rival_theories:
   - "Techno-Nationalism — 수출 통제보다 자국 기술 자급이 근본 해결책"
   - "Techno-Globalism (Rosecrance) — 기술 통제는 혁신 속도를 낮추어 장기적으로 통제국에 손해"
   - "AI Strategic Competition — 칩 통제보다 알고리즘·데이터 생태계 우위가 결정적"
+related:
+  - "[[semiconductor_supply_chain]]"
+  - "[[techno_nationalism]]"
+  - "[[ai_strategic_competition]]"
 ---
 
 ## 핵심 주장

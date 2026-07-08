@@ -23,6 +23,11 @@ theorists:
 theory_id: sanction_un_eu_us_russia_2022
 title: '제재: 러시아 (EU, US, UK, JP, CA, AU)'
 year: 2022
+related:
+  - "[[weaponized_interdependence]]"
+  - "[[resource_weaponization]]"
+  - "[[economic_sanctions_theory]]"
+  - "[[case_ukraine_invasion_2022]]"
 ---
 
 ## 개요

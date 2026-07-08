@@ -18,6 +18,10 @@ year: 2023
 regions:
 - taiwan_strait
 - south_china_sea
+related:
+  - "[[semiconductor_supply_chain]]"
+  - "[[weaponized_interdependence]]"
+  - "[[case_pelosi_taiwan_2022]]"
 ---
 
 ## 사건 개요

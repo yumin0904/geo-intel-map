@@ -19,6 +19,8 @@ theorists:
 theory_id: sanction_un_sc_sudan
 title: '제재: 수단 (UN, US, EU)'
 year: 2004
+related:
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

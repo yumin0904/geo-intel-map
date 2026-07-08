@@ -32,6 +32,10 @@ rival_theories:
   - "Coercive Diplomacy (Schelling/George) — 에스컬레이션은 강압의 하위 수단, 독립 이론 아님"
   - "Conventional Deterrence Theory — 사다리 이론보다 능력 균형이 결정적"
   - "Nuclear Taboo Theory (Tannenwald) — 규범이 에스컬레이션 사다리의 핵 단계를 구조적으로 차단"
+related:
+  - "[[coercive_diplomacy]]"
+  - "[[nuclear_taboo_theory]]"
+  - "[[gray_zone_strategy]]"
 ---
 
 ## 핵심 주장

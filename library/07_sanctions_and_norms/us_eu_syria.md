@@ -21,6 +21,9 @@ theorists:
 theory_id: sanction_us_eu_syria
 title: '제재: 시리아 (US, EU, UK, CA)'
 year: 2011
+related:
+  - "[[economic_sanctions_theory]]"
+  - "[[hybrid_warfare]]"
 ---
 
 ## 개요

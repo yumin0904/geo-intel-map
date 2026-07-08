@@ -32,6 +32,10 @@ rival_theories:
   - "Liberal Hegemony (Ikenberry) — 자유주의 국제질서 유지를 위한 전방배치 패권 불가피"
   - "Primacy Theory — 압도적 우위 유지가 최선의 억지"
   - "Alliance Entrapment Theory (Snyder) — 역외균형은 동맹 방기(abandonment) 위험 극대화"
+related:
+  - "[[mearsheimer_offensive_realism]]"
+  - "[[command_of_the_commons]]"
+  - "[[alliance_theory]]"
 ---
 
 ## 핵심 주장

@@ -30,6 +30,11 @@ rival_theories:
   - "Defensive Realism (Waltz)"
   - "Liberal Interdependence (Keohane & Nye)"
   - "Hegemonic Stability Theory"
+related:
+  - "[[waltz_defensive_realism]]"
+  - "[[democratic_peace_theory]]"
+  - "[[power_transition_theory]]"
+  - "[[offshore_balancing]]"
 ---
 
 ## 핵심 주장

@@ -32,6 +32,10 @@ rival_theories:
   - "Sea Control (실효 지배가 법적 주장보다 우선)"
   - "FONOP — 항행의 자유 실증으로 법적 주장에 물리적 반박"
   - "Salami Slicing — 법적 주장과 병행되는 물리적 점진 침식"
+related:
+  - "[[fonop]]"
+  - "[[gray_zone_strategy]]"
+  - "[[salami_slicing]]"
 ---
 
 ## 핵심 주장

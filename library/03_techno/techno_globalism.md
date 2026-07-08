@@ -32,6 +32,10 @@ rival_theories:
   - "Digital Iron Curtain — 기술 블록화가 불가피, 세계주의는 이상"
   - "Weaponized Interdependence (Farrell & Newman) — 상호의존이 강압 수단으로 전환"
 era: unipolar
+related:
+  - "[[techno_nationalism]]"
+  - "[[semiconductor_supply_chain]]"
+  - "[[digital_iron_curtain]]"
 ---
 
 ## 핵심 주장

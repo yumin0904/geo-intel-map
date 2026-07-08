@@ -19,6 +19,11 @@ regions:
 - taiwan_strait
 - south_china_sea
 - korean_peninsula
+related:
+  - "[[semiconductor_supply_chain]]"
+  - "[[techno_nationalism]]"
+  - "[[weaponized_interdependence]]"
+  - "[[us_entity_list_china]]"
 ---
 
 ## 사건 개요

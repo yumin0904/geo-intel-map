@@ -31,6 +31,10 @@ rival_theories:
   - "Liberal Interdependence (Keohane & Nye)"
   - "Balance of Power (Waltz)"
   - "Resource Weaponization (Hirschman)"
+related:
+  - "[[resource_weaponization]]"
+  - "[[semiconductor_supply_chain]]"
+  - "[[techno_nationalism]]"
 ---
 
 ## 핵심 주장

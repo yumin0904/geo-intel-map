@@ -31,6 +31,10 @@ rival_theories:
   - "Alliance Dilemma (Snyder) — 비용분담보다 연루-방기 딜레마가 동맹 행동 더 잘 설명"
   - "Liberal Institutionalism (Keohane) — NATO 제도가 무임승차 문제를 정보 공유·규범으로 관리"
   - "Hegemonic Stability Theory — 패권국은 장기적 이익을 위해 무임승차를 묵인"
+related:
+  - "[[alliance_theory]]"
+  - "[[hegemonic_stability_theory]]"
+  - "[[extended_deterrence]]"
 ---
 
 ## 핵심 주장

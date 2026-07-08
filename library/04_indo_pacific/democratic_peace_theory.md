@@ -31,6 +31,10 @@ rival_theories:
   - "Offensive Realism (Mearsheimer) — 민주주의보다 권력 구조가 전쟁 결정, 민주 평화는 허구"
   - "Liberal Institutionalism (Keohane) — 제도·상호의존이 민주주의보다 더 강한 평화 조건"
   - "Power Transition Theory (Organski) — 민주주의 여부보다 국력 전이·불만족이 전쟁 결정"
+related:
+  - "[[mearsheimer_offensive_realism]]"
+  - "[[liberal_institutionalism]]"
+  - "[[constructivism]]"
 ---
 
 ## 핵심 주장

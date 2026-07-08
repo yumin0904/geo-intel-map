@@ -31,6 +31,10 @@ rival_theories:
   - "Realism (Waltz·Mearsheimer) — 물질적 힘의 분포가 규범·정체성을 결정, 역 인과"
   - "Liberal Institutionalism (Keohane) — 제도·상호의존이 행동 변화의 주 동인, 규범은 부수적"
   - "Democratic Peace Theory (Doyle) — 정체성(민주 vs 비민주) 구분이 행동 변화의 핵심 — 구성주의와 부분 중첩"
+related:
+  - "[[mearsheimer_offensive_realism]]"
+  - "[[liberal_institutionalism]]"
+  - "[[democratic_peace_theory]]"
 ---
 
 ## 핵심 주장

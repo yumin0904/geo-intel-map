@@ -32,6 +32,10 @@ rival_theories:
   - "Balance of Threat Theory (Walt) — 힘 아닌 위협 인식이 군비 결정"
   - "Deterrence Theory — 군비 증강이 억지 효과로 안보 증진"
   - "Offensive Realism (Mearsheimer) — 나선이 아닌 패권 추구가 동기"
+related:
+  - "[[waltz_defensive_realism]]"
+  - "[[a2ad_strategy]]"
+  - "[[alliance_theory]]"
 ---
 
 ## 핵심 주장

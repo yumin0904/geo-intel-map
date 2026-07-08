@@ -32,6 +32,10 @@ rival_theories:
   - "Compellence vs Deterrence 구분 비판 — 실제 사례에서 경계 모호"
   - "Conventional Deterrence Theory — 위협보다 실제 방어 능력이 결정적"
   - "Liberal Institutionalism (Keohane) — 제도·경제 상호의존이 강압보다 효과적"
+related:
+  - "[[escalation_theory]]"
+  - "[[conventional_deterrence]]"
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 핵심 주장

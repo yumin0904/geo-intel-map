@@ -32,6 +32,10 @@ rival_theories:
   - "Information Warfare (정보전) — 인지전은 정보전의 하위 범주 vs 독립 개념 논쟁"
   - "Propaganda Theory (Bernays) — 전통 선전과 본질적 차이 없음, 매체만 변화"
   - "Resilience Theory — 효과는 공격 강도가 아니라 표적 사회 회복력이 결정"
+related:
+  - "[[information_warfare]]"
+  - "[[apt_attribution_theory]]"
+  - "[[gray_zone_strategy]]"
 ---
 
 ## 핵심 주장

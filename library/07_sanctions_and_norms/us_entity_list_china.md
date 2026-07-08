@@ -18,6 +18,11 @@ theorists:
 theory_id: sanction_us_entity_list_china
 title: '제재: 중국 기술기업 (미 Entity List) (US)'
 year: 2019
+related:
+  - "[[techno_nationalism]]"
+  - "[[weaponized_interdependence]]"
+  - "[[semiconductor_supply_chain]]"
+  - "[[case_chips_act_2022]]"
 ---
 
 ## 개요

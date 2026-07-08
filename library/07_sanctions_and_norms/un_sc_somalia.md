@@ -18,6 +18,9 @@ theorists:
 theory_id: sanction_un_sc_somalia
 title: '제재: 소말리아 (UN)'
 year: 1992
+related:
+  - "[[chokepoint_sloc]]"
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

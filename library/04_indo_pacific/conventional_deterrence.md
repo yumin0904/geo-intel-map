@@ -32,6 +32,10 @@ rival_theories:
   - "Nuclear Deterrence Theory — 재래식 억지는 핵 억지의 보완재에 불과"
   - "Coercive Diplomacy (Schelling) — 실제 전력보다 위협의 신뢰성이 결정적"
   - "A2/AD Strategy — 재래식 억지의 비대칭 현대화 형태"
+related:
+  - "[[coercive_diplomacy]]"
+  - "[[a2ad_strategy]]"
+  - "[[extended_deterrence]]"
 ---
 
 ## 핵심 주장

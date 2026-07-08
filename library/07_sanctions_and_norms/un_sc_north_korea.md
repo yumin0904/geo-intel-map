@@ -22,6 +22,9 @@ theorists:
 theory_id: sanction_un_sc_north_korea
 title: '제재: 북한 (UN, US, EU, JP, KR)'
 year: 2006
+related:
+  - "[[nuclear_nonproliferation_theory]]"
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

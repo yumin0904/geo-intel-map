@@ -33,6 +33,10 @@ rival_theories:
   - "Weaponized Interdependence (Farrell & Newman)"
   - "Liberal Interdependence (Keohane & Nye)"
   - "Commodity Power Theory"
+related:
+  - "[[weaponized_interdependence]]"
+  - "[[energy_security_theory]]"
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 핵심 주장

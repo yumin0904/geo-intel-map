@@ -31,6 +31,11 @@ rival_theories:
   - "Liberal Interdependence (상호의존이 충돌 억지 — 양안 무역이 침공 비용 상승)"
   - "Techno-Nationalism (자급 추구가 집중 리스크를 정책적으로 해소)"
   - "Weaponized Interdependence (집중이 무기가 아니라 미국의 대중 초크포인트 레버리지)"
+related:
+  - "[[weaponized_interdependence]]"
+  - "[[techno_nationalism]]"
+  - "[[case_chips_act_2022]]"
+  - "[[case_joint_sword_2023]]"
 ---
 
 ## 핵심 주장

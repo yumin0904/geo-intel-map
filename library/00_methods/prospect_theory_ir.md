@@ -32,6 +32,9 @@ rival_theories:
   - "Expected Utility Theory (Bueno de Mesquita) — 지도자는 기대 효용 극대화 합리 행위자"
   - "Poliheuristic Theory (Mintz) — 두 단계 결정: 국내 수용성 필터 → 합리 최적화 선택"
   - "Psychological Realism (Jervis) — 인지 편향·이미지·역사 오인이 위기 결정의 핵심 동인"
+related:
+  - "[[escalation_theory]]"
+  - "[[coercive_diplomacy]]"
 ---
 
 ## 핵심 주장

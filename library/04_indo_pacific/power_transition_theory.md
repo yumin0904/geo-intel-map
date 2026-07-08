@@ -32,6 +32,10 @@ rival_theories:
   - "Hegemonic Stability Theory (Kindleberger) — 패권국 존재 자체가 안정, 전이 불필요"
   - "Defensive Realism (Waltz) — 구조가 전쟁 억제, 국력 격차가 아닌 균형이 핵심"
   - "Liberal Peace Theory — 민주국가 간·고상호의존 국가 간 전쟁 억제"
+related:
+  - "[[hegemonic_stability_theory]]"
+  - "[[mearsheimer_offensive_realism]]"
+  - "[[gray_zone_strategy]]"
 ---
 
 ## 핵심 주장

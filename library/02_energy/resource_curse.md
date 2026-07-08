@@ -31,6 +31,9 @@ rival_theories:
   - "Institutional Quality Theory (저주의 진짜 원인은 자원이 아니라 제도)"
   - "Rentier State Theory (조세 없는 통치가 권위주의를 강화하는 메커니즘 보완)"
   - "Prebisch-Singer (1차산품 교역조건 장기 악화가 원인)"
+related:
+  - "[[rentier_state_theory]]"
+  - "[[resource_weaponization]]"
 ---
 
 ## 핵심 주장

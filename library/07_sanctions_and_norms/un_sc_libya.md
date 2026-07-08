@@ -19,6 +19,8 @@ theorists:
 theory_id: sanction_un_sc_libya
 title: '제재: 리비아 (UN, EU, US)'
 year: 2011
+related:
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

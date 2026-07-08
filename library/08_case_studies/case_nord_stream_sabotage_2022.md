@@ -17,6 +17,10 @@ year: 2022
 regions:
 - ukraine
 - eastern_europe
+related:
+  - "[[resource_weaponization]]"
+  - "[[hybrid_warfare]]"
+  - "[[weaponized_interdependence]]"
 ---
 
 ## 사건 개요

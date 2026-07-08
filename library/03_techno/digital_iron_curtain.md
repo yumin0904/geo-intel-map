@@ -32,6 +32,10 @@ rival_theories:
   - "Multi-Stakeholder Internet Governance"
   - "Techno-Globalism"
   - "Techno-Nationalism"
+related:
+  - "[[techno_nationalism]]"
+  - "[[cyber_sovereignty]]"
+  - "[[techno_globalism]]"
 ---
 
 ## 핵심 주장

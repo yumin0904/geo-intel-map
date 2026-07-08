@@ -32,6 +32,10 @@ rival_theories:
   - "Hegemonic Stability Theory (Kindleberger) — 패권 없이 제도만으로 질서 불가"
   - "Offensive Realism (Mearsheimer) — 제도는 국가 이익의 도구, 자율 변수 아님"
   - "Weaponized Interdependence (Farrell & Newman) — 상호의존이 협력이 아닌 강압 수단으로 전환"
+related:
+  - "[[hegemonic_stability_theory]]"
+  - "[[mearsheimer_offensive_realism]]"
+  - "[[weaponized_interdependence]]"
 ---
 
 ## 핵심 주장

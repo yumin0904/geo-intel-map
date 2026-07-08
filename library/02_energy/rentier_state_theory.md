@@ -31,6 +31,9 @@ rival_theories:
   - "Institutional Quality Theory — 저주의 진짜 원인은 자원이 아니라 제도 취약성"
   - "Resource Curse Theory (Sachs & Warner) — 경제 경로 의존성이 정치보다 선행"
   - "Prebisch-Singer — 1차산품 교역조건 장기 악화가 개발 함정의 구조적 원인"
+related:
+  - "[[resource_curse]]"
+  - "[[energy_security_theory]]"
 ---
 
 ## 핵심 주장

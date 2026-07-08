@@ -31,6 +31,10 @@ rival_theories:
   - "Power Projection Theory"
   - "AirSea Battle Doctrine (JOAC)"
   - "Mahan Sea Power Theory"
+related:
+  - "[[command_of_the_commons]]"
+  - "[[corbett_sea_control]]"
+  - "[[semiconductor_supply_chain]]"
 ---
 
 ## 핵심 주장

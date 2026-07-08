@@ -17,6 +17,9 @@ theorists:
 theory_id: sanction_us_cuba_embargo
 title: '제재: 쿠바 (US)'
 year: 1962
+related:
+  - "[[economic_sanctions_theory]]"
+  - "[[weaponized_interdependence]]"
 ---
 
 ## 개요

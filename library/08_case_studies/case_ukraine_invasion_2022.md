@@ -21,6 +21,11 @@ regions:
 - eastern_europe
 - bab_el_mandeb
 - hormuz
+related:
+  - "[[resource_weaponization]]"
+  - "[[weaponized_interdependence]]"
+  - "[[mearsheimer_offensive_realism]]"
+  - "[[case_nord_stream_sabotage_2022]]"
 ---
 
 ## 사건 개요

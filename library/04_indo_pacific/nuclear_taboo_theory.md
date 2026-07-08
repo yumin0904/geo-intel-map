@@ -32,6 +32,10 @@ rival_theories:
   - "Nuclear Deterrence Theory (Waltz) — 핵 금기가 아닌 상호확증파괴(MAD) 계산이 핵 억지의 진짜 원인"
   - "Conventional Deterrence Theory — 재래식 균형이 핵 사용 문턱을 규범보다 효과적으로 높임"
   - "Escalation Theory (Kahn) — 핵 금기는 허구, 사다리의 방화선은 전략적 계산으로만 존재"
+related:
+  - "[[nuclear_nonproliferation_theory]]"
+  - "[[escalation_theory]]"
+  - "[[conventional_deterrence]]"
 ---
 
 ## 핵심 주장

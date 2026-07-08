@@ -19,6 +19,8 @@ theorists:
 theory_id: sanction_un_eu_haiti
 title: '제재: 아이티 (UN, US, CA)'
 year: 2022
+related:
+  - "[[economic_sanctions_theory]]"
 ---
 
 ## 개요

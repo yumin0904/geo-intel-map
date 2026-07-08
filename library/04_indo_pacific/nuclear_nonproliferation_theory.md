@@ -31,6 +31,9 @@ rival_theories:
   - "Nuclear Taboo Theory (Tannenwald) — 규범이 비확산보다 실제 핵 사용 억제에 더 중요"
   - "Nuclear Deterrence Theory (Waltz) — 핵 확산이 오히려 상호 억지를 강화해 안정적"
   - "Alliance Dilemma (Snyder) — 핵우산 보장 미비가 동맹국의 독자 핵 개발 동기를 창출"
+related:
+  - "[[nuclear_taboo_theory]]"
+  - "[[extended_deterrence]]"
 ---
 
 ## 핵심 주장

@@ -32,6 +32,11 @@ rival_theories:
   - "Hybrid Warfare Theory (Hoffman)"
   - "Conventional Deterrence Theory"
   - "Coercive Diplomacy (George)"
+related:
+  - "[[salami_slicing]]"
+  - "[[hybrid_warfare]]"
+  - "[[lawfare]]"
+  - "[[fonop]]"
 ---
 
 ## 핵심 주장

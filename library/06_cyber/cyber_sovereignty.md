@@ -31,6 +31,10 @@ rival_theories:
   - "Cognitive Warfare (du Cluzel) — 사이버 주권은 허위정보 통제를 위한 합리적 방어 수단"
   - "APT Attribution Theory — 주권 장벽이 귀속 증거 수집을 방해하는 이중 효과"
   - "Digital Iron Curtain — 사이버 주권은 디지털 장막의 규범적 정당화"
+related:
+  - "[[digital_iron_curtain]]"
+  - "[[cognitive_warfare]]"
+  - "[[apt_attribution_theory]]"
 ---
 
 ## 핵심 주장

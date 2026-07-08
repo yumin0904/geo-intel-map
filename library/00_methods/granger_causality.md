@@ -31,6 +31,9 @@ rival_theories:
   - "Structural VAR (Sims)"
   - "Cointegration Analysis (Engle-Granger)"
   - "Counterfactual Causal Inference (Rubin)"
+related:
+  - "[[korea_discount]]"
+  - "[[semiconductor_supply_chain]]"
 ---
 
 ## 핵심 주장
