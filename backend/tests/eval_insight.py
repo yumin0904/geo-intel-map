@@ -128,24 +128,30 @@ def _judge_via_nim(prompt: str) -> str | None:
     base = os.getenv("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1").rstrip("/")
     if not key:
         return None
-    try:
-        r = httpx.post(
-            f"{base}/chat/completions",
-            headers={"Authorization": f"Bearer {key}"},
-            # max_tokens 4000: deepseek-v4-pro는 추론모델이라 <think>가 예산을 먼저
-            # 소진한다. 800이면 사고 후 최종 JSON을 못 뱉어 채점이 None으로 떨어지고
-            # (위원회 2026-07-06: judged 12/33 = 절단 로터리), 어느 케이스가 채점될지
-            # 통제 불가해진다. 4000으로 <think>+답변 예산 확보 → 커버리지 안정화.
-            json={"model": _JUDGE_MODEL,
-                  "messages": [{"role": "user", "content": prompt}],
-                  "temperature": 0.2, "max_tokens": 4000},
-            timeout=180,
-        )
-        if r.status_code != 200:
-            return None
-        return r.json()["choices"][0]["message"]["content"]
-    except Exception:
-        return None
+    # 재시도 3회 백오프: --parallel 실행 시 생성+judge 동시 스트림이 NIM 동시성
+    # 한도에 걸리면 429/5xx가 나는데, 재시도 없이 None을 삼키면 채점이 조용히
+    # 소실된다 (실측 2026-07-08: 병렬 6에서 judged 0/33). 생성 경로엔 재시도가
+    # 있었고 judge에만 없었던 비대칭이 원인.
+    for wait in (0, 10, 30):
+        if wait:
+            time.sleep(wait)
+        try:
+            r = httpx.post(
+                f"{base}/chat/completions",
+                headers={"Authorization": f"Bearer {key}"},
+                # max_tokens 4000: deepseek-v4-pro는 추론모델이라 <think>가 예산을 먼저
+                # 소진한다. 800이면 사고 후 최종 JSON을 못 뱉어 채점이 None으로 떨어짐
+                # (위원회 2026-07-06: judged 12/33 = 절단 로터리).
+                json={"model": _JUDGE_MODEL,
+                      "messages": [{"role": "user", "content": prompt}],
+                      "temperature": 0.2, "max_tokens": 4000},
+                timeout=180,
+            )
+            if r.status_code == 200:
+                return r.json()["choices"][0]["message"]["content"]
+        except Exception:
+            pass
+    return None
 
 
 def _judge_quality(full_text: str) -> dict | None:
