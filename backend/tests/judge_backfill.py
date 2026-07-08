@@ -7,7 +7,8 @@ arch = sorted(glob.glob('tests/eval_results/20260708_*.json'))[-1]
 d = json.load(open(latest)); ok = 0
 for i, r in enumerate(d['results']):
     t = r.get('full_text', '')
-    if not t or r.get('error'):
+    # 기채점 스킵: 재실행 시 성공분 29건을 재채점하면 쿼터 낭비 + 미채점 도달 전 429 재유발
+    if not t or r.get('error') or r.get('quality'):
         continue
     q = _judge_quality(t)
     if q: r['quality'] = q; ok += 1
