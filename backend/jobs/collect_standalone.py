@@ -187,6 +187,7 @@ def main() -> int:
         run_un_news_batch,
         run_policy_think_tank_batch,
         run_govinfo_batch,
+        run_mofa_press_batch,
     )
     from jobs.prediction_scoring_job import run_prediction_scoring_batch
 
@@ -203,6 +204,7 @@ def main() -> int:
         ("un_news", run_un_news_batch),                  # UN News RSS
         ("policy_think_tank", run_policy_think_tank_batch),
         ("govinfo", run_govinfo_batch),                  # 대통령 성명 (1차 사료)
+        ("mofa_press", run_mofa_press_batch),             # 외교부 보도자료 (20일 미배선 배선)
         ("archive_cycle", archive.run_full_cycle),       # TTL 이관·삭제
         ("prediction_scoring", run_prediction_scoring_batch),  # Phase 10-2 만기 예측 채점
     ]

@@ -9,16 +9,35 @@
 #   어디에도 선언돼 있지 않아 빠진 소스를 아무도 못 잡는다"는 것 — 이
 #   파일이 그 선언이다.
 #
+# 판례: geo-os 20260709-data-audit-committee (로스터 스키마 3필드 확장)
+#   배경: trigger(누가 언제 돌리는지)·backfillable(과거분 채울 수 있는지)이
+#   문서 어디에도 선언돼 있지 않아 손으로 먹인 메타데이터가 코드와 조용히
+#   어긋났다. spotcheck 검사 6이 trigger 선언을 collect_standalone.py·
+#   main.py 실물과 대조해 이 필드들이 썩지 않게 한다.
+#
 # 필드 계약:
 #   source_id            고유 슬러그
 #   name                 사람이 읽는 이름
-#   kind                 live(스케줄 수집) | seed(정적 1회 적재) | manual(수동/온디맨드)
+#   kind                 live(스케줄 수집) | seed(정적 1회 적재) | annual(연간 릴리스 소스,
+#                         seed와 적재 방식은 같으나 정기 갱신이 실재함) | manual(수동/온디맨드)
 #   connector             connectors/ 또는 scripts/ 하위 구현 경로 (없으면 null)
 #   job                   collect_standalone의 잡 이름 (live 중 실제 배선된 것만, 아니면 null)
 #   db_table              신선도 대조 테이블 (없으면 null)
 #   timestamp_col         신선도 판정에 쓸 컬럼 (수집 시각을 반영하는 컬럼 우선 — 아래 참고)
 #   filter                공유 테이블에서 소스 구분용 SQL WHERE절 (전용 테이블이면 null)
-#   max_staleness_hours   경보 임계값 (live+job 있는 항목만. 없으면 null=경보 비활성)
+#   max_staleness_hours   경보 임계값 (live+job 있는 항목만. 없으면 null=경보 비활성.
+#                         kind: annual은 10000h(약 14개월, 연 릴리스+버퍼) 관행값 — collect_standalone의
+#                         _check_staleness는 kind=="live"만 대조하므로 현재는 정보 선언용)
+#   trigger               launchd(collect_standalone.py, launchd 잡으로 하루 2회) |
+#                         server(main.py APScheduler, FastAPI 서버 프로세스 생존 시에만) |
+#                         on_demand(요청 시점에만 호출, DB 미적재·스케줄 없음) |
+#                         manual(seed CLI 스크립트 수동 실행 또는 정적 config 수동 편집).
+#                         launchd·server 이중 등재 소스는 트리거 실제 주기가 더 촘촘한
+#                         launchd를 primary로 선언하고 notes에 server 병행 사실을 남긴다.
+#   backfillable          true(소스 자체가 역사적 데이터를 공개해 과거분을 소급 적재할 수 있음 —
+#                         GDELT·V-Dem·WGI류) | false(전진 누적만 가능, 과거분 소급 불가 —
+#                         aisstream·opensky 같은 실시간 스냅샷 스트림). 백필 가능 소스는
+#                         "누적이 쌓일 때까지 대기"가 게이트가 아니라는 뜻 — 즉시 과거분 적재 가능.
 #   notes                 근거 1줄
 #
 # timestamp_col 선택 원칙 (실측으로 확정):
@@ -43,7 +62,9 @@ sources:
     timestamp_col: created_at
     filter: "json_extract(payload,'$.data_source')='GDELT'"
     max_staleness_hours: 48
-    notes: "서버 스케줄 15분이나 실제 실행은 launchd 1일2회(collect_standalone) — 그 갭을 흡수하도록 48h"
+    trigger: launchd
+    backfillable: true
+    notes: "서버 스케줄 15분이나 실제 실행은 launchd 1일2회(collect_standalone) — 그 갭을 흡수하도록 48h. server 15분 병행(main.py gdelt_pipeline)"
 
   - source_id: gdelt_gkg
     name: "GDELT GKG (테마 보강)"
@@ -54,6 +75,8 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: launchd
+    backfillable: true
     notes: "gdelt 파이프라인 내 결합(services/gdelt_pipeline.py) — 독립 테이블 없음, 신선도는 gdelt 항목이 대표"
 
   - source_id: acled
@@ -65,6 +88,8 @@ sources:
     timestamp_col: created_at
     filter: "json_extract(payload,'$.data_source')='ACLED'"
     max_staleness_hours: 240
+    trigger: launchd
+    backfillable: true
     notes: "ACLED 자체 갱신이 주간 단위 + 학술 tier event_date 지연(최대~14개월, timestamp 사용 불가) — 240h(10일)로 완충. 판례 20260709 재등록 대상"
 
   # ── 물리 센서 (sensor_snapshots 테이블) ─────────────────────────────────
@@ -77,7 +102,9 @@ sources:
     timestamp_col: timestamp
     filter: "source_type='fire'"
     max_staleness_hours: 48
-    notes: "위성 관측시각 자체가 준실시간(TTL 24h) — timestamp(관측시각) 그대로 사용, 48h 여유"
+    trigger: launchd
+    backfillable: true
+    notes: "위성 관측시각 자체가 준실시간(TTL 24h) — timestamp(관측시각) 그대로 사용, 48h 여유. server 6h 병행(main.py firms_sensor)"
 
   # ── 언론·정책 보도자료 (fetched_at = 수집 시각 기준, pub_date 아님) ──────
   - source_id: nk_press
@@ -89,6 +116,8 @@ sources:
     timestamp_col: fetched_at
     filter: null
     max_staleness_hours: 72
+    trigger: launchd
+    backfillable: true
     notes: "서버 스케줄 6h, 실제는 launchd 1일2회 — fetched_at은 원문 발행일(pub_date)이 아닌 수집 시각"
 
   - source_id: un_news
@@ -100,7 +129,9 @@ sources:
     timestamp_col: fetched_at
     filter: null
     max_staleness_hours: 72
-    notes: "피드가 topic 1개뿐이라 실패 시 전체 소스 손실 — 감사에서 network 예외 처리 수리 대상"
+    trigger: launchd
+    backfillable: true
+    notes: "피드가 topic 1개뿐이라 실패 시 전체 소스 손실 — 감사에서 network 예외 처리 수리 대상. server 6h 병행(main.py un_news)"
 
   - source_id: policy_think_tank
     name: "Atlantic Council + Arms Control Assoc"
@@ -111,7 +142,9 @@ sources:
     timestamp_col: fetched_at
     filter: null
     max_staleness_hours: 72
-    notes: "감사에서 _parse_feed의 URLError 삼킴(return []) 발견·수리"
+    trigger: launchd
+    backfillable: true
+    notes: "감사에서 _parse_feed의 URLError 삼킴(return []) 발견·수리. server 6h 병행(main.py policy_think_tank)"
 
   - source_id: govinfo
     name: "GovInfo CPD 대통령 성명"
@@ -122,7 +155,23 @@ sources:
     timestamp_col: fetched_at
     filter: null
     max_staleness_hours: 240
-    notes: "키 발급 완료(2026-07-09) — API 접근 정상. CPD는 발행 자체가 불규칙(백악관 문서 모음, 며칠 공백이 정상)이라 72h는 오경보 유발 → 240h(10일)로 조정. fetched_at 기준 = '마지막 신규 문서 적재' 시각임에 유의"
+    trigger: launchd
+    backfillable: true
+    notes: "키 발급 완료(2026-07-09) — API 접근 정상. CPD는 발행 자체가 불규칙(백악관 문서 모음, 며칠 공백이 정상)이라 72h는 오경보 유발 → 240h(10일)로 조정. fetched_at 기준 = '마지막 신규 문서 적재' 시각임에 유의. server 12h 병행(main.py govinfo_cpd)"
+
+  # ── RSS 교차검증 (GDELT Stage2 종속, 독립 테이블 없음) ──────────────────
+  - source_id: rss_crosscheck
+    name: "뉴스 RSS 교차검증 8매체 (Al Jazeera·BBC·RFA·France24·Guardian·NHK·DW·NDTV)"
+    kind: live
+    connector: connectors/news_cross_validator.py
+    job: gdelt
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    trigger: launchd
+    backfillable: false
+    notes: "gdelt Stage2 교차검증용 — 독립 테이블 없음, confidence 보정에만 사용. gdelt 잡에 종속되어 launchd로 병행 실행"
 
   # ── 배선 안 된 live 커넥터 (범위 밖 — 존재만 선언, 경보는 비활성) ────────
   - source_id: reliefweb
@@ -134,18 +183,22 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
-    notes: "DB 미사용, TTL 30분 캐시 전용(api/layers.py) — collect_standalone에서 의도적 제외(주석 참조), 정상 설계"
+    trigger: on_demand
+    backfillable: true
+    notes: "DB 미사용, TTL 30분 캐시 전용(api/layers.py) — collect_standalone에서 의도적 제외(주석 참조), 정상 설계. main.py에 30분 캐시만료 잡이 있으나 실제 fetch는 요청 시점 온디맨드"
 
   - source_id: mofa_press
     name: "MOFA 외교부 보도자료"
     kind: live
     connector: connectors/mofa_press.py
-    job: null
+    job: mofa_press
     db_table: mofa_press_releases
     timestamp_col: fetched_at
     filter: null
     max_staleness_hours: null
-    notes: "감사 중 발견: 어떤 잡·스케줄러에도 미배선(ACLED와 동일 패턴의 잠재 갭). 이번 채택안 범위는 ACLED 한정이라 배선은 보류 — max_staleness_hours=null로 오탐 방지. 후속 검토 필요"
+    trigger: launchd
+    backfillable: true
+    notes: "감사 중 발견된 미배선(ACLED와 동일 패턴의 잠재 갭) — collect_standalone에 mofa_press 잡 배선 진행 중(판례 20260709-data-audit-committee). 잡 가동·1회 이상 성공 실행 확인 후 nk_press/un_news/policy_think_tank와 동일 72h 임계로 전환 예정 — 배선 미완 상태에서 임계 설정 시 상시 오경보 유발"
 
   - source_id: mofa_lod
     name: "MOFA/IFANS SPARQL 발간물"
@@ -156,6 +209,8 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: on_demand
+    backfillable: true
     notes: "온디맨드 SPARQL 조회 전용(process_tracing 등에서 호출), DB 캐시 없음 — reliefweb과 동일 패턴"
 
   - source_id: aisstream
@@ -167,7 +222,9 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
-    notes: "api/layers.py 요청 시에만 온디맨드 호출, DB 미저장 — 스케줄 잡 없음(설계상)"
+    trigger: on_demand
+    backfillable: false
+    notes: "api/layers.py 요청 시에만 온디맨드 호출, DB 미저장 — 스케줄 잡 없음(설계상). 실시간 스트림만 제공, 과거분 소급 불가"
 
   - source_id: opensky
     name: "OpenSky ADS-B 군용기"
@@ -178,7 +235,9 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
-    notes: "api/layers.py·cascade/engine.py에서 온디맨드 호출, DB 미저장 — 스케줄 잡 없음(설계상)"
+    trigger: on_demand
+    backfillable: false
+    notes: "api/layers.py·cascade/engine.py에서 온디맨드 호출, DB 미저장 — 스케줄 잡 없음(설계상). 실시간 스냅샷만 제공, 과거분 소급 불가"
 
   - source_id: yfinance
     name: "yfinance 시장데이터"
@@ -189,7 +248,9 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
-    notes: "cascade 룰 시장반응 평가용 온디맨드 조회, DB 미저장"
+    trigger: on_demand
+    backfillable: true
+    notes: "cascade 룰 시장반응 평가용 온디맨드 조회, DB 미저장. yfinance 자체는 수십년치 과거 시세를 공개하므로 백필은 가능(현재 온디맨드 조회만 구현)"
 
   # ── 정적 설정 (YAML, DB 아님) ─────────────────────────────────────────
   - source_id: sanctions
@@ -201,31 +262,51 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: manual
+    backfillable: true
     notes: "정적 config/sanctions.yaml 로더 — DB 미사용, 갱신은 수동 편집"
+
+  # ── CNS 북한 미사일 발사 DB (구조적 미관측 폐쇄국가 데이터 — 판례 20260709-data-audit-committee) ──
+  - source_id: cns_nk_missile
+    name: "CNS 북한 미사일 발사 DB (NTI)"
+    kind: seed
+    connector: scripts/nk_missile_ingest.py
+    job: null
+    db_table: event_archive
+    timestamp_col: null
+    filter: "source_type='missile_test'"
+    max_staleness_hours: null
+    trigger: manual
+    backfillable: true
+    notes: "구조적 미관측(폐쇄국가) — 수집 백로그 아님, NTI 갱신 대기. ACLED가 북한을 커버 못 해(korean_peninsula 이벤트 98%가 남한 시위) 도입된 대안 — 경보 제외가 곧 SLA 분리이며 max_staleness는 null 유지"
 
   # ── seed CSV/API 1회 적재 (scripts/load_external_data.py) ───────────────
   # kind=seed는 정체가 정상 상태임을 선언하는 것 자체가 목적 — staleness null.
   - source_id: sipri_milex
     name: "SIPRI 군사비"
-    kind: seed
+    kind: annual
     connector: scripts/load_external_data.py
     job: null
     db_table: sipri_milex
     timestamp_col: null
     filter: null
-    max_staleness_hours: null
-    notes: "1회 seed (--source sipri), 연간 갱신은 수동 --update"
+    max_staleness_hours: 10000
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source sipri), 연간 갱신은 수동 --update — SIPRI 군사비 데이터베이스는 연 1회 릴리스"
 
   - source_id: sipri_arms_transfers
     name: "SIPRI 무기 이전"
-    kind: seed
+    kind: annual
     connector: scripts/load_external_data.py
     job: null
     db_table: sipri_arms_transfers
     timestamp_col: null
     filter: null
-    max_staleness_hours: null
-    notes: "1회 seed (--source sipri_arms)"
+    max_staleness_hours: 10000
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source sipri_arms) — SIPRI 무기이전 데이터베이스는 연 1회 릴리스"
 
   - source_id: cow_alliances
     name: "COW 동맹 데이터"
@@ -236,7 +317,9 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
-    notes: "1회 seed (--source cow)"
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source cow) — 진짜 1회성 정적 데이터셋(프로젝트 자체 갱신 없음)"
 
   - source_id: cow_wars
     name: "COW 전쟁 데이터"
@@ -247,40 +330,48 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
-    notes: "1회 seed (--source cow_wars)"
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source cow_wars) — 진짜 1회성 정적 데이터셋(프로젝트 자체 갱신 없음)"
 
   - source_id: vdem
     name: "V-Dem 민주주의 지수"
-    kind: seed
+    kind: annual
     connector: scripts/load_external_data.py
     job: null
     db_table: vdem_index
     timestamp_col: null
     filter: null
-    max_staleness_hours: null
-    notes: "1회 seed (--source vdem)"
+    max_staleness_hours: 10000
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source vdem) — V-Dem은 연 1회(3월경) 릴리스"
 
   - source_id: polity5
     name: "Polity5 정체 지수"
-    kind: seed
+    kind: annual
     connector: scripts/load_external_data.py
     job: null
     db_table: polity5
     timestamp_col: null
     filter: null
-    max_staleness_hours: null
-    notes: "1회 seed (--source polity5) — 프로젝트 자체가 2018년 종료된 정적 데이터셋"
+    max_staleness_hours: 10000
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source polity5) — 프로젝트 자체가 2018년 종료된 정적 데이터셋이나 배포 체계는 연간 릴리스 관행을 따름"
 
   - source_id: world_bank_wgi
     name: "World Bank 거버넌스 지표(WGI)"
-    kind: seed
+    kind: annual
     connector: scripts/load_external_data.py
     job: null
     db_table: world_bank_wgi
     timestamp_col: null
     filter: null
-    max_staleness_hours: null
-    notes: "1회 seed (--source world_bank)"
+    max_staleness_hours: 10000
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source world_bank) — WGI는 연 1회 릴리스"
 
   - source_id: fred
     name: "FRED 거시지표"
@@ -291,6 +382,8 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: manual
+    backfillable: true
     notes: "1회 seed (--source fred), FRED_API_KEY 보유 — 갱신은 수동 --update"
 
   - source_id: eia
@@ -302,6 +395,8 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: manual
+    backfillable: true
     notes: "1회 seed (--source eia)"
 
   - source_id: csis
@@ -313,29 +408,35 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: manual
+    backfillable: true
     notes: "1회 seed (--source csis)"
 
   - source_id: itu
     name: "ITU ICT 지표"
-    kind: seed
+    kind: annual
     connector: scripts/load_external_data.py
     job: null
     db_table: itu_ict
     timestamp_col: null
     filter: null
-    max_staleness_hours: null
-    notes: "1회 seed (--source itu)"
+    max_staleness_hours: 10000
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source itu) — ITU ICT 지표는 연 1회 릴리스"
 
   - source_id: owid
     name: "Our World in Data"
-    kind: seed
+    kind: annual
     connector: scripts/load_external_data.py
     job: null
     db_table: owid_data
     timestamp_col: null
     filter: null
-    max_staleness_hours: null
-    notes: "1회 seed (--source owid)"
+    max_staleness_hours: 10000
+    trigger: manual
+    backfillable: true
+    notes: "1회 seed (--source owid) — 지표 다수가 연 1회 갱신되는 편집 데이터셋"
 
   - source_id: kiel
     name: "Kiel 우크라이나 지원 트래커"
@@ -346,6 +447,8 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: manual
+    backfillable: true
     notes: "1회 seed (--source kiel)"
 
   - source_id: hiik
@@ -357,6 +460,8 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: manual
+    backfillable: true
     notes: "1회 seed (--source hiik)"
 
   - source_id: semi_market
@@ -368,4 +473,6 @@ sources:
     timestamp_col: null
     filter: null
     max_staleness_hours: null
+    trigger: manual
+    backfillable: true
     notes: "1회 seed (--source semi)"

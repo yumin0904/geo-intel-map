@@ -902,6 +902,9 @@ Pydantic 모델: `backend/models/intelligence.py` → `IntelligenceMetadata`
 
 > 언급(mention)과 발생지(location)를 구분하지 않는 region 배정은 Hammond-Weidmann이 실측한 편향을 엔진 내부에 재현한다. 근거 원문: geo-os `wiki/literature/T2-event-data-validity.md` · 판례: geo-os `wiki/decisions/20260709-wave1-adoption.md`
 
+1. **ACLED 랙 규칙**: ACLED(학술 티어)는 event_date 기준 최대 ~14개월 랙 — **근과거(<14개월) 분석에 이벤트 건수를 증거로 쓰지 않는다** (신선도는 created_at, 분석 가용성은 event_date로 판단. 실측: source_roster.yaml acled 항목).
+2. **구조적 미관측 규칙**: 폐쇄국가(북한 등) 내부 데이터갭은 수집 확장 대상이 아니라 **구조적 미관측** — UNQUANTIFIABLE(과정추적·구조적 논증) 트랙으로 라우팅하고 data_gap 수집 우선순위에서 제외한다 (판례 20260709-data-audit-committee).
+
 ---
 
 ## 19. 인사이트 엔진 생성 원칙 (2026-06 로드맵 반영)

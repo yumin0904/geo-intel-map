@@ -17,6 +17,8 @@
   - seed: `cow_wars_seed.csv` · 용도: 전쟁 선례 시계열, 전투 사망자 추정.
 - **HIIK Conflict Barometer 2024** — Heidelberg Institute for International Conflict Research. https://hiik.de/en/conflict-barometer/
   - seed: `hiik_conflict_seed.csv` · 강도 척도 1(분쟁)~5(전쟁).
+- **CNS North Korea Missile Test Database** — James Martin Center for Nonproliferation Studies (NTI 호스팅). https://www.nti.org/analysis/articles/cns-north-korea-missile-test-database/
+  - 적재 스크립트: `scripts/nk_missile_ingest.py` → `event_archive`(source_type='missile_test'). 1984년부터 북한 미사일 발사 전수 큐레이션. ACLED가 폐쇄국가 북한을 커버 못 해(korean_peninsula 이벤트 98%가 남한 시위) 도입된 대안 — 구조적 미관측 데이터갭 해소용, NTI 갱신 주기에 종속(source_roster.yaml `cns_nk_missile`).
 
 ### 거버넌스·정치체제
 - **V-Dem (Varieties of Democracy)** v14 (2024) — V-Dem Institute, University of Gothenburg. https://v-dem.net

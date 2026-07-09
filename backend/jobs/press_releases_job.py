@@ -57,3 +57,18 @@ def run_govinfo_batch() -> None:
         logger.info("[PressJob/GovInfo] 완료 — %d건 신규", n)
     except Exception as exc:
         logger.warning("[PressJob/GovInfo] 실패 (다음 회차 재시도): %s", exc)
+
+
+def run_mofa_press_batch() -> None:
+    """외교부 보도자료(공공데이터포털) 전체 수집 → mofa_press_releases 저장.
+
+    20일간 CLI 전용으로 방치되어 launchd 주기 수집에 배선되지 않았던 소스
+    (source_roster.yaml 감사에서 발견). collect_all()은 전체 페이지를
+    재순회하되 INSERT OR IGNORE로 중복을 걸러 매 회차 신규분만 실효 반영된다.
+    """
+    try:
+        from connectors.mofa_press import collect_all
+        n = collect_all()
+        logger.info("[PressJob/MOFA] 완료 — %d건 처리", n)
+    except Exception as exc:
+        logger.warning("[PressJob/MOFA] 실패 (다음 회차 재시도): %s", exc)

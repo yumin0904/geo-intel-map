@@ -93,8 +93,10 @@ class NasaFirmsConnector(BaseConnector):
 
         seen_source_ids: set[str] = set()
         events: list[Event] = []
+        fail_count = 0
         for region_code, result in zip(_FIRE_REGIONS, results):
             if isinstance(result, Exception):
+                fail_count += 1
                 logger.warning(f"[FIRMS] {region_code} 조회 실패: {result}")
                 continue
             for ev in result:
@@ -106,6 +108,15 @@ class NasaFirmsConnector(BaseConnector):
             f"[FIRMS] {len(events)}개 열점 수집 "
             f"({len(_FIRE_REGIONS)}개 지역, 중복 제거 후)"
         )
+
+        # 판례 20260709: 전 지역이 실패했는데도 빈 리스트를 반환하면 "열점
+        # 0건 관측"과 구분 불가 — DNS 장애 같은 전면 접속 불가가 "성공"으로
+        # 집계된다(오늘 아침 실제 발생). nk_news_connector.collect_all()과
+        # 동일하게, 일부 지역만 실패했으면 나머지로 확보한 events가 정직한
+        # 값이므로 그대로 반환하고, 전량 실패 시에만 예외를 던진다.
+        if _FIRE_REGIONS and fail_count == len(_FIRE_REGIONS):
+            raise RuntimeError(f"[FIRMS] 전체 지역({fail_count}개) 접근 실패")
+
         return events
 
     async def _fetch_region(
@@ -114,31 +125,44 @@ class NasaFirmsConnector(BaseConnector):
         """단일 지역 bbox의 VIIRS NRT 열점을 조회한다."""
         region_meta = get_region(region_code)
         if not region_meta or "bbox" not in region_meta:
-            logger.warning(f"[FIRMS] {region_code}: regions.yaml에 bbox 없음")
-            return []
+            # 판례 20260709: 설정 누락도 return []로 삼키면 "열점 0건"과
+            # 구분 불가 — 상위 fetch()가 지역 실패로 집계하도록 던진다.
+            raise RuntimeError(f"[FIRMS] {region_code}: regions.yaml에 bbox 없음")
 
         min_lon, min_lat, max_lon, max_lat = region_meta["bbox"]
         # FIRMS bbox 파라미터 순서: W,S,E,N (= min_lon, min_lat, max_lon, max_lat)
         bbox_str = f"{min_lon},{min_lat},{max_lon},{max_lat}"
         url = f"{FIRMS_BASE_URL}/{self._map_key}/{VIIRS_SOURCE}/{bbox_str}/{DAY_RANGE}"
 
+        # 판례 20260709: HTTP/네트워크 오류를 return []로 삼키면 gather()의
+        # return_exceptions=True가 이를 "정상 결과(열점 0건)"로만 보고 예외로
+        # 집계하지 못한다 — DNS 장애로 전 지역이 이 경로를 타도 fetch()가
+        # "0개 열점 수집"을 성공으로 로그하게 되는 원인이었다(오늘 아침 실측).
+        # 상위 fetch()가 지역별 실패를 fail_count로 집계할 수 있도록 예외를
+        # 그대로 던진다 — 개별 지역 실패는 fetch()가 흡수해 나머지 지역은
+        # 계속 진행되므로 안전하다.
         try:
             resp = await client.get(url)
             resp.raise_for_status()
         except httpx.HTTPStatusError as e:
-            logger.warning(
+            raise RuntimeError(
                 f"[FIRMS] {region_code} HTTP {e.response.status_code} | {url}"
-            )
-            return []
+            ) from e
         except httpx.RequestError as e:
-            logger.warning(f"[FIRMS] {region_code} 네트워크 오류: {e}")
-            return []
+            raise RuntimeError(f"[FIRMS] {region_code} 네트워크 오류: {e}") from e
 
         text = resp.text.strip()
-        # 빈 응답이거나 API 키 오류 XML이면 열점 없음으로 처리
-        if not text or text.startswith("<?xml") or text.startswith("<html"):
-            logger.debug(f"[FIRMS] {region_code}: 열점 없음 (응답 비어있거나 XML)")
+        # 빈 응답 = 진짜 "열점 0건"(정상). XML/HTML 응답은 API 키 오류 등
+        # 실패 신호인데 기존엔 둘 다 return []로 동일 취급해 "열점 없음"으로
+        # 삼켰다 — 판례 20260709: 실패는 예외로 던져 fetch()가 지역 실패로
+        # 집계하게 한다.
+        if not text:
+            logger.debug(f"[FIRMS] {region_code}: 열점 없음 (응답 비어있음)")
             return []
+        if text.startswith("<?xml") or text.startswith("<html"):
+            raise RuntimeError(
+                f"[FIRMS] {region_code}: 비정상 응답(XML/HTML, API 키 오류 가능성) | {url}"
+            )
 
         events = self._parse_csv(text, region_code)
         logger.debug(f"[FIRMS] {region_code}: {len(events)}개 열점")

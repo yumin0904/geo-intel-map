@@ -49,6 +49,7 @@ async def run_firms_sensor_job() -> dict:
         return {"saved": 0, "skipped": 0}
 
     saved = skipped = 0
+    fail_count = 0
     async with httpx.AsyncClient(timeout=30) as client:
         for region_code, (w, s, e, n) in _REGIONS:
             url = f"{_FIRMS_BASE}/{_FIRMS_KEY}/{_SOURCE}/{w},{s},{e},{n}/1"
@@ -65,9 +66,18 @@ async def run_firms_sensor_job() -> dict:
                     if ok:
                         saved += 1
             except Exception as e:
+                fail_count += 1
                 logger.warning("[firms_job] %s 조회 실패: %s", region_code, e)
 
     logger.info("[firms_job] 완료 — 저장 %d건, FRP 미달 제외 %d건", saved, skipped)
+
+    # 판례 20260709: 전 지역 조회가 실패(예: DNS 장애)해도 saved=0을 그냥
+    # 반환하면 "화재 없음"과 구분 불가 — run_firms_sensor_batch()를 거쳐
+    # collect_standalone의 잡 레벨 except가 실제로 발동하도록, 일부 지역만
+    # 실패했으면 그대로 반환(부분 실패 허용·집계)하고 전량 실패 시에만 던진다.
+    if _REGIONS and fail_count == len(_REGIONS):
+        raise RuntimeError(f"[firms_job] 전체 지역({fail_count}개) 접근 실패")
+
     return {"saved": saved, "skipped": skipped}
 
 
