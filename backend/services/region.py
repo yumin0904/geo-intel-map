@@ -47,6 +47,42 @@ def region_center(region_code: str) -> tuple[float, float] | None:
     return (lat, lon)
 
 
+def region_for_event(
+    lat: float,
+    lon: float,
+    *,
+    country: str = "",
+    actors: tuple[str, ...] = (),
+) -> str | None:
+    """행위자·발생국 신호를 좌표보다 우선하는 region 판정.
+
+    왜 좌표만으로 부족한가: north_korea 같은 '행위자형' region은 국가 행위자의
+    행동을 추적하는 분석 단위인데, ACLED는 북한 도발을 접촉점(판문점·DMZ 남측)에
+    좌표코딩하므로 발생지 bbox만으로는 원리적으로 놓친다. 반대로 bbox가 서울을
+    물면 남한 시위가 '북한 도발' 버킷에 섞인다 (2026-07-09 오염 3,136건 실측,
+    geo-os 판례 20260709-nk-region-bbox-contamination).
+
+    판정 순서 (사전 선언 — 결과 보고 무관 결정론):
+    1. actor_match — 행위자명 부분 문자열 매치 (행위자형 region 전용)
+    2. country_match — 발생국 정확 매치 (좌표 경계 정밀도 갭 보완)
+    3. region_for_point(lat, lon) — bbox 폴백 (좌표만 있는 소스: FIRMS·AIS 등)
+    """
+    regions = _load_regions()
+    for code, meta in regions.items():
+        if not isinstance(meta, dict):
+            continue
+        for keyword in meta.get("actor_match", []):
+            if any(keyword in (actor or "") for actor in actors):
+                return code
+    if country:
+        for code, meta in regions.items():
+            if not isinstance(meta, dict):
+                continue
+            if country in meta.get("country_match", []):
+                return code
+    return region_for_point(lat, lon)
+
+
 def region_for_point(lat: float, lon: float) -> str | None:
     """좌표가 속한 첫 번째 region_code를 반환한다(없으면 None).
 

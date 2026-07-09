@@ -43,8 +43,13 @@ south_china_sea:
 north_korea:
   name: "북한"
   # 탄도미사일 발사장(함흥·원산 등) 포함 DPRK 전역. 미사일 테스트 트리거 포착.
-  bbox: [124.0, 37.5, 130.5, 42.7]
+  # [행위자형 region] 1차 배정은 actor/country 매치(region_for_event) — bbox는 좌표만 있는 소스(FIRMS 등) 폴백.
+  #   ACLED는 북한 도발을 접촉점(판문점·DMZ 남측 37.96N)에 좌표코딩하므로 발생지 bbox만으로는 원리적으로 누락.
+  #   남위 경계 38.0: 서울(37.52~37.60N) 월경 오염 수리 — geo-os 판례 20260709-nk-region-bbox-contamination
+  bbox: [124.0, 38.0, 130.5, 42.7]
   center: [127.0, 40.0]
+  actor_match: ["North Korea"]     # actor1/actor2 부분 문자열 매치 (예: "Military Forces of North Korea (2011-)")
+  country_match: ["North Korea"]   # ACLED country 필드 정확 매치
   theory: "Compellence / Nuclear Deterrence — 북한의 미사일 도발은 확장억제 신뢰성 시험이자 경제 압박 수단"
 
 suez:
@@ -71,8 +76,11 @@ middle_east:
 korean_peninsula:
   name: "한반도"
   # 남북한 전체 + DMZ. 북한 도발 및 한미 연합훈련에 따른 한국 시장 리스크 반영.
+  # country_match: 제주(33.4998N — bbox 하한 33.5 밖 0.0002도)·독도(경도 130.5 초과) 이벤트가
+  #   east_china_sea로 낙하하던 경계 정밀도 갭을 발생국 신호로 보완 (실측 183건, 판례 동일).
   bbox: [124.0, 33.5, 130.5, 43.0]
   center: [127.5, 37.5]
+  country_match: ["South Korea"]
   theory: "Extended Deterrence — 미국 핵우산의 신뢰성 변동이 한국 리스크 프리미엄(코리아 디스카운트)으로 즉각 전이"
 
 east_china_sea:

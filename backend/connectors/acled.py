@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 
 from connectors.base import BaseConnector
 from models.event import Event
-from services.region import region_for_point
+from services.region import region_for_event
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -613,8 +613,11 @@ class AcledConnector(BaseConnector):
         else:
             title = f"{event_type} — {country}"
 
-        # 좌표로 region_code 결정 — theory_tags 배정에 사용
-        region_code = region_for_point(lat, lon)
+        # 행위자·발생국 우선 region 판정 (좌표 bbox는 폴백) — theory_tags 배정에 사용
+        # 판례 20260709: 서울 시위의 north_korea 월경 + 판문점 북한 도발 누락을 동시에 차단
+        region_code = region_for_event(
+            lat, lon, country=country, actors=(actor1_name, actor2_name)
+        )
 
         return Event(
             id=str(uuid.uuid4()),
