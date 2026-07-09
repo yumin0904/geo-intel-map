@@ -387,6 +387,11 @@ geomap/
 작업 완료를 progress.md에 기록할 때, 해당 작업이 마이너 이상 변경이라면
 `version.json`도 함께 bump한 뒤 두 파일을 같은 커밋에 포함한다.
 
+### progress.md 로테이션 규약 (볼트 점검 2026-07-10)
+Phase/사이클에 ✅ 완료를 마킹하는 시점에 그 상세 로그를 `docs/archive/progress_history.md`로
+즉시 로테이션하고, 본문에는 3줄 요약+포인터만 남긴다 (Phase 0~8 관행의 명문화 —
+스냅샷 슬림, 이력은 아카이브). 위반은 geo-os spotcheck 검사 10(30KB 임계)이 감시.
+
 ---
 
 ## 11. PHASE ROADMAP
