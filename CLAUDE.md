@@ -403,7 +403,7 @@ Phase/사이클에 ✅ 완료를 마킹하는 시점에 그 상세 로그를 `do
    |---------|----------|------|
    | `D4_INSUFFICIENT` | 데이터 적재 확장(지역 이벤트 시계열·lookback↑) | Phase 6-A / 7-D |
    | `D2_NONLINEAR` | 적극적 비선형 검정(임계회귀·체제전환) | 8-E |
-   | `D3_BAD_PROXY` | 더 나은 대리변수 또는 직접 DV(hand-coding) | `proxy_suggestions` / §20 Phase D |
+   | `D3_BAD_PROXY` | 더 나은 대리변수 또는 직접 DV(hand-coding) | `proxy_suggestions` / Phase 7-D(annex §20-C) |
    | `D1_NO_RELATION` | **관계 없음이 정직한 결론** — 경쟁 이론·구조적 설명으로 전환 (그 자체가 정보) | §19-B-2 ③ 문헌공백 |
 
 **탐색형 vs 확증형 2-레인 분리 (p-해킹 방어 핵심)**
@@ -579,7 +579,7 @@ class MethodResult:
 
 ## 12. 매 응답 자가 점검
 
-- [ ] 5대 섹터 범위 안에 있는가?
+- [ ] 6대 섹터(§1) 범위 안에 있는가?
 - [ ] Event 모델로 정규화되는가?
 - [ ] Cascade 분석에 기여하는가? (장기적으로)
 - [ ] 정치외교학 이론과 연결 가능한가?
@@ -795,20 +795,13 @@ Pydantic 모델: `backend/models/intelligence.py` → `IntelligenceMetadata`
 
 ### 19-D. 인사이트 신뢰도 산출 기준
 
-| 항목 | 배점 |
-|------|------|
-| 수치 데이터 직접 인용 | +30 |
-| 1차 사료(원문 보고서·통계 DB) 참조 | +20 |
-| 반증 가능 가설 포함 | +20 |
-| 경쟁 이론 비교 포함 | +15 |
-| 연쇄 고리 강도 명시 | +15 |
-| 기본값 | 0 |
-
-합계 0~100. 60 미만 인사이트는 [PROVISIONAL] 레이블.
+배점의 진실원은 **코드**: `backend/services/confidence_scorer.py` (문서 배점표는 코드와
+드리프트가 실측돼 2026-07-10 포인터화 — 1-A "충돌 시 원천 승").
+**[필수] 불변 규칙**: 합계 0~100 · **60 미만은 [PROVISIONAL] 레이블**(provisional=True).
 
 ---
 
-## 20. IA-Engine-D 설계 명세 (v7.0 목표)
+## 20. IA-Engine-D 계약 (현행 — §20-A H1 스키마 · §20-B 신뢰도 캡 [필수])
 
 ### 20-A. H1 자동 생성 출력 스키마
 
