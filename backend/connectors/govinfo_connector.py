@@ -465,8 +465,11 @@ def collect_recent(days_back: int = 7, api_key: str = "") -> int:
         with urlopen(req, timeout=_TIMEOUT) as r:
             data = json.loads(r.read())
     except URLError as exc:
+        # 판례 20260709: 네트워크 실패를 return 0으로 삼키면 "신규 0건"과
+        # 구분 불가 — press_releases_job.run_govinfo_batch()의 except가
+        # 실제로 발동하도록 예외를 재던진다.
         logger.warning("[GovInfo] 컬렉션 접근 실패: %s", exc)
-        return 0
+        raise RuntimeError(f"[GovInfo] CPD 컬렉션 접근 실패: {exc}") from exc
 
     pkgs = data.get("packages", [])
     logger.info("[GovInfo] CPD %s 이후 %d건 스캔 중…", start_dt[:10], len(pkgs))

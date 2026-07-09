@@ -116,6 +116,7 @@ def collect_all(test_only: bool = False) -> int:
     """전체 수집. test_only=True면 DB 저장 없이 결과만 출력."""
     fetched_at = datetime.now(timezone.utc).isoformat()
     total_inserted = 0
+    fail_count = 0
 
     if not test_only:
         con = sqlite3.connect(str(_DB_PATH))
@@ -158,11 +159,19 @@ def collect_all(test_only: bool = False) -> int:
             print(f"  → DB 저장 {len(rows)}건")
 
         except Exception as exc:
+            fail_count += 1
             logger.warning("[nk_news] %s 수집 실패: %s", src["name"], exc)
         time.sleep(0.5)
 
     if not test_only:
         con.close()
+
+    # 판례 20260709: 전체 소스가 실패했는데도 0을 반환하면 "신규 0건"과
+    # 구분 불가 — press_releases_job.run_nk_press_batch()의 except가 실제
+    # 발동하도록 예외를 던진다. 일부만 실패했으면 나머지로 확보한
+    # total_inserted가 정직한 값이므로 그대로 반환한다.
+    if not test_only and _SOURCES and fail_count == len(_SOURCES):
+        raise RuntimeError(f"[nk_news] 전체 소스({fail_count}개) 접근 실패")
 
     return total_inserted
 

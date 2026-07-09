@@ -3,7 +3,8 @@
 > IA-Engine이 분석에 사용하는 데이터 소스의 출처·버전·인용 정보를 한곳에 모은 문서.
 > **단일 진실 공급원:** 각 항목의 버전·연도는 `backend/data/external/*.csv` (및 `data/trade/*.csv`) seed 파일의 헤더 주석에서 가져온 것이다. seed를 갱신하면 이 문서도 함께 갱신한다.
 > 신뢰 수준: **(A) 정량 데이터셋** = 1차 통계 DB / **(B) 질적·큐레이션** = 2차 가공·해석 포함 / **(C) 실시간 커넥터** = API 수집.
-> 최종 확인: 2026-06-15.
+> 소스 전수의 기계 가독 진실원은 `backend/config/source_roster.yaml` — 이 문서는 사람용 설명.
+> 최종 확인: 2026-07-09.
 
 ---
 
@@ -75,6 +76,15 @@
 | yfinance / 시장지표 | `connectors/yfinance_adapter.py` | 시장 오버레이(주가·선물) |
 | 제재(GSDB/UN) | `connectors/sanctions_connector.py` | 제재 레이어 |
 | 외교부 LOD (IFANS) | `connectors/mofa_lod.py` | 한국 시각 발간자료(SPARQL) |
+| GovInfo.gov CPD | `connectors/govinfo_connector.py` | 미 대통령 성명·기자회견·의회 연설 원문(1차 사료) → `govinfo_releases`. 스케줄러 12시간 주기(`jobs/press_releases_job.py::run_govinfo_batch`) |
+| 외교부 보도자료 (공공데이터포털 15141564) | `connectors/mofa_press.py` | 한국 정부 1차 사료, 22,483건 전체 적재 → `mofa_press_releases`. 스케줄러 미등록 — CLI 수동 실행(`python3 -m connectors.mofa_press`), 주기 미확인 |
+| NKNews + 38 North | `connectors/nk_news_connector.py` | 북한 전문 뉴스·학술 분석 → `nk_press_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_nk_press_batch`) |
+| UN News | `connectors/un_news_connector.py` | UN 공식 뉴스(다자 시각, 이중결정 검정 보강) → `un_news_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_un_news_batch`) |
+| Atlantic Council + Arms Control Assoc | `connectors/policy_think_tank_connector.py` | 워싱턴 외교안보 싱크탱크 정책 분석 → `policy_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_policy_think_tank_batch`) |
+
+**제외 판단(커넥터 아님, 실측 근거):**
+- `connectors/news_cross_validator.py` — GDELT 1단계 통과 이벤트의 RSS 교차검증 유틸리티. 자체 DB 테이블을 생성하지 않고 기존 국제뉴스 RSS를 재사용해 confidence_score만 보정(GDELT Stage 2). 독립 소스가 아니라 검증 로직.
+- `connectors/gemini_translator.py` — 수집 시점이 아닌 사용자 열람 시점 on-demand 번역 래퍼(Gemini API). 데이터 수집이 아니라 기존 수집물의 후처리.
 
 ---
 

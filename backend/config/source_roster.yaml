@@ -1,0 +1,371 @@
+# source_roster.yaml — 수집 소스 로스터. 수집 대상 전수의 단일 진실원.
+#
+# collect_standalone.py의 신선도 경보·종료 요약 분모, geo-os spotcheck가
+# 여기서 파생된다. 필드명은 두 소비자가 공유하는 계약이므로 변경 금지.
+#
+# 판례: geo-os/wiki/decisions/20260709-os-observability-committee.md
+#   배경: ACLED 커넥터가 collect_standalone 잡 목록에 미등록 상태로 6주
+#   방치(2026-05-26 백필 이후 무경고 0건). 근본 원인은 "수집 대상 전수가
+#   어디에도 선언돼 있지 않아 빠진 소스를 아무도 못 잡는다"는 것 — 이
+#   파일이 그 선언이다.
+#
+# 필드 계약:
+#   source_id            고유 슬러그
+#   name                 사람이 읽는 이름
+#   kind                 live(스케줄 수집) | seed(정적 1회 적재) | manual(수동/온디맨드)
+#   connector             connectors/ 또는 scripts/ 하위 구현 경로 (없으면 null)
+#   job                   collect_standalone의 잡 이름 (live 중 실제 배선된 것만, 아니면 null)
+#   db_table              신선도 대조 테이블 (없으면 null)
+#   timestamp_col         신선도 판정에 쓸 컬럼 (수집 시각을 반영하는 컬럼 우선 — 아래 참고)
+#   filter                공유 테이블에서 소스 구분용 SQL WHERE절 (전용 테이블이면 null)
+#   max_staleness_hours   경보 임계값 (live+job 있는 항목만. 없으면 null=경보 비활성)
+#   notes                 근거 1줄
+#
+# timestamp_col 선택 원칙 (실측으로 확정):
+#   events/event_archive 공유 테이블은 GDELT 고가치 이벤트가 24h 후 event_archive로
+#   이관되며 events에서 삭제된다 — event 자체의 timestamp만 보면 최신 수집 여부를
+#   놓칠 수 있다. 또한 ACLED는 학술 접근 tier 특성상 event_date(=timestamp)가 실제
+#   대비 최대 ~14개월 지연된다(실측: 2026-07 시스템 시각 vs ACLED 최신 이벤트
+#   2025-05-29) — timestamp로는 "잡이 최근에 돌았는지" 판단이 원천적으로 불가능하다.
+#   반면 created_at은 신규 이벤트가 항상 먼저 적재되는 events 테이블에 실제 수집
+#   시각으로 기록되고, 이관 후에도 events 쪽 원본은 삭제되지 않거나(ACLED) 최근
+#   이벤트는 24h 미만이라 이관 대상에서 제외된다(archive_manager._promote_high_value
+#   cutoff_24h) — 따라서 GDELT/ACLED 모두 events.created_at을 신선도 기준으로 쓴다.
+
+sources:
+  # ── 실시간 이벤트 (events 테이블, created_at 기준) ─────────────────────
+  - source_id: gdelt
+    name: "GDELT Events/GKG"
+    kind: live
+    connector: connectors/gdelt_connector.py
+    job: gdelt
+    db_table: events
+    timestamp_col: created_at
+    filter: "json_extract(payload,'$.data_source')='GDELT'"
+    max_staleness_hours: 48
+    notes: "서버 스케줄 15분이나 실제 실행은 launchd 1일2회(collect_standalone) — 그 갭을 흡수하도록 48h"
+
+  - source_id: gdelt_gkg
+    name: "GDELT GKG (테마 보강)"
+    kind: live
+    connector: connectors/gdelt_gkg.py
+    job: gdelt
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "gdelt 파이프라인 내 결합(services/gdelt_pipeline.py) — 독립 테이블 없음, 신선도는 gdelt 항목이 대표"
+
+  - source_id: acled
+    name: "ACLED 분쟁 이벤트"
+    kind: live
+    connector: connectors/acled.py
+    job: acled
+    db_table: events
+    timestamp_col: created_at
+    filter: "json_extract(payload,'$.data_source')='ACLED'"
+    max_staleness_hours: 240
+    notes: "ACLED 자체 갱신이 주간 단위 + 학술 tier event_date 지연(최대~14개월, timestamp 사용 불가) — 240h(10일)로 완충. 판례 20260709 재등록 대상"
+
+  # ── 물리 센서 (sensor_snapshots 테이블) ─────────────────────────────────
+  - source_id: firms
+    name: "NASA FIRMS 화재/열점"
+    kind: live
+    connector: connectors/nasa_firms.py
+    job: firms
+    db_table: sensor_snapshots
+    timestamp_col: timestamp
+    filter: "source_type='fire'"
+    max_staleness_hours: 48
+    notes: "위성 관측시각 자체가 준실시간(TTL 24h) — timestamp(관측시각) 그대로 사용, 48h 여유"
+
+  # ── 언론·정책 보도자료 (fetched_at = 수집 시각 기준, pub_date 아님) ──────
+  - source_id: nk_press
+    name: "NKNews + 38 North"
+    kind: live
+    connector: connectors/nk_news_connector.py
+    job: nk_press
+    db_table: nk_press_releases
+    timestamp_col: fetched_at
+    filter: null
+    max_staleness_hours: 72
+    notes: "서버 스케줄 6h, 실제는 launchd 1일2회 — fetched_at은 원문 발행일(pub_date)이 아닌 수집 시각"
+
+  - source_id: un_news
+    name: "UN News RSS"
+    kind: live
+    connector: connectors/un_news_connector.py
+    job: un_news
+    db_table: un_news_releases
+    timestamp_col: fetched_at
+    filter: null
+    max_staleness_hours: 72
+    notes: "피드가 topic 1개뿐이라 실패 시 전체 소스 손실 — 감사에서 network 예외 처리 수리 대상"
+
+  - source_id: policy_think_tank
+    name: "Atlantic Council + Arms Control Assoc"
+    kind: live
+    connector: connectors/policy_think_tank_connector.py
+    job: policy_think_tank
+    db_table: policy_releases
+    timestamp_col: fetched_at
+    filter: null
+    max_staleness_hours: 72
+    notes: "감사에서 _parse_feed의 URLError 삼킴(return []) 발견·수리"
+
+  - source_id: govinfo
+    name: "GovInfo CPD 대통령 성명"
+    kind: live
+    connector: connectors/govinfo_connector.py
+    job: govinfo
+    db_table: govinfo_releases
+    timestamp_col: fetched_at
+    filter: null
+    max_staleness_hours: 72
+    notes: "GOVINFO_API_KEY가 현재 backend/.env에 없음 — 위원회 실측 시점 기준 상시 경보 예상(키 미발급은 범위 밖). URLError 삼킴(return 0)은 이번에 수리"
+
+  # ── 배선 안 된 live 커넥터 (범위 밖 — 존재만 선언, 경보는 비활성) ────────
+  - source_id: reliefweb
+    name: "ReliefWeb UN OCHA"
+    kind: live
+    connector: connectors/reliefweb.py
+    job: null
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "DB 미사용, TTL 30분 캐시 전용(api/layers.py) — collect_standalone에서 의도적 제외(주석 참조), 정상 설계"
+
+  - source_id: mofa_press
+    name: "MOFA 외교부 보도자료"
+    kind: live
+    connector: connectors/mofa_press.py
+    job: null
+    db_table: mofa_press_releases
+    timestamp_col: fetched_at
+    filter: null
+    max_staleness_hours: null
+    notes: "감사 중 발견: 어떤 잡·스케줄러에도 미배선(ACLED와 동일 패턴의 잠재 갭). 이번 채택안 범위는 ACLED 한정이라 배선은 보류 — max_staleness_hours=null로 오탐 방지. 후속 검토 필요"
+
+  - source_id: mofa_lod
+    name: "MOFA/IFANS SPARQL 발간물"
+    kind: live
+    connector: connectors/mofa_lod.py
+    job: null
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "온디맨드 SPARQL 조회 전용(process_tracing 등에서 호출), DB 캐시 없음 — reliefweb과 동일 패턴"
+
+  - source_id: aisstream
+    name: "AISStream 선박 AIS"
+    kind: live
+    connector: connectors/aisstream.py
+    job: null
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "api/layers.py 요청 시에만 온디맨드 호출, DB 미저장 — 스케줄 잡 없음(설계상)"
+
+  - source_id: opensky
+    name: "OpenSky ADS-B 군용기"
+    kind: live
+    connector: connectors/opensky.py
+    job: null
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "api/layers.py·cascade/engine.py에서 온디맨드 호출, DB 미저장 — 스케줄 잡 없음(설계상)"
+
+  - source_id: yfinance
+    name: "yfinance 시장데이터"
+    kind: live
+    connector: connectors/yfinance_adapter.py
+    job: null
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "cascade 룰 시장반응 평가용 온디맨드 조회, DB 미저장"
+
+  # ── 정적 설정 (YAML, DB 아님) ─────────────────────────────────────────
+  - source_id: sanctions
+    name: "제재 레짐 (UN SC/OFAC/EU)"
+    kind: seed
+    connector: connectors/sanctions_connector.py
+    job: null
+    db_table: null
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "정적 config/sanctions.yaml 로더 — DB 미사용, 갱신은 수동 편집"
+
+  # ── seed CSV/API 1회 적재 (scripts/load_external_data.py) ───────────────
+  # kind=seed는 정체가 정상 상태임을 선언하는 것 자체가 목적 — staleness null.
+  - source_id: sipri_milex
+    name: "SIPRI 군사비"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: sipri_milex
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source sipri), 연간 갱신은 수동 --update"
+
+  - source_id: sipri_arms_transfers
+    name: "SIPRI 무기 이전"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: sipri_arms_transfers
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source sipri_arms)"
+
+  - source_id: cow_alliances
+    name: "COW 동맹 데이터"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: cow_alliances
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source cow)"
+
+  - source_id: cow_wars
+    name: "COW 전쟁 데이터"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: cow_wars
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source cow_wars)"
+
+  - source_id: vdem
+    name: "V-Dem 민주주의 지수"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: vdem_index
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source vdem)"
+
+  - source_id: polity5
+    name: "Polity5 정체 지수"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: polity5
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source polity5) — 프로젝트 자체가 2018년 종료된 정적 데이터셋"
+
+  - source_id: world_bank_wgi
+    name: "World Bank 거버넌스 지표(WGI)"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: world_bank_wgi
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source world_bank)"
+
+  - source_id: fred
+    name: "FRED 거시지표"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: fred_indicators
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source fred), FRED_API_KEY 보유 — 갱신은 수동 --update"
+
+  - source_id: eia
+    name: "EIA 에너지 생산/수출"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: eia_energy
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source eia)"
+
+  - source_id: csis
+    name: "CSIS 사이버 사건"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: csis_cyber_incidents
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source csis)"
+
+  - source_id: itu
+    name: "ITU ICT 지표"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: itu_ict
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source itu)"
+
+  - source_id: owid
+    name: "Our World in Data"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: owid_data
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source owid)"
+
+  - source_id: kiel
+    name: "Kiel 우크라이나 지원 트래커"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: kiel_ukraine_support
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source kiel)"
+
+  - source_id: hiik
+    name: "HIIK 분쟁 바로미터"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: hiik_conflict
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source hiik)"
+
+  - source_id: semi_market
+    name: "반도체 시장 데이터"
+    kind: seed
+    connector: scripts/load_external_data.py
+    job: null
+    db_table: semi_market_data
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    notes: "1회 seed (--source semi)"

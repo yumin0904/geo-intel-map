@@ -619,8 +619,18 @@ class AcledConnector(BaseConnector):
             lat, lon, country=country, actors=(actor1_name, actor2_name)
         )
 
+        # id를 event_id_cnty 기반 안정 UUID로 생성 — 라이브 잡이 30일 롤링
+        # 창을 매일 재조회해도 같은 사건이 매번 새 랜덤 id로 중복 적재되지
+        # 않도록 한다 (판례 20260709: uuid4() 랜덤 id는 재실행마다 달라져
+        # write_events의 INSERT OR REPLACE 멱등성이 무력화되는 버그였음).
+        event_id_cnty = raw.get("event_id_cnty", "")
+        stable_id = (
+            str(uuid.uuid5(uuid.NAMESPACE_DNS, f"acled_{event_id_cnty}"))
+            if event_id_cnty else str(uuid.uuid4())
+        )
+
         return Event(
-            id=str(uuid.uuid4()),
+            id=stable_id,
             timestamp=datetime.strptime(
                 raw["event_date"], "%Y-%m-%d"
             ).replace(tzinfo=timezone.utc),

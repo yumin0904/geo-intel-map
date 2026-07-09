@@ -162,6 +162,7 @@ def collect_all(test_only: bool = False) -> int:
     """전체 수집. test_only=True면 DB 저장 없이 출력만."""
     fetched_at = datetime.now(timezone.utc).isoformat()
     total = 0
+    fail_count = 0
 
     if not test_only:
         con = sqlite3.connect(str(_DB_PATH))
@@ -205,11 +206,19 @@ def collect_all(test_only: bool = False) -> int:
                 print(f"  → DB 저장 {len(rows)}건")
 
         except Exception as exc:
+            fail_count += 1
             logger.warning("[un_news] %s 수집 실패: %s", feed["label"], exc)
         time.sleep(0.5)
 
     if not test_only:
         con.close()
+
+    # 판례 20260709: _UN_FEEDS가 토픽 1개뿐이라 그 하나가 실패하면 전체
+    # 수집이 무너지는데, 기존엔 return 0으로 삼켜 "신규 0건"과 구분 불가했다.
+    # press_releases_job.run_un_news_batch()의 except가 실제로 발동하도록
+    # 전체 실패 시 예외를 던진다.
+    if not test_only and _UN_FEEDS and fail_count == len(_UN_FEEDS):
+        raise RuntimeError(f"[un_news] 전체 피드({fail_count}개) 접근 실패")
 
     return total
 

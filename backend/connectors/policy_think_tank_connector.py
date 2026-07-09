@@ -102,8 +102,11 @@ def _parse_feed(cfg: dict) -> list[dict]:
         with urlopen(req, timeout=_TIMEOUT) as resp:
             raw = resp.read().decode("utf-8", "replace")
     except URLError as exc:
+        # 판례 20260709: return []로 삼키면 collect_all()에서 "0건 신규"와
+        # 구분 불가 — 호출부(collect_all)가 소스별 성공/실패를 집계할 수
+        # 있도록 예외를 재던진다.
         logger.warning("[PolicyTT] %s 피드 접근 실패: %s", cfg["name"], exc)
-        return []
+        raise RuntimeError(f"[PolicyTT] {cfg['name']} 피드 접근 실패: {exc}") from exc
 
     # line 92 문제처럼 </rss> 뒤 junk 제거
     rss_end = raw.find("</rss>")
@@ -114,7 +117,7 @@ def _parse_feed(cfg: dict) -> list[dict]:
         root = ET.fromstring(raw)
     except ET.ParseError as exc:
         logger.warning("[PolicyTT] %s XML 파싱 오류: %s", cfg["name"], exc)
-        return []
+        raise RuntimeError(f"[PolicyTT] {cfg['name']} XML 파싱 오류: {exc}") from exc
 
     items = root.findall(".//item")
     sector_tags = cfg.get("sector_tags", [])
@@ -161,8 +164,18 @@ def collect_all() -> int:
     _init_table(con)
 
     total_new = 0
+    fail_count = 0
     for cfg in _SOURCES:
-        items = _parse_feed(cfg)
+        try:
+            items = _parse_feed(cfg)
+        except Exception as exc:
+            # _parse_feed가 이제 네트워크/파싱 실패 시 예외를 던진다(수리 전엔
+            # return []로 삼켜 "0건 신규"와 구분 불가했음). 소스 단위로 흡수해
+            # 다른 소스는 계속 시도하되, 실패 건수를 별도 집계한다.
+            fail_count += 1
+            logger.warning("[PolicyTT] %s 수집 실패 (다음 소스 계속): %s", cfg["name"], exc)
+            continue
+
         new = 0
         for item in items:
             try:
@@ -184,6 +197,14 @@ def collect_all() -> int:
         total_new += new
 
     con.close()
+
+    # 전체 소스가 실패한 경우에만 예외를 던진다 — press_releases_job.
+    # run_policy_think_tank_batch()의 except가 실제로 발동해 "0건 신규"와
+    # "전면 접속 불가"를 로그에서 구분할 수 있게 한다. 일부만 실패했으면
+    # 나머지 소스로 확보한 total_new가 정직한 값이므로 예외를 던지지 않는다.
+    if _SOURCES and fail_count == len(_SOURCES):
+        raise RuntimeError(f"[PolicyTT] 전체 소스({fail_count}개) 접근 실패")
+
     return total_new
 
 
