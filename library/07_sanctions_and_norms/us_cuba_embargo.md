@@ -1,7 +1,7 @@
 ---
 asset_type: norm
 era: cold_war
-geopol_region: null
+geopol_region: global
 instrument_of_power: economic
 level_of_analysis: state_domestic
 regions:

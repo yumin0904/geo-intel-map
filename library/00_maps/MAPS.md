@@ -1,4 +1,4 @@
-> ⚠️ 자동 생성 색인 (build_vault_maps.py) — 직접 편집 금지, 재실행으로 갱신. 생성: 2026-07-09 15:23
+> ⚠️ 자동 생성 색인 (build_vault_maps.py) — 직접 편집 금지, 재실행으로 갱신. 생성: 2026-07-10 00:04
 
 # MAPS — 볼트 허브 색인
 
@@ -17,8 +17,8 @@
 
 - [[region_bab_el_mandeb]] (9편)
 - [[region_east_china_sea]] (1편)
-- [[region_eastern_europe]] (19편)
-- [[region_global]] (2편)
+- [[region_eastern_europe]] (20편)
+- [[region_global]] (9편)
 - [[region_hormuz]] (17편)
 - [[region_indian_ocean]] (1편)
 - [[region_indo_pacific]] (4편)

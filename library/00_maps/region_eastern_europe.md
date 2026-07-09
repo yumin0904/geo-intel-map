@@ -1,8 +1,8 @@
-> ⚠️ 자동 생성 색인 (build_vault_maps.py) — 직접 편집 금지, 재실행으로 갱신. 생성: 2026-07-09 15:23
+> ⚠️ 자동 생성 색인 (build_vault_maps.py) — 직접 편집 금지, 재실행으로 갱신. 생성: 2026-07-10 00:04
 
 # 지역 허브: eastern_europe
 
-총 19편
+총 20편
 
 ## 이론 (11)
 
@@ -26,6 +26,10 @@
 - [[briefing_20260522_wotr_ukraine_battlefield_innovation_loop]] — [WotR] 우크라이나 전장 혁신 루프 — 피드백 구조의 우위와 서방 협력 모델 재설계
 - [[briefing_20260528_rand_uk_aisi_ai_cyber_uplift]] — [RAND Europe / UK AISI] 프런티어 AI의 공세 사이버 업리프트: 인간 업리프트 실험 연구
 - [[briefing_20260529_ecfr_europe_defence_digital_layer]] — [ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어
+
+## 규범 (1)
+
+- [[eu_us_belarus]] — 제재: 벨라루스 (EU, US, UK, CA)
 
 ## 케이스 (2)
 

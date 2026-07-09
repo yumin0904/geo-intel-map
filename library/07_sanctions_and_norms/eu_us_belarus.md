@@ -1,7 +1,7 @@
 ---
 asset_type: norm
 era: multipolar
-geopol_region: null
+geopol_region: eastern_europe
 instrument_of_power: economic
 level_of_analysis: state_domestic
 regions:
