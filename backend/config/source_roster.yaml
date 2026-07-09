@@ -66,6 +66,19 @@ sources:
     backfillable: true
     notes: "서버 스케줄 15분이나 실제 실행은 launchd 1일2회(collect_standalone) — 그 갭을 흡수하도록 48h. server 15분 병행(main.py gdelt_pipeline)"
 
+  - source_id: gdelt_bq_country_daily
+    name: "GDELT 국가급 일간 카운트 (BigQuery 백필)"
+    kind: manual
+    connector: scripts/load_gdelt_bq.py
+    job: null
+    db_table: gdelt_country_daily
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    trigger: manual
+    backfillable: true
+    notes: "BigQuery gdelt-bq.gdeltv2.events → 국가×일 와이드 집계(총계·시위14·물리분쟁q4·언어분쟁q3·mentions·Goldstein), 2015~. 스캔 ~28GB/회(무료 1TB의 3%), ADC=사용자 계정·프로젝트 geo-intel-gdelt-2026. §18-A: 국가급 이상 전용, Hammond-Weidmann 보도편향 [한계] 의무. 판례 20260709-data-audit-committee 웨이브2"
+
   - source_id: gdelt_gkg
     name: "GDELT GKG (테마 보강)"
     kind: live

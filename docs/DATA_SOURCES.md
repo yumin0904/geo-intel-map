@@ -83,6 +83,7 @@
 | NKNews + 38 North | `connectors/nk_news_connector.py` | 북한 전문 뉴스·학술 분석 → `nk_press_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_nk_press_batch`) |
 | UN News | `connectors/un_news_connector.py` | UN 공식 뉴스(다자 시각, 이중결정 검정 보강) → `un_news_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_un_news_batch`) |
 | Atlantic Council + Arms Control Assoc | `connectors/policy_think_tank_connector.py` | 워싱턴 외교안보 싱크탱크 정책 분석 → `policy_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_policy_think_tank_batch`) |
+| GDELT 국가급 일간 카운트 (BigQuery) | `scripts/load_gdelt_bq.py` | 2015~현재 국가×일 와이드 집계(총계·시위 root14·물리분쟁 quad4·언어분쟁 quad3·mentions·Goldstein) → `gdelt_country_daily`. 수동 백필(온디맨드 재실행, ~28GB 스캔/회, ADC 사용자 계정·프로젝트 geo-intel-gdelt-2026). ⚠️ §18-A: 국가급 이상 전용 + Hammond-Weidmann 보도편향 [한계] 의무 (판례 20260709-data-audit-committee 웨이브2) |
 
 **제외 판단(커넥터 아님, 실측 근거):**
 - `connectors/news_cross_validator.py` — GDELT 1단계 통과 이벤트의 RSS 교차검증 유틸리티. 자체 DB 테이블을 생성하지 않고 기존 국제뉴스 RSS를 재사용해 confidence_score만 보정(GDELT Stage 2). 독립 소스가 아니라 검증 로직.
