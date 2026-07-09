@@ -121,8 +121,8 @@ sources:
     db_table: govinfo_releases
     timestamp_col: fetched_at
     filter: null
-    max_staleness_hours: 72
-    notes: "GOVINFO_API_KEY가 현재 backend/.env에 없음 — 위원회 실측 시점 기준 상시 경보 예상(키 미발급은 범위 밖). URLError 삼킴(return 0)은 이번에 수리"
+    max_staleness_hours: 240
+    notes: "키 발급 완료(2026-07-09) — API 접근 정상. CPD는 발행 자체가 불규칙(백악관 문서 모음, 며칠 공백이 정상)이라 72h는 오경보 유발 → 240h(10일)로 조정. fetched_at 기준 = '마지막 신규 문서 적재' 시각임에 유의"
 
   # ── 배선 안 된 live 커넥터 (범위 밖 — 존재만 선언, 경보는 비활성) ────────
   - source_id: reliefweb
