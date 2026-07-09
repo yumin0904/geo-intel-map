@@ -100,7 +100,9 @@ def _parse(xlsx_bytes: bytes) -> list[dict]:
             "id": f"cns_nk_missile_{n:04d}_{ts[:10]}",
             "timestamp": ts,
             "source_type": "missile_test",
-            "region_code": "korean_peninsula",
+            # north_korea = 행위자형 region (미사일 도발 주체 기준) — north_korea_missile_to_krw
+            # 룰의 데이터원. korean_peninsula 하드코딩이던 것을 판례 20260709 위원회가 재라우팅.
+            "region_code": "north_korea",
             "severity": _SEV_BY_TYPE.get(mtype, 40),
             "title": f"[CNS] 북한 {mname} ({mtype}) 발사 — {facility}",
             "description": f"{outcome} · {loc}".strip(" ·"),
