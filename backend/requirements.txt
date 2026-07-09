@@ -32,3 +32,6 @@ statsmodels>=0.14,<1.0
 
 # IA-Engine-B1: SIPRI·Kiel Excel 파싱 (load_external_data.py)
 openpyxl>=3.1,<4.0
+
+# V-Dem .RData 파싱 — R 설치 없이 공식 vdemdata 저장소에서 백필 (load_vdem_api.py)
+pyreadr>=0.5,<1.0

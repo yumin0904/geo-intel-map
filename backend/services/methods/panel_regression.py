@@ -83,16 +83,22 @@ _VAR_CATALOG: list[_VarEntry] = [
         "val", "panel",
     ),
     # ── 민주주의·거버넌스 ────────────────────────────────────────────────
+    # V-Dem(vdem_index)·WGI(world_bank_wgi): wave-2 frozen-seed panelization fix
+    # (geo-os/wiki/decisions/20260709-data-audit-committee.md) 로 전체 연도 백필 완료.
+    # SQL에 year 컬럼 추가 + data_type "panel"로 전환 — n_periods>=2 게이트 통과 가능.
     _VarEntry(
         r"민주주의|democracy|polyarchy|자유화|liberal.*dem",
-        "SELECT iso3, v2x_polyarchy AS val FROM vdem_index",
-        "val", "cross",
+        "SELECT iso3, year, v2x_polyarchy AS val FROM vdem_index",
+        "val", "panel",
     ),
     _VarEntry(
         r"자유민주주의|liberal.*democracy",
-        "SELECT iso3, v2x_libdem AS val FROM vdem_index",
-        "val", "cross",
+        "SELECT iso3, year, v2x_libdem AS val FROM vdem_index",
+        "val", "panel",
     ),
+    # Polity5: 프로젝트 자체가 2018년으로 시리즈 종료됨 — 백필해도 년도 범위가
+    # 안 늘어나 패널화 이득이 없음(체제 변화가 드문 저빈도 지표라 실효 n_periods도 낮음).
+    # data_type "cross" 유지.
     _VarEntry(
         r"체제.*유형|regime.*type|권위주의|autocracy|polity",
         "SELECT iso3, polity2_score AS val FROM polity5",
@@ -100,33 +106,33 @@ _VAR_CATALOG: list[_VarEntry] = [
     ),
     _VarEntry(
         r"정치.*안정|political.*stab|내전.*위험",
-        "SELECT iso3, pv_score AS val FROM world_bank_wgi",
-        "val", "cross",
+        "SELECT iso3, year, pv_score AS val FROM world_bank_wgi",
+        "val", "panel",
     ),
     _VarEntry(
         r"부패|corruption|청렴",
-        "SELECT iso3, cc_score AS val FROM world_bank_wgi",
-        "val", "cross",
+        "SELECT iso3, year, cc_score AS val FROM world_bank_wgi",
+        "val", "panel",
     ),
     _VarEntry(
         r"법치|rule.*of.*law",
-        "SELECT iso3, rl_score AS val FROM world_bank_wgi",
-        "val", "cross",
+        "SELECT iso3, year, rl_score AS val FROM world_bank_wgi",
+        "val", "panel",
     ),
     _VarEntry(
         r"규제.*품질|regulatory",
-        "SELECT iso3, rq_score AS val FROM world_bank_wgi",
-        "val", "cross",
+        "SELECT iso3, year, rq_score AS val FROM world_bank_wgi",
+        "val", "panel",
     ),
     _VarEntry(
         r"정부.*효율|government.*effect",
-        "SELECT iso3, ge_score AS val FROM world_bank_wgi",
-        "val", "cross",
+        "SELECT iso3, year, ge_score AS val FROM world_bank_wgi",
+        "val", "panel",
     ),
     _VarEntry(
         r"표현.*자유|voice.*account",
-        "SELECT iso3, va_score AS val FROM world_bank_wgi",
-        "val", "cross",
+        "SELECT iso3, year, va_score AS val FROM world_bank_wgi",
+        "val", "panel",
     ),
     # ── 에너지·자원 ──────────────────────────────────────────────────────
     _VarEntry(

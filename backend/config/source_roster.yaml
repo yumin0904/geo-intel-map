@@ -337,7 +337,7 @@ sources:
   - source_id: vdem
     name: "V-Dem 민주주의 지수"
     kind: annual
-    connector: scripts/load_external_data.py
+    connector: scripts/load_vdem_api.py
     job: null
     db_table: vdem_index
     timestamp_col: null
@@ -345,7 +345,7 @@ sources:
     max_staleness_hours: 10000
     trigger: manual
     backfillable: true
-    notes: "1회 seed (--source vdem) — V-Dem은 연 1회(3월경) 릴리스"
+    notes: "1회 seed (--source vdem) — V-Dem은 연 1회(3월경) 릴리스. 전체연도 백필 완료(2026-07-09)·행수 6383(1990~2025년·181개국, vdeminstitute/vdemdata GitHub 무료 공개 RData)"
 
   - source_id: polity5
     name: "Polity5 정체 지수"
@@ -363,7 +363,7 @@ sources:
   - source_id: world_bank_wgi
     name: "World Bank 거버넌스 지표(WGI)"
     kind: annual
-    connector: scripts/load_external_data.py
+    connector: scripts/load_wgi_api.py
     job: null
     db_table: world_bank_wgi
     timestamp_col: null
@@ -371,7 +371,7 @@ sources:
     max_staleness_hours: 10000
     trigger: manual
     backfillable: true
-    notes: "1회 seed (--source world_bank) — WGI는 연 1회 릴리스"
+    notes: "1회 seed (--source world_bank) — WGI는 연 1회 릴리스. 전체연도 백필 완료(2026-07-09)·행수 5301(1996~2024년·207개국, World Bank API GOV_WGI_*.EST 지표)"
 
   - source_id: fred
     name: "FRED 거시지표"
