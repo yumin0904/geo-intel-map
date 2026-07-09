@@ -1054,6 +1054,10 @@ if verification_status == "VERIFIED":  # 상한 없음 — Granger p<0.05 자동
 Phase 6 (데이터 기반 강화):
 ✅ UNVERIFIED 평균 <1건/케이스 (Cycle 6-A, v6.4.0)
 ✅ IA-Engine-D: Granger VERIFIED 2건 (한반도 p=0.048 + 북극 p=0.049, v7.2.0)
+   ⚠️ 정정(2026-07-09): 한반도 p=0.048은 region 오염기(서울 이벤트 3,136건이 north_korea로
+   월경해 korean_peninsula에서 누락) 버킷의 인공물 — v9.30.0 마이그레이션 후 재검정 p=0.2175
+   (n=717)로 재유도 실패. north_korea 쌍도 p=0.6037(극단 84건, CNS 재라우팅으로 데이터 고갈
+   해소 확인). 두 쌍 모두 정직 null. 판례 20260709-nk-region-bbox-contamination §20-C 재유도 완결.
 □ H1 Type_A/B 비율 50%+ (현재 대부분 Type_C — 데이터 공백으로 인한 추상화)
 
 Phase 7 (추론 고도화):
