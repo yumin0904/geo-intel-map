@@ -225,15 +225,20 @@ def _classify_linear_testability(
 # ── region 키워드 매핑 ────────────────────────────────────────────────────────
 # independent_var 텍스트에서 지역/행위자를 식별해 event_archive region_code로 변환
 
+# 각 지역의 region_code 리터럴("bab_el_mandeb" 등)도 키워드에 포함한다 —
+# H1/쿼리에 코드가 언더스코어 그대로 박히는 실측 형태가 있는데, 공백 기반
+# 키워드("bab el"·"middle east")는 언더스코어 리터럴과 부분문자열 매치가 안 돼
+# dependent_region이 비고 B4 사건→사건 경로가 차단됐다 (위원회 실측 2026-07-09:
+# hormuz_redsea_contagion·middle_east_hormuz_contagion 2건이 이 버그로 pending_typeB 낙하).
 _REGION_MAP: list[tuple[list[str], str]] = [
-    (["우크라이나", "ukraine", "러시아", "russia", "동유럽", "eastern europe"], "eastern_europe"),
-    (["대만", "taiwan", "남중국해", "south china", "반도체", "tsmc"], "taiwan_strait"),
+    (["우크라이나", "ukraine", "러시아", "russia", "동유럽", "eastern europe", "eastern_europe"], "eastern_europe"),
+    (["대만", "taiwan", "남중국해", "south china", "반도체", "tsmc", "taiwan_strait"], "taiwan_strait"),
     (["호르무즈", "hormuz", "이란", "iran", "걸프", "gulf", "페르시아"], "hormuz"),
-    (["한반도", "korean", "북한", "dprk", "조선", "남한", "south korea"], "korean_peninsula"),  # 남한: 골드셋 v2가 검출한 공백
-    (["동중국해", "east china", "센카쿠", "senkaku", "일본", "japan", "자위대", "jsdf"], "east_china_sea"),
-    (["홍해", "red sea", "바브엘만데브", "bab el", "예멘", "후티", "houthi"], "bab_el_mandeb"),
+    (["한반도", "korean", "북한", "dprk", "조선", "남한", "south korea", "korean_peninsula"], "korean_peninsula"),  # 남한: 골드셋 v2가 검출한 공백
+    (["동중국해", "east china", "센카쿠", "senkaku", "일본", "japan", "자위대", "jsdf", "east_china_sea"], "east_china_sea"),
+    (["홍해", "red sea", "바브엘만데브", "bab el", "예멘", "후티", "houthi", "bab_el_mandeb"], "bab_el_mandeb"),
     (["수에즈", "suez", "이집트", "egypt"], "suez"),
-    (["중동", "middle east", "이스라엘", "israel", "팔레스타인"], "middle_east"),
+    (["중동", "middle east", "이스라엘", "israel", "팔레스타인", "middle_east"], "middle_east"),
     (["말라카", "malacca", "동남아", "southeast asia"], "malacca"),
     (["사헬", "sahel", "아프리카", "africa", "말리", "niger"], "sahel"),
 ]

@@ -73,7 +73,9 @@ _VAR_CATALOG: list[_VarEntry] = [
         "val", "panel",
     ),
     _VarEntry(
-        r"방위비|군사비|milex|military.*spend|defense.*spend",
+        # "국방비" 추가: v2_milex_conflict_cross 골드가 이 표현으로 매핑 실패했음
+        # (위원회 실측 2026-07-09 — 방위비·군사비와 동일 구성개념, SIPRI milex).
+        r"방위비|군사비|국방비|국방.*예산|milex|military.*spend|defense.*spend",
         "SELECT iso3, year, gdp_pct AS val FROM sipri_milex",
         "val", "panel",
     ),
@@ -134,6 +136,16 @@ _VAR_CATALOG: list[_VarEntry] = [
         "SELECT iso3, year, va_score AS val FROM world_bank_wgi",
         "val", "panel",
     ),
+    # WGI 총칭("거버넌스 지수"·"WGI"): 세부 축 미특정 가설의 대표 축으로 GE(정부효율)
+    # 사용 — 6축 중 '거버넌스 역량' 총칭에 가장 근접. 세부 축 패턴들이 위에서 먼저
+    # 매칭되므로 이 엔트리는 총칭 표현에만 떨어진다 (구체 패턴 우선 배치 원칙).
+    # ⚠️ "V-Dem 언론자유"는 여기 매핑 금지 — vdem_index에 press freedom 컬럼 부재
+    # (v2x_freexp 미백필), WGI va_score로 보내면 구성개념 치환 (위원회 2026-07-09).
+    _VarEntry(
+        r"거버넌스|governance|\bwgi\b",
+        "SELECT iso3, year, ge_score AS val FROM world_bank_wgi",
+        "val", "panel",
+    ),
     # ── 에너지·자원 ──────────────────────────────────────────────────────
     _VarEntry(
         r"원유.*생산|oil.*prod|crude.*prod",
@@ -161,6 +173,29 @@ _VAR_CATALOG: list[_VarEntry] = [
 
 # ── 공개 인터페이스 ───────────────────────────────────────────────────────────
 
+def _procure_entries(spec) -> tuple["_VarEntry | None", "_VarEntry | None"]:
+    """spec에서 IV/DV 변수 카탈로그 엔트리를 매핑한다 (from_spec 1단계와 동일 로직).
+
+    IV/DV 각자 고유 텍스트에서 매칭, 실패 시 H1 '일수록' 분할로 재시도.
+    조달 게이트(verifier의 Type_B CROSS_SECTION 분기, v9.34.0)와 from_spec이
+    같은 눈으로 판정하도록 단일 함수로 공유한다 — 게이트가 어댑터보다 좁으면
+    검정 가능 케이스를 PENDING에 가두고, 넓으면 no-op 라우팅 착시가 생긴다.
+    """
+    iv_text = getattr(spec, "independent_var", "") or ""
+    dv_text = getattr(spec, "dependent_var", "") or ""
+    h1_text = getattr(spec, "h1", "") or ""
+    iv_entry = _match_var(iv_text) or _match_var(h1_text.split("일수록")[0])
+    dv_entry = _match_var(dv_text) or _match_var(h1_text.split("일수록")[-1])
+    return iv_entry, dv_entry
+
+
+def can_procure(spec) -> bool:
+    """IV·DV가 모두 카탈로그에 조달되고 동어반복이 아닌지 — 조달 게이트용."""
+    iv_entry, dv_entry = _procure_entries(spec)
+    return (iv_entry is not None and dv_entry is not None
+            and iv_entry.sql != dv_entry.sql)
+
+
 def from_spec(spec) -> MethodResult:
     """
     HypothesisSpec → MethodResult (CROSS_SECTION 전용).
@@ -169,12 +204,9 @@ def from_spec(spec) -> MethodResult:
     """
     iv_text = getattr(spec, "independent_var", "") or ""
     dv_text = getattr(spec, "dependent_var", "") or ""
-    h1_text = getattr(spec, "h1", "") or ""
 
     # ── 1. 변수 매핑 ──────────────────────────────────────────────────────
-    # IV/DV 각자 고유 텍스트에서 매칭. 모두 실패하면 H1 전체로 재시도.
-    iv_entry = _match_var(iv_text) or _match_var(h1_text.split("일수록")[0])
-    dv_entry = _match_var(dv_text) or _match_var(h1_text.split("일수록")[-1])
+    iv_entry, dv_entry = _procure_entries(spec)
 
     if iv_entry is None or dv_entry is None:
         matched = []

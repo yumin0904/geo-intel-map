@@ -183,6 +183,7 @@ _ROUTE_GRANGER_A     = "granger_typeA"           # Type_A 정상: 금융 ticker 
 _ROUTE_NO_HYPOTHESIS = "no_quantitative_hypothesis"    # H1이 '정량 가설 없음' 선언문 — 검정 대상 아님
 _ROUTE_PENDING_METHOD = "pending_method_unimplemented" # 시그니처 판정 명확, 해당 방법(9-A/9-B) 미구현
 _ROUTE_CONSTRUCT_FAIL = "construct_validity_fail"       # IV가 질문 대상을 측정 못함 — 검정 미수행(2026-07-05)
+_ROUTE_PANEL_B        = "panel_typeB_cross_section"     # Type_B CROSS_SECTION 조달 게이트 통과 → 9-B (v9.34.0)
 
 # 추출기가 검정 불가를 정직하게 선언한 문장 패턴 (H1 자리에 선언문이 오는 실측 형태 2종).
 # 이 선언문이 Type_A/C로 오분류되면 섹터 proxy Granger까지 흘러가 유의 결과로 '세탁'될 수 있어
@@ -229,8 +230,26 @@ def _build_surface(spec: "HypothesisSpec") -> None:
             spec.surface_summary = f"[사건→사건] {rgn}→{dep} — 통계 비유의"
             spec.confidence_word = "낮음"
     elif m == _ROUTE_PENDING_B:
-        spec.surface_summary  = f"[행동변수] {dv} — 이벤트스터디 미구현, 검정 불가"
+        spec.surface_summary  = f"[행동변수] {dv} — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가"
         spec.confidence_word  = "검정불가"
+    elif m == _ROUTE_PANEL_B:
+        # 9-B 실검정 결과 — method_result.all_results의 panel_regression 항목이 원천
+        # (이 함수는 Method Router 이후에 호출되므로 항상 채워져 있다).
+        _pr = next((r for r in ((spec.method_result or {}).get("all_results") or [])
+                    if r.get("method") == "panel_regression"), None)
+        _pv = _pr.get("significance") if _pr else None
+        _pstr = f"p={_pv:.3f}" if isinstance(_pv, (int, float)) else "p=?"
+        _fe = bool(((_pr or {}).get("robustness") or {}).get("is_panel_fe"))
+        _mname = "패널FE" if _fe else "횡단OLS"
+        if spec.verification_status == "VERIFIED":
+            spec.surface_summary = f"[{_mname}] {iv} → {dv} 유의 ({_pstr}) — {spec.inference_grade}"
+            spec.confidence_word = "높음" if _fe else "보통"
+        elif spec.verification_status == "PARTIAL":
+            spec.surface_summary = f"[{_mname}] {iv} → {dv} 경향성 ({_pstr})"
+            spec.confidence_word = "보통"
+        else:
+            spec.surface_summary = f"[{_mname}] {iv} → {dv} — 비유의 또는 가정 미충족"
+            spec.confidence_word = "낮음"
     elif m in (_ROUTE_GRANGER_C, _ROUTE_GRANGER_A_DG):
         proxy_note = "(대리쌍)" if spec.is_proxy_pair else ""
         if spec.verification_status == "VERIFIED":
@@ -773,6 +792,25 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             continue
 
         if spec.var_type == "Type_B":
+            # [v9.34.0 위원회 2026-07-09] CROSS_SECTION + 변수 조달 게이트 —
+            # 시그니처가 국가간 비교이고 IV·DV가 **둘 다** 변수 카탈로그에 실제 매핑될
+            # 때만 9-B로 라우팅한다. 조달 선확인 없는 재배선은 '9-B로 갔다'는 라벨만
+            # 남기는 no-op(반박석 실측: CROSS_SECTION 4건 전건 카탈로그 매핑 실패).
+            # 최종 판정(VERIFIED/PARTIAL/PENDING)은 Method Router 블록이 삼각측량
+            # 결과로 확정한다. 국가간 비교라 region_code는 불요(iso3 패널이 단위).
+            if spec.data_signature == "CROSS_SECTION":
+                from services.methods.panel_regression import can_procure as _pr_procure
+                if _pr_procure(spec):
+                    spec.routing_method = _ROUTE_PANEL_B
+                    spec.routing_confidence = "HIGH"
+                    spec.routing_alternatives = ["Granger (짝지은 시계열 재구성 시)"]
+                    logger.info("[hypothesis] Type_B CROSS_SECTION 조달 통과 → 9-B: %s",
+                                spec.h1[:60])
+                    results.append(spec)
+                    continue
+            # 잔여(조달 실패·비CROSS_SECTION)는 정직 PENDING 존치 — 카운트 DV를 다른
+            # 측정으로 치환하지 않는다(측정 치환 laundering 차단). 카운트 전용 방법
+            # (카운트 패널 DV·ITS)은 원전 정독 게이트 통과 후 별도 사이클에서 착수.
             if not spec.region_code:
                 spec.error = "Type B (행동 변수): region_code 미식별 → ACLED 검증 불가"
                 spec.inference_caveat = (
@@ -783,16 +821,20 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 spec.error = (
                     f"Type B (행동 변수): ACLED 이벤트 비교 필요 "
                     f"(region={spec.region_code}) "
-                    f"→ actor_filter 기반 event study로 검증 가능 (다음 버전 구현 예정)"
+                    f"→ 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류"
                 )
                 spec.inference_caveat = (
-                    f"검정 불가 — 종속변수가 행동 변수(건수)로 {spec.region_code} ACLED 시계열은 있으나 "
-                    f"actor_filter 기반 event study 미구현. 현재는 서술·이론 근거만 가능."
+                    f"검정 불가 — 종속변수가 행동 변수(건수·율)로 {spec.region_code} ACLED 시계열은 "
+                    f"있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 "
+                    f"대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능."
                 )
             # [9-P-3] 라우팅 마킹
             spec.routing_method = _ROUTE_PENDING_B
             spec.routing_confidence = "HIGH"   # Type_B 판정 자체는 명확
-            spec.routing_alternatives = ["9-A 이벤트스터디 (actor_filter 기반 event study 구현 후)"]
+            spec.routing_alternatives = [
+                "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+                "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)",
+            ]
             logger.info("[hypothesis] Type_B PENDING: %s", spec.h1[:60])
             results.append(spec)
             continue
@@ -994,10 +1036,6 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         except Exception as exc:
             logger.warning("[hypothesis] FDR 보정 실패: %s", exc)
 
-    # [9-P-4] 표면 2계층 일괄 생성 (FDR 보정 후 최종 등급 기준)
-    for s in results:
-        _build_surface(s)
-
     # [9-0/9-A] Method Router 연결 — 시그니처 분류 + MethodResult 변환 + 삼각측량
     try:
         from services.methods.router import classify_signature, select_method_set, filter_implemented
@@ -1099,8 +1137,47 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 "[9-A] sig=%s headline=%s/%s stubs=%s",
                 sig, tri.headline_rung, tri.headline_method, stubs,
             )
+
+            # [v9.34.0] Type_B CROSS_SECTION 조달 통과분 — 최종 판정을 여기서 확정.
+            # 다른 라우트는 위 분기에서 이미 사전 확정돼 있어 건드리지 않는다.
+            # 판정 규약은 Granger와 대칭: p<0.05 → VERIFIED·방법의 실제 칸 /
+            # p<0.15 → PARTIAL·상관 상한 / 그 외·가정 미충족 → PENDING·기술적.
+            if getattr(s, "routing_method", "") == _ROUTE_PANEL_B:
+                _pr = next((r for r in method_results
+                            if r.method == "panel_regression"), None)
+                if _pr is None or not _pr.assumptions_met:
+                    _pr_caveat = _pr.assumption_caveat if _pr else "패널회귀 미실행"
+                    s.verification_status = "PENDING"
+                    s.inference_grade = _LADDER_DESCRIPTIVE
+                    s.error = f"9-B 가정 미충족 — {_pr_caveat}"
+                    s.inference_caveat = (
+                        f"검정 불가 — 변수 조달은 통과했으나 {_pr_caveat}. "
+                        "서술·이론 근거만 가능."
+                    )
+                else:
+                    _pp = _pr.significance
+                    if _pp is not None and _pp < _P_VERIFIED:
+                        s.verification_status = "VERIFIED"
+                        s.inference_grade = _pr.actual_rung
+                    elif _pp is not None and _pp < _P_PARTIAL:
+                        s.verification_status = "PARTIAL"
+                        s.inference_grade = _LADDER_CORRELATIONAL
+                    else:
+                        s.verification_status = "PENDING"
+                        s.inference_grade = _LADDER_DESCRIPTIVE
+                    s.inference_caveat = _pr.assumption_caveat
+                logger.info("[9-B] Type_B 판정: %s grade=%s p=%s",
+                            s.verification_status, s.inference_grade,
+                            getattr(_pr, "significance", None))
     except Exception as exc:
         logger.warning("[9-A] Method Router 연결 실패 (무시, Granger 결과 유지): %s", exc)
+
+    # [9-P-4] 표면 2계층 일괄 생성 — Method Router **뒤**로 이동 (v9.34.0 위원회):
+    # 기존엔 라우터 앞에서 생성돼 pending_typeB의 표면이 "이벤트스터디 미구현"이라
+    # 말하는데 실제 시도 방법은 panel_regression인 불일치가 있었다(시스템석 실측).
+    # 기존 라우트는 verification_status가 라우터 블록에서 불변이라 이동은 no-op.
+    for s in results:
+        _build_surface(s)
 
     # [9-Q 우선순위 2] 인식론 모드 캡 — 모든 등급 계산이 끝난 최종 단일 패스.
     #   탐색형(HARKing) → '상관' 상한 + [탐색적]. 확증형 → [확증] 라벨. (헤드라인 3곳 정합)
