@@ -319,9 +319,18 @@ def _check_rival_comparison(text: str) -> dict:
     # 발명해 열세 판정 — 태그와 판정이 공존해 기존 렌즈를 모두 통과하던 패턴).
     verdict_on_unverified: list[str] = []
     for chunk in re.split(r"\n\s*\n", rival_section):
-        if re.search(r"\[UNVERIFIED\]|정량값\s*부재|DV\s*부재", chunk) and \
-           re.search(r"판정\s*:[^\n]*(우세|열세)", chunk):
-            verdict_on_unverified.append(chunk.strip()[:60])
+        if not re.search(r"\[UNVERIFIED\]|정량값\s*부재|DV\s*부재", chunk):
+            continue
+        _vline = re.search(r"판정\s*:[^\n]*", chunk)
+        if not _vline or not re.search(r"우세|열세", _vline.group(0)):
+            continue
+        # [오탐 가드 2026-07-10] "우세/열세 판정 불가"처럼 판정을 명시적으로 '거부'한
+        # 문장은 위반이 아니라 정확히 옳은 행동이다 — qwen3.5가 이 표현을 상용해
+        # 신 baseline에서 2건 오탐(hormuz_redsea·iran_war_oil). 부정형이 없을 때만 위반.
+        # 원검출 대상(판정: ... 열세 — 부정형 없음)은 그대로 잡힌다.
+        if re.search(r"(판정|판단|비교)\s*(불가|불능|유보|보류)|불가\b", _vline.group(0)):
+            continue
+        verdict_on_unverified.append(chunk.strip()[:60])
 
     quantitative = has_prediction and has_measured
     return {
