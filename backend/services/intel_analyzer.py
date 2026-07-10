@@ -471,6 +471,40 @@ def _get_kiel_data(regions: list[str]) -> list[dict]:
         return []
 
 
+def _get_press_releases(regions: list[str]) -> dict:
+    """미배선 텍스트 소스 3종(govinfo·nk_press·un_news) — region_hint 게이트 조달.
+
+    큐 10① census 수리(2026-07-11): 적재 실존(155·376·72행)·인용 0이던 공백.
+    mofa_press는 의도적 미배선 유지(source_roster 명시 — 수동 CLI).
+    pub_date 동봉 필수 — govinfo는 1966년 사료까지 있어 연도 태그가 시대착오 방지선.
+    """
+    if not regions:
+        return {}
+    placeholders = ",".join("?" * len(regions))
+    tables = {"govinfo": "govinfo_releases",
+              "nknews": "nk_press_releases",
+              "un_news": "un_news_releases"}
+    out: dict[str, list[dict]] = {}
+    try:
+        with _db(_INTEL_DB) as con:
+            for key, table in tables.items():
+                rows = con.execute(
+                    f"""
+                    SELECT title, pub_date, description
+                    FROM {table}
+                    WHERE region_hint IN ({placeholders})
+                    ORDER BY pub_date DESC LIMIT 4
+                    """,
+                    tuple(regions),
+                ).fetchall()
+                if rows:
+                    out[key] = [dict(r) for r in rows]
+        return out
+    except Exception as e:
+        logger.warning("[intel] press_releases 실패: %s", e)
+        return {}
+
+
 # ── 6. EIA 에너지 통계 ───────────────────────────────────────────────────────
 
 def _get_eia_data(actors: list[str], regions: list[str]) -> dict:
@@ -1067,6 +1101,8 @@ _SOURCE_SPECS: dict[str, dict] = {
     # 관련성을 보장 — 섹터 이중 게이트는 off-domain 페널티→예산 기아만 낳았다
     # (큐 10① census 실측: 배선 실존·인용 0, 2026-07-11 수리)
     "kiel":          {"sectors": set()},
+    # press: _get_press_releases가 region_hint로 조달을 게이트 — kiel과 동일 원리로 범용
+    "press":         {"sectors": set()},
     "eia":           {"sectors": {"energy", "maritime"}},
     "csis":          {"sectors": {"cyber"}},
     "sipri_arms":    {"sectors": {"indo_pacific", "alliance", "techno"}},
@@ -1190,6 +1226,23 @@ def _emit_kiel(kiel_data) -> list[str]:
         )
     period = kiel_data[0].get("data_period", "") if kiel_data else ""
     out.append(f"  기간: {period} | 출처: Kiel Institute Ukraine Support Tracker")
+    out.append("")
+    return out
+
+
+def _emit_press(press_data) -> list[str]:
+    if not press_data:
+        return []
+    label = {"govinfo": "GovInfo·미 정부 문서", "nknews": "NK 동향(북한 발표·보도)",
+             "un_news": "UN News"}
+    out = ["## 정부·국제기구 발표 (1차 사료 — 발행일과 함께 인용, 발행연도 확인 필수)"]
+    for key, rows in press_data.items():
+        for r in rows:
+            out.append(f"- [{label.get(key, key)}] {r.get('pub_date', '?')} — "
+                       f"{(r.get('title') or '')[:90]}")
+            desc = (r.get("description") or "").strip().replace("\n", " ")
+            if desc:
+                out.append(f"  {desc[:110]}")
     out.append("")
     return out
 
@@ -1490,6 +1543,7 @@ _SOURCE_EMITTERS = {
     "sipri_milex":   _emit_sipri_milex,
     "cow_alliances": _emit_cow_alliances,
     "kiel":          _emit_kiel,
+    "press":         _emit_press,
     "eia":           _emit_eia,
     "csis":          _emit_csis,
     "sipri_arms":    _emit_sipri_arms,
@@ -1532,6 +1586,7 @@ def _build_context(
     semi_data:        list[dict] | None = None,
     owid_data:        list[dict] | None = None,
     trade_dep_data:   list[dict] | None = None,
+    press_data:       dict | None = None,
     # Phase 8 융합1: 경쟁이론 비교 컨텍스트 (priority tier)
     theory_cmp_ctx:   str = "",
 ) -> str:
@@ -1735,6 +1790,7 @@ def _build_context(
         "semi":          semi_data,
         "owid":          owid_data,
         "trade":         trade_dep_data,
+        "press":         press_data,
     }
 
     scored: list[tuple[float, str]] = []
@@ -1809,6 +1865,8 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_owid_data, pq.actors, pq.regions, pq.sectors),
         # AR-1b: Comtrade 무역 의존도 (Weaponized Interdependence IV)
         loop.run_in_executor(None, _get_trade_dependency, pq.actors, pq.regions),
+        # 큐 10① 배선 (2026-07-11): govinfo·nk_press·un_news — region_hint 게이트
+        loop.run_in_executor(None, _get_press_releases, pq.regions),
         return_exceptions=True,
     )
 
@@ -1838,13 +1896,14 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
     semi_data         = _safe(results[20], [])
     owid_data         = _safe(results[21], [])
     trade_dep_data    = _safe(results[22], [])
+    press_data        = _safe(results[23], {})
 
     context_text = _build_context(
         pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
         sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
         sipri_arms, vdem_data, cow_wars, ifans_pubs,
         fred_data, wbk_data, polity5_data, itu_data, hiik_data, semi_data,
-        owid_data, trade_dep_data,
+        owid_data, trade_dep_data, press_data,
         theory_cmp_ctx=theory_cmp_ctx,  # Phase 8 융합1: priority tier로 이동
     )
 
@@ -1889,6 +1948,7 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
             "hiik":                len(hiik_data),
             "semi":                len(semi_data),
             "owid":                len(owid_data),
+            "press":               sum(len(v) for v in press_data.values()),
         },
         "like_items":        like_items,
         "sector_items":      sector_items,
