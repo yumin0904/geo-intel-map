@@ -8,7 +8,9 @@ defect_gold:      # 합의 결함 — Fable 감사·opus 맹검 양쪽 LOW
   v2_nk_iv_misroute:         {cr_max: 2, why: "룰매칭강도를 환율 DV 실측으로·편차 0 위조·HKDUS 오지정 (judge 4.0)"}
 exemplar_gold:    # 합의 모범 — 양쪽 HIGH
   china_cyber_us:            {cr_min: 4, why: "스킬별 성공률(+18%p·0.012%)이 그 이론의 실 DV — 타당 정량 편차+쟁점"}
-contested:        # 이견 — 사용자 판정 대기 (Fable 감사 vs opus 맹검)
+contested:        # 이견 — 계쟁 배제 원칙(2026-07-10 사용자 채택)으로 골드 부적격 확정.
+                  # 폐기 아님: 전문가 질문 후보로 이관 (geo-os/wiki/expert-questions.md Q1~Q3,
+                  # 한국외교협회 글로벌리더십과정 2026-07-20~24). 답을 얻으면 재상정 가능.
   hormuz_oil_verify:         {fable: "cr<=3 — HHI 9765/30000 모순·편차0 위조·이중라벨", opus: "cr>=4 — 유가 -18.6%는 실 DV 편차, 결함은 부차", question: "결함 공존 시 타당한 편차 하나가 구제하는가"}
   ukraine_drone_innovation:  {fable: "cr<=3 — 사이버 실험은 드론 역량의 DV 아님(도메인 불일치)", opus: "cr>=4 — 하이브리드 '역량' 광의로 타당", question: "DV 구성개념의 허용 폭"}
   middle_east_hormuz_contagion: {fable: "cr=4 — Stock/Flow 구분·정직 절제", opus: "cr=3 — 실측 편차 전무는 루브릭 문언상 3", question: "정직한 판정 유보가 4를 받아야 하나(=v2 루브릭 논쟁의 재림)"}
