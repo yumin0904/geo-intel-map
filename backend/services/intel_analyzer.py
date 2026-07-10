@@ -1063,7 +1063,10 @@ def _get_country_profiles(actors: list[str]) -> dict:
 _SOURCE_SPECS: dict[str, dict] = {
     "sipri_milex":   {"sectors": {"indo_pacific", "alliance"}},
     "cow_alliances": {"sectors": {"indo_pacific", "alliance"}},
-    "kiel":          {"sectors": {"alliance"}},
+    # kiel: _get_kiel_data가 우크라이나 지역 쿼리에만 조달하므로 지역 게이트가 이미
+    # 관련성을 보장 — 섹터 이중 게이트는 off-domain 페널티→예산 기아만 낳았다
+    # (큐 10① census 실측: 배선 실존·인용 0, 2026-07-11 수리)
+    "kiel":          {"sectors": set()},
     "eia":           {"sectors": {"energy", "maritime"}},
     "csis":          {"sectors": {"cyber"}},
     "sipri_arms":    {"sectors": {"indo_pacific", "alliance", "techno"}},
@@ -1753,7 +1756,6 @@ def _build_context(
             continue   # 이 블록이 초과하면 건너뜀 — 더 작은 다음 블록은 들어갈 수 있음
         lines.extend(block)
 
-    result = "\n".join(lines)
     result = "\n".join(lines)
     # 혹시 예산을 초과한 경우 마지막 완전 섹션 경계에서 절단
     if len(result) > _CONTEXT_MAX_CHARS:
