@@ -28,6 +28,7 @@ import re
 import sqlite3
 import yaml
 from contextlib import contextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -205,6 +206,10 @@ _REGION_KO: dict[str, list[str]] = {
 }
 
 
+# [큐 10] 월간 변화율 산출의 분모 하한 — 미만이면 %·방향이 수집 아티팩트에 지배됨
+_TREND_MIN_BASE = 30
+
+
 def _get_event_stats(regions: list[str]) -> dict:
     if not regions:
         return {}
@@ -231,6 +236,19 @@ def _get_event_stats(regions: list[str]) -> dict:
                 """,
                 tuple(regions),
             ).fetchall()
+            # [큐 10 — 시계열 형태 공백 처방 2026-07-11] 총량·평균만 주면 모델이 총량으로
+            # 추세를 창작한다(전수 감사 검증비약 ~12건의 구조 원인). 월별 배열을 Token-Zero로
+            # 사전계산 조달 — 추세 서술의 유일 허용 원천.
+            month_rows = con.execute(
+                f"""
+                SELECT region_code, substr(timestamp, 1, 7) AS ym, COUNT(*) AS cnt
+                FROM event_archive
+                WHERE region_code IN ({placeholders})
+                GROUP BY region_code, ym
+                ORDER BY ym DESC
+                """,
+                tuple(regions),
+            ).fetchall()
 
         stats: dict = {}
         for r in rows:
@@ -247,6 +265,32 @@ def _get_event_stats(regions: list[str]) -> dict:
                 "max_severity": r["max_sev"],
                 "total_events":  r["total"],
             })
+        # 월별 추이: 지역별 최근 6개 버킷(ym 내림차순 조회분을 오름차순 보관).
+        # 변화율은 '완결월' 두 개 사이만 — 당월은 진행 중이라 비교 대상에서 제외.
+        this_ym = datetime.now(timezone.utc).strftime("%Y-%m")
+        monthly: dict[str, list] = {}
+        for r in month_rows:
+            monthly.setdefault(r["region_code"], []).append((r["ym"], r["cnt"]))
+        for rc, series in monthly.items():
+            if rc not in stats:
+                continue
+            series = sorted(series)[-6:]
+            stats[rc]["monthly"] = series
+            complete = [(ym, c) for ym, c in series if ym != this_ym]
+            if len(complete) >= 2:
+                (ym_p, prev), (ym_l, last) = complete[-2], complete[-1]
+                # 달력상 인접한 완결월 사이만 변화율 산출 — 수집 공백을 건너뛴 비교는
+                # 그 자체가 추세 위조다. 절대 건수는 렌더러가 병기(분모 자기 노출).
+                yp, mp = int(ym_p[:4]), int(ym_p[5:7])
+                adjacent = (yp * 12 + mp + 1) == (int(ym_l[:4]) * 12 + int(ym_l[5:7]))
+                # 분모 소표본(<_TREND_MIN_BASE)이면 변화율·방향 미산출 — 1건→62건의
+                # '+6100% ▲'는 수집 아티팩트를 추세로 위조한다(hormuz·taiwan 실측).
+                if adjacent and prev >= _TREND_MIN_BASE:
+                    stats[rc]["trend_from"] = prev
+                    stats[rc]["trend_to"] = last
+                    stats[rc]["trend_pct"] = round((last - prev) / prev * 100, 1)
+                    stats[rc]["trend_dir"] = ("▲" if last > prev
+                                              else "▼" if last < prev else "↔")
         return stats
     except Exception as e:
         logger.warning("[intel] event_stats 실패: %s", e)
@@ -1608,6 +1652,26 @@ def _build_context(
             top3 = sorted(stats.get("event_types", {}).items(), key=lambda x: -x[1])[:3]
             if top3:
                 lines.append("  유형: " + " / ".join(f"{t}({n}건)" for t, n in top3))
+            # [큐 10] 추이 사전계산 — 추세 서술은 이 배열·변화율만 인용 가능(창작 금지)
+            monthly = stats.get("monthly")
+            if monthly:
+                parts, prev_ym = [], None
+                for ym, c in monthly:
+                    if prev_ym is not None:
+                        py, pm = int(prev_ym[:4]), int(prev_ym[5:7])
+                        gap = (int(ym[:4]) * 12 + int(ym[5:7])) - (py * 12 + pm) > 1
+                        parts.append(" ‖ " if gap else " → ")   # ‖ = 수집 단절 구간
+                    parts.append(f"{ym[:7]} {c}건")
+                    prev_ym = ym
+                lines.append("  월별 추이(사전계산): " + "".join(parts))
+                if stats.get("trend_dir"):
+                    pct = stats.get("trend_pct")
+                    pct_s = f" ({pct:+.1f}%)" if pct is not None else ""
+                    lines.append(
+                        f"  직전 완결월 대비: {stats['trend_from']}건→{stats['trend_to']}건"
+                        f"{pct_s} {stats['trend_dir']} — ⚠️ 수집 커버리지 변동 가능, "
+                        "위 배열 밖 추세 서술 금지"
+                    )
         lines.append("")
 
     # ── 국가 프로파일 ─────────────────────────────────────────────────────
