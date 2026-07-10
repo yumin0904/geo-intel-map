@@ -19,7 +19,9 @@
 """
 import json
 import os
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 import sys
@@ -41,15 +43,21 @@ GOLD_ENGAGE = "v2_rival_dv_present_engage"
 src = json.load(open(RESULTS_DIR / 'latest.json'))
 assert src.get('timestamp') == '20260710_1101', "동결 baseline이 아님 — 대상 재확인"
 
+# judge 신원 — provider가 다른 아티팩트에 이어붙이면 계측기 혼합 프랑켄슈타인
+_PROVIDER = os.getenv("JUDGE_PROVIDER", "nim").strip().lower()
+
 # 이어받기: AB_RESUME=<기존 아티팩트 경로> — 크래시/중단 후 완료 셀 보존 재개
 resume = os.getenv("AB_RESUME")
 if resume and Path(resume).exists():
     out_path = Path(resume)
     data = json.load(open(out_path))
     assert data.get("source_baseline") == src['timestamp'], "이어받기 대상의 baseline 불일치"
+    assert data.get("judge_provider", "nim") == _PROVIDER, \
+        f"이어받기 대상의 judge_provider({data.get('judge_provider','nim')}) ≠ 현재({_PROVIDER}) — 계측기 혼합 금지"
 else:
-    out_path = RESULTS_DIR / f"rubric_ab_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
+    out_path = RESULTS_DIR / f"rubric_ab_{datetime.now().strftime('%Y%m%d_%H%M')}_{_PROVIDER}.json"
     data = {"source_baseline": src['timestamp'], "repeats": REPEATS,
+            "judge_provider": _PROVIDER,
             "judge_model": src.get('judge_model'), "cells": {}}
 
 cases = [r for r in src['results'] if r.get('full_text') and not r.get('error')
@@ -69,7 +77,15 @@ def score(text: str, rubric: str) -> dict | None:
     return q
 
 
-for i, r in enumerate(cases):
+# 병렬화(직영 전환 후): NIM 무료 티어는 병렬이 judge를 전멸시켰으나(실측 07-08)
+# DeepSeek 직영은 동시성 500 공식 허용 — 케이스 단위 병렬(케이스 내부는 v1/v2 교차
+# 순차 유지, 쌍 구조 보존). AB_WORKERS=1이면 종전과 동일한 순차.
+WORKERS = int(os.getenv("AB_WORKERS", "1"))
+_lock = threading.Lock()
+_done = [0]
+
+
+def run_case(r: dict) -> None:
     cell = {"v1": [], "v2": []}
     for run in range(REPEATS):
         # v1/v2 교차 실행 — 시간대별 조건(레이트리밋·서버 상태)이 한쪽에 쏠리지 않게
@@ -77,10 +93,20 @@ for i, r in enumerate(cases):
             q = score(r['full_text'], rub)
             cell[ver].append({a: q[a] for a in AXES} if q else None)
             time.sleep(PACE)
-    data['cells'][r['id']] = cell
-    # 크래시 안전: 케이스마다 저장 (judge 콜이 비싸다 — 중단 시 기수집분 보존)
-    json.dump(data, open(out_path, 'w'), ensure_ascii=False, indent=1)
-    print(f"[{i+1}/{len(cases)}] {r['id']} 완료", flush=True)
+    with _lock:
+        data['cells'][r['id']] = cell
+        # 크래시 안전: 케이스마다 저장 (judge 콜이 비싸다 — 중단 시 기수집분 보존)
+        json.dump(data, open(out_path, 'w'), ensure_ascii=False, indent=1)
+        _done[0] += 1
+        print(f"[{_done[0]}/{len(cases)}] {r['id']} 완료", flush=True)
+
+
+if WORKERS > 1:
+    with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+        list(ex.map(run_case, cases))
+else:
+    for r in cases:
+        run_case(r)
 
 # ── 집계 리포트 ──────────────────────────────────────────────────────────────
 def axis_mean(ver: str, axis: str) -> float | None:

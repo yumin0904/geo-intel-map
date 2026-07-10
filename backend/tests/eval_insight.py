@@ -228,6 +228,35 @@ def _judge_via_nim(prompt: str) -> str | None:
     return None
 
 
+def _judge_via_deepseek(prompt: str) -> str | None:
+    """DeepSeek 직영 API judge — NIM 무료 티어의 쿼터 가뭄(모델 단위 장기 429,
+    실측 2026-07-10) 해소용. 동일 모델(deepseek-v4-pro)이지만 서빙 스택이 다르므로
+    provider 전환 = 잠재적 계측기 변경 — 아티팩트 judge_provider 필드로 신원 추적,
+    전환 시 재베이스라인 규약 적용(CHANGELOG 계측기 거버넌스 절).
+    """
+    key = os.getenv("DEEPSEEK_API_KEY")
+    if not key:
+        return None
+    model = os.getenv("JUDGE_MODEL_DEEPSEEK", "deepseek-v4-pro")
+    for wait in (0, 10, 30):
+        if wait:
+            time.sleep(wait)
+        try:
+            r = httpx.post(
+                "https://api.deepseek.com/chat/completions",
+                headers={"Authorization": f"Bearer {key}"},
+                json={"model": model,
+                      "messages": [{"role": "user", "content": prompt}],
+                      "temperature": 0.2, "max_tokens": 4000},
+                timeout=300,
+            )
+            if r.status_code == 200:
+                return r.json()["choices"][0]["message"]["content"]
+        except Exception:
+            pass
+    return None
+
+
 def _judge_quality(full_text: str, rubric_text: str | None = None) -> dict | None:
     """분석 텍스트를 4축 루브릭 채점한다(provider=JUDGE_PROVIDER). 실패 시 None.
 
@@ -239,7 +268,12 @@ def _judge_quality(full_text: str, rubric_text: str | None = None) -> dict | Non
         return None
     rubric = rubric_text or (_JUDGE_RUBRIC_V2 if _JUDGE_RUBRIC_VERSION == "v2" else _JUDGE_RUBRIC)
     prompt = rubric + full_text[:12000]
-    txt = _judge_via_nim(prompt) if _JUDGE_PROVIDER == "nim" else _judge_via_gemini(prompt)
+    if _JUDGE_PROVIDER == "deepseek":
+        txt = _judge_via_deepseek(prompt)
+    elif _JUDGE_PROVIDER == "nim":
+        txt = _judge_via_nim(prompt)
+    else:
+        txt = _judge_via_gemini(prompt)
     if not txt:
         return None
     # reasoning 모델이 <think>...</think>를 앞에 붙이면 그 안의 {}에 오염될 수 있어
@@ -989,6 +1023,22 @@ def _print_summary(results: list[dict]) -> None:
             overall += avg
             print(f"     {labels[ax]}: {avg:.2f}/5")
         print(f"     종합: {overall/4:.2f}/5  ← '박사 수준' 진짜 척도 (형식 무관)")
+
+    # ── 게이밍 감시 3종 (T6 채택위 2026-07-10 — 루브릭 v2의 load-bearing 가드) ──
+    # 태깅률 단독 해석 금지: 상승 = 정직 강화 OR 부재선언 게이밍 양쪽 다 가능(양의적).
+    # 셋을 함께 읽어야 갈린다 — ①태깅률 급증 + ②거부준수 하락 = 게이밍 신호 /
+    # ①상승 + ②③유지 = 정직 강화. 판정은 세션 검토 몫, 여기는 계기판만.
+    unv_tagged = sum(1 for r in valid if "[UNVERIFIED]" in (r.get("full_text") or ""))
+    rc_cases = [r for r in valid if r.get("rival_check")]
+    refuse_ok = sum(1 for r in rc_cases if r["rival_check"].get("no_verdict_on_unverified"))
+    gold_pair = {gid: next((("PASS" if r.get("passed") else "FAIL")
+                            for r in valid if r.get("id") == gid), "—")
+                 for gid in ("v2_rival_dv_absent_honest", "v2_rival_dv_present_engage")}
+    print(f"\n🛡  [게이밍 감시 3종] (단독 해석 금지 — 함께 읽기)")
+    print(f"     ① UNVERIFIED 태깅률: {unv_tagged}/{len(valid)} ({round(unv_tagged/len(valid)*100) if valid else 0}%)")
+    if rc_cases:
+        print(f"     ② 판정거부 준수율(no_verdict_on_unverified): {refuse_ok}/{len(rc_cases)} ({round(refuse_ok/len(rc_cases)*100)}%)")
+    print(f"     ③ 골드 가드쌍: absent_honest={gold_pair['v2_rival_dv_absent_honest']} · present_engage={gold_pair['v2_rival_dv_present_engage']}")
 
     # ── [9-G] 방법론 정직성 집계 ────────────────────────────────────────────
     mi_list = [r.get("method_integrity", {}) for r in valid if r.get("method_integrity")]
