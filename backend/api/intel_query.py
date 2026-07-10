@@ -107,7 +107,9 @@ _USE_COMPACT_CARD = (_LLM_PROVIDER == "ollama" and _OLLAMA_COMPACT)
 #   NIM은 대형 모델이라 압축 카드가 아니라 Gemini와 동일한 풀 11섹션 프롬프트를 받는다.
 _NIM_KEY   = os.getenv("NVIDIA_API_KEY")
 _NIM_BASE  = os.getenv("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1").rstrip("/")
-_NIM_MODEL = os.getenv("NIM_MODEL", "meta/llama-3.3-70b-instruct")
+# 폴백 기본값 = 채택 모델 — env 누락 시 비교불가 모델로 조용히 낙하 방지
+# (qwen3-next 백엔드 17h+ 다운으로 qwen3.5 마이그레이션, 2026-07-10 geo-os 판례)
+_NIM_MODEL = os.getenv("NIM_MODEL", "qwen/qwen3.5-122b-a10b")
 
 # ── 요청 스키마 ───────────────────────────────────────────────────────────
 
