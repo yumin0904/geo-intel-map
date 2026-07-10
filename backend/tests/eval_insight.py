@@ -170,10 +170,11 @@ _JUDGE_RUBRIC_V2 = """당신은 국제정치학 박사학위 논문 심사위원
 _JUDGE_RUBRIC_VERSION = os.getenv("JUDGE_RUBRIC", "v1").strip().lower()
 
 
-# judge provider — 기본 nim(비용 0). JUDGE_PROVIDER=gemini로 과거 baseline 재현 가능.
-# 주의: judge를 NIM으로 바꾸면 과거 Gemini judge 점수와 절대 비교 불가 → NIM으로 새 baseline
-# 재설정 후 그 기준선끼리 비교한다(측정 일관성은 유지, 과거값과의 절대 비교만 포기).
-_JUDGE_PROVIDER = os.getenv("JUDGE_PROVIDER", "nim").strip().lower()
+# judge provider — 기본 deepseek 직영 (2026-07-10 사용자 승인, 판례 20260710-judge-provider-switch).
+# 확증 계측(baseline·게이트 판정·CHANGELOG 기재)은 직영만. NIM judge는 탐색 계측·fallback 전용
+# — 동일 모델이라도 서빙 스택이 다르면 다른 계측기(실측: v1 고정 provider 교체 시 종합 +0.55).
+# JUDGE_PROVIDER=nim/gemini로 과거 눈금 재현 가능하나 직영 점수와 절대 비교 불가.
+_JUDGE_PROVIDER = os.getenv("JUDGE_PROVIDER", "deepseek").strip().lower()
 _JUDGE_MODEL    = os.getenv("JUDGE_MODEL", "deepseek-ai/deepseek-v4-pro")
 
 
