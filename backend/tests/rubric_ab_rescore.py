@@ -18,6 +18,7 @@
 실행: backend/.venv/bin/python tests/rubric_ab_rescore.py
 """
 import json
+import os
 import time
 from datetime import datetime
 from pathlib import Path
@@ -27,9 +28,12 @@ sys.path.insert(0, '.')
 from tests.eval_insight import _judge_quality, _JUDGE_RUBRIC, _JUDGE_RUBRIC_V2  # noqa: E402
 
 RESULTS_DIR = Path('tests/eval_results')
-REPEATS = 3
-PACE = 2                    # 케이스 간 간격(초) — judge 지연이 지배적이라 최소만
-BACKOFFS = (60, 120, 240)   # judge None(429 등) 시 외곽 재시도 대기
+# 속도 튜닝(2026-07-10 실측): PACE 2s 연사 6콜이 429 폭풍→긴 백오프 악순환(9케이스/96분).
+# 정속 페이싱이 총 처리량에서 이긴다. REPEATS 2 축소 시 v1 3번째 표본은 원 baseline
+# (latest.json quality — 동일 동결 텍스트·동일 계기)이 대신한다 — 리포트에 명기할 것.
+REPEATS = int(os.getenv("AB_REPEATS", "3"))
+PACE = int(os.getenv("AB_PACE", "2"))
+BACKOFFS = (60, 300, 900, 1800)  # 모델 쿼터 가뭄(장기 429) 실측 반영 — 최장 ~51분 대기 후 포기
 AXES = ("non_obviousness", "inference_honesty", "competing_rigor", "falsifiability")
 GOLD_HONEST = "v2_rival_dv_absent_honest"
 GOLD_ENGAGE = "v2_rival_dv_present_engage"
@@ -37,12 +41,21 @@ GOLD_ENGAGE = "v2_rival_dv_present_engage"
 src = json.load(open(RESULTS_DIR / 'latest.json'))
 assert src.get('timestamp') == '20260710_1101', "동결 baseline이 아님 — 대상 재확인"
 
-out_path = RESULTS_DIR / f"rubric_ab_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
-cases = [r for r in src['results'] if r.get('full_text') and not r.get('error')]
-print(f"대상 {len(cases)}건 × (v1+v2) × {REPEATS}회 = {len(cases)*2*REPEATS}콜 → {out_path}", flush=True)
+# 이어받기: AB_RESUME=<기존 아티팩트 경로> — 크래시/중단 후 완료 셀 보존 재개
+resume = os.getenv("AB_RESUME")
+if resume and Path(resume).exists():
+    out_path = Path(resume)
+    data = json.load(open(out_path))
+    assert data.get("source_baseline") == src['timestamp'], "이어받기 대상의 baseline 불일치"
+else:
+    out_path = RESULTS_DIR / f"rubric_ab_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
+    data = {"source_baseline": src['timestamp'], "repeats": REPEATS,
+            "judge_model": src.get('judge_model'), "cells": {}}
 
-data = {"source_baseline": src['timestamp'], "repeats": REPEATS,
-        "judge_model": src.get('judge_model'), "cells": {}}
+cases = [r for r in src['results'] if r.get('full_text') and not r.get('error')
+         and r['id'] not in data['cells']]
+print(f"잔여 {len(cases)}건 × (v1+v2) × {REPEATS}회 = {len(cases)*2*REPEATS}콜 "
+      f"(기완료 {len(data['cells'])}건 보존) → {out_path}", flush=True)
 
 
 def score(text: str, rubric: str) -> dict | None:
