@@ -1,17 +1,16 @@
 # judge 계기 검증 골드 (개선위 2026-07-10 — P5) — 양방향 비대칭 가드
-# 대상: 동결 산출물(latest.json 20260710_1101)의 해당 케이스 full_text를 judge가 채점할 때
-# 경쟁이론엄밀(competing_rigor) 기대 구간. 근거: 전수 감사(FULL_EVAL_AUDIT_20260710, Fable 5석).
-# 통과 기준: 결함 골드 전건 cr<=3 AND 모범 골드 전건 cr>=4 (서열 보존 100%).
-# 단방향만 두면 judge를 가혹 쪽으로 과보정해도 통과한다 — 반드시 쌍으로 검사(방법론석).
-# ※ 인간(사용자) 라벨 검증 대기: 아래 기대치는 감사 채점 — P6 병행기 전 사용자 스팟 확인 권장.
-defect_gold:      # 형식 완비·논리 붕괴형 — judge(DS)가 4~5를 준 실측 오벌점
-  hormuz_oil_verify:        {cr_max: 3, why: "HHI 9765/30000 모순 병기·편차 0 위조·누적치로 시계열 판정 (judge 올5)"}
-  taiwan_liberal_vs_realist: {cr_max: 3, why: "불가능 HHI 25449 앵커·실측이 이론 DV 아님 (judge 5.0)"}
-  v2_iran_war_oil_shock:    {cr_max: 3, why: "DV(가격) 실측 0건 채 우세 판정·서수 편차 산술 (judge 5.0)"}
-  ukraine_drone_innovation: {cr_max: 3, why: "드론 DV 자리에 미국 테러·사이버 실험 (judge 5.0)"}
-  v2_nk_iv_misroute:        {cr_max: 2, why: "룰매칭강도를 실측 DV로·편차 0 위조·HKDUS 티커 오류 (judge 4.0)"}
-exemplar_gold:    # 판정 절제·설계 특정형 — 감사 확인 모범
-  middle_east_hormuz_contagion: {cr_min: 4, why: "Stock/Flow 구분 명시·앵커 부재 정직 선언"}
-  houthi_red_sea_sloc:          {cr_min: 4, why: "실측이 이론 DV(유가)와 정합·방향 편차 수치 제시"}
-  china_cyber_us:               {cr_min: 4, why: "카드1 실측-DV 일치 최상급 비교"}
-  pla_taiwan_a2ad:              {cr_min: 4, why: "판정 남발 없음·SOXX Δ 실측·자기강등"}
+# 2026-07-10 심야 개정: opus 맹검 교차라벨과 Fable 감사의 이견 5건을 계쟁(contested)으로 분리.
+# 골드는 두 독립 심사자가 합의한 4건만 — 계쟁분은 인간(사용자) 판정 후 승격/폐기.
+# 통과 기준: defect 전건 cr<=3 AND exemplar 전건 cr>=4 (서열 보존).
+defect_gold:      # 합의 결함 — Fable 감사·opus 맹검 양쪽 LOW
+  taiwan_liberal_vs_realist: {cr_max: 3, why: "불가능 HHI 25,449 앵커·기준선 없는 정성 판정 (judge 5.0)"}
+  v2_iran_war_oil_shock:     {cr_max: 3, why: "우세 판정의 실측이 이론 DV(유가·금값) 아님 — IV·구성비 대입 (judge 5.0)"}
+  v2_nk_iv_misroute:         {cr_max: 2, why: "룰매칭강도를 환율 DV 실측으로·편차 0 위조·HKDUS 오지정 (judge 4.0)"}
+exemplar_gold:    # 합의 모범 — 양쪽 HIGH
+  china_cyber_us:            {cr_min: 4, why: "스킬별 성공률(+18%p·0.012%)이 그 이론의 실 DV — 타당 정량 편차+쟁점"}
+contested:        # 이견 — 사용자 판정 대기 (Fable 감사 vs opus 맹검)
+  hormuz_oil_verify:         {fable: "cr<=3 — HHI 9765/30000 모순·편차0 위조·이중라벨", opus: "cr>=4 — 유가 -18.6%는 실 DV 편차, 결함은 부차", question: "결함 공존 시 타당한 편차 하나가 구제하는가"}
+  ukraine_drone_innovation:  {fable: "cr<=3 — 사이버 실험은 드론 역량의 DV 아님(도메인 불일치)", opus: "cr>=4 — 하이브리드 '역량' 광의로 타당", question: "DV 구성개념의 허용 폭"}
+  middle_east_hormuz_contagion: {fable: "cr=4 — Stock/Flow 구분·정직 절제", opus: "cr=3 — 실측 편차 전무는 루브릭 문언상 3", question: "정직한 판정 유보가 4를 받아야 하나(=v2 루브릭 논쟁의 재림)"}
+  houthi_red_sea_sloc:       {fable: "cr=4 — 카드1 실측이 DV(유가) 정합", opus: "cr=3 — 수치 미제공·방향 확인만", question: "동상"}
+  pla_taiwan_a2ad:           {fable: "cr=4 — 판정 절제·자기강등", opus: "cr=3 — 전 판정 미검증+불가능 HHI", question: "동상"}
