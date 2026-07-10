@@ -27,6 +27,11 @@ from pathlib import Path
 import httpx
 import yaml
 
+# services.* 임포트(린트·DV게이트 사후 점검)를 위한 backend 루트 경로 —
+# tests/에서 직접 실행하면 sys.path에 backend가 없어 ModuleNotFoundError로
+# 풀런이 결과 저장 전에 죽는다 (07-11 실측: 30분 생성분 유실. v9.36 린트 배선의 잠복 버그).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 # judge(NIM)·기타 키를 .env에서 로드 — eval은 서버와 별도 프로세스라 명시 로드 필요
 # (없으면 _judge_via_nim의 NVIDIA_API_KEY가 None → judge 전건 실패).
 try:
@@ -944,6 +949,9 @@ def evaluate_case(
         # DV 게이트 사후 점검 (개선위 P4) — 보고 전용(채점 미편입), 서버 강등 정상 시 0건.
         # context 미전달 → 구성개념 검사만 (provenance는 생성 시점 _finalize 소관).
         "dv_gate": __import__("services.dv_gate", fromlist=["check"]).check(text),
+        # 과잉유보 카운터 (개선위 P3) — P4 강등 게이트의 부작용 감시 짝:
+        # 게이트가 판정을 깎기만 하면 판정 회피로 최적화될 수 있어 결단율을 함께 계측.
+        "verdict_stats": _verdict_stats(text),
         "full_text": text,  # 상세 분석용 (JSON에 포함)
         "expected_min_score": exp_score,
         "retries": retries,
@@ -953,6 +961,24 @@ def evaluate_case(
 
 
 # ── 종합 리포트 ───────────────────────────────────────────────────────────
+
+_VERDICT_LINE = re.compile(r"판정\s*[:：]\s*([^\n]{0,80})")
+_VERDICT_DECISIVE = re.compile(r"우세|열세")
+
+
+def _verdict_stats(text: str) -> dict:
+    """과잉유보 카운터 (개선위 P3) — '전제충족(DV 미검증)' 남발(>70%) 감시.
+
+    유보 자체는 정직한 종결(채택② 2026-07-08)이라 감점하지 않는다 — 이 카운터는
+    점수가 아니라 분포 감시다: 결단(우세/열세) 0에 수렴하면 게이트 과보정 신호.
+    """
+    verdicts = _VERDICT_LINE.findall(text or "")
+    n = len(verdicts)
+    decisive = sum(1 for v in verdicts if _VERDICT_DECISIVE.search(v))
+    ratio = round((n - decisive) / n, 3) if n else None
+    return {"verdicts": n, "decisive": decisive, "hedge_ratio": ratio,
+            "overhedged": bool(n >= 3 and ratio is not None and ratio > 0.7)}
+
 
 def _print_summary(results: list[dict]) -> None:
     # [골드셋 v2] dormant는 집계 제외 · legacy/v2 분리 보고 (계측 연속성 — DeepSeek 판례 규율)
@@ -1015,6 +1041,20 @@ def _print_summary(results: list[dict]) -> None:
             n = ladder.get(grade, 0)
             print(f"     {grade}: {n}/{len(valid)}")
         print(f"   ⚠️ '선행성'도 Granger 예측적 선행일 뿐 구조적 인과 아님 (교란 미통제)")
+
+    # ── 결정론 결함 집계 (개선위 P3 주지표 — judge 델타 아님) ────────────────
+    if valid:
+        n_lint = sum(len(r.get("lint") or []) for r in valid)
+        n_gate = sum(len(r.get("dv_gate") or []) for r in valid)
+        vs = [r.get("verdict_stats") or {} for r in valid]
+        tot_v = sum(v.get("verdicts", 0) for v in vs)
+        tot_d = sum(v.get("decisive", 0) for v in vs)
+        over = [r["id"] for r, v in zip(valid, vs) if v.get("overhedged")]
+        hedge = f"{(tot_v - tot_d) / tot_v:.0%}" if tot_v else "—"
+        print(f"\n🔧 [P3 결정론] 린트 결함 {n_lint}건 · DV게이트 잔여 {n_gate}건 "
+              f"· 판정 {tot_v}건(결단 {tot_d}, 유보율 {hedge})")
+        if over:
+            print(f"   ⚠️ 과잉유보(>70%) 케이스: " + ", ".join(over))
 
     # ── [C1] 질적 평가 집계 (LLM 심판, --judge 시) ────────────────────────────
     judged = [r for r in valid if r.get("quality")]

@@ -135,12 +135,21 @@ def _classify_target(spec: "HypothesisSpec") -> tuple[str, str, bool]:
     return (spec.dependent_var or "—"), "qualitative", False
 
 
+# 선언문·파편 h1 필터 (큐 8 소급 정화의 상류 차단, 2026-07-11) — "정량 가설 없음"은
+# 정직한 무가설 선언이지 예측이 아니다. 기존 unclear+DV미식별 가드는 scorable=0 행을
+# 우회시켜 이런 행이 계속 적재됐다(실측: 07-10 적재분 포함 27건). 체크리스트 파편
+# ("작성 시도했으나…") 동류. 좁게 유지 — 가설 본문+논평 병기는 '가설 없음' 자기선언만 거른다.
+_DECLARATION_H1 = re.compile(r"가설\s*없음|정량\s*가설이?\s*(?:부재|불가)|작성\s*시도했으나")
+
+
 def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord | None:
     """단일 HypothesisSpec → 반증가능 PredictionRecord (Token-Zero).
 
-    None 반환 = 추출 실패 산물(방향 unclear + DV 미식별) — 등재 대상 아님.
+    None 반환 = 추출 실패 산물(방향 unclear + DV 미식별) 또는 선언문 h1 — 등재 대상 아님.
     """
     now = datetime.now(timezone.utc)
+    if _DECLARATION_H1.search(spec.h1 or ""):
+        return None            # 선언문은 예측 로그가 아니라 카드 본문의 소관
     target, target_kind, scorable = _classify_target(spec)
     direction = _detect_direction(spec)
 
