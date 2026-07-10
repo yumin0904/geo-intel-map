@@ -763,6 +763,18 @@ async def _stream_gemini(
                 logger.warning("[lint] 스캐폴드 %d줄 제거, 결함 %s", _n_strip,
                                [(p["code"], p["detail"]) for p in _lint_problems])
 
+        # DV 출처 게이트 (개선위 P4) — 구성개념 서로소·출처 없는 실측의 '우세/열세' 판정을
+        # '전제충족(DV 미검증)'으로 결정론 강등. provenance 원장은 프롬프트의 <context> 블록.
+        # 저장·채점·아카이브 경로에 강등판이 흐른다(린트와 동일 위상).
+        if full_text:
+            import re as _re
+            from services.dv_gate import apply_gate as _dv_apply
+            _ctx_m = _re.search(r"<context>(.*?)</context>", prompt, _re.S)
+            full_text, _dv_actions = _dv_apply(full_text, _ctx_m.group(1) if _ctx_m else None)
+            if _dv_actions:
+                logger.warning("[dv_gate] 판정 강등 %d건 %s", len(_dv_actions),
+                               [(a["code"], a["detail"]) for a in _dv_actions])
+
         # §19-D 신뢰도 점수 역산 — 스트리밍 완료 후 score 이벤트 전송
         if full_text:
             score_result = score_output(full_text)

@@ -941,6 +941,9 @@ def evaluate_case(
         "rival_check": rival_check,
         # 결정론 린트 (개선위 2026-07-10) — 계측기 변경으로 CHANGELOG 기재됨
         "lint": __import__("services.deterministic_lint", fromlist=["lint"]).lint(text),
+        # DV 게이트 사후 점검 (개선위 P4) — 보고 전용(채점 미편입), 서버 강등 정상 시 0건.
+        # context 미전달 → 구성개념 검사만 (provenance는 생성 시점 _finalize 소관).
+        "dv_gate": __import__("services.dv_gate", fromlist=["check"]).check(text),
         "full_text": text,  # 상세 분석용 (JSON에 포함)
         "expected_min_score": exp_score,
         "retries": retries,

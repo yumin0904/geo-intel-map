@@ -1,0 +1,240 @@
+# dv_spec.yaml — 이론별 DV 스펙 (개선위 P4 DV 출처 게이트)
+# ⚠️ 생성물 — 직접 편집 금지. 재생성: python3 scripts/build_dv_spec.py
+# 원천: db/library.db theories.dependent_var (이론 프로파일 자기 선언) → 클래스 기계 매핑.
+# 소비자: services/dv_gate.py (판정 스탬프 강등 게이트).
+
+classes:
+  market_econ:
+    aliases: ["유가", "가격", "운임", "보험료", "환율", "주가", "kospi", "pbr", "밸류에이션", "프리미엄", "gdp", "성장률", "금리", "인플레", "무역량", "시장", "해고"]
+  trade_flow:
+    aliases: ["무역", "수출", "수입", "교역", "물동량", "통과량", "공급량", "공급 차단", "데이터 흐름", "흐름 교란", "점유율", "hhi", "공급망", "의존도", "집중도"]
+  conflict_event:
+    aliases: ["분쟁", "무력", "충돌", "교전", "도발", "침략", "공격", "위기", "개시", "테러", "전쟁", "mid", "acled", "hiik", "사상", "폭력", "프록시", "행동 빈도", "활동 고조"]
+  policy_concession:
+    aliases: ["양보", "정책 변화", "수용", "철회", "요구 수락", "순응", "정책 지지", "의사결정", "대응 지연", "제재 목표", "협상"]
+  military_posture:
+    aliases: ["군비", "방위비", "국방비", "병력", "배치", "전개", "기지", "무장", "군사화", "투사", "작전", "훈련", "동원", "억지", "억제", "milex", "자율성", "군사 이용", "해군"]
+  cyber_incident:
+    aliases: ["사이버", "침해", "귀속", "apt", "인시던트", "해킹", "재공격"]
+  governance_social:
+    aliases: ["지지율", "여론", "양극화", "신뢰도", "민주주의", "민주화", "거버넌스", "정치 안정", "부패", "선거", "제도 신뢰", "v-dem"]
+  territorial:
+    aliases: ["점유", "영토", "기지화", "면적", "인공섬", "현상 변경", "점령"]
+  cooperation:
+    aliases: ["협력", "조약", "준수", "이행", "조정", "동맹", "통합", "제도화", "연루", "방기"]
+  nuclear:
+    aliases: ["핵무장", "핵 확산", "핵 보유", "핵 사용", "핵실험"]
+  shipping_sloc:
+    aliases: ["통항", "항행", "sloc", "해상", "호송", "해운", "선박", "교통로", "운송", "병참", "상선"]
+  tech_capability:
+    aliases: ["기술", "표준", "특허", "혁신", "반도체", "ooda", "격차 변화", "점유율", "r&d", "역량"]
+
+compat_groups:
+  target_response: [policy_concession, military_posture, conflict_event]
+  economic: [market_econ, trade_flow]
+
+theories:
+  cyber_apt_attribution_theory:
+    aliases: ["APT 귀속 이론", "APT Attribution Theory"]
+    dv_classes: [conflict_event, cyber_incident]
+    dv_source: "공개 귀속 성명 후 동일 행위자 재공격 빈도 변화율 (CSIS Significant Cyber Incidents DB, 6개월 전후 비교)"   # 원천 선언문 (참조용)
+  cyber_cognitive_warfare:
+    aliases: ["인지전 이론", "Cognitive Warfare Theory"]
+    dv_classes: [policy_concession, governance_social]
+    dv_source: "표적 사회의 정책 지지율 변화 (여론 조사 분기별 변동, 신뢰도 지수)"   # 원천 선언문 (참조용)
+  cyber_cyber_sovereignty:
+    aliases: ["사이버 주권론", "Cyber Sovereignty Theory"]
+    dv_classes: [trade_flow]
+    dv_source: "크로스보더 데이터 흐름 감소율 (OECD 디지털 서비스 무역 제한 지수 DSTRI, 국가별 연간 Δ)"   # 원천 선언문 (참조용)
+  cyber_libicki_cyber_deterrence:
+    aliases: ["사이버 억지 이론", "Cyber Deterrence Theory"]
+    dv_classes: [conflict_event, military_posture, cyber_incident]
+    dv_source: "억지 성공률 (사이버 공격 발생 빈도 감소율)"   # 원천 선언문 (참조용)
+  cyber_offense_defense_balance:
+    aliases: ["사이버 공세-방어 균형", "Cyber Offense-Defense Balance"]
+    dv_classes: [conflict_event, cyber_incident]
+    dv_source: "사이버 공격 성공률 (침해 성공 건수 / 시도 건수, CSIS Cyber Incidents DB)"   # 원천 선언문 (참조용)
+  energy_energy_security_theory:
+    aliases: ["에너지 안보론", "Energy Security Theory"]
+    dv_classes: [market_econ]
+    dv_source: "에너지 가격 충격 민감도 (유가 10% 변동 시 GDP 성장률 변화율, World Bank)"   # 원천 선언문 (참조용)
+  energy_rentier_state_theory:
+    aliases: ["렌티어 국가론", "Rentier State Theory"]
+    dv_classes: [governance_social]
+    dv_source: "민주화 지수 역수 (V-DEM 자유민주주의 지수 하락률 또는 V-Dem Electoral Democracy)"   # 원천 선언문 (참조용)
+  energy_resource_curse:
+    aliases: ["자원의 저주", "Resource Curse"]
+    dv_classes: [conflict_event, governance_social]
+    dv_source: "거버넌스 질·정치 안정 (V-Dem 민주주의 지수, 내전·분쟁 발생 빈도)"   # 원천 선언문 (참조용)
+  energy_resource_weaponization:
+    aliases: ["자원무기화", "Resource Weaponization"]
+    dv_classes: [trade_flow, policy_concession]
+    dv_source: "공급 차단 위협에 대한 피의존국 정치적 양보 빈도"   # 원천 선언문 (참조용)
+  energy_weaponized_interdependence:
+    aliases: ["상호의존의 무기화", "Weaponized Interdependence"]
+    dv_classes: [policy_concession]
+    dv_source: "피의존국 외교 양보 빈도 및 정책 변화율"   # 원천 선언문 (참조용)
+  gray_zone_economic_sanctions_theory:
+    aliases: ["경제 제재 이론", "Economic Sanctions Theory"]
+    dv_classes: [policy_concession]
+    dv_source: "정책 변화 달성률 (제재 목표 수용 건수 / 전체 제재 건수, HSE 205개 사례)"   # 원천 선언문 (참조용)
+  gray_zone_escalation_theory:
+    aliases: ["에스컬레이션 이론", "Escalation Theory"]
+    dv_classes: [conflict_event]
+    dv_source: "상대국 대응 강도 변화율 (COW MID 후속 사건 강도 Δ, 평균 대기 기간)"   # 원천 선언문 (참조용)
+  gray_zone_gray_zone_strategy:
+    aliases: ["회색지대 전략", "Gray Zone Strategy"]
+    dv_classes: [policy_concession]
+    dv_source: "목표국의 정책 변화 빈도 (양보·철회·수용 건수)"   # 원천 선언문 (참조용)
+  gray_zone_hybrid_warfare:
+    aliases: ["하이브리드 전쟁", "Hybrid Warfare"]
+    dv_classes: [policy_concession]
+    dv_source: "목표국 정치적 의사결정 비용 (대응 지연 일수·정책 변화율)"   # 원천 선언문 (참조용)
+  gray_zone_information_warfare:
+    aliases: ["정보전·인지전", "Information & Cognitive Warfare"]
+    dv_classes: [policy_concession, governance_social]
+    dv_source: "표적 사회 분열·정책 변화 (여론 양극화 지수, 선거 결과 변동, 제도 신뢰도)"   # 원천 선언문 (참조용)
+  gray_zone_lawfare:
+    aliases: ["법전쟁", "Lawfare"]
+    dv_classes: [territorial]
+    dv_source: "경쟁자의 물리 행동 제약 효과 (FONOP 빈도 변화·점유 지역 역전 성공률)"   # 원천 선언문 (참조용)
+  gray_zone_proxy_war_theory:
+    aliases: ["대리전 이론", "Proxy War Theory"]
+    dv_classes: [conflict_event]
+    dv_source: "프록시 충돌 강도·지속 기간 (ACLED 이벤트 건수·HIIK 분쟁 강도)"   # 원천 선언문 (참조용)
+  gray_zone_salami_slicing:
+    aliases: ["살라미 전술 / 점진적 현상 변경", "Salami Slicing Strategy"]
+    dv_classes: [military_posture, territorial]
+    dv_source: "누적 영토·행동 변화량 (점유 지역·기지화 면적 증가, CSIS AMTI 데이터)"   # 원천 선언문 (참조용)
+  indo_burden_sharing_theory:
+    aliases: ["동맹 비용분담 이론", "Burden Sharing Theory"]
+    dv_classes: [trade_flow, military_posture, cooperation]
+    dv_source: "집단 안보 공공재 공급량 (미군 해외 주둔 비용 + 공동 작전 수행 능력, NATO 통합 지수)"   # 원천 선언문 (참조용)
+  indo_nuclear_nonproliferation_theory:
+    aliases: ["핵 비확산 이론", "Nuclear Nonproliferation Theory"]
+    dv_classes: [nuclear]
+    dv_source: "핵 확산 사례 수 (1945년 이후 실제 핵 보유 달성 국가 수 누적, SIPRI WNTI)"   # 원천 선언문 (참조용)
+  indo_nuclear_taboo_theory:
+    aliases: ["핵 금기 이론", "Nuclear Taboo Theory"]
+    dv_classes: [nuclear]
+    dv_source: "핵 사용 결정 사례 빈도 (1945년 이후 핵 사용 = 0건, 위협적 사용 = Atomic Bomb Project SIPRI)"   # 원천 선언문 (참조용)
+  indo_pacific_a2ad_strategy:
+    aliases: ["반접근/지역거부 전략", "A2/AD Strategy"]
+    dv_classes: [military_posture]
+    dv_source: "상대국 전력 투사 비용 (항모 작전 운용 비용 지수)"   # 원천 선언문 (참조용)
+  indo_pacific_alliance_theory:
+    aliases: ["동맹 이론", "Alliance Theory"]
+    dv_classes: [cooperation]
+    dv_source: "연루(entrapment) vs 방기(abandonment) 위험도 분리 지수"   # 원천 선언문 (참조용)
+  indo_pacific_coercive_diplomacy:
+    aliases: ["강압 외교", "Coercive Diplomacy"]
+    dv_classes: [policy_concession]
+    dv_source: "강압 수용률 (요구 수락 건수 / 위협 건수, ICB 데이터셋)"   # 원천 선언문 (참조용)
+  indo_pacific_conventional_deterrence:
+    aliases: ["재래식 억지 이론", "Conventional Deterrence Theory"]
+    dv_classes: [conflict_event]
+    dv_source: "침략 발생 빈도 (COW 데이터 무력분쟁 개시 건수)"   # 원천 선언문 (참조용)
+  indo_pacific_democratic_peace_theory:
+    aliases: ["민주 평화론", "Democratic Peace Theory"]
+    dv_classes: [conflict_event]
+    dv_source: "양국 간 무력 분쟁 발생 확률 (COW MID 데이터 — 민주국가쌍 vs 혼합·권위주의쌍 비교)"   # 원천 선언문 (참조용)
+  indo_pacific_extended_deterrence:
+    aliases: ["확장억제", "Extended Deterrence"]
+    dv_classes: [conflict_event, military_posture, cooperation, nuclear]
+    dv_source: "동맹국 독자 핵무장 추구 정도 / 적성국 도발 빈도"   # 원천 선언문 (참조용)
+  indo_pacific_hegemonic_stability_theory:
+    aliases: ["패권 안정론", "Hegemonic Stability Theory"]
+    dv_classes: [market_econ, trade_flow, conflict_event, tech_capability]
+    dv_source: "국제 무역량 증감률 (WTO) + 지역 분쟁 빈도 (ACLED COW)"   # 원천 선언문 (참조용)
+  indo_pacific_korea_discount:
+    aliases: ["코리아 디스카운트", "Korea Discount"]
+    dv_classes: [market_econ]
+    dv_source: "KOSPI 밸류에이션 (PBR), KRW 환율"   # 원천 선언문 (참조용)
+  indo_pacific_liberal_institutionalism:
+    aliases: ["자유주의 제도론", "Liberal Institutionalism / Neoliberal Institutionalism"]
+    dv_classes: [conflict_event, cooperation]
+    dv_source: "국가 간 협력 이행률 (조약 준수 비율·분쟁 조정 성공률)"   # 원천 선언문 (참조용)
+  indo_pacific_mearsheimer_offensive_realism:
+    aliases: ["공격적 현실주의", "Offensive Realism"]
+    dv_classes: [conflict_event, military_posture]
+    dv_source: "군비 경쟁 강도 및 갈등 빈도 (ACLED 고강도 이벤트 수)"   # 원천 선언문 (참조용)
+  indo_pacific_offshore_balancing:
+    aliases: ["역외균형 전략", "Offshore Balancing"]
+    dv_classes: [military_posture]
+    dv_source: "미국 전방 배치 병력·기지 수 변화 (개입 수준 지수 — IISS Military Balance 연도별)"   # 원천 선언문 (참조용)
+  indo_pacific_power_transition_theory:
+    aliases: ["세력전이 이론", "Power Transition Theory"]
+    dv_classes: [conflict_event]
+    dv_source: "패권 안정성 지수 역수 (분쟁 건수·위기 빈도, COW MID 데이터)"   # 원천 선언문 (참조용)
+  indo_pacific_security_dilemma:
+    aliases: ["안보 딜레마", "Security Dilemma"]
+    dv_classes: [military_posture]
+    dv_source: "경쟁국 방위비 대응 증가율 (군비 경쟁 나선 지수 — 전년도 대비 ΔmiIex)"   # 원천 선언문 (참조용)
+  indo_pacific_waltz_defensive_realism:
+    aliases: ["방어적 현실주의 / 수준분석 이론", "Defensive Realism / Levels of Analysis"]
+    dv_classes: [conflict_event, cooperation]
+    dv_source: "세력균형 행동 빈도 (내적 균형 투자·외적 균형 동맹 형성)"   # 원천 선언문 (참조용)
+  maritime_chokepoint_sloc:
+    aliases: ["SLOC 통제 이론", "Chokepoint & Sea Lines of Communication"]
+    dv_classes: [market_econ, trade_flow, shipping_sloc]
+    dv_source: "글로벌 무역·에너지 흐름 교란 (해상 운임·보험료·유가 변동 %)"   # 원천 선언문 (참조용)
+  maritime_command_of_the_commons:
+    aliases: ["공유지 지배권", "Command of the Commons"]
+    dv_classes: [military_posture]
+    dv_source: "타국의 공유지 군사 이용 억제율 (도전국 A2/AD 투자 증가율 역수, SIPRI)"   # 원천 선언문 (참조용)
+  maritime_corbett_sea_control:
+    aliases: ["코르벳 제한적 제해권 이론", "Corbett's Limited Sea Control"]
+    dv_classes: [shipping_sloc]
+    dv_source: "해상 통상 보호율 (SLOC 통항 성공률, Lloyd's 해운 데이터)"   # 원천 선언문 (참조용)
+  maritime_fonop:
+    aliases: ["자유항행작전 FONOP", "Freedom of Navigation Operations"]
+    dv_classes: [conflict_event, military_posture, territorial]
+    dv_source: "중국 회색지대 활동 변화 (인공섬 군사화 속도, 해경 충돌 건수)"   # 원천 선언문 (참조용)
+  maritime_mahan_sea_power:
+    aliases: ["마한의 해양력 이론", "Sea Power Theory"]
+    dv_classes: [shipping_sloc]
+    dv_source: "해상 교통로(SLOC) 통제 범위 및 상업 운송 안전도"   # 원천 선언문 (참조용)
+  maritime_string_of_pearls:
+    aliases: ["진주목걸이 전략", "String of Pearls"]
+    dv_classes: [military_posture, shipping_sloc]
+    dv_source: "중국 SLOC 자율성 / 인도의 대항 균형 행동 (해군 증강·Quad 참여)"   # 원천 선언문 (참조용)
+  methods_constructivism:
+    aliases: ["구성주의", "Constructivism"]
+    dv_classes: [policy_concession]
+    dv_source: "국가 행동 변화율 (규범 채택 전후 정책 변화 사례 수, Finnemore & Sikkink 1998 데이터)"   # 원천 선언문 (참조용)
+  methods_granger_causality:
+    aliases: ["Granger 인과분석", "Granger Causality"]
+    dv_classes: [market_econ, cooperation]
+    dv_source: "시장·동맹 지표 시계열 (환율·주가·방산 ETF)"   # 원천 선언문 (참조용)
+  methods_prospect_theory_ir:
+    aliases: ["전망 이론", "Prospect Theory in IR"]
+    dv_classes: [policy_concession]
+    dv_source: "위험 감수 의사결정 확률 (군사 행동 선택 / 외교 협상 선택, ICB International Crisis Behavior 데이터베이스)"   # 원천 선언문 (참조용)
+  techno_ai_strategic_competition:
+    aliases: ["AI 전략 경쟁론", "AI Strategic Competition Theory"]
+    dv_classes: [policy_concession, tech_capability]
+    dv_source: "군사 AI 의사결정 속도 우위 (OODA 루프 단축 비율, RAND 전장 모의 데이터)"   # 원천 선언문 (참조용)
+  techno_critical_minerals_security:
+    aliases: ["핵심 광물 안보론", "Critical Minerals Security Theory"]
+    dv_classes: [trade_flow]
+    dv_source: "첨단 산업 생산 차질 빈도 (OECD 공급망 교란 지수 + IEA Critical Minerals 보고서)"   # 원천 선언문 (참조용)
+  techno_digital_iron_curtain:
+    aliases: ["디지털 철의 장막", "Digital Iron Curtain"]
+    dv_classes: [tech_capability]
+    dv_source: "기술 표준 분절화 정도 (AI·통신·플랫폼 표준 수렴 vs 분기)"   # 원천 선언문 (참조용)
+  techno_dual_use_technology:
+    aliases: ["이중용도 기술 통제론", "Dual-Use Technology Control Theory"]
+    dv_classes: [tech_capability]
+    dv_source: "적대국 군사 기술 격차 변화율 (IISS Military Balance 주요 능력 지표 연간 Δ)"   # 원천 선언문 (참조용)
+  techno_globalism:
+    aliases: ["기술 세계주의", "Techno-Globalism"]
+    dv_classes: [tech_capability]
+    dv_source: "기술 혁신 속도 (특허 출원 건수·R&D 생산성 — 분산 협업 vs 자국 폐쇄)"   # 원천 선언문 (참조용)
+  techno_semiconductor_supply_chain:
+    aliases: ["반도체 공급망 집중 리스크", "TSMC 딜레마"]
+    dv_classes: [trade_flow, tech_capability]
+    dv_source: "공급망 충격 시 글로벌 기술·경제 전이 강도 (반도체 의존 산업 생산 차질 %)"   # 원천 선언문 (참조용)
+  techno_techno_nationalism:
+    aliases: ["기술 민족주의", "Techno-Nationalism"]
+    dv_classes: [trade_flow, tech_capability]
+    dv_source: "기술 공급망 분절화 정도 / 경쟁국 기술 자립도"   # 원천 선언문 (참조용)
