@@ -4,7 +4,7 @@
   "judge_provider": "nim",
   "judge_model": "deepseek-ai/deepseek-v4-pro",
   "total": 48,
-  "passed": 43,
+  "passed": 46,
   "total_active": 46,
   "results": [
     {
@@ -6516,7 +6516,7 @@
       "routing_gold": null,
       "rival_gold": null,
       "relabel_due": false,
-      "elapsed": 131.3,
+      "elapsed": 183.4,
       "confidence": 100,
       "inference_grade": "기술적",
       "provisional": false,
@@ -6527,10 +6527,10 @@
       "h1_expected": true,
       "hypothesis": [
         {
-          "h1": "호르무즈 해협의 이란 도발 건수 (X) 가 증가할 때, 홍해·바브엘만데브 후티 공격 건수 (Y) 가 통계적으로 유의하게 증가한다.",
+          "h1": "호르무즈 해협의 이란 도발 건수 (X) 가 증가할 때, 바브엘만데브 해협의 후티 공격 건수 (Y) 가 통계적으로 유의하게 증가한다 (Granger 인과 또는 시계열 상관).",
           "status": "PENDING",
           "var_type": "Type_B",
-          "p_value": 0.3783,
+          "p_value": 0.3781,
           "granger_q": null,
           "inference_grade": "기술적",
           "theory_grounded": true,
@@ -6544,13 +6544,13 @@
               "named_countries": [
                 "Iran"
               ],
-              "named_share": 0.469,
+              "named_share": 0.47,
               "named_n": 277,
               "top_country": "(미상)",
-              "top_share": 0.526,
-              "n_events": 591,
+              "top_share": 0.525,
+              "n_events": 589,
               "country_dist": {
-                "(미상)": 311,
+                "(미상)": 309,
                 "Iran": 277,
                 "United Arab Emirates": 3
               },
@@ -6576,8 +6576,8 @@
         }
       ],
       "labels": {
-        "UNVERIFIED": 2,
-        "SPECULATIVE": 3,
+        "UNVERIFIED": 6,
+        "SPECULATIVE": 2,
         "PROVISIONAL": 0,
         "TEMPORAL_REVERSAL": 0,
         "HIGH_chain": 0,
@@ -6585,25 +6585,25 @@
         "LOW_chain": 1
       },
       "rival_check": {
-        "has_prediction_label": false,
-        "has_measured_label": false,
-        "has_verdict_label": false,
-        "theory_mentions": 9,
+        "has_prediction_label": true,
+        "has_measured_label": true,
+        "has_verdict_label": true,
+        "theory_mentions": 7,
         "has_numbers_in_rival": true,
-        "quantitative_comparison": false,
+        "quantitative_comparison": true,
         "comparative_comparison": true,
         "no_verdict_on_unverified": true,
         "verdict_on_unverified_cases": []
       },
-      "full_text": "### [단계 1] 관찰\n사용자가 제시한 \"호르무즈 해협의 이란 도발 건수가 홍해·바브엘만데브 후티 공격 건수로 전이된다\"는 주장은 두 지역 간 ACLED 분쟁 이벤트 건수의 공변동을 검증하는 것을 목표로 합니다.\n- **호르무즈 (hormuz) 지역**: 총 611 건의 분쟁 이벤트가 기록되었으며, 평균 심각도는 49.3/100로 중동 지역 내 가장 높은 수준을 보입니다.\n- **바브엘만데브 (bab_el_mandeb) 지역**: 총 8,491 건의 분쟁 이벤트가 기록되었으며, 평균 심각도는 34.9/100입니다.\n- **중동 (middle_east) 전체**: 총 57,431 건의 분쟁 이벤트가 기록되었습니다.\n- **시간적 맥락**: 2026 년 2 월 28 일 미국 - 이스라엘 대이란 전쟁 개전 이후, 이란의 '저항의 축'(후티 등) 재활성화 우려가 제기되고 있으나, <context> 내에는 두 지역 간 **시계열 상관관계 (시간 지연 포함) 를 계산한 수치나 전이율 (전환 비율) 이 제공되지 않았습니다**.\n\n### [단계 2] 변수 식별\n- **독립변수 (X)**: 호르무즈 해협 (hormuz) 에서 발생한 이란 관련 분쟁 이벤트 건수 (건/월 또는 건/기간).\n- **종속변수 (Y)**: 바브엘만데브 해협 (bab_el_mandeb) 에서 발생한 후티 관련 분쟁 이벤트 건수 (건/월 또는 건/기간).\n- **통제변수**: 중동 전체 분쟁 강도 (HIIK 강도 5), 이란 - 이스라엘 전쟁 개전 시점 (2026.02.28), 미국 대테러 예산 삭감 (40% 감소) 등 외부 충격 요인.\n\n### [단계 3] 가설 공식화\n- **H1 (주장 지지)**: 호르무즈 해협의 이란 도발 건수 (X) 가 증가할 때, 홍해·바브엘만데브 후티 공격 건수 (Y) 가 통계적으로 유의하게 증가한다.\n- **H0 (귀무 가설)**: 호르무즈 해협의 이란 도발 건수 증가와 바브엘만데브 후티 공격 건수 증가 사이에 통계적으로 유의한 상관관계가 없으며, 두 지역의 분쟁은 독립적으로 발생하거나 다른 요인 (예: 지역 내 국지적 갈등) 에 의해 설명된다.\n\n### [단계 4] 경쟁 이론\n사용자 쿼리 주제 (해협 간 전이) 에 가장 직접적으로 대응하는 두 이론을 <context>의 '경쟁 이론 비교 프로파일'에서 선택하여 분석합니다.\n\n**이론: 자원무기화 (Resource Weaponization)**\n- **학자**: Hirschman (1945), Drezner (2015)\n- **예측**: 호르무즈 (주요 원유 수송로) 의 긴장/봉쇄 위협이 고조되면, 이란은 후티를 통해 바브엘만데브 (2 차 수송로) 를 추가로 공격하여 글로벌 공급망 왜곡을 극대화할 것임 (X 증가 → Y 증가).\n- **실측**: 호르무즈 분쟁 건수 611 건 (평균 심각도 49.3) vs 바브엘만데브 분쟁 건수 8,491 건 (평균 심각도 34.9) — **시계열 전이율 및 인과 편차 [UNVERIFIED] 정량값 부재**. (context 에 두 변수 간 Granger 인과나 상관계수가 없음)\n- **판정**: 전제충족 (DV 미검증) — IV(호르무즈 긴장) 는 존재하나, DV(바브엘만데브 전이) 의 정량적 연동 관계가 데이터로 확인되지 않음.\n\n**이론: 회색지대 전략 (Gray Zone Strategy)**\n- **학자**: Hoffman (Hybrid Warfare)\n- **예측**: 이란은 정면 충돌 (호르무즈 봉쇄) 을 회피하기 위해, 비국가 행위자 (후티) 를 이용한 회색지대 공격 (바브엘만데브) 을 '대체 수단'으로 활용하여 전략적 종심을 확보할 것임 (X 증가 → Y 증가).\n- **실측**: 이란 정치안정 지수 (WGI) -1.58 (임계 0 대비 -1.6 편차, 전제충족) — 거버넌스 공백이 회색지대 침투를 가능하게 함. 하지만 **바브엘만데브 공격 건수의 호르무즈 의존도 [UNVERIFIED] 정량값 부재**.\n- **판정**: 전제충족 (DV 미검증) — IV 전제조건 (거버넌스 공백) 은 충족하나, X 와 Y 의 인과적 전이 방향과 크기를 증명할 실측 데이터 부재.\n\n▶ **편차 비교 (사실)**: 자원무기화 예측편차 [산술 미제공] vs 회색지대 전략 예측편차 [산술 미제공] — 두 이론 모두 X 와 Y 의 정량적 전이 관계를 입증할 실측 데이터가 <context>에 존재하지 않아 편차 계산 불가.\n▶ **당신의 판단 (연구자 몫)**:\n   - **쟁점 1 (데이터 부재)**: 두 이론 모두 \"호르무즈 긴장이 바브엘만데브 공격을 유발한다\"는 방향성은 예측하지만, 실제 ACLED 시계열 데이터상에서 두 변수가 동기화되어 있는지 (Correlation) 확인된 바 없습니다.\n   - **쟁점 2 (반례 가능성)**: <context>의 '문헌 공백 원장'에 따르면, 후티의 홍해 공격에도 유가 급등이 제한적이었던 사례 (2024~2025) 가 존재합니다. 이는 전이가 발생하더라도 시장 반응이나 공격 강도가 이론 예측 (자원 무기화) 과 다를 수 있음을 시사합니다.\n   - **판단 가이드**: 연구자는 ACLED 데이터의 실제 시계열 그래프를 확인하여, 호르무즈 사건 급증 시점 (예: 2026.02.28 전쟁 개전) 과 바브엘만데브 사건 급증 시점의 **시간적 선후관계 (Lag)** 를 직접 검증해야 합니다.\n\n### [단계 5] 근거 평가\n- **지지 증거**:\n  - 이란의 '저항의 축' 네트워크 (헤즈볼라, 후티, PMF) 가 존재하며, 2026 년 2 월 28 일 전쟁 개전 이후 이 네트워크의 재가동 위험이 CSIS 보고서에서 지적됨.\n  - 바브엘만데브 (8,491 건) 에 호르무즈 (611 건) 보다 훨씬 많은 분쟁이 기록되어 있어, 이란이 호르무즈를 직접 봉쇄하기보다 후티를 통한 간접 공격을 선호할 가능성 (회색지대 전략) 을 시사.\n- **반증 증거**:\n  - <context> 내 ACLED 통계는 지역별 **누적 총계**만 제공하며, **시계열 (Time-series) 상관관계**나 **전이 (Transfer) 비율**을 계산한 수치는 없음.\n  - \"문헌 공백 원장\"에 따르면, 초크포인트 위협이 자동으로 가격 충격이나 공격 전이로 이어지지 않는 사례 (후티 공격 시 유가 제한적 상승) 가 존재하여, 단순 전이 가설의 보편성을 의문시함.\n- **미검증 항목**:\n  - 호르무즈 분쟁 건수 증가와 바브엘만데브 분쟁 건수 증가 간의 **Granger 인과 관계 (통계적 유의성)**.\n  - 이란 도발 건수가 후티 공격 건수로 전이되는 구체적인 **전이율 (전환 비율)** 수치.\n\n### [단계 6] 연쇄 고리 강도 자기평가\n- **고리 1 (이란 도발 → 후티 공격)**: **LOW** (<40%). 이론적 근거 (저항의 축) 는 존재하나, ACLED 시계열 데이터상 인과 검증이 이루어지지 않음. [SPECULATIVE]\n- **고리 2 (지역 간 전이 메커니즘)**: **MEDIUM** (40~70%). 회색지대 전략과 자원 무기화 이론이 전이 가능성을 제시하지만, 반례 (유가 충격 부재 등) 가 존재하여 불확실성 존재.\n- **전체 결론 레이블**: **[SPECULATIVE]** (시계열 검증 데이터 부재 및 반례 존재로 인한 가설 단계)\n\n### 동사 자기검열\n- **수정 전 (위험)**: \"호르무즈 사건이 후티 공격을 **유발한다**.\"\n- **수정 후 (적정)**: \"호르무즈 분쟁 건수와 바브엘만데브 분쟁 건수가 **함께 관찰된다** (동반).\" 또는 \"호르무즈 긴장이 후티 공격 **증가의 가능성**을 시사한다.\"\n- **판단**: 현재 데이터는 두 지역의 분쟁이 동시에 존재함을 보여줄 뿐, 인과 방향 (A 가 B 를 일으킴) 을 통계적으로 입증하지 못하므로 '유발한다'는 동사는 금지합니다.\n\n### 최종 판정\n- **결론**: **불확실** (데이터 부족으로 지지/반증 불가)\n  - **이유**: 사용자가 요구한 \"시계열로 검증\"을 수행할 수 있는 실시간 또는 시계열 ACLED 데이터 (변화율, 상관계수) 가 <context>에 제공되지 않았습니다. 현재 제공된 데이터는 지역별 **누적 총계**이므로, '호르무즈 사건 증가 시 홍해 공격 증가'라는 **인과적 전이**를 검증할 수 없습니다.\n  - **참고**: <context>의 '문헌 공백 원장'에 명시된 바와 같이, 초크포인트 위협이 항상 가격 충격이나 공격 전이로 이어지지 않는 반례가 존재하므로, 이 주장이 성립하려면 추가적인 시계열 분석이 필수적입니다.\n- **레이블**: [SPECULATIVE]\n\n---\n### [비자명기여] (Insight Generation)\n- **통념**: \"이란이 호르무즈를 위협하면, 이란의 대리세력 (후티) 이 자동으로 홍해 (바브엘만데브) 에서 공격을 가해 전선이 다변화된다.\" (단순 선형 전이)\n- **비자명적 반박/정교화**:\n  1. **전이 차단 조건 (Range Condition)**: <context>의 '문헌 공백 원장'에 따르면, 초크포인트 위협 (후티 공격) 이 발생해도 **미국 전략비축유 방출**과 **대체 운송로 (우회 항로)** 가 존재하면 유가 충격은 차단되며, 이는 공격의 전략적 효과 (자원 무기화) 를 무력화시킵니다. 즉, \"호르무즈 긴장 → 후티 공격\"은 발생하더라도, \"**후티 공격 → 글로벌 공급망 붕괴 (유가 폭등)**\"라는 2 단계 전이는 **완충 재고와 우회 경로**라는 변수에 의해 **차단**될 수 있습니다.\n  2. **비대칭 전이 (Asymmetric Contagion)**: 호르무즈 (611 건) 와 바브엘만데브 (8,491 건) 의 절대 건수 격차는, 이란이 직접적인 호르무즈 봉쇄 (고비용) 보다 후티를 통한 바브엘만데브 교란 (저비용) 을 **선호**할 가능성을 시사합니다. 이는 \"호르무즈 긴장이 후티 공격을 유발한다\"는 단순 인과가 아니라, \"**호르무즈 봉쇄의 비용이 임계치를 넘으면, 바브엘만데브 공격이 대안적 전략으로 활성화된다**\"는 **임계값 (Threshold) 기반의 전략적 전환**으로 해석해야 합니다.\n  3. **시각적 오해 (Selection Bias)**: 현재 데이터는 두 지역 모두에서 분쟁이 *존재함*을 보여줄 뿐, *동시성*을 증명하지 못합니다. 후티 공격은 이란의 지시 없이도 지역 내 국지적 갈등 (예: 사우디-후티 국지전) 으로 독립적으로 발생할 수 있으며, 이를 '호르무즈 전이'로 오인할 수 있는 **선택편향** 위험이 있습니다.\n\n**[검증포인트]**:\n연구자는 ACLED 데이터베이스에서 **2026 년 2 월 28 일 (이란전 개전) 이전과 이후**의 두 지역 분쟁 건수 시계열을 추출하여, **Granger 인과 검정**을 수행해야 합니다. 특히, 호르무즈 사건이 발생한 **T 시점**에서 바브엘만데브 사건이 **T+L (Lag)** 시점에 유의하게 증가하는지 확인해야 합니다.",
+      "full_text": "### [단계 1] 관찰\n사용자의 주장은 \"호르무즈 해협의 이란 도발 건수 증가가 홍해·바브엘만데브 후티 공격 건수 증가로 전이된다\"는 인과적 전이를 검증하는 것이다.\n- **관찰 대상 1 (독립변수 근사치)**: 호르무즈 해협 (hormuz) 지역의 ACLED 분쟁 건수는 총 **609건** (평균 심각도 49.2/100) 으로, 중동 전체 (57,399건) 대비 소수이나 평균 심각도가 매우 높은 고강도 갈등 지역임을 보여준다.\n- **관찰 대상 2 (종속변수 근사치)**: 바브엘만데브 (bab_el_mandeb) 해협 지역의 ACLED 분쟁 건수는 총 **8,491건** (평균 심각도 34.9/100) 으로, 호르무즈보다 건수는 약 14 배 많으나 평균 심각도는 낮다.\n- **관찰 대상 3 (시계열 전이 데이터 부재)**: 컨텍스트에는 두 지역 간 **시계열 상관관계 (Time-series correlation)** 또는 **건수 변화율의 동기화 (Synchronization)** 데이터가 제공되지 않았다. 총 건수 (Cumulative count) 만 존재하며, \"호르무즈 건수 증가 시점에 바브엘만데브 건수가 함께 증가하는가\"를 확인할 수 있는 연도별·월별 분해 데이터가 **[UNVERIFIED]** 상태이다.\n- **맥락적 관찰**: CSIS 보고서에 따르면 2026 년 2 월 28 일 미 - 이란 전쟁 개전 이후 이란의 대리전 네트워크 (헤즈볼라·후티·PMF) 가 재가동될 위험이 있으며, 이는 \"한 위기가 다른 지역으로 번진다\"는 전이 (Contagion) 가 발생했을 가능성을 시사하지만, 이를 정량적으로 입증하는 시계열 편차 데이터는 없다.\n\n### [단계 2] 변수 식별\n- **독립변수 (X)**: 호르무즈 해협 (hormuz) 의 이란 관련 회색지대 도발 건수 (ACLED conflict events per month).\n- **종속변수 (Y)**: 바브엘만데브 해협 (bab_el_mandeb) 의 후티 관련 공격 건수 (ACLED conflict events per month).\n- **통제변수**: 중동 전체 분쟁 강도 (middle_east aggregate), 유가 변동 (WTI/Brent), 미국 대테러 예산 삭감 (FBI/CIA 인력 감축), 미 - 이란 전쟁 개전 여부 (2026.02.28).\n\n### [단계 3] 가설 공식화\n- **H1 (주장 지지)**: 호르무즈 해협의 이란 도발 건수 (X) 가 증가할 때, 바브엘만데브 해협의 후티 공격 건수 (Y) 가 통계적으로 유의하게 증가한다 (Granger 인과 또는 시계열 상관).\n- **H0 (귀무 가설)**: 호르무즈 해협의 이란 도발 건수 변화와 바브엘만데브 해협의 후티 공격 건수 변화 간에 유의미한 시계열 상관관계가 존재하지 않는다 (두 지역의 도발은 독립적 사건이거나 공통 외부 요인에만 반응함).\n\n### [단계 4] 경쟁 이론\n사용자 쿼리의 주제 (해협 간 전이) 에 가장 직접 대응하는 이론으로 **'자원무기화 (Resource Weaponization)'**와 **'회색지대 전략 (Gray Zone Strategy)'**을 선택하여 비교한다. (※ 컨텍스트 내 '경쟁 이론 비교 프로파일' 섹션 기준)\n\n이론A: 자원무기화 (Resource Weaponization) (Hirschman, Drezner)\n  예측: 호르무즈 (원유 20% 통과) 의 긴장이 고조되면, 공급 차단 효과를 극대화하기 위해 바브엘만데브 (원유 9% 통과) 에서도 후티 등의 공격이 동기화되어 증가할 것 (전파 효과).\n  실측: 호르무즈 총 건수 609 건 vs 바브엘만데브 총 건수 8,491 건 — 시계열 전이 (동기화) 데이터 [UNVERIFIED] 정량값 부재. (총건수만 존재하며, '호르무즈 증가 시 바브엘만데브 증가'라는 시차 상관 데이터 없음).\n  판정: 전제충족 (DV 미검증) — IV 전제조건인 '초크포인트 의존도'는 충족하나, DV(전이 현상) 의 정량적 편차 데이터가 없어 우세/열세 판정 불가.\n\n이론B: 회색지대 전략 (Gray Zone Strategy) (Hoffman 등)\n  예측: 이란은 단일 초크포인트 (호르무즈) 의 집중적 봉쇄 위험을 분산시키기 위해, 바브엘만데브 등 다수의 회색지대에서 비정규 공격을 분산 배치하여 상대국의 대응 비용을 높일 것 (분산 전략).\n  실측: 바브엘만데브 건수 (8,491 건) 가 호르무즈 (609 건) 보다 압도적으로 많음 — 그러나 이는 '전이 (전이율 X% 증가)'가 아니라 '분산 배치'의 결과일 수 있음. 시계열 전이 데이터 [UNVERIFIED] 정량값 부재.\n  판정: 전제충족 (DV 미검증) — IV 전제조건인 '거버넌스 공백 (WGI -1.58)'은 충족하나, DV(전이 메커니즘) 의 정량적 증거가 부재하여 '분산'인지 '전이'인지 구분 불가.\n\n▶ 편차 비교 (사실): 이론A(전이) 와 이론B(분산) 모두 '시계열 전이 데이터 (델타 값)'가 [UNVERIFIED] 로 부재하여, 두 이론의 예측 편차를 수치적으로 직접 비교 불가. (총건수 차이 8,491 vs 609 는 전이율의 증감이 아님).\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 '시계열 동기화 (Correlation)' 데이터 부재로 인해 검증이 멈춰 있다. 연구자는 다음 쟁점을 판단해야 한다:\n  1. **메커니즘의 이질성**: 바브엘만데브의 고건수 (8,491 건) 가 호르무즈의 도발에 대한 '반응 (전이)'인지, 이란이 애초에 '분산 공격 (Gray Zone)'을 계획하여 독립적으로 발생한 것인지 구분하는 기준은 무엇인가?\n  2. **범위조건**: 만약 전이가 발생했다면, 이는 미 - 이란 전쟁 개전 (2026.02.28) 이후의 일시적 현상인지, 아니면 상시적 전략인지? (CSIS 보고서의 '복합·분산 위협' 서술이 분산 전략을 지지할 수 있음).\n\n### [단계 5] 근거 평가\n- **지지 증거**:\n  - CSIS 보고서: \"이란이 실존적 위협에 직면하면서... 헤즈볼라·후티·이라크 PMF 등 이란의 축 재가동 위험\" — 이는 전략적 전이의 정성적 근거가 됨.\n  - Cascade 룰: \"바브엘만데브 긴장 → 유가 상승\" 및 \"호르무즈 긴장 → 유가 상승\" 룰이 존재하며, 두 해협이 글로벌 에너지 흐름에 미치는 영향이 유사하여 전이 메커니즘의 물리적 토대는 존재함.\n  - ACLED 데이터: 바브엘만데브 (8,491 건) 가 호르무즈 (609 건) 보다 건수가 많아, 이란이 단일 지점 의존을 피하려는 '분산 전략'을 취하고 있을 가능성은 높음.\n- **반증 증거**:\n  - **데이터 부재**: 시계열 상관관계 데이터가 전혀 없음. 총 건수만으로는 \"호르무즈가 원인\"인지 \"공통 원인 (전쟁 개전) 이 결과\"인지 구분 불가.\n  - **선택편향**: ACLED 데이터는 '보고된' 사건만 포함. 은폐된 성공적인 이란의 전이 작전이나, 호르무즈와 무관하게 후티가 독자적으로 실행한 공격이 과대/과소 보고될 수 있음.\n- **미검증 항목**:\n  - 호르무즈 사건 발생 일자와 바브엘만데브 사건 발생 일자의 시차 (Lag) 분석 데이터 **[UNVERIFIED]**.\n  - 이란 중앙 지휘 (IRGC) 와 현지 대리인 (후티) 간의 통신·지령 흐름에 대한 정량 데이터 **[UNVERIFIED]**.\n\n### [단계 6] 연쇄 고리 강도 자기평가\n1. **호르무즈 긴장 → 이란의 전이 지시 (전략적 고리)**: **MEDIUM** (CSIS 보고서의 정성적 서술은 있으나, 지령 체계의 정량적 증거 부재).\n2. **전이 지시 → 바브엘만데브 공격 발생 (실행 고리)**: **LOW** (ACLED 데이터는 총량만 제공하며, 인과적 연결고리를 시계열로 입증하지 못함).\n3. **결과**: 전체 결론에 **[SPECULATIVE]** 레이블을 부착한다. (데이터 부재로 인한 가설 검증 불가 상태).\n\n### [동사 자기검열 — 최종 판정 전 필수]\n- [단계 3] H1 에서 \"유발한다\"는 표현을 사용했으나, 이는 사용자가 선언한 가설의 형식일 뿐, 본 분석에서는 이를 **검증되지 않은 가설**로 명시.\n- [단계 5] 서술에서 \"전이될 가능성\", \"연결 고리\" 등의 표현은 '상관' 또는 '선행' 증거가 부족하므로, \"**함께 관찰될 수 있는 현상**\" 또는 \"**전략적 동기가 존재하는 것으로 해석됨**\" 수준으로 완화.\n- 인과 단정 동사 (\"유발한다\", \"초래한다\") 는 Granger 유의성 검정 데이터 부재로 인해 **사용 금지**.\n\n### 최종 판정\n- **결론**: **불확실** (데이터 부재로 인한 검증 불가)\n  ⚠️ [9-Q 해석 주체] 사용자의 주장 (\"호르무즈 사건 증가 → 홍해 공격 증가\") 은 **정량적 시계열 데이터가 부재**하여 지지도 반증도 할 수 없다. CSIS 보고서의 정성적 근거는 전이의 '가능성'을 시사할 뿐, 인과적 '증명'은 아니다.\n- **레이블**: **[SPECULATIVE]** (시계열 상관 데이터 부재 및 통제변수 미사전선언)\n- **한계 (선택편향)**: ACLED 데이터는 '보고된' 공격만 포함하므로, 성공적으로 은폐된 전이 작전이나 이란의 지령 없이 발생한 후티의 독자 공격을 구분하지 못해 **선택편향 (Survival Bias)** 위험이 있음.\n\n---\n\n### [비자명기여] (통념 반박 및 정교화)\n- **통념**: \"호르무즈 긴장이 고조되면 후티의 홍해 공격이 자연스럽게 따라와 전염병처럼 번진다 (단순 전이 모델).\"\n- **비자명적 통찰 (반례·범위조건)**:\n  - **전이의 '차단' 조건**: CSIS 보고서와 War on the Rocks 분석에 따르면, 호르무즈와 홍해의 공격 증가가 단순한 '전이'가 아니라, 이란이 **단일 초크포인트 의존 리스크를 분산**하기 위한 **의도적 전략 (Gray Zone 분산)**일 가능성이 높다. 즉, \"A가 B를 유발했다\"가 아니라, \"이란이 A와 B를 **동시에** 관리하는 **제어된 분산 (Controlled Dispersion)** 전략\"을 취하고 있을 수 있음.\n  - **임계값의 부재**: 후티 공격 건수 (8,491 건) 가 호르무즈 (609 건) 보다 14 배 많다는 사실은, 호르무즈의 도발이 홍해 공격의 '원인'이라기보다, **홍해가 이미 이란의 주요 회색지대 전장 (Primary Gray Zone Theater)**으로 독립적으로 기능하고 있음을 시사. 즉, 호르무즈의 긴장은 전이의 '방아쇠'가 아니라, **이미 존재하는 분산 전장의 '부수적 강화'**일 뿐이며, 전이 속도가 비대칭적 (홍해→호르무즈 전이보다 호르무즈→홍해 전이가 더 느리거나 무의미할 수 있음) 일 수 있음.\n  - **문헌 공백 활용**: <context>의 '문헌 공백 원장'에 따르면, \"SLOC 통제 이론\"은 초크포인트 위협이 자동으로 가격 충격이 되지 않음을 지적함. 이는 **물리적 전이 (건수 증가) 가 전략적 효과 (유가 상승/억지) 로 자동 전이되지 않는다는 점**과 유사하게, **건수 전이 (Transit) 가 반드시 인과적 전이 (Causation) 를 의미하지는 않음**을 시사.\n\n### [검증포인트] (연구자 수행 과제)\n1. **시계열 교차상관 (Cross-Correlation) 분석**: 2024~2026 년 ACLED 원자료를 확보하여, 호르무즈 사건 발생일 (t) 과 바브엘만데브 사건 발생일 (t+k) 간의 시차 상관관계를 계산하라. (k=0, 1, 7, 30 일).\n2. **지령 체계 확인**: IRGC(Quds Force) 와 후티 (Ansar Allah) 간의 통신 기록, 자금 흐름, 무기 수송 경로 (선박 AIS 데이터) 를 분석하여, 호르무즈 사건과 홍해 사건의 **공통 지령자 (Common Commander)** 존재 여부를 입증하라.\n3. **통제변수 분리**: 2026 년 2 월 28 일 미 - 이란 전쟁 개전이라는 **공통 외부 충격 (Common Shock)**을 통제변수로 두고, 전쟁 전후 두 지역의 공격 빈도 변화율을 비교하여 전이 효과와 전쟁 효과를 분리하라.\n\n---\n**참고**: 이 분석은 사용자가 제시한 \"전이 (Contagion)\" 가설을 검증하려 했으나, 데이터의 한계로 인해 **전략적 분산 (Strategic Dispersion)** 대 **인과적 전이 (Causal Contagion)**를 구분할 수 없음을 보여줍니다. 연구자는 두 이론 중 어떤 것이 현상을 더 잘 설명하는지, 시계열 데이터 확보 후 판단해야 합니다.",
       "expected_min_score": 55,
       "retries": 0,
       "quality": {
         "non_obviousness": 4,
         "inference_honesty": 4,
-        "competing_rigor": 5,
+        "competing_rigor": 4,
         "falsifiability": 4,
-        "one_line": "통념적 전이 가설을 임계값 기반 전략적 전환과 전이 차단 조건으로 정교화하여 반직관적 통찰을 제시했으나, 인과 동사는 통제했지만 Granger 인과 검정 등 구체적 검증 방법을 명시했음에도 데이터 출처와 측정 시점의 완전한 조작화가 약간 미흡하다."
+        "one_line": "시계열 데이터 부재를 정직하게 인정하고 전이(contagion)와 분산(dispersion)이라는 경쟁 메커니즘을 식별했으나, 두 이론의 예측 편차를 수치화할 데이터가 없어 검증이 중단된 상태를 명확히 연구자에게 넘긴 점이 우수하다."
       },
       "method_integrity": {
         "routing_ok": true,
@@ -6627,7 +6627,7 @@
           "NETWORK_DIFFUSION"
         ]
       },
-      "rerun_note": "풀런 FAIL은 비대칭 검출기 오탐('판정 불가'를 위반 오인, aa63d17 수리) — 수리 후 재실행 PASS 접합 (2026-07-10)"
+      "rerun_note": "판정 정정(2026-07-10 눈금위원회): 검출기 오탐 수리(aa63d17)를 동결 원판 본문에 재채점 — 구 rerun(재생성)은 규약 위반이라 폐기(반박석 적발: 재생성은 산출물 오염시만, v2_iran 등급세탁 실증). 원판은 수리 검출기로 통과 확인."
     },
     {
       "id": "south_china_sea_maritime",
@@ -9874,9 +9874,9 @@
       "routing_gold": null,
       "rival_gold": null,
       "relabel_due": false,
-      "elapsed": 66.2,
+      "elapsed": 109.8,
       "confidence": 100,
-      "inference_grade": "상관",
+      "inference_grade": "기술적",
       "provisional": false,
       "completeness_pct": 100,
       "missing_sections": [],
@@ -9885,17 +9885,17 @@
       "h1_expected": true,
       "hypothesis": [
         {
-          "h1": "2026년 6월 중동 분쟁 이벤트 건수 (middle_east) 증가 시, 미국 CPI 상승률 (전년 대비 %)이 관세 부담 (John Deere $10억 비용 등) 통제 하에 통계적으로 유의하게 상승한다.",
+          "h1": "middle_east 지역 ACLED 분쟁 건수 증가 시, 미국 CPI 내 에너지 비중이 높은 품목 (신발, 운송) 의 가격 상승률이 통계적으로 유의하게 증가한다 ().",
           "status": "PENDING",
           "var_type": "Type_C",
-          "p_value": 0.2625,
-          "granger_q": 0.4958,
+          "p_value": 0.2628,
+          "granger_q": 0.2628,
           "inference_grade": "기술적",
           "theory_grounded": true,
           "differenced": true,
           "data_signature": "SINGLE_SHOCK",
-          "routing_method": "granger_typeA_downgrade",
-          "routing_confidence": "MEDIUM",
+          "routing_method": "granger_typeC_proxy",
+          "routing_confidence": "HIGH",
           "is_proxy_pair": false,
           "method_result": {
             "iv_construct": {
@@ -9907,128 +9907,9 @@
               "named_n": 6609,
               "top_country": "Syria",
               "top_share": 0.302,
-              "n_events": 51721,
+              "n_events": 51689,
               "country_dist": {
-                "(미상)": 3624,
-                "Bahrain": 962,
-                "Iran": 4128,
-                "Iraq": 6210,
-                "Israel": 2481,
-                "Kuwait": 1,
-                "Lebanon": 11959,
-                "Oman": 3,
-                "Saudi Arabia": 23,
-                "Sudan": 231,
-                "Syria": 15633,
-                "Yemen": 6466
-              },
-              "filter_country": null
-            },
-            "headline_rung": "상관",
-            "headline_method": "event_study",
-            "convergence": false,
-            "convergence_note": "발산 — 방법별 칸 엇갈림(event_study:준실험 / granger:기술적). 발산 자체가 발견: 단기·국소 효과는 있으나 전역·지속 선행성은 없을 수 있음.",
-            "stub_methods": [],
-            "all_results": [
-              {
-                "method": "event_study",
-                "signature": "SINGLE_SHOCK",
-                "effect_estimate": -0.07157338758194107,
-                "effect_size_label": "중간",
-                "significance": 0.4914,
-                "ci_low": -0.1955,
-                "ci_high": 0.1894,
-                "assumptions_met": true,
-                "assumption_caveat": "",
-                "reachable_rung": "준실험",
-                "actual_rung": "준실험",
-                "confidence_within_rung": 25,
-                "robustness": {
-                  "r2_market_model": 0.1002,
-                  "n_estimation": 97,
-                  "n_event_window": 23,
-                  "alpha": -0.000207,
-                  "beta": 0.8317,
-                  "significance_label": "비유의",
-                  "car_short": -0.0388
-                },
-                "native_stats": {
-                  "car": -0.0716,
-                  "t_stat": -0.691,
-                  "p_value": 0.4914,
-                  "r2": 0.1002,
-                  "event_date": "2026-06-15",
-                  "ticker": "GLD",
-                  "benchmark": "^GSPC",
-                  "estimation_window": "T-120~T-20",
-                  "event_window": "T-5~T+20"
-                },
-                "exploratory": false
-              },
-              {
-                "method": "granger",
-                "signature": "SINGLE_SHOCK",
-                "effect_estimate": 1.332,
-                "effect_size_label": "무시할 수준",
-                "significance": 0.2625,
-                "ci_low": null,
-                "ci_high": null,
-                "assumptions_met": true,
-                "assumption_caveat": "",
-                "reachable_rung": "선행성",
-                "actual_rung": "기술적",
-                "confidence_within_rung": 50,
-                "robustness": {
-                  "extreme_p": null,
-                  "differenced": true,
-                  "controlled": true
-                },
-                "native_stats": {
-                  "granger_p": 0.2625,
-                  "granger_q": 0.4958,
-                  "f_statistic": 1.332,
-                  "best_lag": 3,
-                  "n_obs": 464
-                },
-                "exploratory": true
-              }
-            ],
-            "epistemic_cap": "[탐색적] 준실험→상관 (HARKing 방어, 원본 추정치는 all_results 보존)"
-          },
-          "headline_rung": "상관",
-          "headline_method": "event_study",
-          "convergence": false,
-          "all_methods_met": true,
-          "any_exploratory": true,
-          "surface_exploratory": true,
-          "surface_summary": "[탐색적] [Granger] middle_east→GLD — 비유의"
-        },
-        {
-          "h1": "2026 년 6 월 중동 분쟁 이벤트 건수 (middle_east) 증가 시, LNG 선물 가격 (USD/MMBtu) 이 카타르 생산량 감소율 (20%) 과 통계적으로 유의하게 정방향으로 변화한다.",
-          "status": "PENDING",
-          "var_type": "Type_A",
-          "p_value": 0.4958,
-          "granger_q": 0.4958,
-          "inference_grade": "기술적",
-          "theory_grounded": false,
-          "differenced": true,
-          "data_signature": "SINGLE_SHOCK",
-          "routing_method": "granger_typeA",
-          "routing_confidence": "MEDIUM",
-          "is_proxy_pair": false,
-          "method_result": {
-            "iv_construct": {
-              "named_countries": [
-                "Iran",
-                "Israel"
-              ],
-              "named_share": 0.128,
-              "named_n": 6609,
-              "top_country": "Syria",
-              "top_share": 0.302,
-              "n_events": 51721,
-              "country_dist": {
-                "(미상)": 3624,
+                "(미상)": 3592,
                 "Bahrain": 962,
                 "Iran": 4128,
                 "Iraq": 6210,
@@ -10064,32 +9945,32 @@
                 "confidence_within_rung": 0,
                 "robustness": {},
                 "native_stats": {
-                  "ticker": "NG=F"
+                  "ticker": "GLD"
                 },
                 "exploratory": false
               },
               {
                 "method": "granger",
                 "signature": "SINGLE_SHOCK",
-                "effect_estimate": 0.797,
+                "effect_estimate": 1.331,
                 "effect_size_label": "무시할 수준",
-                "significance": 0.4958,
+                "significance": 0.2628,
                 "ci_low": null,
                 "ci_high": null,
                 "assumptions_met": true,
                 "assumption_caveat": "",
                 "reachable_rung": "선행성",
                 "actual_rung": "기술적",
-                "confidence_within_rung": 25,
+                "confidence_within_rung": 50,
                 "robustness": {
-                  "extreme_p": 0.3963,
+                  "extreme_p": 0.5956,
                   "differenced": true,
                   "controlled": true
                 },
                 "native_stats": {
-                  "granger_p": 0.4958,
-                  "granger_q": 0.4958,
-                  "f_statistic": 0.797,
+                  "granger_p": 0.2628,
+                  "granger_q": 0.2628,
+                  "f_statistic": 1.331,
                   "best_lag": 3,
                   "n_obs": 464
                 },
@@ -10103,11 +9984,317 @@
           "all_methods_met": false,
           "any_exploratory": true,
           "surface_exploratory": true,
-          "surface_summary": "[탐색적] [Granger] 2026 년 6 월 중동 분쟁 이벤트 건수 (middle_east) → LNG 선물 가격 (USD/MMBtu) 이 카타르 생산량 — 비유의"
+          "surface_summary": "[탐색적] [Granger] middle_east→GLD — 비유의"
+        },
+        {
+          "h1": "현재 데이터로 전쟁 개전 시점 (2026.02) 과 CPI 데이터 (2026.04) 의 시간적 선후는 확인되나, 관세와 전쟁의 상호작용 효과를 통제하지 않았으므로 인과 검증 불가.",
+          "status": "PENDING",
+          "var_type": "Type_C",
+          "p_value": 0.2628,
+          "granger_q": 0.2628,
+          "inference_grade": "기술적",
+          "theory_grounded": true,
+          "differenced": true,
+          "data_signature": "SINGLE_SHOCK",
+          "routing_method": "granger_typeA_downgrade",
+          "routing_confidence": "MEDIUM",
+          "is_proxy_pair": false,
+          "method_result": {
+            "iv_construct": {
+              "named_countries": [
+                "Iran",
+                "Israel"
+              ],
+              "named_share": 0.128,
+              "named_n": 6609,
+              "top_country": "Syria",
+              "top_share": 0.302,
+              "n_events": 51689,
+              "country_dist": {
+                "(미상)": 3592,
+                "Bahrain": 962,
+                "Iran": 4128,
+                "Iraq": 6210,
+                "Israel": 2481,
+                "Kuwait": 1,
+                "Lebanon": 11959,
+                "Oman": 3,
+                "Saudi Arabia": 23,
+                "Sudan": 231,
+                "Syria": 15633,
+                "Yemen": 6466
+              },
+              "filter_country": null
+            },
+            "headline_rung": "기술적",
+            "headline_method": "granger",
+            "convergence": null,
+            "convergence_note": "",
+            "stub_methods": [],
+            "all_results": [
+              {
+                "method": "event_study",
+                "signature": "SINGLE_SHOCK",
+                "effect_estimate": null,
+                "effect_size_label": "",
+                "significance": null,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": false,
+                "assumption_caveat": "이벤트 날짜 미식별 — H1 텍스트에 날짜(YYYY-MM-DD / YYYY년 MM월 DD일) 없음",
+                "reachable_rung": "준실험",
+                "actual_rung": "기술적",
+                "confidence_within_rung": 0,
+                "robustness": {},
+                "native_stats": {
+                  "ticker": "GLD"
+                },
+                "exploratory": false
+              },
+              {
+                "method": "granger",
+                "signature": "SINGLE_SHOCK",
+                "effect_estimate": 1.331,
+                "effect_size_label": "무시할 수준",
+                "significance": 0.2628,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": true,
+                "assumption_caveat": "",
+                "reachable_rung": "선행성",
+                "actual_rung": "기술적",
+                "confidence_within_rung": 50,
+                "robustness": {
+                  "extreme_p": 0.5956,
+                  "differenced": true,
+                  "controlled": true
+                },
+                "native_stats": {
+                  "granger_p": 0.2628,
+                  "granger_q": 0.2628,
+                  "f_statistic": 1.331,
+                  "best_lag": 3,
+                  "n_obs": 464
+                },
+                "exploratory": true
+              }
+            ]
+          },
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "all_methods_met": false,
+          "any_exploratory": true,
+          "surface_exploratory": true,
+          "surface_summary": "[탐색적] [Granger] middle_east→GLD — 비유의"
+        },
+        {
+          "h1": "HIIK 분쟁 강도가 3 (폭력위기) 이상으로 상승할 때, 금(GLD) 가격 변동률은 ACLED 분쟁 건수 증가율과 통계적으로 유의하게 정적 상관관계를 가진다 ().",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.2628,
+          "granger_q": 0.2628,
+          "inference_grade": "기술적",
+          "theory_grounded": true,
+          "differenced": true,
+          "data_signature": "SINGLE_SHOCK",
+          "routing_method": "granger_typeA",
+          "routing_confidence": "HIGH",
+          "is_proxy_pair": false,
+          "method_result": {
+            "iv_construct": {
+              "named_countries": [
+                "Iran",
+                "Israel"
+              ],
+              "named_share": 0.128,
+              "named_n": 6609,
+              "top_country": "Syria",
+              "top_share": 0.302,
+              "n_events": 51689,
+              "country_dist": {
+                "(미상)": 3592,
+                "Bahrain": 962,
+                "Iran": 4128,
+                "Iraq": 6210,
+                "Israel": 2481,
+                "Kuwait": 1,
+                "Lebanon": 11959,
+                "Oman": 3,
+                "Saudi Arabia": 23,
+                "Sudan": 231,
+                "Syria": 15633,
+                "Yemen": 6466
+              },
+              "filter_country": null
+            },
+            "headline_rung": "기술적",
+            "headline_method": "granger",
+            "convergence": null,
+            "convergence_note": "",
+            "stub_methods": [],
+            "all_results": [
+              {
+                "method": "event_study",
+                "signature": "SINGLE_SHOCK",
+                "effect_estimate": null,
+                "effect_size_label": "",
+                "significance": null,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": false,
+                "assumption_caveat": "이벤트 날짜 미식별 — H1 텍스트에 날짜(YYYY-MM-DD / YYYY년 MM월 DD일) 없음",
+                "reachable_rung": "준실험",
+                "actual_rung": "기술적",
+                "confidence_within_rung": 0,
+                "robustness": {},
+                "native_stats": {
+                  "ticker": "GLD"
+                },
+                "exploratory": false
+              },
+              {
+                "method": "granger",
+                "signature": "SINGLE_SHOCK",
+                "effect_estimate": 1.331,
+                "effect_size_label": "무시할 수준",
+                "significance": 0.2628,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": true,
+                "assumption_caveat": "",
+                "reachable_rung": "선행성",
+                "actual_rung": "기술적",
+                "confidence_within_rung": 50,
+                "robustness": {
+                  "extreme_p": 0.5956,
+                  "differenced": true,
+                  "controlled": true
+                },
+                "native_stats": {
+                  "granger_p": 0.2628,
+                  "granger_q": 0.2628,
+                  "f_statistic": 1.331,
+                  "best_lag": 3,
+                  "n_obs": 464
+                },
+                "exploratory": true
+              }
+            ]
+          },
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "all_methods_met": false,
+          "any_exploratory": true,
+          "surface_exploratory": true,
+          "surface_summary": "[탐색적] [Granger] HIIK 분쟁 강도가 3 (폭력위기) 이상으로 → 금(GLD) 가격 변동률은 ACLED 분쟁 건수 — 비유의"
+        },
+        {
+          "h1": "현재 데이터는 분쟁 강도 (5) 와 금 상승 (룰 발화) 의 동시성을 보여주나, 금리나 달러 인덱스 등 교란 변수 통제가 없어 인과 검증 불가.",
+          "status": "PENDING",
+          "var_type": "Type_A",
+          "p_value": 0.2628,
+          "granger_q": 0.2628,
+          "inference_grade": "기술적",
+          "theory_grounded": true,
+          "differenced": true,
+          "data_signature": "SINGLE_SHOCK",
+          "routing_method": "granger_typeA",
+          "routing_confidence": "HIGH",
+          "is_proxy_pair": false,
+          "method_result": {
+            "iv_construct": {
+              "named_countries": [
+                "Iran",
+                "Israel"
+              ],
+              "named_share": 0.128,
+              "named_n": 6609,
+              "top_country": "Syria",
+              "top_share": 0.302,
+              "n_events": 51689,
+              "country_dist": {
+                "(미상)": 3592,
+                "Bahrain": 962,
+                "Iran": 4128,
+                "Iraq": 6210,
+                "Israel": 2481,
+                "Kuwait": 1,
+                "Lebanon": 11959,
+                "Oman": 3,
+                "Saudi Arabia": 23,
+                "Sudan": 231,
+                "Syria": 15633,
+                "Yemen": 6466
+              },
+              "filter_country": null
+            },
+            "headline_rung": "기술적",
+            "headline_method": "granger",
+            "convergence": null,
+            "convergence_note": "",
+            "stub_methods": [],
+            "all_results": [
+              {
+                "method": "event_study",
+                "signature": "SINGLE_SHOCK",
+                "effect_estimate": null,
+                "effect_size_label": "",
+                "significance": null,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": false,
+                "assumption_caveat": "이벤트 날짜 미식별 — H1 텍스트에 날짜(YYYY-MM-DD / YYYY년 MM월 DD일) 없음",
+                "reachable_rung": "준실험",
+                "actual_rung": "기술적",
+                "confidence_within_rung": 0,
+                "robustness": {},
+                "native_stats": {
+                  "ticker": "GLD"
+                },
+                "exploratory": false
+              },
+              {
+                "method": "granger",
+                "signature": "SINGLE_SHOCK",
+                "effect_estimate": 1.331,
+                "effect_size_label": "무시할 수준",
+                "significance": 0.2628,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": true,
+                "assumption_caveat": "",
+                "reachable_rung": "선행성",
+                "actual_rung": "기술적",
+                "confidence_within_rung": 50,
+                "robustness": {
+                  "extreme_p": 0.5956,
+                  "differenced": true,
+                  "controlled": true
+                },
+                "native_stats": {
+                  "granger_p": 0.2628,
+                  "granger_q": 0.2628,
+                  "f_statistic": 1.331,
+                  "best_lag": 3,
+                  "n_obs": 464
+                },
+                "exploratory": true
+              }
+            ]
+          },
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "all_methods_met": false,
+          "any_exploratory": true,
+          "surface_exploratory": true,
+          "surface_summary": "[탐색적] [Granger] 현재 데이터는 분쟁 강도 (5) 와 금 상승 (룰 발화) 의 동시성을 보여주나, 금리나 달러 인덱스 등 교란 변수 통제가 없어 인과 검증 불가. → 미식별 — 비유의"
         }
       ],
       "labels": {
-        "UNVERIFIED": 3,
+        "UNVERIFIED": 4,
         "SPECULATIVE": 0,
         "PROVISIONAL": 0,
         "TEMPORAL_REVERSAL": 0,
@@ -10126,7 +10313,7 @@
         "no_verdict_on_unverified": true,
         "verdict_on_unverified_cases": []
       },
-      "full_text": "[헤드라인] [탐색적] 2026년 6월 이란-이스라엘 전쟁 개전과 브렌트유 가격의 급등은 단순 공급 차단이 아닌, 관세로 이미 소진된 '경제적 버퍼'와 중첩된 복합 충격을 동반한다\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 중동 전쟁 발생 시 유가는 공급 차단 우려로 인해 단순 선형적으로 상승하며, 이는 전쟁 기간 동안 지속된다.\n[비자명기여] 통념은 유가 상승을 '공급량 감소'에만 귀속하지만, 본 분석은 **'트럼프 관세로 선제 소진된 미국 내 기업 버퍼'**가 2차 충격(유가)을 증폭시키는 **비선형적 복합 위기** 메커니즘을 제시한다. 이는 〈자원무기화〉이론이 예측하는 '의존도 증가→양보'를 넘어, **수요측 버퍼 붕괴**가 공급 충격의 파장을 확대하는 **범위조건**을 규명한다.\n     ↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 범위조건으로 쓰라]\n  • 〈자원무기화 (Resource Weaponization)〉 예측 임계: 의존도 증가 시 공급 위협에 대한 정치적 양보 증가 (통제: 군사 균형, 대체 공급원 접근성) | 반례: 미국 셰일 혁명 이후 OPEC 무기화 효과 감소 — 대체재 출현 시 설명력 하락; 유럽 가스 대체 성공.\n  → 본 사례는 대체재(셰일)가 존재함에도 불구하고, **관세로 인한 비용 흡수 능력 (Buffer) 상실**이 무기화 효과를 재부활시켰다. 즉, '대체재 유무'가 아닌 '경제적 완충재고 (Buffer Stock)'의 유무가 무기화 효율의 임계값임을 보여줌.\n[관찰] 2026년 2월 28일 미-이란 전쟁 개전 이후, 2026년 4월 미국 CPI 상승률은 3.8%를 기록했으며 에너지 가격이 이 상승에서 차지한 비중은 **40% 이상**이다. 또한, 신발 가격 상승률은 4.2%로 43개월 만에 최고치를 기록했으며, 아동화 관세율은 최대 **87.5%**에 달했다. 2026년 6월 전쟁 개전 시점에는 이미 기업들의 비용 흡수 버퍼가 관세로 선제 소진된 상태였다.\n[주장] (등급: 상관) 중동 분쟁 확대와 브렌트유 가격 상승은 **'관세로 소진된 경제 버퍼'**와 결합할 때 단순 합산이 아닌 복합적 인플레이션 상승과 동반한다.\n[가설] H1: 2026년 6월 중동 분쟁 이벤트 건수 (middle_east) 증가 시, 미국 CPI 상승률 (전년 대비 %)이 관세 부담 (John Deere $10억 비용 등) 통제 하에 통계적으로 유의하게 상승한다.\n[근거] [War on the Rocks] 보고서: 2026년 4월 CPI 3.8% (에너지 비중 40%+), John Deere 관세 비용 $10억, KPMG 소비재 마진 1~5% 하락 예상 비율 43%.\n[한계] 2026년 6월의 구체적인 유가 변동 수치 (Brent price $) 가 context 에 명시되지 않아 [UNVERIFIED]이며, 단순 사건 기록만으로는 공급 차단량과 가격 변동의 정량적 매핑이 불가능하다. 또한, 소수 사례(이란전)에 의존하여 일반화할 경우 **선택·생존편향** (성공적인 억제 사례는 보고되지 않을 수 있음) 위험이 있다.\n[경쟁설명]\n이론A명 (자원무기화 - Hirschman):\n  예측: 에너지 공급 차단 시 정치적/경제적 충격이 커지며 가격 폭등 발생 (의존도↑→가격↑)\n  실측: 에너지 가격 비중 40% 이상 (CPI 상승 기여도) — 공급 차단 영향이 직접적으로 관측됨\n  판정: 우세 — 예측 '공급 차단→가격폭등' vs 실측 '에너지 비중 40%+' → 방향 일치 (앵커: HIIK 강도 5, 전제 충족)\n\n이론B명 (자유주의 상호의존 - Keohane):\n  예측: 글로벌 공급망 복잡성으로 인해 단기 충격이 빠르게 완화되거나 대체 공급으로 흡수됨 (상호의존↑→충격↓)\n  실측: [UNVERIFIED] 정량값 부재 — context 에 대체 공급량 증가율이나 가격 안정화 수치 미제공\n  판정: 전제충족 (DV 미검증) — 실측 데이터 부재로 예측 검증 불가 (정성 관찰: 관세로 버퍼 소진됨 → 대체 효과 약화 가능성)\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 '가격폭등 (실측 40% 비중)' vs 자유주의 예측편차 '[산술 미제공] (대체 효과)' — 자원무기화 쪽 편차만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 위 편차로 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: 자유주의 이론의 '대체 공급' 가정이 관세로 인한 수요측 버퍼 붕괴를 고려하지 않았을 가능성)\n[검증포인트] 2026년 6월~7월 중布伦트유 일일 가격 변동률 (Bloomberg/Terminal), 미국 전략석유비축 (SPR) 방출량 및 시기, 이란산 원유 수출량 감소율 (EIA 데이터).\n[문헌공백] 기존 〈자원무기화〉문헌은 대체재 출현 시 무기화 효과가 감소한다고 보았으나 (반례: 셰일 혁명), 본 분석은 **경제적 버퍼 (Buffer) 의 선제 소진**이 대체재 존재에도 무기화 효과를 재부활시킨다는 **새로운 임계조건**을 제시한다. 기존 문헌은 공급측 (Production) 과 수요측 (Buffer) 의 상호작용을 분리하여 분석하여, **정책적 선택 (관세) 이 안보적 취약성 (유가 충격) 을 증폭시키는 경로**를 놓치고 있다.\n\n---\n\n[헤드라인] [탐색적] 이란-이스라엘 전쟁의 에너지 충격을 단순 '공급 차단'으로 보는 통념은, GCC 국가들의 **LNG 생산 붕괴 (카타르 20%)**가 호르무즈 봉쇄와 결합한 **다중 공급망 동시 타격** 구조를 간과한다\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 전쟁은 원유 생산 시설 타격 (물리적 공급 차단) 만 초래하며, LNG(액화천연가스) 시장은 원유 시장과 분리되어 별동대로 움직인다.\n[비자명기여] 통념은 원유와 LNG 시장을 이분법적으로 보지만, 본 분석은 **카타르 라스 라판 LNG 생산 20% 파괴**와 **호르무즈 봉쇄**가 동시에 발생하여 **전 세계 에너지 공급의 중첩적 붕괴**를 초래함을 지적한다. 이는 〈에너지 안보론〉의 '다변화 원칙'이 **인프라 동시 타격** 전에는 무력화되는 **범위조건**을 규명한다.\n     ↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 범위조건으로 쓰라]\n  • 〈에너지 안보론 (Energy Security Theory)〉 예측 임계: 에너지 공급원 HHI 감소 (다변화) 시 에너지 가격 충격 대비 GDP 변동성 감소 (통제: 재생에너지 비율·전략 비축량) | 반례: 독일의 노르드스트림 의존 전략 (2000~2022): 에너지 안보론의 '다변화 원칙' 위반 → 2022 년 러시아 공급 차단 시 에너지 위기 실증.\n  → 본 사례는 카타르 (LNG) 와 중동 (원유) 이 **동시 타격**받는 상황으로, HHI 감소 (다변화) 가 **물리적 인프라 동시 파괴**라는 극단적 조건에서는 무효화됨을 보여줌.\n[관찰] 2026 년 전쟁 개전 후 카타르 라스 라판 시설이 공격받아 LNG 생산량 약 **20%**가 파괴되었으며, 이는 전 세계 LNG 공급의 **1/5**에 해당한다. 카타르는 역사상 최초의 불가항력 (Force Majeure) 을 선언했다. GCC 국가들은 호르무즈 의존도가 극대 (카타르, 쿠웨이트, 바레인) 이며, 이란 공격으로 모든 GCC 국가의 저장·운송·정제 인프라가 타격을 입었다.\n[주장] (등급: 상관) 중동 전쟁 개전은 원유 공급 차단과 **LNG 생산 시설 동시 파괴**를 동반하며, 이는 글로벌 에너지 시장에서의 가격 변동성 상승과 공변한다.\n[가설] H1: 2026 년 6 월 중동 분쟁 이벤트 건수 (middle_east) 증가 시, LNG 선물 가격 (USD/MMBtu) 이 카타르 생산량 감소율 (20%) 과 통계적으로 유의하게 정방향으로 변화한다.\n[근거] [CSIS] 아랍 걸프 국가들 보고서: 카타르 라스 라판 LNG 생산량 **20%** 파괴, 전 세계 공급량 **1/5** 비중, 불가항력 선언.\n[한계] 2026 년 6 월의 구체적인 LNG 가격 변동 수치와 원유 가격 변동의 상관관계 계수가 context 에 제공되지 않아 [UNVERIFIED] 이다. 또한, '불가항력 선언'이라는 정성적 사건이 가격 변동에 미치는 지연 효과를 정량화하기 어렵다.\n[도메인 교차 경로] [군사 도메인 → 에너지 도메인] 이란의 미사일/드론 공격 (군사) 이 GCC LNG 시설 (에너지) 을 직접 타격하여, 단순 원유 차단이 아닌 **가스-원유 연동 가격 폭등** 경로 발생. 전이 조건: 호르무즈 봉쇄와 동시에 인프라 타격 발생 시.\n[경쟁설명]\n이론A명 (에너지 안보론 - Energy Security Theory):\n  예측: 공급원 다변화 (HHI 감소) 가 충격 시 가격 변동성을 완화함 (안정성↑)\n  실측: 카타르 LNG 생산 20% 파괴 (전 세계 1/5 비중) — 주요 공급원 동시 타격으로 다변화 효과 무력화\n  판정: 열세 — 예측 '다변화→안정' vs 실측 '주요 공급원 20% 파괴' → 방향 불일치 (앵커: HIIK 강도 5, 전제 충족)\n\n이론B명 (자원무기화 - Resource Weaponization):\n  예측: 에너지 공급 차단 시 정치적/경제적 충격이 극대화됨 (공급 차단↑→가격/충격↑)\n  실측: 라스 라판 공격으로 전 세계 LNG 공급 1/5 차단 — 공급 차단 규모가 극대\n  판정: 우세 — 예측 '공급 차단→충격증가' vs 실측 'LNG 1/5 차단' → 방향 일치 (앵커: HIIK 강도 5, 전제 충족)\n\n▶ 편차 비교 (사실): 에너지 안보론 예측편차 '안정성 유지 (실측 20% 파괴)' vs 자원무기화 예측편차 '충격 극대화 (실측 1/5 차단)' — 자원무기화 쪽 예측이 실측과 더 일치하는 것으로 보임 (수치적 편차: 안보론 -20% vs 무기화 +1/5)\n▶ 당신의 판단 (연구자 몫): 위 편차로 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: 다변화 이론이 '인프라 동시 타격'이라는 비선형 리스크를 측정하지 못했는지 여부)\n[검증포인트] 2026 년 6 월~7 월 TTF(유럽) 및 Henry Hub(미국) 천연가스 선물 가격 변동, 카타르 LNG 수출 중단 기간 및 회복 속도, 호르무즈 해협 통과 선박 수 (Vessel Tracking Data).\n[문헌공백] 기존 〈에너지 안보론〉문헌은 공급원의 지리적 분산 (다변화) 에만 주목하여, **물리적 인프라의 동시 타격**이 다변화 효과를 무효화하는 **비선형 임계점**을 간과했다. 또한, 원유와 LNG 시장을 분리하여 분석하는 **섹터별 접근의 한계**가 드러났으며, 본 분석은 **다중 공급망 동시 붕괴**라는 교차 도메인 공백을 메우는 기여를 한다.",
+      "full_text": "[헤드라인] [탐색적] 이란-이스라엘 전쟁 개전과 브렌트유 급등은 단순 공급 차단이 아닌, '관세로 소진된 미국 경제 버퍼'와 결합해 복합 인플레이션 충격을 동반한다\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 중동 전쟁 개전은 호르무즈 해협 봉쇄 우려로 인해 원유 공급량 감소 → 유가 상승이라는 단순한 공급/수요 인과관계를 따른다.\n\n[비자명기여] 통념은 유가 상승의 원인을 '물리적 공급 차단'으로만 보지만, 본 분석은 **'미국 내 관세 정책으로 소진된 경제 회복탄력성'**이 유가 충격의 증폭기 역할을 했음을 제시한다.\n  ↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 범위조건으로 쓰라]\n  • 〈에너지 안보론 (Energy Security Theory)〉 예측 임계: 에너지 공급원 HHI 감소(다변화) 시 에너지 가격 충격 대비 GDP 변동성 감소 (통제: 재생에너지 비율·전략 비축량) → 반례: 독일의 노르드스트림 의존 전략(2000~2022): 에너지 안보론의 '다변화 원칙' 위반 → 2022년 러시아 공급 차단 시 에너지 위기 실증\n  → **적용:** 2026년 4월 기준 미국 내 에너지 가격이 CPI 상승의 40% 이상을 차지하는 가운데, 트럼프 행정부의 관세 정책 (IEEPA/Section 122) 으로 기업 마진이 1~5% 하락하여 버퍼가 선제 소진된 상태였다. 따라서 유가 충격은 단순 가격 상승이 아닌, **관세발 구조적 취약성과 결합된 복합 위기 (×n)**로 전개되었다. 이는 에너지 안보론이 예측하는 '다변화'나 '비축'만으로는 해결되지 않는, **내부 정책 실패가 외부 충격을 증폭시키는 범위조건**을 보여준다.\n\n[관찰]\n1. **전쟁 개전 및 공급 차질:** 2026년 2월 28일 미-이스라엘 대이란 전쟁 개전. 카타르 라스 라판 LNG 시설이 공격받아 생산량 약 20% 파괴, 역사상 최초의 불가항력 선언 발생.\n2. **유가 및 물가 충격:** 2026년 4월 미국 CPI 상승률은 전년 대비 **3.8%**로 상승했으며, 이 중 에너지 가격이 차지한 비중은 **40% 이상**임. 신발 가격 상승률은 4.2%로 43개월 만에 최고치 기록.\n3. **경제 버퍼 소진:** 2026년 기준 미국 기업 중 KPMG 임원 43%가 관세로 인해 마진 1~5% 하락을 예상했으며, John Deere 같은 제조업체는 관세로 인해 **$10억**의 추가 비용을 부담함. 미국 수입재 중 국내 제조업 투입재 비중은 **56%**로, 외부 충격이 내부 생산망에 직접 전이됨.\n\n[주장] (등급: 상관) 중동 분쟁 확대와 브렌트유 가격 상승은 **강한 공변 관계**를 보이며, 특히 미국 내 관세 정책으로 인한 경제 버퍼 소진 상태에서는 그 충격이 단순 합산이 아닌 복합 인플레이션으로 동조하는 경향이 관찰된다.\n\n[가설] H1: middle_east 지역 ACLED 분쟁 건수 증가 시, 미국 CPI 내 에너지 비중이 높은 품목 (신발, 운송) 의 가격 상승률이 통계적으로 유의하게 증가한다 (통제변수: 미국 관세율, 원유 비축량).\n[가설] 현재 데이터로 전쟁 개전 시점 (2026.02) 과 CPI 데이터 (2026.04) 의 시간적 선후는 확인되나, 관세와 전쟁의 상호작용 효과를 통제하지 않았으므로 인과 검증 불가.\n\n[근거]\n- War on the Rocks (2026): 2026년 4월 CPI 상승률 3.8%, 에너지 비중 40% 이상, 신발 가격 4.2% 상승.\n- War on the Rocks (2026): John Deere 관세 비용 $10억, KPMG 마진 하락 예상 43%, 수입재 투입재 비중 56%.\n- CSIS (2026): 카타르 라스 라판 LNG 생산량 20% 파괴, 불가항력 선언.\n\n[한계]\n- **선택·생존편향:** 분석 대상이 '관세로 취약해진 미국'이라는 단일 사례에 집중되어 있어, 다른 국가 (예: 유럽, 아시아) 에서 동일 전쟁이 발생했을 때 유가 충격 전파 양상이 다를 수 있음.\n- **교란 변수 통제 부재:** 2026년 4월의 인플레이션이 전쟁 외에도 중국과의 무역 긴장 (베이징 정상회담 전후) 이나 내부 공급망 교란에 의한 것인지 분리되지 않음.\n\n[경쟁설명]\n이론: 자원무기화 (Resource Weaponization) (Hirschman)\n  예측: 이란의 호르무즈 봉쇄 위협으로 글로벌 공급망 의존도가 높은 국가 (미국, 중국, 유럽) 의 정치적·경제적 양보가 증가하고, 공급 차단 시 유가가 급등하여 GDP 변동성이 커진다.\n  실측: 카타르 LNG 생산량 20% 파괴 (라스 라판 공격), 2026년 4월 에너지 비중 40% 이상 (CPI 상승 요인).\n  판정: 우세 — 예측 '공급 차단→유가 급등' vs 실측 'LNG 20% 파괴 + 에너지 비중 40%↑' → 방향 및 수치적 충격 일치 (앵커: HIIK 강도 5, 전제 충족)\n\n이론: 자유주의 상호의존 (Liberal Interdependence) (Keohane & Nye)\n  예측: 글로벌 에너지 시장이 높은 상호의존도를 가지므로, 공급 차단 발생 시 시장 메커니즘 (대체 공급원, 비축 방출) 이 작동하여 가격 충격이 완화되거나 단기적으로만 지속된다.\n  실측: [UNVERIFIED] DV 정량값 부재 (시장의 가격 안정화 기간 또는 대체 공급원 증가율에 대한 구체적 수치 미제공).\n  판정: 전제충족 (DV 미검증) — 정성 관찰(불가항력 선언) 은 예측과 상반되나, DV(가격 안정화) 의 정량값이 없어 우세/열세 판단 불가.\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 (LNG 20% 파괴 + CPI 40% 에너지 비중) vs 자유주의 [UNVERIFIED] — 자원무기화 쪽 편차만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 위 편차로 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: 자유주의 이론은 '시장의 자동 조정'을 전제로 하나, 관세로 인한 공급망 경직성이 이를 막았을 가능성 있음. 관세 변수를 통제하지 않으면 자유주의 이론의 실패인지, 전제 조건 불충분인지 구분 불가.)\n\n[검증포인트]\n1. 2026년 2월~6월 중 미국 전략비축유 (SPR) 방출량 및 대체 수입처 (미국 셰일, 서부 아프리카 등) 의 유입량 데이터.\n2. 전쟁 개전 전후의 브렌트유 가격 변동률과 미국 내 관세율 변화의 Granger 인과성 검정.\n3. 카타르 LNG 복구 속도와 글로벌 LNG 선적량 (LNG shipping volume) 의 상관관계 분석.\n\n[문헌공백]\n기존 연구는 '에너지 안보론' 하에서 공급원 다변화 (HHI 감소) 가 가격 충격을 완화한다고 보지만, **<context>의 반례 클러스터**가 지적하듯 독일의 노르드스트림 의존 사례처럼 다변화 실패 시 위기가 발생한다는 점은 알려져 있다.\n그러나 본 분석은 **〈자원무기화〉와 〈상호의존의 무기화〉의 교차 지점**에서 새로운 공백을 발견한다. 기존 문헌은 외부 행위자 (이란) 의 공격만 강조했으나, **미국 자신의 관세 정책 (내부 요인) 이 공급망의 '버퍼'를 소진시켜外部 충격을 증폭시키는 메커니즘**을 다루지 못했다.\n특히 **<문헌 공백 원장>의 ② 경쟁이론 미해결** 항목에서 언급된 〈자원무기화〉와 〈상호의존의 무기화〉의 충돌이, 실제 전쟁 시 **'내부 정책 실패'가 외부 무기화의 효과를 극대화하는 조건**으로 작용함을 보여주며, 이는 단순한 공급 차단 모델로는 설명 불가능한 새로운 공백이다. 기존 연구는 '에너지 의존도'만 보았지, '관세로 인한 경제 탄력성 하락'이라는 매개 변수를 포함하지 않았다.\n\n---\n\n[헤드라인] [탐색적] 이란 전쟁 개전으로 중동 분쟁이 '회색지대'에서 '정규전'으로 에스컬레이션됨에 따라, 금(GLD) 수요는 위험 회피 심리와 함께 에너지 대체 자산으로서의 기능과 동반 상승하는 경향을 보임\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 전쟁이 시작되면 투자자들이 주식이나 원유를 팔고 금으로 자산을 이동시켜 금 가격이 상승한다.\n\n[비자명기여] 통념은 금 상승을 '단순한 위험 회피 (Risk-off)'로만 해석하지만, 본 분석은 **에너지 공급망 붕괴 (LNG 20% 파괴) 가 '실물 자산 대체' 메커니즘을 강화**시켜 금 수요를 증폭시켰음을 제시한다.\n  ↳ [비자명기여 재료 — 아래 반례 경계 중 1개를 ③ 범위조건으로 쓰라]\n  • 〈자원의 저주 (Resource Curse)〉 예측 임계: 자원 의존도 증가 시 민주주의 지수 하락·내전 위험 증가 (통제: 초기 제도 질) → 반례: 노르웨이·보츠와나 — 강한 제도 하에서 자원이 저주가 아닌 축복으로 작동\n  → **적용:** 중동 지역 (이란, 이스라엘) 의 정치안정성 (WGI -1.58, -1.04) 이 낮고, 분쟁 강도가 5 (전쟁) 로 상향된 상황에서, 에너지 인프라 (LNG) 가 직접 타격을 입음. 이는 단순한 '정치적 불안'을 넘어 **'에너지 실물 자산의 물리적 붕괴'**를 의미하며, 이때 금은 단순한 안전자산이 아닌 **'에너지 대체 불가능성'을 헤지하는 수단**으로 작용한다. 즉, **에너지 인프라 파괴라는 구체적 물리적 조건**이 금 상승의 메커니즘을 '심리적 위험 회피'에서 '실물 자산 대체'로 전환시키는 범위조건이 된다.\n\n[관찰]\n1. **분쟁 에스컬레이션:** HIIK 분쟁 강도 기준, Gaza-Israel War (2024) 는 강도 5 (전쟁) 로, 이란-이스라엘 전쟁 (2026.02.28 개전) 도 강도 5 수준으로 에스컬레이션됨.\n2. **거버넌스 취약성:** 이란 (정치안정 -1.58), 이스라엘 (정치안정 -1.04) 모두 WB 거버넌스 지수에서 음(-) 값을 보이며, 이는 회색지대 전략이나 하이브리드 전이 정규전으로 전환될 수 있는 거버넌스 공백을 시사.\n3. **Cascade 룰 발화:** 중동 분쟁 확대 → 금(GLD) 상승 룰이 1.0의 매칭 강도로 5회 연속 발화됨 (룰매칭강도 1.0, 1단계).\n4. **인프라 타격:** 카타르 라스 라판 LNG 시설 20% 파괴로 에너지 공급망의 물리적 붕괴 발생.\n\n[주장] (등급: 상관) 중동 분쟁 강도의 에스컬레이션 (전쟁 단계) 과 금(GLD) 가격 상승은 **강한 공변 관계**를 보이며, 특히 에너지 인프라 물리적 타격 시 금의 상승 폭이 심리적 위험 회피 수준을 초과하여 동반 상승하는 경향이 관찰된다.\n\n[가설] H1: HIIK 분쟁 강도가 3 (폭력위기) 이상으로 상승할 때, 금(GLD) 가격 변동률은 ACLED 분쟁 건수 증가율과 통계적으로 유의하게 정적 상관관계를 가진다 (통제변수: 달러 인덱스, 미국 금리).\n[가설] 현재 데이터는 분쟁 강도 (5) 와 금 상승 (룰 발화) 의 동시성을 보여주나, 금리나 달러 인덱스 등 교란 변수 통제가 없어 인과 검증 불가.\n\n[근거]\n- CSIS (2026): 카타르 라스 라판 LNG 20% 파괴, 불가항력 선언.\n- HIIK (2024): Gaza-Israel War 강도 5 (전쟁), Iran-Israel Shadow War 진행 중.\n- WB WGI (2022): Iran 정치안정 -1.58, Israel 정치안정 -1.04.\n- Cascade 엔진: 중동 분쟁 확대 → 금(GLD) 상승 룰 발화 5회 (매칭강도 1.0).\n\n[한계]\n- **생존편향:** '금 상승'만 기록된 사례를 분석하여, 금이 하락하거나 변동성이 없었던 전쟁 사례 (예: 제한된 국지전이나 즉각적인 휴전) 는 누락되었을 가능성.\n- **교란 변수:** 금 가격 상승이 전쟁 때문인지, 아니면 동시 발생했던 미국 내 인플레이션 (CPI 3.8%) 이나 금리 정책 때문인지 분리되지 않음.\n\n[경쟁설명]\n이론: 에스컬레이션 이론 (Escalation Theory) (Kahn)\n  예측: 분쟁 강도가 사다리 상단 (강도 4~5) 에 도달하면, 상대국의 대응 강도가 급증하고 불확실성이 극대화되어 안전자산 (금) 수요가 폭발적으로 증가한다.\n  실측: HIIK 분쟁 강도 5 (전쟁) 달성, 카타르 LNG 20% 파괴 (실질적 타격).\n  판정: 우세 — 예측 '강도 5→불확실성↑→안전자산 수요↑' vs 실측 '강도 5 + LNG 파괴' → 방향 일치 (앵커: HIIK 강도 5 vs 임계 3, 편차 +2.0, 전제 충족)\n\n이론: 회색지대 전략 (Gray Zone Strategy)\n  예측: 분쟁이 회색지대 (강도 1~3) 에 머무를 때, 목표국의 정책 양보나 혼란이 발생하며, 완전한 전쟁 (강도 5) 은 오히려 명확한 규칙을 만들어 불확실성을 제한할 수 있다.\n  실측: [UNVERIFIED] DV 정량값 부재 (금 가격 변동의 '제한' 또는 '하락'에 대한 구체적 수치 미제공).\n  판정: 전제충족 (DV 미검증) — 정성 관찰(불가항력 선언) 은 예측과 상반되나, DV(가격 제한) 의 정량값이 없어 우세/열세 판단 불가.\n\n▶ 편차 비교 (사실): 에스컬레이션 이론 예측편차 (강도 5 달성 + LNG 파괴) vs 회색지대 전략 [UNVERIFIED] — 에스컬레이션 이론 쪽 편차만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 위 편차로 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: 회색지대 이론은 '혼란의 지속'을 예측하나, 전쟁 개전은 '명확한 적대 관계'를 형성해 오히려 시장이 가격을 재설정할 수 있음. 하지만 실제 데이터는 금 상승이 지속되었으므로, 불확실성이 '명확한 전쟁' 상태에서도 지속되는 메커니즘이 무엇인지 연구자가 판단해야 함.)\n\n[검증포인트]\n1. 전쟁 개전 전후 30일 이내의 금(GLD) 일별 가격 변동률과美元指数 (DXY) 의 상관관계 분석.\n2. HIIK 강도 4 (제한전) 과 5 (전쟁) 구간별 금 가격 변동 폭 비교 (단순 비교가 아닌 회귀 분석).\n3. 미국 금리 (Fed Funds Rate) 변화와 금 가격의 Granger 인과성 검정 (전쟁 변수 통제 시).\n\n[문헌공백]\n기존 연구는 **<문헌 공백 원장>의 ③ 교차도메인 밀도**에서 지적하듯, '회색지대' (4건) 와 '에너지' (2건) 를 연결하는 교차도메인 인과 경로가 부족하다.\n대부분의 문헌은 금 상승을 '지정학적 리스크'라는 단일 도메인 변수로 설명하거나, 에너지 가격을 '공급/수요'로만 분석한다.\n본 분석은 **에너지 인프라 (LNG) 의 물리적 파괴**가 **금 (안전자산) 수요**로 전이되는 **'에너지→금융' 교차 경로**를 구체화한다. 특히 **<반례 클러스터>의 노르웨이 사례**가 보여주듯, 강한 제도 하에서는 자원이 저주가 아니지만, **중동과 같은 거버넌스 취약 지역 (WGI -1.58) 에서 에너지 인프라 파괴는 '제도적 대체 불가능성'을 초래**하여 금 수요를 비선형적으로 증폭시킨다는 점을 기존 문헌이 간과하고 있다. 이는 단일 도메인 분석으로는 포착할 수 없는 **교차도메인 공백**을 메우는 기여이다.",
       "expected_min_score": 60,
       "retries": 0,
       "quality": {
@@ -10134,13 +10321,13 @@
         "inference_honesty": 3,
         "competing_rigor": 4,
         "falsifiability": 3,
-        "one_line": "관세로 소진된 경제적 버퍼가 자원무기화 효과를 재부활시킨다는 비자명한 통찰을 제시하나, 인과 등급(상관)과 본문 동사('증폭', '동반') 간 불일치 및 일부 변수 측정의 모호성이 존재한다."
+        "one_line": "관세로 인한 내부 버퍼 소진과 외부 에너지 충격의 결합이라는 교차도메인 통찰은 독창적이나, 인과 등급 표기와 본문 동사 간 불일치가 있고 가설의 측정·통제변수가 불완전하여 검증 가능성이 제한적이다."
       },
       "method_integrity": {
         "routing_ok": true,
         "no_laundering": true,
         "no_construct_launder": true,
-        "triangulation_ok": true,
+        "triangulation_ok": null,
         "no_exploratory_leak": true,
         "confirmatory_label_ok": null,
         "routing_low_cases": [],
@@ -10150,15 +10337,15 @@
         "exploratory_leak_cases": [],
         "confirmatory_label_violations": [],
         "triangulation_violations": [],
-        "n_triangulated": 1,
-        "n_hypotheses": 2,
+        "n_triangulated": 0,
+        "n_hypotheses": 4,
         "expected_signature": "SINGLE_SHOCK",
         "routing_match": true,
         "actual_signatures": [
           "SINGLE_SHOCK"
         ]
       },
-      "rerun_note": "풀런 FAIL은 비대칭 검출기 오탐('판정 불가'를 위반 오인, aa63d17 수리) — 수리 후 재실행 PASS 접합 (2026-07-10)"
+      "rerun_note": "판정 정정(2026-07-10 눈금위원회): 검출기 오탐 수리(aa63d17)를 동결 원판 본문에 재채점 — 구 rerun(재생성)은 규약 위반이라 폐기(반박석 적발: 재생성은 산출물 오염시만, v2_iran 등급세탁 실증). 원판은 수리 검출기로 통과 확인."
     },
     {
       "id": "democracy_defense_spending_panel",
@@ -11867,5 +12054,5 @@
     }
   ],
   "diagnosis": "## 자동화 테스트 진단\n\n### 반복 누락 섹션 (빈도순)\n- `[단계 1]`: 1/48 케이스에서 누락\n- `[단계 2]`: 1/48 케이스에서 누락\n- `[단계 3]`: 1/48 케이스에서 누락\n- `[단계 4]`: 1/48 케이스에서 누락\n- `[단계 5]`: 1/48 케이스에서 누락\n\n### 신뢰도 분포\n- 최고: 100, 최저: 0, 평균: 87\n- 60 미만(PROVISIONAL): 1/48\n\n### H1 가설 추출률\n- 38/39 케이스에서 H1 추출 성공\n  ✅ [korean_peninsula_alliance]\n  ✅ [japan_korea_techno]\n  ✅ [arctic_lawfare_verify]\n  ✅ [hormuz_oil_verify]\n  ✅ [ukraine_russia_energy]\n  ✅ [russia_china_arctic_control]\n  ✅ [taiwan_semiconductor]\n  ✅ [china_ai_export_ban]\n  ✅ [pla_taiwan_a2ad]\n  ✅ [salt_typhoon_cyber_deterrence]\n  ✅ [houthi_red_sea_sloc]\n  ✅ [hormuz_iran_blockade]\n  ✅ [middle_east_hormuz_contagion]\n  ✅ [mearsheimer_vs_liberal_taiwan]\n  ✅ [ukraine_middleeast_contagion]\n  ✅ [eia_gas_europe_energy]\n  ✅ [nato_burden_sharing]\n  ✅ [hormuz_redsea_contagion]\n  ✅ [south_china_sea_maritime]\n  ✅ [ukraine_invasion_event_study]\n  ✅ [china_rareearth_techno]\n  ✅ [sahel_governance_gray_zone]\n  ✅ [pelosi_taiwan_event_study]\n  ✅ [v2_absent_dormant]\n  ✅ [v2_nk_iv_misroute]\n  ✅ [v2_sk_filter_positive]\n  ✅ [taiwan_liberal_vs_realist]\n  ✅ [v2_proxy_downgrade_honest]\n  ✅ [v2_martial_law_krw_shock]\n  ✅ [v2_iran_war_oil_shock]\n  ❌ [democracy_defense_spending_panel]\n  ✅ [v2_rival_dv_absent_honest]\n  ✅ [v2_rival_dv_present_engage]\n  ✅ [v2_rival_threat_no_action]\n  ✅ [v2_pressfreedom_protest_cross]\n  ✅ [v2_counterfactual_unimplemented]\n  ✅ [v2_regime_lexicon_structural]\n  ✅ [v2_milex_conflict_cross]\n  ✅ [v2_missile_episodic_structural]\n\n### 경쟁이론 수치 비교 충족률 (Cycle 7-B 평가)\n- [엄격] 예측+실측 레이블: 31/31 (100%)\n- [완화] 이론 2개+수치+판정: 25/31 (81%)\n- '예측:' 레이블: 31/31\n- '실측:' 레이블: 31/31\n- 목표(50%+) 엄격: ✅ 달성 / 완화: ✅ 달성\n\n### Granger 검증 현황 (87개 가설)\n- PENDING: 71개\n- PARTIAL: 14개\n- VERIFIED: 2개\n\n### [9-G] 방법론 정직성 진단 (46케이스)\n#### 데이터 시그니처 분포\n- UNQUANTIFIABLE: 22개\n- PAIRED_TIMESERIES: 20개\n- NETWORK_DIFFUSION: 11개\n- CROSS_SECTION: 11개\n- SINGLE_SHOCK: 8개\n- COUNTERFACTUAL: 2개\n- NONLINEAR: 2개\n#### Method Router 달성 칸 분포\n- 기술적: 56개\n- 상관: 12개\n\n#### 시그니처 라우팅 정확도: 21/22 (95%)\n- ✅ 기대=NETWORK_DIFFUSION 실제=['NETWORK_DIFFUSION']\n- ✅ 기대=UNQUANTIFIABLE 실제=['UNQUANTIFIABLE']\n- ✅ 기대=PAIRED_TIMESERIES 실제=['PAIRED_TIMESERIES']\n- ✅ 기대=NETWORK_DIFFUSION 실제=['NETWORK_DIFFUSION']\n- ✅ 기대=UNQUANTIFIABLE 실제=['UNQUANTIFIABLE']\n- ✅ 기대=PAIRED_TIMESERIES 실제=['PAIRED_TIMESERIES', 'UNQUANTIFIABLE']\n- ✅ 기대=UNQUANTIFIABLE 실제=['UNQUANTIFIABLE']\n- ✅ 기대=UNQUANTIFIABLE 실제=['UNQUANTIFIABLE']\n- ✅ 기대=PAIRED_TIMESERIES 실제=['PAIRED_TIMESERIES']\n- ✅ 기대=NETWORK_DIFFUSION 실제=['NETWORK_DIFFUSION', 'CROSS_SECTION']\n- ✅ 기대=UNQUANTIFIABLE 실제=['UNQUANTIFIABLE']\n- ✅ 기대=UNQUANTIFIABLE 실제=['UNQUANTIFIABLE']\n- ✅ 기대=SINGLE_SHOCK 실제=['SINGLE_SHOCK']\n- ✅ 기대=UNQUANTIFIABLE 실제=['PAIRED_TIMESERIES', 'UNQUANTIFIABLE']\n- ✅ 기대=CROSS_SECTION 실제=['CROSS_SECTION']\n- ✅ 기대=SINGLE_SHOCK 실제=['SINGLE_SHOCK']\n- ❌ 기대=CROSS_SECTION 실제=['UNQUANTIFIABLE']\n- ✅ 기대=SINGLE_SHOCK 실제=['SINGLE_SHOCK']\n- ✅ 기대=SINGLE_SHOCK 실제=['SINGLE_SHOCK']\n- ✅ 기대=CROSS_SECTION 실제=['CROSS_SECTION']\n- ✅ 기대=COUNTERFACTUAL 실제=['COUNTERFACTUAL']\n- ✅ 기대=CROSS_SECTION 실제=['CROSS_SECTION']\n- laundering 0건 ✅\n- 탐색→확증 누출 0건 ✅\n- 확증 라벨 위반 0건 ✅ ([확증] 라벨 정상)\n\n⚠️  LOW 라우팅 9건 (폴백·대리쌍 경로 오선택 의심):\n  - 북극해역에서의 UNCLOS 관련 법적 분쟁 건수 (X) 가 증가할 때, 북극 항로 이용 선\n  - 북극해역에서의 에너지 무기화 시도 (X, 그림자 선단 운항 건수) 가 증가할 때, 서방 국\n  - 미국의 GPU 수출 통제 건수 (건/월) 가 증가할 때, 중국의 7nm 이하 칩 수율 (%\n  - 중국의 핵심 광물 (갈륨/니켈) 수출 통제 강도 (지수) 가 증가할 때, 미국 방산 관련 \n  - AI 칩(A100급) 보유량 격차가 2배 미만인 경우, 열세국(중국)의 AI 모델 성능 점",
-  "ledger_note": "재실행 접합 3건: democracy(NIM 순단)·hormuz/iran(검출기 오탐 수리) — 각 rerun_note 참조"
+  "ledger_note": "정정 원장: democracy=재생성 접합(NIM 순단, 정당) · hormuz/iran=동결 원판+수리 검출기 재채점(재생성분 폐기 — splice 규약: 채점기 버그는 동결 재채점, 재생성은 산출물 오염시만)"
 }
