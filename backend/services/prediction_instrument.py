@@ -135,8 +135,11 @@ def _classify_target(spec: "HypothesisSpec") -> tuple[str, str, bool]:
     return (spec.dependent_var or "—"), "qualitative", False
 
 
-def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord:
-    """단일 HypothesisSpec → 반증가능 PredictionRecord (Token-Zero)."""
+def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord | None:
+    """단일 HypothesisSpec → 반증가능 PredictionRecord (Token-Zero).
+
+    None 반환 = 추출 실패 산물(방향 unclear + DV 미식별) — 등재 대상 아님.
+    """
     now = datetime.now(timezone.utc)
     target, target_kind, scorable = _classify_target(spec)
     direction = _detect_direction(spec)
@@ -149,8 +152,13 @@ def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord:
         horizon = max(best_lag, 7)
 
     mr = getattr(spec, "method_result", None) or {}
-    # 방향이 unclear인데 수치 타깃이면 자동 채점이 무의미 → scorable 강등
     if scorable and direction == "unclear":
+        # DV까지 미식별이면 가설이 아니라 상류 추출 실패 산물(오류 문구 속 키워드에
+        # ticker가 물려 market으로 오분류되는 경로 실측) — 등재 자체를 거른다.
+        # '미식별'은 파싱 실패와 "정직한 무방향 가설"을 가르는 구조 신호다.
+        if (spec.dependent_var or "").strip() in ("", "미식별"):
+            return None
+        # 정직한 무방향 수치 가설은 질적 트랙과 동일하게 기록만 — 자동 채점 제외
         scorable = False
 
     return PredictionRecord(
@@ -233,8 +241,12 @@ def log_predictions(specs: list["HypothesisSpec"], query: str) -> list[Predictio
     try:
         con = sqlite3.connect(_INTEL_DB)
         _ensure_table(con)
+        skipped = 0
         for spec in specs:
             rec = build_prediction(spec, query)
+            if rec is None:            # 추출 실패 산물 — 미등재 (관측성은 카운터로 보존)
+                skipped += 1
+                continue
             if _is_duplicate(con, rec):
                 continue
             con.execute(
@@ -258,8 +270,8 @@ def log_predictions(specs: list["HypothesisSpec"], query: str) -> list[Predictio
         con.close()
         scorable_n = sum(1 for r in recs if r.scorable)
         logger.info(
-            "[10-1 instrument] 예측 %d건 적재 (채점가능 %d · 질적 %d)",
-            len(recs), scorable_n, len(recs) - scorable_n,
+            "[10-1 instrument] 예측 %d건 적재 (채점가능 %d · 질적 %d · 추출실패 스킵 %d)",
+            len(recs), scorable_n, len(recs) - scorable_n, skipped,
         )
     except Exception as exc:  # noqa: BLE001 — 계측 실패가 분석 흐름을 막으면 안 됨
         logger.warning("[10-1 instrument] 예측 적재 실패: %s", exc)

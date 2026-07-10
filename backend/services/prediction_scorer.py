@@ -184,6 +184,16 @@ def score_prediction(con: sqlite3.Connection, row: sqlite3.Row, as_of: date) -> 
     predicted = row["direction"]
     threshold = row["threshold_pct"]
 
+    # 채점 비대상(scorable=0)은 만기 시 UNRESOLVED 종결 — 영구 PENDING 방지 +
+    # dedup 슬롯 해제. 이 가드가 kind 분기보다 먼저여야 unclear 방향의 market 행이
+    # 시장 채점에 흘러들어 무조건 MISS 되는 오판을 막는다. UNRESOLVED는 비종결 —
+    # 질적 예측의 인간 사후 채점(HIT/MISS로 UPDATE)은 열려 있다.
+    if not row["scorable"]:
+        reason = ("질적 타깃 — 자동 채점 비대상(인간 사후 채점 후보)"
+                  if kind == "qualitative"
+                  else "방향 불명 — 자동 채점 비대상")
+        return _result(row, "UNRESOLVED", None, "", reason, as_of)
+
     if kind == "market":
         out = _fetch_market_outcome(row["target"], created, resolve_by)
         if out is None:
@@ -223,7 +233,7 @@ def _result(row, status, realized_pct, realized_dir, reason, as_of) -> dict:
 
 def score_due_predictions(as_of: date | None = None, dry_run: bool = False) -> dict:
     """
-    resolve_by가 도래한 PENDING·scorable 예측을 일괄 채점.
+    resolve_by가 도래한 PENDING 예측을 일괄 채점 (scorable=0은 UNRESOLVED 종결).
 
     as_of: 채점 기준일 (기본 오늘 UTC). dry_run: DB 미반영(미리보기).
     반환: 집계 요약 (적중률은 eligible_for_calibration=1 인 HIT/MISS만 대상 — 원칙 ③).
@@ -233,9 +243,11 @@ def score_due_predictions(as_of: date | None = None, dry_run: bool = False) -> d
     con.row_factory = sqlite3.Row
     _ensure_score_columns(con)
 
+    # scorable=0도 만기 시 인출 — score_prediction 상단 가드가 UNRESOLVED로 종결
+    # (구 필터 'AND scorable = 1'은 채점 비대상을 영구 PENDING에 가뒀다)
     due = con.execute(
         "SELECT * FROM prediction_log "
-        "WHERE status = 'PENDING' AND scorable = 1 AND resolve_by <= ? "
+        "WHERE status = 'PENDING' AND resolve_by <= ? "
         "ORDER BY resolve_by",
         (as_of.isoformat(),),
     ).fetchall()
