@@ -510,11 +510,17 @@ _REGION_TRADE_ACTORS_TC: dict[str, list[str]] = {
 
 def _get_trade_hhi(actors: list[str], regions: list[str]) -> dict:
     """
-    UN Comtrade → 공급망 HHI proxy 계산 (Weaponized Interdependence IV).
+    UN Comtrade → 단일 시장 공급원 HHI (Weaponized Interdependence IV).
+
+    개선위 2026-07-10 재설계: 시장 = (reporter, hs_code, trade_flow, 최신 period).
+    그 시장의 **파트너 전수** dependency_ratio 제곱합이 진짜 HHI(0~10,000)다.
+    구버전은 서로 다른 보고국·연도의 상위 3쌍을 뒤섞어 제곱합해 상한 초과
+    사이비 수치(25,449·30,000)를 냈다 — 정의된 모수가 없는 값이었다.
+    HS별 보고 값 = 관련 행위자 시장 중 최대 집중 시장(신원 동봉).
 
     반환 구조:
-        {hs_code: {"hhi_proxy": float, "top_pair": str, "top_ratio": float,
-                   "label": str, "period": str}}
+        {hs_code: {"hhi": float, "market": str, "top_pair": str, "top_ratio": float,
+                   "label": str, "period": str, "coverage": float}}
     """
     iso3_set = set(actors)
     for r in regions:
@@ -525,38 +531,55 @@ def _get_trade_hhi(actors: list[str], regions: list[str]) -> dict:
     try:
         placeholders = ",".join("?" * len(iso3_set))
         with _db(_INTEL_DB) as con:
+            # 파트너 필터·비율 절단 없음: HHI는 시장 내 전 파트너가 필요하다.
+            # 최신 연도만 — 복수 연도 혼입이 구버전 중복 합산 사고의 절반이었다.
             rows = con.execute(
                 f"""
-                SELECT hs_code, reporter_iso, partner_iso, trade_flow,
-                       dependency_ratio, period
-                FROM historical_trade_matrix
-                WHERE reporter_iso IN ({placeholders})
-                  AND partner_iso  IN ({placeholders})
-                  AND partner_iso  != 'WLD'
-                  AND dependency_ratio >= 0.1
-                ORDER BY hs_code, dependency_ratio DESC
+                SELECT t.hs_code, t.reporter_iso, t.partner_iso, t.trade_flow,
+                       t.dependency_ratio, t.period
+                FROM historical_trade_matrix t
+                JOIN (SELECT reporter_iso, hs_code, trade_flow, MAX(period) AS period
+                      FROM historical_trade_matrix
+                      WHERE partner_iso != 'WLD'
+                      GROUP BY reporter_iso, hs_code, trade_flow) latest
+                  ON  t.reporter_iso = latest.reporter_iso
+                  AND t.hs_code      = latest.hs_code
+                  AND t.trade_flow   = latest.trade_flow
+                  AND t.period       = latest.period
+                WHERE t.reporter_iso IN ({placeholders})
+                  AND t.partner_iso  != 'WLD'
+                ORDER BY t.hs_code, t.dependency_ratio DESC
                 """,
-                (*list(iso3_set), *list(iso3_set)),
+                list(iso3_set),
             ).fetchall()
 
-        # HS 코드별 최고 의존도 쌍 + HHI proxy (상위 3쌍 제곱합)
+        # 시장 단위 그룹핑: (reporter, hs, flow) — 각 시장의 전 파트너로 HHI 계산
         from collections import defaultdict
-        by_hs: dict[str, list] = defaultdict(list)
+        by_market: dict[tuple, list] = defaultdict(list)
         for r in rows:
-            by_hs[r["hs_code"]].append(r)
+            by_market[(r["reporter_iso"], r["hs_code"], r["trade_flow"])].append(r)
 
+        # HS별 최대 집중 시장 1개를 보고 (시장 신원 동봉 — 앵커 오배정 차단)
         result: dict[str, dict] = {}
-        for hs, items in by_hs.items():
+        for (rep, hs, flow), items in by_market.items():
+            shares = [i["dependency_ratio"] for i in items]
+            hhi_val = A.hhi(shares, scale_0_1=True)
+            if hhi_val is None or hhi_val > 10000:   # 방어적 이중 가드
+                continue
+            coverage = round(sum(shares), 3)
             top = items[0]
-            # HHI proxy = 상위 3쌍의 dependency_ratio² 합산 (arithmetic_layer 통일)
-            hhi_val = A.hhi([i["dependency_ratio"] for i in items[:3]], scale_0_1=True) or 0
-            result[hs] = {
-                "hhi_proxy": hhi_val,
-                "top_pair": f"{top['reporter_iso']} {('수입' if top['trade_flow']=='M' else '수출')}←{top['partner_iso']}",
+            flow_ko = "수입" if flow == "M" else "수출"
+            entry = {
+                "hhi": hhi_val,
+                "market": f"{rep} {flow_ko}",
+                "top_pair": f"{rep} {flow_ko}←{top['partner_iso']}",
                 "top_ratio": round(top["dependency_ratio"] * 100, 1),
                 "label": _HS_LABEL_TC.get(hs, hs),
                 "period": top["period"],
+                "coverage": coverage,     # <0.8이면 파트너 부분 수록 = HHI 하한
             }
+            if hs not in result or entry["hhi"] > result[hs]["hhi"]:
+                result[hs] = entry
         return result
     except Exception as e:
         logger.debug("[theory_cmp] trade_hhi 조회 실패: %s", e)
@@ -786,9 +809,9 @@ def _collect_anchor_metrics(milex, trade_hhi, eia, wbk, polity5, hiik, itu, semi
     """실측 dict들에서 앵커 metric 단일 수치를 추출 (Token-Zero, 모두 결정론적)."""
     m: dict[str, float] = {}
     if trade_hhi:
-        vals = [d.get("hhi_proxy") for d in trade_hhi.values() if d.get("hhi_proxy") is not None]
+        vals = [d.get("hhi") for d in trade_hhi.values() if d.get("hhi") is not None]
         if vals:
-            m["trade_hhi"] = max(vals)   # 가장 집중된 품목
+            m["trade_hhi"] = max(vals)   # 가장 집중된 품목·시장 (0~10,000 실 HHI)
     if eia and eia.get("flow_mbpd") is not None:
         m["eia_flow_mbpd"] = eia["flow_mbpd"]
     mvals = [v.get("gdp_pct") for v in (milex or {}).values() if v.get("gdp_pct") is not None]
@@ -1017,15 +1040,16 @@ def build_theory_comparison_context(
                         f"({semi['china_import_dep']['year']}) — 비대칭 의존 수치"
                     )
             # AR-1b: Comtrade 무역 의존도 HHI — Weaponized Interdependence IV 직접 측정값
-            # HHI proxy: 상위 3쌍 dependency_ratio² 합산 × 10000 (>2500=독과점)
+            # 단일 시장 공급원 HHI (개선위 2026-07-10 — 시장 신원 명시, >2500=독과점)
             if trade_hhi:
                 for hs, data in trade_hhi.items():
-                    hhi_val = data.get("hhi_proxy", 0)
+                    hhi_val = data.get("hhi", 0)
                     concentration = A.concentration_label(hhi_val)
+                    cov_note = "" if data.get("coverage", 1) >= 0.8 else " ⚠️하한(파트너 부분수록)"
                     empirical_lines.append(
-                        f"실측 — {data['label']}(HS {hs}) 공급망 HHI: {hhi_val:.0f} ({concentration}, 사전계산, "
-                        f"최고의존쌍 {data['top_pair']} {data['top_ratio']}%, {data['period']}) "
-                        f"[UN Comtrade]"
+                        f"실측 — {data['market']} {data['label']}(HS {hs}) 공급원 HHI: {hhi_val:.0f} "
+                        f"({concentration}{cov_note}, 사전계산, 최고의존쌍 {data['top_pair']} "
+                        f"{data['top_ratio']}%, {data['period']}) [UN Comtrade]"
                     )
 
         if "mearsheimer" in tid or "waltz" in tid:

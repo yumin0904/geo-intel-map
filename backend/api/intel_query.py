@@ -495,6 +495,8 @@ MEDIUM 이하가 포함되면 전체 결론에 [SPECULATIVE] 레이블을 붙일
   이론 우열 판정은 [경쟁설명]의 '▶ 당신의 판단 (연구자 몫)'과 동일하게 연구자 몫이다.
   (증거가 한 이론의 예측과 더 정합하면 '실측은 A이론 예측 방향과 일치'까지만 사실로 적고, 우열 단정은 금지.)
 - **레이블**: [SPECULATIVE] / [PROVISIONAL] / 없음
+  ※ [확증] 결론과 [SPECULATIVE] 레이블을 **동시에 쓰지 마라** — 연쇄 강도가 MEDIUM 이하거나 검증 불가면
+    결론 표기를 [확증]이 아닌 [탐색적]으로 내려라(인식론 모드와 연쇄강도 라벨의 충돌 금지, 개선위 2026-07-10).
 
 ⚠️ **[단계 완결 최우선]** [단계 1]~[최종 판정]을 **모두 완성**하라. [단계 4]가 길어지면 각 이론 서술을 2~3문장으로 요약하라 — 단계 누락이 내용 부족보다 훨씬 큰 감점이다."""
 
@@ -751,6 +753,16 @@ async def _stream_gemini(
         Gemini·Ollama 어느 경로든 동일한 full_text를 받아 동일하게 처리한다
         (산술·통계는 Token-Zero 파이썬이므로 provider와 무관).
         """
+        # 결정론 린트 (개선위 2026-07-10) — 스캐폴드 지시문 스트립(내용 무손실·가역)
+        # 후 결함 표면화. 스트림엔 이미 나갔지만 저장·채점·아카이브 경로는 정화된다.
+        if full_text:
+            from services.deterministic_lint import lint as _lint, strip_scaffold as _strip
+            full_text, _n_strip = _strip(full_text)
+            _lint_problems = _lint(full_text)
+            if _n_strip or _lint_problems:
+                logger.warning("[lint] 스캐폴드 %d줄 제거, 결함 %s", _n_strip,
+                               [(p["code"], p["detail"]) for p in _lint_problems])
+
         # §19-D 신뢰도 점수 역산 — 스트리밍 완료 후 score 이벤트 전송
         if full_text:
             score_result = score_output(full_text)

@@ -1,0 +1,17 @@
+# judge 계기 검증 골드 (개선위 2026-07-10 — P5) — 양방향 비대칭 가드
+# 대상: 동결 산출물(latest.json 20260710_1101)의 해당 케이스 full_text를 judge가 채점할 때
+# 경쟁이론엄밀(competing_rigor) 기대 구간. 근거: 전수 감사(FULL_EVAL_AUDIT_20260710, Fable 5석).
+# 통과 기준: 결함 골드 전건 cr<=3 AND 모범 골드 전건 cr>=4 (서열 보존 100%).
+# 단방향만 두면 judge를 가혹 쪽으로 과보정해도 통과한다 — 반드시 쌍으로 검사(방법론석).
+# ※ 인간(사용자) 라벨 검증 대기: 아래 기대치는 감사 채점 — P6 병행기 전 사용자 스팟 확인 권장.
+defect_gold:      # 형식 완비·논리 붕괴형 — judge(DS)가 4~5를 준 실측 오벌점
+  hormuz_oil_verify:        {cr_max: 3, why: "HHI 9765/30000 모순 병기·편차 0 위조·누적치로 시계열 판정 (judge 올5)"}
+  taiwan_liberal_vs_realist: {cr_max: 3, why: "불가능 HHI 25449 앵커·실측이 이론 DV 아님 (judge 5.0)"}
+  v2_iran_war_oil_shock:    {cr_max: 3, why: "DV(가격) 실측 0건 채 우세 판정·서수 편차 산술 (judge 5.0)"}
+  ukraine_drone_innovation: {cr_max: 3, why: "드론 DV 자리에 미국 테러·사이버 실험 (judge 5.0)"}
+  v2_nk_iv_misroute:        {cr_max: 2, why: "룰매칭강도를 실측 DV로·편차 0 위조·HKDUS 티커 오류 (judge 4.0)"}
+exemplar_gold:    # 판정 절제·설계 특정형 — 감사 확인 모범
+  middle_east_hormuz_contagion: {cr_min: 4, why: "Stock/Flow 구분 명시·앵커 부재 정직 선언"}
+  houthi_red_sea_sloc:          {cr_min: 4, why: "실측이 이론 DV(유가)와 정합·방향 편차 수치 제시"}
+  china_cyber_us:               {cr_min: 4, why: "카드1 실측-DV 일치 최상급 비교"}
+  pla_taiwan_a2ad:              {cr_min: 4, why: "판정 남발 없음·SOXX Δ 실측·자기강등"}

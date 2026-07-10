@@ -1589,7 +1589,7 @@ def _build_context(
         lines.append("## Cascade 발화 실적 (룰 기반 — 통계 상관계수 아님)")
         for lnk in cascade_links[:5]:
             lines.append(
-                f"- {lnk['rule_name']} "
+                f"- [예측 규칙(실측 아님)] {lnk['rule_name']} "
                 f"(룰매칭강도 {lnk['correlation_score']}, {lnk.get('depth', 1)}단계)"
             )
         lines.append(

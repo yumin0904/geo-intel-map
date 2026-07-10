@@ -71,6 +71,16 @@ def hhi(values, *, scale_0_1: bool = True, ndigits: int = 0) -> float | None:
     nums = [v for v in nums if v is not None]
     if not nums:
         return None
+    # 입력 불변식 (개선위 2026-07-10): HHI는 '한 시장 내' 점유율 분해라 합이 1(=100%)을
+    # 넘을 수 없다. 서로 다른 시장·연도의 비율을 섞어 넣으면 상한 10,000 초과 사이비
+    # 수치가 나온다(실측: 25,449·30,000) — 그런 입력은 계산 거부가 정직하다.
+    total = sum(nums)
+    limit = 1.02 if scale_0_1 else 102          # 반올림 여유 2%
+    if total > limit:
+        import logging
+        logging.getLogger(__name__).warning(
+            "hhi(): 점유율 합=%.3f > %s — 단일 시장 입력이 아님, None 반환", total, limit)
+        return None
     if scale_0_1:
         return round(sum(v ** 2 for v in nums) * 10000, ndigits)
     return round(sum(v ** 2 for v in nums), ndigits)

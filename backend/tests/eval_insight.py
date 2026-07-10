@@ -939,6 +939,8 @@ def evaluate_case(
         "hypothesis": hyp_summary,
         "labels": labels,
         "rival_check": rival_check,
+        # 결정론 린트 (개선위 2026-07-10) — 계측기 변경으로 CHANGELOG 기재됨
+        "lint": __import__("services.deterministic_lint", fromlist=["lint"]).lint(text),
         "full_text": text,  # 상세 분석용 (JSON에 포함)
         "expected_min_score": exp_score,
         "retries": retries,
@@ -1040,6 +1042,20 @@ def _print_summary(results: list[dict]) -> None:
     if rc_cases:
         print(f"     ② 판정거부 준수율(no_verdict_on_unverified): {refuse_ok}/{len(rc_cases)} ({round(refuse_ok/len(rc_cases)*100)}%)")
     print(f"     ③ 골드 가드쌍: absent_honest={gold_pair['v2_rival_dv_absent_honest']} · present_engage={gold_pair['v2_rival_dv_present_engage']}")
+
+    # ── 결정론 린트 집계 (개선위 2026-07-10 — 전수 감사 결함의 기계 그물) ──────
+    from collections import Counter as _Counter
+    _lint_counter: _Counter = _Counter()
+    _lint_cases = 0
+    for r in valid:
+        ps = r.get("lint") or []
+        if ps:
+            _lint_cases += 1
+        for p in ps:
+            _lint_counter[p["code"]] += 1
+    if _lint_counter:
+        print(f"\n🧹 [결정론 린트] 결함 보유 {_lint_cases}/{len(valid)}케이스 — "
+              + " · ".join(f"{k} {v}" for k, v in _lint_counter.most_common()))
 
     # ── [9-G] 방법론 정직성 집계 ────────────────────────────────────────────
     mi_list = [r.get("method_integrity", {}) for r in valid if r.get("method_integrity")]
