@@ -116,6 +116,11 @@ _REQUIRED_SECTIONS_VERIFY = [
 ]
 _VALID_ENDINGS = {".", "다", "임", "됨", ")", "음", "?"}
 
+# 종결 판정 전에 벗기는 폐쇄 인용부호 — 생성 모델(NIM Qwen 실측)이 H1을 따옴표로
+# 감싸면 완결 문장('…유가)."')의 마지막 글자가 '"'가 되어 미완성으로 오탐된다
+# (batch_20260711 실측 3건: berbera·semiconductor-hhi·alliance-burden — 전부 문장 자체는 완결)
+_TRAILING_QUOTES = '"\'”’」』'
+
 # H1 줄 탐지 — 잘린 H1은 저장 거부 (P0 fix: 다중 카드의 두 번째 H1 잘림 포착)
 _RE_H1_LINE = re.compile(r'H1\s*[:：]\s*.+', re.MULTILINE)
 
@@ -141,11 +146,12 @@ def validate_insight_completeness(text: str, mode: str = "insight") -> tuple[boo
 
     # H1 문장 완결 — 모든 H1 줄 검사 (다중 카드 잘림 포착)
     for h1_match in _RE_H1_LINE.finditer(text):
-        h1_line = h1_match.group().rstrip()
+        h1_line = h1_match.group().rstrip().rstrip(_TRAILING_QUOTES).rstrip()
         if h1_line and h1_line[-1] not in _VALID_ENDINGS:
             return False, f"H1 문장 미완성: '{h1_line[-20:]}...'"
 
-    last_char = text.rstrip()[-1] if text.rstrip() else ""
+    stripped_text = text.rstrip().rstrip(_TRAILING_QUOTES).rstrip()
+    last_char = stripped_text[-1] if stripped_text else ""
     if last_char not in _VALID_ENDINGS:
         return False, f"마지막 문장 미완성 (마지막 글자: '{last_char}')"
 
