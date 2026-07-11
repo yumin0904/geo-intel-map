@@ -128,13 +128,24 @@ def _search_library_like(query: str, regions: list[str],
 
     try:
         with _db(_LIB_DB) as con:
-            # 키워드별 히트 수로 관련도 계산
+            # [밤샘 사이클 2, 2026-07-13] 관련도 랭킹 — 구현은 최신순(published_date)뿐이라
+            # 주석("히트 수로 관련도 계산")이 거짓이었다. 최신 화제 브리핑이 전 쿼리에
+            # 밀려들어 15개 이질 쿼리의 컨텍스트가 자카드 0.48로 겹침 → IV 표류(후티
+            # 쿼리에 이란전 가설)의 상류 원인. 키워드 히트 가중합(title 3·summary 2·
+            # body 1)으로 정렬하고 최신순은 동점 타이브레이크로 강등. Token-Zero 결정론.
             conditions = " OR ".join(
                 f"(title LIKE ? OR summary LIKE ? OR body LIKE ?)"
                 for _ in keywords
             )
-            params = []
-            for kw in keywords:
+            score_expr = " + ".join(
+                "((title LIKE ?) * 3 + (summary LIKE ?) * 2 + (body LIKE ?))"
+                for _ in keywords
+            )
+            params: list = []
+            for kw in keywords:          # score_expr 파라미터
+                pat = f"%{kw}%"
+                params.extend([pat, pat, pat])
+            for kw in keywords:          # conditions 파라미터
                 pat = f"%{kw}%"
                 params.extend([pat, pat, pat])
             params.append(limit)
@@ -146,15 +157,16 @@ def _search_library_like(query: str, regions: list[str],
                        published_date, body,
                        independent_var, dependent_var, conditions,
                        falsifiable_prediction, known_counterexample, rival_theories,
-                       contested_by
+                       contested_by,
+                       ({score_expr}) AS _relevance
                 FROM theories
                 WHERE {conditions}
-                ORDER BY published_date DESC NULLS LAST
+                ORDER BY _relevance DESC, published_date DESC NULLS LAST
                 LIMIT ?
                 """,
                 params,
             ).fetchall()
-        return [dict(r) for r in rows]
+        return [{k: v for k, v in dict(r).items() if k != "_relevance"} for r in rows]
     except Exception as e:
         logger.warning("[intel] LIKE 검색 실패: %s", e)
         return []
