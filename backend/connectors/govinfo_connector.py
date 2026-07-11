@@ -136,22 +136,35 @@ def _init_table(con: sqlite3.Connection) -> None:
     con.commit()
 
 
+# 지역 태깅 룰 — 순서 = 우선순위 (첫 매치 승).
+# 단어 경계 매칭이라 형용사형(korean·iranian)·수도명을 명시해야 한다
+_REGION_RULES: list[tuple[list[str], str]] = [
+    (["korea", "korean", "dprk", "north korea", "pyongyang", "seoul",
+      "denuclearization"], "korean_peninsula"),
+    (["taiwan", "taiwanese", "south china sea", "prc", "east china sea"], "taiwan_strait"),
+    (["iran", "iranian", "tehran", "hormuz", "nuclear deal", "iaea"], "hormuz"),
+    (["ukraine", "ukrainian", "kyiv", "russia", "russian", "moscow", "nato",
+      "donbas", "zelenskyy"], "eastern_europe"),
+    (["houthi", "red sea", "bab el-mandeb", "yemen", "yemeni"], "bab_el_mandeb"),
+    (["semiconductor", "chips", "huawei", "5g", "supply chain"], "techno_supply_chain"),
+    (["indo-pacific", "aukus", "quad", "pacific alliance"], "indo_pacific"),
+    (["arctic", "svalbard"], "arctic"),
+]
+
+
 def _tag_region(title: str, desc: str) -> "Optional[str]":
-    """제목+설명에서 지역 코드 추론."""
+    """제목+설명에서 지역 코드 추론.
+
+    오태깅 census 수리 (2026-07-11, 실측 86/148 불일치):
+    부분문자열 매칭은 "senatorial"⊂"nato" 류 오탐을 만들므로 단어 경계(\\b) 매칭.
+    region_hint는 프로세스 트레이싱 ★★★★★ 증거 조달 필터라 정밀도 우선 —
+    본문에 지역 신호가 없으면 None (오태깅 = 지역 분석에 가짜 1차 사료 주입).
+    """
     text = (title + " " + desc).lower()
-    rules: list[tuple[list[str], str]] = [
-        (["korea", "dprk", "north korea", "pyongyang", "denuclearization"], "korean_peninsula"),
-        (["taiwan", "south china sea", "prc", "east china sea"], "taiwan_strait"),
-        (["iran", "hormuz", "nuclear deal", "iaea"], "hormuz"),
-        (["ukraine", "russia", "nato", "donbas", "zelenskyy"], "eastern_europe"),
-        (["houthi", "red sea", "bab el-mandeb", "yemen"], "bab_el_mandeb"),
-        (["semiconductor", "chips", "huawei", "5g", "supply chain"], "techno_supply_chain"),
-        (["indo-pacific", "aukus", "quad", "pacific alliance"], "indo_pacific"),
-        (["arctic", "svalbard"], "arctic"),
-    ]
-    for keywords, code in rules:
-        if any(k in text for k in keywords):
-            return code
+    for keywords, code in _REGION_RULES:
+        for k in keywords:
+            if re.search(r"\b" + re.escape(k) + r"\b", text):
+                return code
     return None
 
 
@@ -251,7 +264,9 @@ def online_search(
             region_hit = row[3]
         else:
             snippet    = _extract_text_snippet(pkg_id, api_key)
-            region_hit = region or _tag_region(title, snippet)
+            # caller region을 무검증 저장하면 검색 문맥이 사료 태그로 굳는다
+            # (census 실측: 랠리 연설이 korean_peninsula) — 본문 검증 태깅만 저장
+            region_hit = _tag_region(title, snippet)
             try:
                 con.execute(
                     """INSERT OR IGNORE INTO govinfo_releases
@@ -426,17 +441,20 @@ def bulk_load(api_key: str = "") -> int:
                 continue
 
             snippet = _extract_text_snippet(pkg_id, api_key)
+            # 쿼리 region 일괄 부여가 오태깅 최다 경로였다 (NDAA 세출법 →
+            # korean_peninsula 류, census 86/148) — 본문 검증 태깅으로 교체
+            region_hit = _tag_region(title, snippet)
             try:
                 con.execute(
                     """INSERT OR IGNORE INTO govinfo_releases
                        (id,collection_code,package_id,granule_id,title,pub_date,description,region_hint,fetched_at)
                        VALUES (?,?,?,?,?,?,?,?,?)""",
-                    (uid, coll, pkg_id, granule_id, title, pub_date, snippet, region,
+                    (uid, coll, pkg_id, granule_id, title, pub_date, snippet, region_hit,
                      datetime.now(timezone.utc).isoformat()),
                 )
                 if con.total_changes > total_new:
                     total_new = con.total_changes
-                    logger.info("[GovInfo/bulk] ✓ [%s][%s][%s] %s", pub_date, coll, region[:10], title[:50])
+                    logger.info("[GovInfo/bulk] ✓ [%s][%s][%s] %s", pub_date, coll, (region_hit or "-")[:10], title[:50])
             except sqlite3.Error as exc:
                 logger.debug("[GovInfo] INSERT 실패: %s", exc)
 
@@ -560,6 +578,58 @@ def search_local(query: str, region: str | None = None, limit: int = 5) -> list[
     ]
 
 
+def retag_regions(dry_run: bool = False) -> dict:
+    """기존 행 region_hint 재태깅 마이그레이션 (오태깅 census 수리, 2026-07-11).
+
+    쿼리/caller region 일괄 부여로 오염된 행을 단어 경계 _tag_region으로 재산출.
+    _KEY_EVENT_RANGES의 큐레이션 패키지(이진 탐색으로 실측된 사건 앵커)는
+    의도적 설계라 보존한다. Token-Zero 결정론 — LLM 호출 없음.
+    """
+    if not _DB_PATH.exists():
+        return {"error": "DB 없음"}
+
+    # 큐레이션 패키지 ID 집합 (보존 대상)
+    curated: set[str] = set()
+    for _region, year, n_start, n_end, _label in _KEY_EVENT_RANGES:
+        for num in range(n_start, n_end + 1):
+            curated.add(f"DCPD-{year:04d}{num:05d}")
+
+    con = sqlite3.connect(str(_DB_PATH))
+    rows = con.execute(
+        "SELECT id, package_id, title, description, region_hint FROM govinfo_releases"
+    ).fetchall()
+
+    changed, kept_curated, unchanged = [], 0, 0
+    for uid, pkg_id, title, desc, old_region in rows:
+        if pkg_id in curated:
+            kept_curated += 1
+            continue
+        new_region = _tag_region(title or "", desc or "")
+        if new_region != old_region:
+            changed.append((uid, old_region, new_region))
+            if not dry_run:
+                con.execute(
+                    "UPDATE govinfo_releases SET region_hint=? WHERE id=?",
+                    (new_region, uid),
+                )
+        else:
+            unchanged += 1
+    if not dry_run:
+        con.commit()
+    con.close()
+
+    from collections import Counter
+    transitions = Counter(f"{o or 'None'}→{n or 'None'}" for _, o, n in changed)
+    return {
+        "total": len(rows),
+        "curated_kept": kept_curated,
+        "unchanged": unchanged,
+        "changed": len(changed),
+        "transitions": dict(transitions.most_common()),
+        "dry_run": dry_run,
+    }
+
+
 def stats() -> dict:
     if not _DB_PATH.exists():
         return {"error": "DB 없음"}
@@ -604,6 +674,10 @@ if __name__ == "__main__":
             m = _fetch_pkg_meta(yr, i, k)
             if m:
                 print(f"  {i:5d}: [{m['date']}] {m['title'][:65]}")
+    elif "--retag" in sys.argv:
+        # region_hint 재태깅 마이그레이션 (--retag [--dry-run])
+        result = retag_regions(dry_run="--dry-run" in sys.argv)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
     elif "--bulk" in sys.argv:
         # 주제별 역사적 문서 일괄 적재
         n = bulk_load()
