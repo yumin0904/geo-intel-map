@@ -1033,7 +1033,7 @@ class SaveRequest(BaseModel):
 def intel_save(req: SaveRequest):
     """분석 결과 저장. [P0-A] 저장 전 완결성 검사 통과 시만 허용."""
     # [P0-A] 인사이트 완결성 검사 — 섹션 누락·문장 미완성 시 거부
-    ok, reason = validate_insight_completeness(req.result_md)
+    ok, reason = validate_insight_completeness(req.result_md, mode=req.mode)
     if not ok:
         raise HTTPException(status_code=422, detail=f"인사이트 미완성: {reason}")
 

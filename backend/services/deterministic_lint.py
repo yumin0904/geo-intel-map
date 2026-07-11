@@ -34,7 +34,10 @@ _HHI_NUM = re.compile(r"HHI[^\d\n]{0,20}(\d[\d,]{2,})")
 # 근거를 제조). 정확한 0 편차는 원리상 가능하나 실코퍼스 전례 없음 — report-only 감사 표면화.
 # 간격 {0,3}: '편차 0'·'편차: 0'만 — '편차: 예측치 0건 vs 실측 1,228건' 같은
 # 정직한 편차 서술(수식어 개입)은 제외 (1101 소급 오탐 실측으로 조정).
-_ZERO_DEVIATION = re.compile(r"편차[^\d\n]{0,3}0(?:\.0+)?(?![\d.,%])")
+# [최종검토위 2026-07-11] %·%p는 단위로 허용 — 구 룩어헤드가 %계열 전체를 배제해
+# 표적 골드 표기 "편차 0%p"(v2_nk)를 놓치던 미탐 수리(반박석 2c). '편차 0.5%'는
+# 소수부 비영으로 계속 배제.
+_ZERO_DEVIATION = re.compile(r"편차[^\d\n]{0,3}0(?:\.0+)?\s*%?p?(?![\d.])")
 # [계측위 2026-07-11] verdict_on_unverified 재정의 — 구 정의(판정 라인 120자 내 '미검증'
 # 토큰 존재)는 실측 수치에 기반한 판정이 보조 캐비엇("단, 세부 수치는 [UNVERIFIED]")을
 # 정직하게 단 것까지 잡는 오탐(6 entry 중 4 — 캐비엇 처벌은 정직성 역유인). 표적 구성물은
@@ -85,6 +88,18 @@ def lint(text: str) -> list[dict]:
     for m in _ZERO_DEVIATION.finditer(text):
         problems.append({"code": "zero_deviation",
                          "detail": f"편차 0 주장 — 위조 의심 감사 대상: '{text[m.start():m.start()+30]}'"})
+
+    # [최종검토위 2026-07-11] 백스톱 2종 (report-only) — verify 산출물('최종 판정' 실존) 한정:
+    # ① 모드 표기 누락 — v2_milex 실증("[확증]을 붙이지 않고 [불확실]로 표기"): 모드↔판정
+    #    혼용의 역형태(모드 탈락). ② 연쇄강도 MEDIUM/LOW 자기평가가 있는데 [SPECULATIVE]
+    #    레이블 부재 — speculative 게이트 키의 FN 우회(방법론석 C-2 권고).
+    if "최종 판정" in text:
+        if "[확증" not in text:
+            problems.append({"code": "mode_label_missing",
+                             "detail": "verify 산출물에 [확증 모드] 표기 부재(모드 탈락)"})
+        if re.search(r"\bMEDIUM\b|\bLOW\b", text) and "[SPECULATIVE]" not in text:
+            problems.append({"code": "speculative_label_missing",
+                             "detail": "연쇄강도 MEDIUM/LOW 자기평가에 [SPECULATIVE] 레이블 부재"})
 
     return problems
 

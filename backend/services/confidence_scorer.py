@@ -109,18 +109,24 @@ def apply_data_void_penalty(
 _REQUIRED_SECTIONS = [
     "[관찰]", "[주장]", "[가설]", "[근거]", "[한계]", "[경쟁설명]", "[검증포인트]", "[문헌공백]",
 ]
+# [최종검토위 2026-07-11] verify 산출물은 §19-A 6단계 구조라 insight 8섹션 검사가 전건
+# FAIL(14/14 실측) — 확증 발행 경로 관통률 0%의 근원. 모드별 필수 섹션 분기(반박석 4a).
+_REQUIRED_SECTIONS_VERIFY = [
+    "[단계 1]", "[단계 2]", "[단계 3]", "[단계 4]", "[단계 5]", "[단계 6]", "최종 판정",
+]
 _VALID_ENDINGS = {".", "다", "임", "됨", ")", "음", "?"}
 
 # H1 줄 탐지 — 잘린 H1은 저장 거부 (P0 fix: 다중 카드의 두 번째 H1 잘림 포착)
 _RE_H1_LINE = re.compile(r'H1\s*[:：]\s*.+', re.MULTILINE)
 
 
-def validate_insight_completeness(text: str) -> tuple[bool, str]:
+def validate_insight_completeness(text: str, mode: str = "insight") -> tuple[bool, str]:
     """
-    Gemini 출력이 완결된 인사이트 카드를 포함하는지 검사한다.
+    Gemini 출력이 완결된 카드를 포함하는지 검사한다 (모드별 필수 섹션).
 
     검사 항목:
-      1. 필수 8개 섹션 존재 여부 ([문헌공백] 포함)
+      1. 필수 섹션 존재 — insight/presentation: 8섹션, verify: [단계 1~6]+최종 판정
+         (최종검토위 2026-07-11 — 모드 무관 8섹션 검사가 verify 발행 경로를 전건 차단하던 결함 수리)
       2. 모든 H1 문장 완결 여부 (두 번째 카드 H1 잘림 포착)
       3. 전체 텍스트 마지막 문장 완결 여부
 
@@ -128,7 +134,8 @@ def validate_insight_completeness(text: str) -> tuple[bool, str]:
         (True, "완결") — 저장 허용
         (False, "오류 설명") — 저장 거부
     """
-    for section in _REQUIRED_SECTIONS:
+    required = _REQUIRED_SECTIONS_VERIFY if mode == "verify" else _REQUIRED_SECTIONS
+    for section in required:
         if section not in text:
             return False, f"미완성: {section} 섹션 없음"
 

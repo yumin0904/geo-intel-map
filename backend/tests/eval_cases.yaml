@@ -372,7 +372,6 @@ cases:
   # legacy(무 block) 서브셋과 분리 보고 — 계측 연속성 규율.
 
   - id: v2_absent_dormant
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
     block: A
     dormant: true                     # 활성 조건: DATA_ABSENT 실인스턴스 확보(전 커버국 데이터 풍부 + region 미배정국은 게이트 미달 — 검수 실측으로 A1 기각→휴면 전환)
     name: "DATA_ABSENT 골드 (휴면 — 실인스턴스 대기)"
@@ -383,7 +382,7 @@ cases:
     expect: { min_score: 0, h1: true, tags: ["쿠바"] }
 
   - id: v2_nk_iv_misroute
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: reserve   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: A
     name: "북한 도발 → 환율 (IV_MISROUTE 정답)"
     query: "북한의 군사 도발 빈도가 원/달러 환율 변동에 선행하는지 분석해줘"
@@ -394,7 +393,7 @@ cases:
     expect: { min_score: 0, h1: true, tags: ["북한"] }
 
   - id: v2_declaration_only
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: reserve   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: A
     name: "개념 질문 → 정량가설 없음 선언 (soft)"
     query: "강대국 경쟁 시대에 중견국 외교의 본질은 무엇인지 개념적으로 논해줘"
@@ -404,7 +403,7 @@ cases:
     expect: { min_score: 0, h1: false, tags: ["중견국"] }
 
   - id: v2_sk_filter_positive
-    hedge_expected: engage   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: engage   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: A
     name: "남한 시위 → KOSPI (게이트 통과+A-1 필터 양성 대조군)"
     query: "남한의 대규모 시위 빈도가 KOSPI 지수 변동에 영향을 주는지 분석해줘"
@@ -415,7 +414,6 @@ cases:
     expect: { min_score: 60, h1: true, tags: ["시위"] }
 
   - id: v2_proxy_downgrade_honest
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
     block: A
     name: "추상 지수 IV → 프록시 강등 경로 정직성 (검수 재정의)"
     query: "글로벌 제재 강도 지수가 상승할 때 러시아에 대한 유엔총회 표결 동조율이 하락하는지 분석해줘"
@@ -425,7 +423,7 @@ cases:
     expect: { min_score: 0, h1: true, tags: ["제재"] }
 
   - id: v2_iran_war_oil_shock
-    hedge_expected: engage   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: engage   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: B
     expected_signature: SINGLE_SHOCK
     name: "2026 이란전 개전 → 유가 단기 충격"
@@ -434,7 +432,7 @@ cases:
     expect: { min_score: 60, h1: true, tags: ["이란", "유가"] }
 
   - id: v2_martial_law_krw_shock
-    hedge_expected: engage   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: engage   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: B
     expected_signature: SINGLE_SHOCK
     name: "2024-12 한국 계엄 선포 → 환율 충격"
@@ -443,7 +441,7 @@ cases:
     expect: { min_score: 60, h1: true, tags: ["계엄", "환율"] }
 
   - id: v2_milex_conflict_cross
-    hedge_expected: engage   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: engage   # 최종검토위 07-11 비준 — DV '개입 빈도'는 카탈로그 조달 실패 가능(RELABEL 감시)
     block: B
     expected_signature: CROSS_SECTION
     name: "국방비 비율 ↔ 분쟁 개입 (국가 간 비교)"
@@ -460,7 +458,7 @@ cases:
     expect: { min_score: 0, h1: true, tags: ["언론"] }   # 검증 런 정정: pending_typeB 정직 선언을 신뢰도 바가 처벌하던 구조 제거 — 이 케이스의 골드는 시그니처
 
   - id: v2_rival_dv_absent_honest
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: reserve   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: C
     name: "경쟁이론 DV 부재 → 전제충족 종결이 정답"
     query: "사헬 서방 철수 이후 러시아 용병단의 정치적 영향력이 확대됐는지 세력전이 이론과 회색지대 이론으로 교차 분석해줘"
@@ -469,7 +467,7 @@ cases:
     expect: { min_score: 60, h1: true, tags: ["사헬"] }
 
   - id: v2_rival_threat_no_action
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: reserve   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: C
     name: "위협-실행 부재 → 침묵을 '실행 0건'으로 위조 금지"
     query: "중국의 희토류 수출통제 위협이 실제 전면 통제로 이어지지 않는 이유를 상호의존 무기화 이론과 전략적 자제론으로 비교 분석해줘"
@@ -478,7 +476,7 @@ cases:
     expect: { min_score: 60, h1: true, tags: ["희토류"] }
 
   - id: v2_rival_dv_present_engage
-    hedge_expected: engage   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: engage   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: C
     name: "DV 실재 → 판정 참여가 정답 (과잉 회피 방지)"
     query: "호르무즈 해협 긴장 고조가 브렌트유 가격 상승으로 이어지는지 자원무기화 이론의 예측과 실측을 비교해줘"
@@ -487,7 +485,6 @@ cases:
     expect: { min_score: 60, h1: true, tags: ["호르무즈"] }
 
   - id: v2_missile_episodic_structural
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
     block: D
     dormant: true                     # 활성: CNS 갱신→창내 미사일≥30 (현재 A2 경로와 동일 낙하 — RELABEL 감시)
     name: "미사일 발사 빈도 → episodic 구조적 논증 (휴면)"
@@ -498,7 +495,7 @@ cases:
     expect: { min_score: 0, h1: true, tags: ["미사일"] }
 
   - id: v2_regime_lexicon_structural
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: reserve   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: D
     name: "임계·체제전환 질문 → 9-C 미구현 정직 선언"
     query: "러시아 정권 생존이 임계점에 도달하면 에너지 무기화 강도가 급변하는지 분석해줘"
@@ -508,7 +505,7 @@ cases:
     expect: { min_score: 0, h1: true, tags: ["체제"] }
 
   - id: v2_counterfactual_unimplemented
-    hedge_expected: reserve   # 계측위 07-11 초벌(비준 대기) — 판별 정확도 골드
+    hedge_expected: reserve   # 최종검토위 07-11 비준 — 판별 정확도 골드
     block: D
     expected_signature: COUNTERFACTUAL
     name: "반사실 질문 → '방법 미구현' 정직 라우팅 (검수 커버리지 지적 반영)"

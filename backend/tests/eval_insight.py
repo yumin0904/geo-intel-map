@@ -966,7 +966,10 @@ def evaluate_case(
 # ── 종합 리포트 ───────────────────────────────────────────────────────────
 
 _VERDICT_LINE = re.compile(r"판정\s*[:：]\s*([^\n]{0,80})")
-_VERDICT_DECISIVE = re.compile(r"우세|열세")
+# [최종검토위 2026-07-11] 지지|반증 산입 — 신 표기 '[확증 모드] 판정: 지지/반증'은 명백한
+# 결단인데 구 어휘(우세|열세)만 세면 유보로 오계수(층위 혼동, 양석 합치 지적). splice:
+# 이 확장 전후의 hedge_ratio는 verify 케이스에서 비교 불가(CHANGELOG 기재).
+_VERDICT_DECISIVE = re.compile(r"우세|열세|지지|반증")
 
 
 def _verdict_stats(text: str) -> dict:
@@ -1076,17 +1079,28 @@ def _print_summary(results: list[dict]) -> None:
         h_leg = _hedge_of([(r, v) for r, v in pairs if not r["id"].startswith("v2_")])
         print(f"   유보율 분해 — v2(유보정답 설계 포함): {h_v2} · 비-v2: {h_leg}")
 
-        # [계측위 2026-07-11] 판별 정확도 — 유보율 절대치 대신 "부재-DV에서 유보하고
-        # present-DV에서 결단하는가"를 계측 (골드라벨 초벌·비준 대기, report-only)
+        # [계측위 2026-07-11, 최종검토위 게이밍 봉쇄 개정] 판별 정확도 — 유보율 절대치 대신
+        # "부재-DV에서 유보하고 present-DV에서 결단하는가"를 계측 (골드라벨 비준분, report-only).
+        # 봉쇄 4칙(방법론·반박 양석): ①reserve·engage 기준 대칭(비율 기준 — '결단 1개+유보'
+        # 퇴행 전략의 동시 만점 차단) ②reserve 정탐은 vou 린트 0 접합(위조 결단 산입 차단)
+        # ③dormant 제외 ④판정 0건: reserve=정탐(결단 미발급) / engage=미스(계기 회피).
+        # 유효조건: 풀 카드 생성 한정(compact 카드는 판정 라인 부재 — insight 축소런 비대상).
+        # ⚠️ 이 수치도 최적화 표적 아님(_verdict_stats 오용 금지 2칙 동일 적용) — 채점 미편입.
         disc_ok, disc_all = 0, 0
         for r, v in pairs:
             exp = r.get("hedge_expected")
-            if not exp or not v.get("verdicts"):
+            if not exp or r.get("dormant"):
                 continue
             disc_all += 1
-            ratio = v.get("hedge_ratio") or 0.0
-            if (exp == "reserve" and ratio >= 0.5) or (exp == "engage" and v.get("decisive", 0) >= 1):
-                disc_ok += 1
+            n_v = v.get("verdicts", 0)
+            ratio = (v.get("hedge_ratio") or 0.0) if n_v else None
+            has_vou = any(l.get("code") == "verdict_on_unverified_stamp"
+                          for l in (r.get("lint") or []))
+            if exp == "reserve":
+                ok_ = (n_v == 0) or (ratio >= 0.5 and not has_vou)
+            else:  # engage
+                ok_ = n_v > 0 and ratio < 0.5 and not has_vou
+            disc_ok += int(ok_)
         if disc_all:
             print(f"   판별 정확도(기대방향 골드 {disc_all}건): {disc_ok}/{disc_all}")
         if over:

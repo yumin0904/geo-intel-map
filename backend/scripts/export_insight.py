@@ -177,7 +177,7 @@ def main() -> int:
         print(f"❌ 분석 실패 — 엔진 응답: {result_md[:200]}")
         return 1
 
-    ok, reason = validate_insight_completeness(result_md)
+    ok, reason = validate_insight_completeness(result_md, mode=run["pq"].mode)
     score = run["score"]
     exploratory = run["pq"].mode != "verify"  # _finalize와 동일 판정
 

@@ -235,3 +235,28 @@ NIM 눈금(종합 3.84)과 절대 비교 불가. 차기 풀런부터 latest.json
 - **판별 정확도 계기 배선(패킷 ③, report-only)**: eval_cases.yaml v2 14건에
   hedge_expected 초벌 태깅(reserve 9·engage 5 — **사용자 비준 대기**), 요약에 판별
   정확도 보고. 유보율 절대치의 결론 도구 강등을 대체하는 계기.
+
+## 2026-07-11 — 최종 검토 위원회 집행 (3석 전원 fable — 사용자 지시, v9.40.1)
+
+- **★ verify 발행 경로 관통률 0% 수리(반박석 실증·최우선)**: validate_insight_completeness가
+  모드 무관 insight 8섹션을 요구해 verify 산출물 14/14 완결성 FAIL → export ok=false →
+  기사화 하드 거부 — **speculative 게이트가 지키던 확증 발행 집합이 공집합**이었다.
+  모드별 필수 섹션 분기([단계 1~6]+최종 판정) — 수리 후 관통 14/14 실측.
+- **계측기 변경(splice ×2)**: ①zero_deviation %·%p 단위 허용 — 구 룩어헤드가 표적 골드
+  표기("편차 0%p", v2_nk)를 배제하던 미탐 수리. 소급: 1101 1→5·0331 0→2, 신규 발화
+  전수 스팟검사 오탐 0(수사적 0편차 포함 전부 표적) ②_VERDICT_DECISIVE에 지지|반증 산입
+  (신 표기 최종판정의 결단이 유보로 오계수되던 층위 혼동) — hedge_ratio 전후 비교 불가.
+- **백스톱 lint 2종(report-only)**: mode_label_missing(모드 표기 탈락 — v2_milex 실증형) ·
+  speculative_label_missing(MEDIUM/LOW 자기평가에 라벨 부재 — 게이트 FN 우회). 한계 인지:
+  메타 언급("[확증]을 붙이지 않고")이 있는 텍스트는 전자가 미발화(텍스트 단독 휴리스틱).
+- **판별 정확도 계기 게이밍 봉쇄(양석 합치)**: reserve·engage 기준 대칭화(비율) — "결단
+  1개+유보" 퇴행 전략의 동시 만점 차단 · reserve 정탐에 vou 린트 0 접합 · dormant 제외 ·
+  판정 0건 비대칭(reserve=정탐/engage=미스). 신 기준 소급 4/11 — 정직한 기준선.
+- **골드라벨 비준 확정(최종검토위 심사 — 사용자 위임)**: 14→**11건**(reserve 6·engage 5).
+  제외 3: dormant 2(활성 시 재라벨)·proxy_downgrade(행동 비결정론 — pressfreedom 동일 처리).
+  v2_milex는 engage 유지+RELABEL 감시.
+- **기각 3건(의장 판정)**: vou 후행 캐비엇 재포섭(정직 캐비엇 오탐 재도입 — 오탐이 미탐보다
+  나쁨) · speculative 포화=결함론(정직한 자기평가 반영+분석글은 원래 human_approval — 심층방어
+  유지, 구조화 필드 正道는 큐) · 스키마 required 승격(구 export 불변 원증거 소급 수정 요구).
+- geo-os 측 동시 수리: insight_to_draft parse_sections 숫자 허용+예약 라벨 제외(잠복 절단).
+- 판례: geo-os [[20260711-final-review-committee]]
