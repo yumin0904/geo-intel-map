@@ -203,3 +203,21 @@ NIM 눈금(종합 3.84)과 절대 비교 불가. 차기 풀런부터 latest.json
   실험③은 prod-deepseek × claude-gold 크로스워크로 목적 전환 [판단필요].
 - 참조 행번호 정정: 구 기재 "431/497행" → 현행 431/**498**행.
 - 판례: geo-os [[20260711-instrumentation-committee]]
+
+## 2026-07-11 — 계측위 잔여 집행 ②·④ (vou 재정의·deepseek 크로스워크, v9.39.2)
+
+- **계측기 변경(splice — verdict_on_unverified 재정의)**: 구 정의(판정 라인 120자 내 '미검증'
+  토큰)는 실측 기반 판정의 정직한 보조 캐비엇까지 잡는 오탐(6 entry 중 4 — 캐비엇 처벌은
+  정직성 역유인) + 본문 반복 블록 이중 계수(india). 신 정의 = (a)실측 필드 [UNVERIFIED]
+  블록의 결단 (b)미검증 양보 구문("~이나/임에도") 뒤 판정 유지, 동일 매치 dedupe.
+- **신 계기 소급 재계측(정직한 역행 눈금)**: 1101(v9.33대)→0331(v9.36~37) 기준
+  dual_label **1→6**·verdict_on_unverified **0→2**·zero_deviation 1→0.
+  "10→13·2→6 대역행" 서사 → "1→6·0→2 소역행 + 계기 오탐" 정정. 잔여 진짜 역행의
+  근원은 431행 무조건 명령(라벨 분리 표기 패킷 — 사용자 승인 대기).
+- **zero_deviation 간격 조정({0,8}→{0,3})**: 1101 소급에서 정직 편차 서술
+  ("편차: 예측치 0건 vs 실측 1,228건") 오탐 1건 실측 — 골드 v2_nk 정탐("편차 0")은 유지.
+- **P6 실험③ 크로스워크(tests/deepseek_judge_gold.py, 목적 전환 집행)**: prod-deepseek
+  직영 × claude-gold, 루브릭 v1 동결·맹검·n3 — **결함 3건 전건 cr med=4.0 FAIL·모범만
+  PASS(fable·sonnet과 동일 패턴)**. 수치맹은 judge 모델 불문 구조적 — 정량-위조 방어는
+  결정론 검사(impossible_hhi·zero_deviation·dv_gate)가 유일층임을 3모델 교차 확증.
+  결과: deepseek_gold_20260711_1233.json

@@ -32,8 +32,20 @@ _HHI_NUM = re.compile(r"HHI[^\d\n]{0,20}(\d[\d,]{2,})")
 
 # [계측위 2026-07-11] 골드 v2_nk 실패모드(편차 0 위조 — 예측·실측 완전일치를 주장해 판정
 # 근거를 제조). 정확한 0 편차는 원리상 가능하나 실코퍼스 전례 없음 — report-only 감사 표면화.
-_ZERO_DEVIATION = re.compile(r"편차[^\d\n]{0,8}0(?:\.0+)?(?![\d.,%])")
-_VERDICT_UNVERIFIED = re.compile(r"판정[:：]\s*(우세|열세)[^\n]{0,120}(미검증|\[UNVERIFIED\])")
+# 간격 {0,3}: '편차 0'·'편차: 0'만 — '편차: 예측치 0건 vs 실측 1,228건' 같은
+# 정직한 편차 서술(수식어 개입)은 제외 (1101 소급 오탐 실측으로 조정).
+_ZERO_DEVIATION = re.compile(r"편차[^\d\n]{0,3}0(?:\.0+)?(?![\d.,%])")
+# [계측위 2026-07-11] verdict_on_unverified 재정의 — 구 정의(판정 라인 120자 내 '미검증'
+# 토큰 존재)는 실측 수치에 기반한 판정이 보조 캐비엇("단, 세부 수치는 [UNVERIFIED]")을
+# 정직하게 단 것까지 잡는 오탐(6 entry 중 4 — 캐비엇 처벌은 정직성 역유인). 표적 구성물은
+# "미검증 DV 위의 결단"(affirming despite unverified) — 두 형태만 잡는다:
+# (a) 실측 필드 자체가 [UNVERIFIED]인 이론 블록의 결단 판정 (규칙 문면 그대로)
+# (b) 판정 라인 내 양보 구문 — "미검증이나/[UNVERIFIED]임에도 …" 뒤 판정 유지
+# 동일 매치 문자열은 1회만 계수(본문 반복 블록의 이중 계수 방지, india 실측).
+_UNVERIFIED_MEASURE_VERDICT = re.compile(
+    r"실측[:：][^\n]*\[UNVERIFIED\][^\n]*\n[^\n]{0,40}판정[:：]\s*(우세|열세)")
+_VERDICT_DESPITE_UNVERIFIED = re.compile(
+    r"판정[:：]\s*(우세|열세)[^\n]{0,120}(?:미검증|\[UNVERIFIED\])\s*(?:이나|이지만|임에도|에도\s*불구)")
 
 
 def lint(text: str) -> list[dict]:
@@ -60,9 +72,15 @@ def lint(text: str) -> list[dict]:
         if v > 10000:
             problems.append({"code": "impossible_hhi", "detail": f"HHI {v} > 상한 10,000"})
 
-    for m in _VERDICT_UNVERIFIED.finditer(text):
-        problems.append({"code": "verdict_on_unverified_stamp",
-                         "detail": f"'{m.group(1)}' 판정과 미검증 선언 동시 발급"})
+    seen_verdicts: set[str] = set()
+    for pat, form in ((_UNVERIFIED_MEASURE_VERDICT, "실측=[UNVERIFIED] 블록"),
+                      (_VERDICT_DESPITE_UNVERIFIED, "미검증 양보 구문")):
+        for m in pat.finditer(text):
+            if m.group(0) in seen_verdicts:
+                continue
+            seen_verdicts.add(m.group(0))
+            problems.append({"code": "verdict_on_unverified_stamp",
+                             "detail": f"'{m.group(1)}' 판정을 미검증 위에 발급({form})"})
 
     for m in _ZERO_DEVIATION.finditer(text):
         problems.append({"code": "zero_deviation",
