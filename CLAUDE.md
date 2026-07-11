@@ -835,6 +835,11 @@ Pydantic 모델: `backend/models/intelligence.py` → `IntelligenceMetadata`
 
 ### 20-B. 신뢰도 상한 캡 규칙 [필수]
 
+> ⚠️ 문서-코드 드리프트 (게이트위 실측 2026-07-11): 아래 캡 함수(`apply_verification_cap`)는
+> 코드에서 폐기(DEPRECATED, `confidence_scorer.py` — 2축 분리로 대체)돼 더는 호출되지 않는다.
+> 1-A "충돌 시 원천 승" — 진실원은 코드. 이 절은 이력 참조용이며, verification_status의 하류
+> 소비 규약은 geo-os `wiki/decisions/20260711-granger-substitution-gate.md` 참조.
+
 ```python
 if verification_status == "PENDING":   confidence_score = min(confidence_score, 75)
 if verification_status == "PARTIAL":   confidence_score = min(confidence_score, 88)

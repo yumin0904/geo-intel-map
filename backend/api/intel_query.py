@@ -897,7 +897,11 @@ async def _stream_gemini(
                                 "linear_testable": s.linear_testable,
                                 "testability_reason": s.testability_reason,
                                 "is_proxy_pair": s.is_proxy_pair,
+                                # [Granger 대리변수 치환 게이트 위원회 2026-07-11]
+                                # is_proxy_pair(이론성 축)와 직교 — 표면 DV 치환 여부(조달 축)
+                                "is_substituted_target": getattr(s, "is_substituted_target", False),
                                 "verification_status": s.verification_status,
+                                "partial_basis": getattr(s, "partial_basis", None),
                                 "inference_grade": s.inference_grade,
                                 "inference_caveat": s.inference_caveat,
                                 "theory_grounded": s.theory_grounded,

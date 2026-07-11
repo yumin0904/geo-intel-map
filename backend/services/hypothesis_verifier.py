@@ -347,17 +347,53 @@ def _check_method_fit(spec: "HypothesisSpec") -> None:
     9-0 Method Router가 구현되면 이 훅의 진단을 라우터 로직에 흡수한다.
     """
     if spec.routing_method in (_ROUTE_GRANGER_C, _ROUTE_GRANGER_A_DG, _ROUTE_SECTOR_PROXY):
-        if spec.is_proxy_pair and spec.verification_status in ("VERIFIED", "PARTIAL"):
-            # 대리쌍으로 유의 결과: 화이트리스트 밖이므로 허위상관 가능성
+        # [Granger 대리변수 치환 게이트 위원회 2026-07-11] 대리쌍 경고 게이트는
+        # is_proxy_pair(화이트리스트 밖 여부, 이론성 축)가 아니라 is_substituted_target
+        # (표면 DV 치환 여부, 조달 축)로 판별한다 — 두 축은 직교하며 이 경고는
+        # "표면 가설과 다른 걸 검정했다"는 조달 문제이지 이론근거 문제가 아니다.
+        if spec.is_substituted_target and spec.verification_status in ("VERIFIED", "PARTIAL"):
+            # 대리 검정으로 유의 결과: 표면 DV 미조달 → 허위상관 가능성
             spec.routing_confidence = "LOW"
             spec.inference_caveat = (
-                "[방법점검-P3] 화이트리스트 밖 대리쌍(is_proxy_pair=True)에서 유의 결과. "
+                "[방법점검-P3] 표면 DV 치환(is_substituted_target=True)에서 유의 결과. "
                 "허위상관 가능성 있음. 직접 DV 시계열 확보 또는 9-A 이벤트스터디 고려. "
             ) + spec.inference_caveat
 
     if spec.routing_method == _ROUTE_SECTOR_PROXY and spec.routing_confidence != "LOW":
         # 섹터 proxy는 지역 추정 포함 — 유의하지 않아도 MEDIUM 이하
         spec.routing_confidence = "MEDIUM"
+
+
+_SUBSTITUTED_CAVEAT = (
+    "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 "
+    "수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음"
+)
+
+
+def _lock_pending_if_substituted(spec: "HypothesisSpec") -> None:
+    """
+    [Granger 대리변수 치환 게이트 위원회 2026-07-11 — 핵심 수리]
+
+    is_substituted_target=True(라우터가 표면 DV를 region/sector 기본 지표로 바꿔치기)면
+    검정 수치(granger_p·f_statistic·error의 "[대리변수 사용]" 기록)는 그대로 두되
+    — 8-F 진단·탐색 재료로 보존 —, 그 결과가 무엇이든 verification_status·
+    inference_grade는 "표면 가설이 검증됐다"는 뜻으로 승격하지 않는다.
+    검정된 것은 대리쌍이지 표면 가설의 (독립변수, 종속변수)가 아니기 때문이다.
+
+    호출 위치: `_run_granger_for_spec`의 모든 계산 경로(정규 Granger + [B8] P90
+    극단 승격) 끝에서 단일 후처리로 적용한다 — 호출부(Type_C·Type_A→C 강등·
+    섹터 proxy) 3곳에 각각 되돌림 로직을 심는 것보다 회귀 위험이 낮다(스펙 지시).
+    호출 전 is_substituted_target=False인 정상 Type_A 경로는 no-op.
+    """
+    if not spec.is_substituted_target:
+        return
+    spec.verification_status = "PENDING"
+    spec.inference_grade = _LADDER_DESCRIPTIVE
+    if _SUBSTITUTED_CAVEAT not in (spec.inference_caveat or ""):
+        spec.inference_caveat = (
+            f"{_SUBSTITUTED_CAVEAT} | {spec.inference_caveat}"
+            if spec.inference_caveat else _SUBSTITUTED_CAVEAT
+        )
 
 
 async def _run_granger_for_spec(
@@ -456,6 +492,11 @@ async def _run_granger_for_spec(
             spec.verification_status = "VERIFIED"   # = '선행성 유의' (UI에서 사다리로 표기)
         elif spec.inference_grade == _LADDER_CORRELATIONAL:
             spec.verification_status = "PARTIAL"
+            # [partial_basis 3진입구 ①] p<0.15 경향성 진입 — _classify_inference_grade의
+            # 마지막 분기(p_value < _P_PARTIAL)만 여기 해당. 나머지 상관 사유(이론근거
+            # 없음·교란 미통제로 상한)는 유의(p<0.05)라 "경향성"이 아니므로 제외.
+            if p_value is not None and _P_VERIFIED <= p_value < _P_PARTIAL:
+                spec.partial_basis = "TREND_P15"
         else:
             spec.verification_status = "PENDING"
 
@@ -493,6 +534,7 @@ async def _run_granger_for_spec(
                                     "(Farrell & Newman 2019 임계 효과 실증)"
                                 )
                                 spec.verification_status = "PARTIAL"
+                                spec.partial_basis = "EXTREME_ONLY"  # [partial_basis 3진입구 ③]
             except Exception as _ext_exc:
                 logger.debug("[hypothesis] [B8-P90] 극단 검정 실패: %s", _ext_exc)
 
@@ -511,6 +553,10 @@ async def _run_granger_for_spec(
                 "중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 "
                 "임계회귀 등 적극적 비선형 검정이 필요(검증포인트)."
             )
+
+        # [핵심 수리 — 대리변수 치환 게이트] 정규 Granger·[B8] P90 극단 승격이 모두
+        # 끝난 뒤 단일 후처리로 적용 — is_substituted_target=False(정상 Type_A)면 no-op.
+        _lock_pending_if_substituted(spec)
 
         if proxy_label:
             spec.error = (
@@ -542,6 +588,7 @@ async def _run_granger_for_spec(
             "verification_status": spec.verification_status,
             "extreme_granger_p": spec.extreme_granger_p,
             "extreme_granger_f": spec.extreme_granger_f,
+            "partial_basis": spec.partial_basis,
         })
     except Exception as exc:
         spec.error = str(exc)
@@ -637,9 +684,30 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
 
     # [9-P-1] 동일 (region_code, ticker) 쌍 중복 표지
     # IV/DV 추출 실패로 두 H1이 같은 폴백 대리쌍에 매핑될 때 두 번째부터
-    # [동일 대리변수쌍] 레이블 → 사용자가 추출 버그임을 인식할 수 있도록.
+    # [동일 검정 공유] 레이블 → 사용자가 추출 버그임을 인식할 수 있도록.
     # 데이터는 동일하므로 캐시 히트 후 수치만 복사 (재계산 불필요).
-    _seen_pairs: set[tuple[str | None, str | None]] = set()
+    # 값 = 이 쌍을 처음 검정한 가설의 1-based 순번(H{n} 표기용).
+    #
+    # [위원회 2026-07-11 수리] 반드시 `_run_granger_for_spec` 호출 *뒤*에 마킹해야 한다 —
+    # 호출 *전*에 caveat을 붙이면 그 함수가 inference_caveat을 자체 계산값으로 덮어써
+    # 라벨이 소실된다(실측: batch_20260711 alliance-burden-sharing H1·H2가 동일
+    # korean_peninsula×ITA 쌍인데 미발화 — 원인은 순서 역전이었지 대리쌍 미통과가 아니었음).
+    _seen_pairs: dict[tuple[str | None, str | None], int] = {}
+
+    def _mark_seen_pair(spec: "HypothesisSpec", seen: dict, idx: int) -> None:
+        """동일 (region_code, ticker) 검정 2회째부터 caveat 발화. 반드시
+        `_run_granger_for_spec` 호출 뒤·`results.append` 전에 호출한다."""
+        key = (spec.region_code, spec.ticker)
+        if key in seen:
+            note = (
+                f"[동일 검정 공유] 이 가설의 검정은 H{seen[key]}과 동일 변수쌍 "
+                f"(region={spec.region_code}, ticker={spec.ticker}) — 검정이 가설을 판별하지 않음"
+            )
+            spec.inference_caveat = (
+                f"{note} | {spec.inference_caveat}" if spec.inference_caveat else note
+            )
+        else:
+            seen[key] = idx + 1
 
     # [9-Q 쿼리-우선 라우팅] 조작화(H1)를 계산하기 '전에' 질문의 논리 형태로 방법을 정한다.
     #   이론 판별형(복수 이론 비교)·해석형(왜/어떻게 — 메커니즘·귀속·역량공백) 질문은 LLM이 만든
@@ -647,7 +715,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     #   순서 역전(조작화→방법)을 질문→방법으로 바로잡음.
     from services.methods.router import unquantifiable_question_reason as _unq_reason
 
-    for spec in specs:
+    for _idx, spec in enumerate(specs):
         # ── [구성타당도 게이트] 라우팅에 앞서 공통 적용 — Granger·과정추적 등 모든 event-IV
         # 경로를 차단한다. IV가 특정 국가를 지목하는데 실제 이벤트 표본에 그 국가가 거의 없으면
         # (질문 대상 미측정) 검정을 진행하지 않는다. 예: "북한 도발" IV인데 korean_peninsula
@@ -846,6 +914,8 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 spec.ticker = default_ticker
                 # [9-P-2] D3 마킹: 화이트리스트 밖 대리쌍 → is_proxy_pair=True
                 spec.is_proxy_pair = (spec.region_code, default_ticker) not in _THEORY_GROUNDED_PAIRS
+                # [Granger 대리변수 치환 게이트] 표면 DV가 region 기본 지표로 치환됨
+                spec.is_substituted_target = True
                 proxy_label = (
                     f"ACLED {spec.region_code} 이벤트 건수"
                     f" → {default_ticker} (지역 기본 지표)"
@@ -863,6 +933,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 spec.routing_confidence = "HIGH" if not spec.is_proxy_pair else "MEDIUM"
                 spec.routing_alternatives = ["9-A 이벤트스터디 (SINGLE_SHOCK 시그니처)"]
                 _check_method_fit(spec)
+                _mark_seen_pair(spec, _seen_pairs, _idx)
             else:
                 proxy_str = ", ".join(spec.proxy_suggestions[:3]) if spec.proxy_suggestions else "대체 지표 필요"
                 spec.error = f"Type C (추상 변수): region 미식별 → 권장 대리변수: {proxy_str}"
@@ -888,6 +959,8 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     spec.ticker = default_ticker
                     # [9-P-2] D3 마킹: Type A 강등 경로도 화이트리스트 밖이면 대리쌍
                     spec.is_proxy_pair = (spec.region_code, default_ticker) not in _THEORY_GROUNDED_PAIRS
+                    # [Granger 대리변수 치환 게이트] 표면 DV가 region 기본 지표로 치환됨
+                    spec.is_substituted_target = True
                     proxy_label = (
                         f"Type A 강등 → ACLED {spec.region_code} + {default_ticker} 대리변수"
                     )
@@ -903,6 +976,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     spec.routing_confidence = "MEDIUM"
                     spec.routing_alternatives = ["ticker 재정의 후 Type_A 정상경로 재시도"]
                     _check_method_fit(spec)
+                    _mark_seen_pair(spec, _seen_pairs, _idx)
                     logger.info("[hypothesis] Type_A→C 자동강등 %s: %s", spec.verification_status, spec.h1[:60])
                     results.append(spec)
                     continue
@@ -923,6 +997,8 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                     region_fallback = True
                 # [9-P-2] 섹터 proxy 경로는 항상 화이트리스트 밖 대리쌍
                 spec.is_proxy_pair = True
+                # [Granger 대리변수 치환 게이트] 표면 DV가 섹터 기본 지표로 치환됨
+                spec.is_substituted_target = True
                 spec = await _run_granger_for_spec(
                     spec, start, end,
                     _load_event_series, _get_market_series, _run_granger,
@@ -942,6 +1018,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
                 spec.routing_confidence = "LOW"
                 spec.routing_alternatives = ["H1에 지역 명시 후 Type_C/A 경로 재시도"]
                 _check_method_fit(spec)
+                _mark_seen_pair(spec, _seen_pairs, _idx)
                 logger.info("[hypothesis] 섹터proxy %s: %s", spec.verification_status, spec.h1[:60])
                 results.append(spec)
                 continue
@@ -986,17 +1063,11 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             results.append(spec)
             continue
 
-        # Type_A 정상 경로: region + ticker 모두 있음
-        # [9-P-1] 이미 처리한 대리쌍이면 [동일 대리변수쌍] 레이블 추가
-        _pair_key = (spec.region_code, spec.ticker)
-        if _pair_key in _seen_pairs:
-            spec.inference_caveat = (
-                "[동일 대리변수쌍 — IV/DV 추출 공유] "
-                f"region={spec.region_code}, ticker={spec.ticker}로 앞선 가설과 동일한 "
-                "시계열 데이터쌍 사용. IV/DV 텍스트는 다르나 Granger 수치는 동일."
-                + (f" | {spec.inference_caveat}" if spec.inference_caveat else "")
-            )
-        _seen_pairs.add(_pair_key)
+        # Type_A 정상 경로: region + ticker 모두 있음. 표면 DV가 그대로 ticker로
+        # 매핑됐으므로 is_substituted_target=False(기본값) 유지 — 치환 아님.
+        # [Granger 대리변수 치환 게이트 수리] is_proxy_pair는 정상 경로에서 미계산·
+        # 발화율 0%였다(위원회 실측) — 다른 경로들과 동일하게 화이트리스트로 채운다.
+        spec.is_proxy_pair = (spec.region_code, spec.ticker) not in _THEORY_GROUNDED_PAIRS
         spec = await _run_granger_for_spec(
             spec, start, end,
             _load_event_series, _get_market_series, _run_granger,
@@ -1009,30 +1080,52 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
         spec.routing_confidence = "HIGH" if spec.theory_grounded else "MEDIUM"
         spec.routing_alternatives = ["9-B 패널회귀 (CROSS_SECTION 시그니처)", "9-A 이벤트스터디 (단일 충격)"]
         _check_method_fit(spec)
+        # [9-P-1 수리] _run_granger_for_spec 호출 뒤에 마킹 — caveat 소실 방지
+        _mark_seen_pair(spec, _seen_pairs, _idx)
         results.append(spec)
 
     # ── [B2] 다중검정 보정 (Benjamini-Hochberg FDR) ──────────────────────────
     # 한 쿼리에서 여러 가설을 검정하면 우연 유의가 누적된다.
     # 같은 쿼리 범위 내 Granger p값을 FDR 보정 → '선행성' 등급 재판정.
+    #
+    # [위원회 2026-07-11 수리 — 통계 버그] 동일 (region_code, ticker) 검정이 여러 spec에
+    # 중복 집계되면(예: [9-P-1] 동일쌍 재사용) family size가 실제 독립 검정 수보다
+    # 부풀어 multipletests의 보정이 과도하게 관대해진다(q값 왜곡 → 잘못된 승격/강등).
+    # 신원(= region_code, ticker) 단위로 dedupe해 대표 1건만 보정에 투입하고, 산출
+    # q값은 같은 신원의 전 spec에 동일 배포한다. 신원이 다른 검정들은 기존 동작 그대로.
     tested = [s for s in results if s.granger_p is not None]
     if len(tested) >= 2:
         try:
             from statsmodels.stats.multitest import multipletests
-            pvals = [s.granger_p for s in tested]
+            _identity_members: dict[tuple, list] = {}
+            for s in tested:
+                _identity_members.setdefault((s.region_code, s.ticker), []).append(s)
+            _identity_keys = list(_identity_members.keys())
+            # 신원별 대표 p값 — [9-P-1] 캐시로 동일 신원의 granger_p는 항상 동일하므로
+            # 첫 등장 spec의 값을 대표로 써도 정보 손실이 없다.
+            pvals = [_identity_members[k][0].granger_p for k in _identity_keys]
             _, qvals, _, _ = multipletests(pvals, alpha=0.05, method="fdr_bh")
-            for s, q in zip(tested, qvals):
-                s.granger_q = round(float(q), 4)
-                # FDR 미통과 시 '선행성' → '상관'으로 정직 강등
-                if s.inference_grade == _LADDER_PRECEDENCE and q >= 0.05:
-                    s.inference_grade = _LADDER_CORRELATIONAL
-                    s.inference_caveat = (
-                        f"{_GRANGER_CAVEAT} · 다중검정 FDR 미통과(q={s.granger_q})"
-                    )
-                    s.verification_status = "PARTIAL"
-                    logger.info(
-                        "[hypothesis] FDR 강등: %s (p=%.4f q=%.4f)",
-                        s.h1[:40], s.granger_p, q,
-                    )
+            for key, q in zip(_identity_keys, qvals):
+                q_rounded = round(float(q), 4)
+                for s in _identity_members[key]:
+                    s.granger_q = q_rounded
+                    # FDR 미통과 시 '선행성' → '상관'으로 정직 강등
+                    if s.inference_grade == _LADDER_PRECEDENCE and q >= 0.05:
+                        s.inference_grade = _LADDER_CORRELATIONAL
+                        # [9-P-1] "[동일 검정 공유]" 라벨이 이미 붙어 있으면 보존한다
+                        # (전면 재작성하면 그 마킹이 소실돼 위원회 5번 항목이 재발한다).
+                        _shared = ""
+                        if s.inference_caveat and s.inference_caveat.startswith("[동일 검정 공유]"):
+                            _shared = s.inference_caveat.split(" | ", 1)[0] + " | "
+                        s.inference_caveat = (
+                            f"{_shared}{_GRANGER_CAVEAT} · 다중검정 FDR 미통과(q={s.granger_q})"
+                        )
+                        s.verification_status = "PARTIAL"
+                        s.partial_basis = "FDR_FAILED"  # [partial_basis 3진입구 ②]
+                        logger.info(
+                            "[hypothesis] FDR 강등: %s (p=%.4f q=%.4f)",
+                            s.h1[:40], s.granger_p, q,
+                        )
         except Exception as exc:
             logger.warning("[hypothesis] FDR 보정 실패: %s", exc)
 

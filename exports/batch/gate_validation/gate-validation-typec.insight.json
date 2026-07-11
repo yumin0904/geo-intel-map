@@ -1,0 +1,342 @@
+{
+  "schema_version": "0.1",
+  "id": "gate-validation-typec",
+  "generated_at": "2026-07-11T14:31:52Z",
+  "engine_version": "9.45.1",
+  "query": "소말릴란드 베르베라 항 개발이 아덴만 물류 재편에서 갖는 위치",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "indian_ocean",
+    "bab_el_mandeb"
+  ],
+  "sectors": [
+    "maritime",
+    "chokepoints"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+    "[War on the Rocks] 소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법",
+    "[War on the Rocks] 어둠 속 지휘: 잠수함 지휘관이 불확실성 하에서 생각하는 법"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 0,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3215,
+    "fred": 0,
+    "wbk": 4,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 4,
+    "semi": 0,
+    "owid": 6,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음 | Granger 비유의(p≥0.15) — 선행성 근거 없음",
+    "speculative": false
+  },
+  "result_md": "[탐색적]\n[헤드라인] 소말릴란드 베르베라 항 개발은 아덴만 물류 재편의 '완충재'로 동반되나, 후티 위협 회피 효과는 유가 급등 임계값(예: OPEC+ 여유생산력 소진)에 의해 결정된다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 후티의 바브엘만데브 위협이 심화될수록 소말릴란드 베르베라 항을 통한 우회 물류가 자연스럽게 증가하여 해협 봉쇄 효과를 무력화한다.\n[비자명기여] 통념은 '위협 증가 → 우회 증가'의 선형적 인과를 가정하나, 실측 데이터는 2024~2025년 후티 공격에도 유가 급등이 제한되었음을 보여준다. 이는 **대체 운송로(베르베라)의 물리적 개통 여부보다, OPEC+의 여유 생산 능력과 전략비축유 방출이라는 '가격 완충재'가 전이 경로를 차단**했음을 의미한다. 즉, 베르베라 항의 역할은 '물류 대체'가 아니라 '가격 충격의 지연'이며, 이 효과는 OPEC+ 여유 생산력이 고갈되는 **[예측 임계: 초크포인트 위협 강도 증가 시 운임·유가 단기 급등 (통제: 비축유 방출·대체 운송로·완충 재고)]** 조건이 깨질 때만 유효하다.\n[관찰] 2025-04~2025-07 기간 바브엘만데브 분쟁 건수는 1,246건 → 226건으로 감소했으나, 2026-06~2026-07에는 2건 → 1건으로 급감했다. 반면 Brent 유가는 2024-01 기준 80.22 USD/barrel에서 최근 추세 +91.7% 상승세를 보이며, 후티 공격이 지속된 2024~2025년에도 유가 급등은 제한적이었다.\n[주장] (등급: 상관) 바브엘만데브 분쟁 강도 감소와 소말릴란드 베르베라 항 개발 진행도는 **동조한다**. 그러나 이 상관관계가 유가 안정화로 이어지는지는 OPEC+ 여유 생산력이라는 교란 변수에 **동반한다**.\n[가설] H1: 바브엘만데브 지역 ACLED 분쟁 건수 증가 시, 소말릴란드 베르베라 항을 경유하는 컨테이너 운임(USD)이 통계적으로 유의하게 상승한다 (통제변수: OPEC+ 여유 생산량, 전략비축유 방출 규모).\n[근거] ACLED 데이터 (bab_el_mandeb 분쟁 건수 2025-04: 1,246건 → 2025-07: 226건), FRED Brent Crude Oil Price (2024-01: 80.22 USD/barrel, 추세 +91.7%), EIA (Bab el-Mandeb 통과량 6.2 Mbpd).\n[한계] 소말릴란드 항만의 실제 화물 처리량과 우회 물류 비율에 대한 실시간 데이터가 부재하여, '물류 재편'의 규모를 정량화하지 못했다. 또한, 후티 공격이 감소한 2026년 데이터는 아직 초기 단계로, 장기적 추세로 일반화하기엔 선택편향 (생존편향) 위험이 있다.\n[경쟁설명]\n이론 A: 자원무기화 (Resource Weaponization)\n예측: 초크포인트 통제 위협 증가 시, 대체항로 (베르베라) 개발 가속화로 피의존국 (수입국) 의 정치적 양보 빈도 감소 (가격/공급 안정화)\n실측: Brent 유가 80.22 USD/barrel (2024-01) → 최근 추세 +91.7% 상승 (실측) — OPEC+ 여유 생산력 유지로 급등 제한됨\n판정: 전제충족 (DV 미검증) — 유가 상승폭이 예보된 '급등'에 미치지 못했으나, 베르베라 항의 구체적 화물 분담율 (DV) 이 [UNVERIFIED] 정량값 부재로 검증 불가\n\n이론 B: 회색지대 전략 (Gray Zone Strategy)\n예측: 후티의 회색지대 행동 (선박 공격) 빈도 증가 시, 목표국 (선박 소유국) 의 정책 양보 (보험료 인상, 우회 비용 수용) 증가\n실측: bab_el_mandeb 분쟁 건수 2025-04: 1,246건 → 2025-07: 226건 (실측) — 행동 빈도 감소\n판정: 전제충족 (DV 미검증) — 분쟁 건수 감소는 예측과 부합하나, 이에 따른 '정책 양보 (보험료/운임)' 데이터가 [UNVERIFIED] 정량값 부재\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 (유가 급등 차단 실패 vs OPEC+ 완충 성공) vs 회색지대 예측편차 (행동 빈도 감소 vs 양보 데이터 부재) — OPEC+ 완충 효과만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 DV (양보 빈도, 화물 분담율) 부재로 판정 불가. 쟁점: '가격 완충 (OPEC+)'이 '물류 재편 (베르베라)'보다 선행하는지, 혹은 상호보완적인지 여부.\n\n[검증포인트] 소말릴란드 베르베라 항의 2024~2026년 연간 화물 처리량 (TEU) 및 우회 선박 수 (Lloyd's List), OPEC+ 여유 생산량 변화 데이터 확보 필요.\n[문헌공백] 기존 문헌은 초크포인트 위협을 '물리적 봉쇄'로만 보아 **〈SLOC 통제 이론〉의 예측 임계 **(위협 강도 증가 시 운임·유가 단기 급등)를 지나치게 단순화한다. 본 분석은 **OPEC+ 여유 생산력과 전략비축유 방출**이라는 '가격 완충재'가 물리적 위협을 무력화하는 **범위조건**을 제시함으로써, 단순한 제해권 논의를 넘어 에너지 시장 메커니즘과 해양 안보의 교차 공백을 메꾼다.\n\n---\n\n[탐색적]\n[헤드라인] 소말릴란드 베르베라 항은 아덴만 물류 재편의 '대안'으로 동반되나, 중국산 드론 의존도가 높은 지역 (아프리카) 의 안보 취약성과는 **상관**하지 않는다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 새로운 항만 개발은 지역 안보 위협 (테러, 해적) 을 분산시키고, 해안 경비력 강화로 이어져 물류 경로의 전반적 안전성을 높인다.\n[비자명기여] 통념은 '항만 개발 → 안보 강화'를 가정하나, 소말릴란드와 소말리아 (알샤바브) 의 지정학적 인접성으로 인해 **안보 위협이 물리적 인프라에 전이 **(contagion)하는 역설이 존재한다. 특히, 소말리아 내 알샤바브 (10,000~18,000 명) 와 같은 지하디스트 조직이 **무장 드론**을 빠르게 채택하고 있는 상황에서, 중국산 드론 (소형 드론 90%) 에 대한 의존도가 높은 지역은 **교차도메인 **(에너지/해양 ↔ 사이버/드론) 위협에 노출된다. 즉, 베르베라 항 개발은 물류 경로를 변경할 뿐, **드론 테러라는 비대칭 위협의 전파 경로를 차단하지 못하며**, 오히려 새로운 표적을 노출시킬 수 있다.\n[관찰] 소말리아 알샤바브는 2024 년 기준 강도 4 (제한전) 의 무력 분쟁을 유지하며, 10,000~18,000 명의 병력을 보유 중이다. 아프리카 지하디스트는 무장 드론을 빠르게 채택하고 있으며, 한국 소형 드론의 90% 가 중국산으로, 분쟁 시 베이징의 수출 제한 시 보충이 수개월 지연될 수 있다.\n[주장] (등급: 상관) 소말릴란드 베르베라 항 개발과 알샤바브의 무장 드론 채택은 **동반한다**. 그러나 항만 개발이 드론 테러 위협을 감소시킨다는 인과관계는 **동조하지 않는다**.\n[가설] H1: 소말릴란드 베르베라 항의 화물 처리량 증가 시, 소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED) 가 통계적으로 유의하게 증가한다 (통제변수: 알샤바브 병력 수, 중국산 드론 수출 제한 여부).\n[근거] CSIS 테러 보고서 (알샤바브 병력 10,000~18,000 명, 무장 드론 채택), War on the Rocks (한국 드론 90% 중국산 의존), ACLED (bab_el_mandeb 분쟁 건수 2025-07: 226 건).\n[한계] 소말릴란드 해안 경비대의 실제 드론 운용 능력과 알샤바브의 드론 공격 데이터가 불명확하여, '드론 테러'의 정량적 추이를 정확히 측정하지 못했다. 또한, 소말릴란드의 내부 정치적 안정성 (알샤바브와의 관계) 이 변수로 작용할 수 있으나 데이터가 부재하다.\n[경쟁설명]\n이론 A: 마한의 해양력 이론 (Sea Power Theory)\n예측: 해군력 투자 증가 (항만 보호) 시 SLOC 통제 범위 확대 및 상업 운송 안전도 향상 (예측 부호: ▲)\n실측: Saudi Arabia 군비 7.1% GDP (2023), United States 군비 3.4% GDP (2023) — 해군력 투자 존재\n판정: 전제충족 (DV 미검증) — 해군력 투자 데이터는 있으나, 베르베라 항의 실제 안전도 (DV) 가 [UNVERIFIED] 정량값 부재\n\n이론 B: 코르벳 제한적 제해권 이론 (Corbett's Limited Sea Control)\n예측: 해군력 열세 행위자 (알샤바브) 가 드론·미사일로 우세 함대 (해군) 위협 시, SLOC 이용 비용 증가 (예측 부호: ▲)\n실측: Somalia-Al Shabaab 강도 4 (제한전, 2024) — 비대칭 위협 존재\n판정: 전제충족 (DV 미검증) — 분쟁 강도 데이터는 있으나, SLOC 이용 비용 증가 (보험료/운임) 데이터가 [UNVERIFIED] 정량값 부재\n\n▶ 편차 비교 (사실): 마한 이론 예측편차 (안전도 향상 vs [UNVERIFIED]) vs 코르벳 이론 예측편차 (비용 증가 vs [UNVERIFIED]) — 두 이론 모두 DV 부재로 편차 측정 불가\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 '안전도/비용' DV 부재로 판정 불가. 쟁점: 해군력 투자 (마한) 가 드론 테러 (코르벳) 를 억제하는 임계점이 존재하는지, 혹은 드론의 저비용 비대칭성이 해군력의 우위를 무력화하는지 여부.\n\n[검증포인트] 소말릴란드 연안에서 발생한 드론 기반 해상 공격 건수 (ACLED), 알샤바브의 드론 보유 및 운용 보고서, 베르베라 항의 해상 보험료 변동 데이터 확보 필요.\n[문헌공백] 기존 문헌은 해양 안보를 **〈코르벳 제한적 제해권 이론〉**에서 함대 보존과 해상 교통로 위협의 2 차원적 관계로만 보았으나, **드론과 AI 의 교차도메인 **(무인화)이 이 관계를 어떻게 변환하는지 다루지 못한다. 본 분석은 **〈교차도메인 밀도〉**에서 지적된 '희박 섹터 (chokepoints)'와 '드론/사이버'의 연결 고리를 제시하며, 기존 해양력 이론이 **비대칭 드론 테러에 대한 취약성**을 간과하고 있음을 지적한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] bab_el_mandeb→CL=F — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA_downgrade",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "ticker 재정의 후 Type_A 정상경로 재시도"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "바브엘만데브 지역 ACLED 분쟁 건수 증가 시, 소말릴란드 베르베라 항을 경유하는 컨테이너 운임(USD)이 통계적으로 유의하게 상승한다 ().",
+        "h0": "바브엘만데브 지역 ACLED 분쟁 건수 증가 시, 소말릴란드 베르베라 항을 경유하는 컨테이너 운임(USD)이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "바브엘만데브 지역 ACLED 분쟁 건수",
+        "dependent_var": "소말릴란드 베르베라 항을 경유하는 컨테이너 운임(USD)",
+        "control_vars": [
+          "OPEC+ 여유 생산량",
+          "전략비축유 방출 규모"
+        ],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_C",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": true,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음 | Granger 비유의(p≥0.15) — 선행성 근거 없음",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.898,
+        "granger_q": null,
+        "f_statistic": 0.269,
+        "best_lag": 4,
+        "differenced": true,
+        "n_obs": 456,
+        "error": "[대리변수 사용] Type A 강등 → ACLED bab_el_mandeb + CL=F 대리변수 → CL=F (p=0.898, F=0.269, lag=4, diff=True)",
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.269,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.898,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.898,
+                "granger_q": null,
+                "f_statistic": 0.269,
+                "best_lag": 4,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED) — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "소말릴란드 베르베라 항의 화물 처리량 증가 시, 소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED) 가 통계적으로 유의하게 증가한다 ().",
+        "h0": "소말릴란드 베르베라 항의 화물 처리량 증가 시, 소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED) 가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "소말릴란드 베르베라 항의 화물 처리량",
+        "dependent_var": "소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED)",
+        "control_vars": [
+          "알샤바브 병력 수",
+          "중국산 드론 수출 제한 여부"
+        ],
+        "region_code": "sahel",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 sahel ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=sahel) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "소말릴란드 베르베라 항의 화물 처리량 증가 시, 소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED) 가 통계적으로 유의하게 증가한다 ().",
+                "region": "sahel",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "JNIM: Group for Support of Islam and Muslims vs Dozo Communal Militia (Mali)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 76,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Unidentified Armed Group (Mali) vs Civilians (Mali)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 55,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "JNIM: Group for Support of Islam and Muslims vs Military Forces of Mali (2021-)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 65,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Fulani Ethnic Militia (Nigeria) vs Civilians (Nigeria)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 58,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Government of Nigeria (2023-), Nigeria",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 20,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [],
+                    "evidence_note": "1차 사료 없음 — 미 국무부·UN 문서·회의록으로 직접 탐색 필요"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "JNIM: Group for Support of Islam and Muslims vs Dozo Communal Militia (Mali)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 76,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Unidentified Armed Group (Mali) vs Civilians (Mali)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 55,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "JNIM: Group for Support of Islam and Muslims vs Military Forces of Mali (2021-)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 65,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Fulani Ethnic Militia (Nigeria) vs Civilians (Nigeria)",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 58,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Government of Nigeria (2023-), Nigeria",
+                        "date": "2025-05-29",
+                        "source_type": "conflict",
+                        "severity": 20,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [],
+                    "evidence_note": "공식 소스 없음 — 대통령 성명·UN 결의·공동성명으로 직접 탐색 필요"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

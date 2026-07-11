@@ -48,6 +48,11 @@ class HypothesisSpec:
     # ── 학술 정합성 재설계 (인과추론 사다리) ──────────────────────────────
     inference_grade: str = "기술적"      # 기술적 → 상관 → 선행성 → 준실험 → 실험
     inference_caveat: str = ""           # Granger 한계·교란 미통제 등 정직한 단서
+    # [Granger 대리변수 치환 게이트 위원회 2026-07-11] PARTIAL 판정 근거 3진입구 —
+    # verification_status="PARTIAL"의 어의(정의) 자체는 불변, 이 필드는 "왜 PARTIAL인지"만
+    # 부가 정보로 얹는다. TREND_P15(p<0.15 경향) / FDR_FAILED(다중검정 강등) /
+    # EXTREME_ONLY(P90 극단 전용 승격) 세 값 중 하나, 해당 없으면 None.
+    partial_basis: str | None = None
     theory_grounded: bool = False        # 종속변수 쌍에 문헌상 인과 메커니즘 존재 여부
     granger_q: float | None = None       # 다중검정 FDR 보정 q값 (Benjamini-Hochberg)
     differenced: bool = False            # 정상성 보정(1차 차분) 적용 여부
@@ -67,6 +72,14 @@ class HypothesisSpec:
     # theory_grounded: 이론 문헌상 인과 메커니즘 화이트리스트 일치 여부 (등급 판정 유지)
     # is_proxy_pair:   화이트리스트 밖 대리변수 쌍 사용 여부 (D3 진단 전용, 등급과 무관)
     is_proxy_pair: bool = False              # D3 진단 전용 — 대리쌍 오류 가능성 마커
+    # ── [Granger 대리변수 치환 게이트 위원회 2026-07-11] ──────────────────────
+    # 라우터가 표면 DV(원 가설의 종속변수)를 region/sector 기본 지표로 치환했는가 —
+    # 쌍의 이론성(theory_grounded)과 직교. 화이트리스트 안 쌍이어도 표면 DV가 다른
+    # 것이면 치환이다(실측: hormuz→CL=F는 화이트리스트 안이라 is_proxy_pair=False였지만
+    # 실제 표면 DV는 "베르베라 항 물류 비중(TEU)"이었음 — 대리 자체는 있었으나
+    # is_proxy_pair 축엔 잡히지 않음). is_proxy_pair는 정상 Type_A 경로에서 미계산·
+    # 발화율 0%로 기능 정지돼 있었다(위원회 실측) — 이 필드가 그 공백을 메운다.
+    is_substituted_target: bool = False
     # ── [9-P-3] 라우팅 판정 근거 — "성공해도 틀린 방법" 사후 점검 기반 ──────
     # 9-0 Method Router 착수 전 현재 분기 구조의 판정 근거를 남겨둔다.
     # routing_method: 실제 선택된 분석 경로 ID
