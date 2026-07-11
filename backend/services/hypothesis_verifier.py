@@ -384,6 +384,11 @@ def _lock_pending_if_substituted(spec: "HypothesisSpec") -> None:
     극단 승격) 끝에서 단일 후처리로 적용한다 — 호출부(Type_C·Type_A→C 강등·
     섹터 proxy) 3곳에 각각 되돌림 로직을 심는 것보다 회귀 위험이 낮다(스펙 지시).
     호출 전 is_substituted_target=False인 정상 Type_A 경로는 no-op.
+
+    [조달 어의 — 게이트 재정의위 2026-07-13, 치환게이트위 이월 통일]
+    조달 = 표면 가설의 IV·DV 그 자체를 측정하는 데이터·경로 확보. 치환 검정은
+    조달이 아니다. 이 사후 잠금과 CROSS_SECTION의 사전 게이트
+    (methods.panel_regression.can_procure)는 같은 원칙의 두 형태다.
     """
     if not spec.is_substituted_target:
         return

@@ -213,7 +213,14 @@ def _procure_entries(spec) -> tuple["_VarEntry | None", "_VarEntry | None"]:
 
 
 def can_procure(spec) -> bool:
-    """IV·DV가 모두 카탈로그에 조달되고 동어반복이 아닌지 — 조달 게이트용."""
+    """IV·DV가 모두 카탈로그에 조달되고 동어반복이 아닌지 — 조달 게이트용.
+
+    [조달 어의 — 게이트 재정의위 2026-07-13, 치환게이트위 이월 통일]
+    조달(procurement) = 표면 가설의 IV·DV **그 자체**를 측정하는 데이터·경로 확보.
+    치환 검정(대리쌍·기본 지표 바꿔치기)은 조달이 아니다 — 수치는 진단 재료로
+    보존하되 등급 귀속 금지. 이 사전 게이트(CROSS_SECTION)와 Granger의 사후 잠금
+    (hypothesis_verifier._lock_pending_if_substituted)은 같은 원칙의 두 형태다.
+    """
     iv_entry, dv_entry = _procure_entries(spec)
     return (iv_entry is not None and dv_entry is not None
             and iv_entry.sql != dv_entry.sql)
