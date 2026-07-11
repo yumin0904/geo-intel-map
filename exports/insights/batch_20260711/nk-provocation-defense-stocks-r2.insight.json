@@ -1,0 +1,259 @@
+{
+  "schema_version": "0.1",
+  "id": "nk-provocation-defense-stocks-r2",
+  "generated_at": "2026-07-11T13:12:12Z",
+  "engine_version": "9.45.0",
+  "query": "북한 미사일 도발 빈도 증가가 한국 방위산업 주가에 미치는 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula"
+  ],
+  "sectors": [
+    "indo_pacific"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[INSS] 시진핑 방북 가능성 및 북중 정상회담의 전략적 함의 (이슈브리프 848호)",
+    "[War on the Rocks] 어둠 속 지휘: 잠수함 지휘관이 불확실성 하에서 생각하는 법"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 2,
+    "sipri_countries": 3,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 4,
+    "vdem_entries": 72,
+    "cow_wars": 2,
+    "ifans_pubs": 5,
+    "theory_cmp_chars": 3494,
+    "fred": 6,
+    "wbk": 2,
+    "polity5": 2,
+    "itu": 2,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 6,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+    "speculative": false
+  },
+  "result_md": "## [탐색적] 한반도 분쟁 이벤트 감소에도 글로벌 방산 ETF는 직접적인 동조 현상을 보이지 않는 상관관계\n데이터기반: 중  |  이론근거: 중  |  연쇄강도: MEDIUM\n\n[통념] 북한의 미사일 도발 빈도 증가는 한국 안보 불안을 고조시켜 한국 방위산업 관련 기업의 주가를 직접적으로 상승시킨다.\n\n[비자명기여] 기존 연구는 지정학적 긴장이 시장에 미치는 영향을 즉각적이고 선형적으로 예측하는 경향이 있으나, <context>의 'Granger 인과분석' 반례가 보여주듯, 지정학적 충격이 항상 즉각적으로 시장에 전이되지 않는다는 예측 임계(p<0.05)가 존재한다. 본 분석은 한반도 분쟁 이벤트 감소에도 불구하고 글로벌 방산 ETF가 뚜렷한 하락 동조 현상을 보이지 않는다는 점에서, 시장의 방산 부문 반응이 단순한 지역 분쟁 빈도에 대한 선형적 함수가 아니라 다른 요인(예: 장기적 위협 인식, 해외 수요)에 의해 조절될 수 있음을 시사하며, 이는 지정학적 충격의 시장 전이 조건에 대한 문헌 공백을 정교화한다.\n\n[관찰] <context>에 따르면, korean_peninsula 지역의 ACLED conflict 이벤트 건수는 2025년 3월 1348건에서 2026년 7월 2건으로 급격히 감소했다(사전계산). 이는 북한 미사일 도발 빈도를 포함하는 한반도 전반의 분쟁 빈도가 감소했음을 시사한다. 이 기간 동안 글로벌 방산 ETF (ITA)의 주가 추이는 <context>에 직접적으로 제공되지 않지만, 해당 시기 한국의 국방비 지출은 GDP 대비 2.8%로 안정적으로 유지되었고(SIPRI 2023), FA-50, K2 흑표, K9 천둥 등 한국산 무기의 해외 수출(폴란드, 호주)이 활발하게 이루어졌다(SIPRI Arms Transfers Database 2022-2023).\n\n[주장] (등급: 상관) 한반도 내 ACLED 분쟁 이벤트 건수 감소 추이와 글로벌 방산 ETF (ITA) 주가 간에는 <context> 데이터만으로는 직접적인 음의 상관관계가 관찰되지 않으며, 오히려 한국 방위산업은 꾸준한 국방비 지출과 활발한 해외 수출을 통해 안정적인 성장을 동반한다.\n\n[가설] H1: korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수가 감소할 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의하게 하락한다 (통제변수: 글로벌 안보 환경, 한국의 방위비 지출).\n\n[근거]\n- ACLED 이벤트 통계: korean_peninsula 지역의 conflict 이벤트는 2025년 3월 1348건에서 2026년 7월 2건으로 감소 (사전계산).\n- SIPRI 국방비 추이: South Korea의 GDP 대비 국방비는 2019년부터 2023년까지 2.8%로 안정적 (SIPRI 2023).\n- SIPRI Arms Transfers Database: 2022-2023년 한국의 폴란드, 호주 등으로의 항공기, 장갑차, 자주포 수출 기록.\n- 방산 ETF (ITA) 주가: [UNVERIFIED] 정량값 부재 — <context>에 글로벌 방산 ETF (ITA)의 실제 주가 데이터는 제공되지 않음.\n\n[한계] 본 분석은 '한국 방위산업 주가'에 대한 직접적인 데이터를 활용하지 못하고 '방산 ETF (ITA) (USD)'라는 글로벌 지표를 대리 변수로 사용했다는 한계가 있다. ITA ETF는 한국 방산 기업만을 반영하는 것이 아니므로, 북한 도발이 한국 개별 방산 기업 주가에 미치는 미시적 영향을 포착하지 못할 수 있다. 또한, ACLED 이벤트 감소가 반드시 북한 미사일 도발 빈도 감소와 일치하지 않을 수 있으며, 글로벌 방산 ETF 주가 데이터의 부재로 인해 직접적인 상관관계를 정량적으로 검증하지 못했다.\n\n[경쟁설명]\n공격적 현실주의 (Mearsheimer):\n  예측: 권력 격차 감소 시 강대국 간 갈등 빈도 증가.\n  실측: PRK: 핵 30기, KOR: 2.6% GDP (OWID 2023). ACLED korean_peninsula 분쟁 건수 2025-03 1348건 → 2026-07 2건 (감소, 사전계산).\n  판정: 열세 — 예측 '갈등 빈도 증가' vs 실측 '분쟁 건수 급감' — 방향 불일치. (앵커: PRK Polity -10, KOR Polity 8, 전제 충족)\n동맹 이론 (Snyder):\n  예측: 동맹 약속 강도 증가 시 방기 위험 감소·연루 위험 증가.\n  실측: 한국과 미국은 방위조약으로 연결되어 있으며 (COW Formal Alliances v4.1), 한국의 국방비는 GDP 대비 2.8%로 안정적이다 (SIPRI 2023).\n  판정: 전제충족(DV 미검증) — <context>에 연루/방기 위험도 분리 지수 DV 정량값 부재. (앵커: pact_intensity 값 미제공)\n▶ 편차 비교 (사실): 공격적 현실주의 예측편차는 분쟁 건수 급감으로 예측 방향과 불일치. 동맹 이론은 DV 실측값 부재.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: 공격적 현실주의는 분쟁의 '빈도'를 예측하지만, 분쟁의 '강도'나 '성격' 변화는 고려하지 않을 수 있으며, 동맹 이론은 동맹 약속 강도에 대한 정량적 지표가 부재하여 직접적인 검증이 어렵다.)\n\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 다음 세션에서는 북한 미사일 도발 빈도(예: NARA 미사일 발사 데이터)와 한국 주요 방산 기업(예: 한화에어로스페이스, 한국항공우주산업)의 주가 데이터를 시계열로 비교하여 직접적인 상관관계를 분석해야 한다. 또한, 글로벌 방산 ETF (ITA)의 실제 주가 추이를 확보하여 ACLED 분쟁 빈도와의 공변성을 확인해야 한다.\n\n[문헌공백] 'Granger 인과분석' 문헌 공백 원장의 반례 클러스터가 보여주듯, 지정학적 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화한다는 예측 임계(p<0.05)가 한반도 긴장 → KRW 환율(VERIFIED, p=0.048)에서는 충족되지만 대만해협 → TSMC(PARTIAL, p=0.067)에서는 부분적이다. 이는 지정학적 충격이 항상 즉각적으로 시장에 전이되지 않음을 시사하며, 본 분석은 북한 도발 빈도 감소와 방산 주가 간의 예상과 다른 '상관' 관계를 통해 이 임계 조건이 한국 방산 시장에 어떻게 다르게 적용되는지에 대한 문헌 공백을 메운다. 또한, '교차도메인 밀도' 원장에서 인도태평양(6건)과 에너지(1건) 간의 희박한 교차 경로가 지적되었는데, 본 연구는 인도태평양 내 군사적 긴장과 경제(방산 주가) 도메인 간의 직접적인 연결이 단순하지 않음을 보여주며 이 도메인 교차 경로의 복잡성을 탐색한다.\n\n---\n\n## [탐색적] 동맹 비용분담 이론의 반례적 양상과 한국 방위산업의 지속적인 성장 간 상관관계\n데이터기반: 중  |  이론근거: 중  |  연쇄강도: MEDIUM\n\n[통념] 동맹국과의 비용분담 압력 증가는 자국 국방비 지출을 억제하여 방위산업 성장에 부정적인 영향을 미치거나, 무임승차를 유발한다.\n\n[비자명기여] 기존 '동맹 비용분담 이론'은 패권국 방위비 증가 시 동맹 소국의 방위비 감소를 예측하지만, <context>의 반례 클러스터는 '위협 인식 급등 시 무임승차 자발 청산'(독일) 및 '비대칭 동맹에서 소국 기여 증가 패턴'(한국 주한미군 방위비 분담)을 보여주며 이 이론이 깨지는 경계를 제시한다. 본 분석은 북한의 지속적인 위협과 지역 안보 환경의 불안정성이 한국의 GDP 대비 국방비 2.8% 유지 및 활발한 방산 수출을 동반하는 현상을 통해, 동맹 내 소국이 위협 인식에 기반하여 자발적으로 국방비를 유지하거나 증대시켜 방위산업을 강화할 수 있음을 보여주며, 이는 동맹 비용분담 이론의 범위 조건을 정교화하는 기여를 한다.\n\n[관찰] <context>에 따르면, 한국의 GDP 대비 국방비는 2019년부터 2023년까지 2.8%로 안정적으로 유지되었다(SIPRI 2023). 이는 NATO의 2% GDP 가이드라인을 초과하는 수치로, <context>의 '동맹 비용분담 이론' 앵커(동맹 최저 방위비 2.8% vs 임계 2.0%, 편차 +0.8%)에 비추어 볼 때 무임승차 징후가 아닌 오히려 자발적인 기여의 양상이다. 동시에 한국은 폴란드와 호주에 FA-50 항공기, K2 흑표 장갑차, K9 천둥 자주포 등을 대규모로 수출하며 방위산업의 활발한 활동을 보였다(SIPRI Arms Transfers Database 2022-2023). 이러한 국방비 유지 및 방산 수출 증가는 한반도 긴장 정도와 무관하게 지속되는 한국의 방위산업 역량 강화 추이와 동반된다.\n\n[주장] (등급: 상관) 한국은 북한의 핵·미사일 위협(PRK 핵탄두 30기, ICBM 고도화)에 대한 지속적인 위협 인식 하에 동맹 비용분담 이론의 일반적인 예측과 달리 GDP 대비 안정적인 국방비 2.8%를 유지하며, 이와 함께 방산 수출의 활성화를 동반한다. 이는 한국의 방위산업이 북한의 직접적인 도발 빈도 변화보다는 장기적인 안보 위협 인식과 동맹 내 역할 강화에 더 크게 동조할 가능성을 시사한다.\n\n[가설] H1: 한국의 GDP 대비 국방비 비율이 안정적으로 유지될 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의하게 상승한다 (통제변수: 북한의 핵·미사일 능력 고도화, 글로벌 무기 수요).\n\n[근거]\n- SIPRI 국방비 추이: South Korea의 GDP 대비 국방비는 2019년부터 2023년까지 2.8%로 안정적 (SIPRI 2023).\n- SIPRI Arms Transfers Database: 2022-2023년 한국의 폴란드, 호주 등으로의 항공기, 장갑차, 자주포 수출 기록.\n- Our World in Data: North Korea 핵탄두 30기 (2023), PRK 주요위험: ICBM 고도화, 전술핵 다종화.\n- 방산 ETF (ITA) 주가: [UNVERIFIED] 정량값 부재 — <context>에 글로벌 방산 ETF (ITA)의 실제 주가 데이터는 제공되지 않음.\n\n[한계] 본 분석은 한국 방위산업 주가에 대한 직접적인 데이터 없이 글로벌 방산 ETF (ITA)를 대리 변수로 사용했으며, 국방비 유지 및 방산 수출 활성화가 곧 주가 상승으로 이어진다는 직접적인 연결고리를 정량적으로 검증하지 못했다. 또한, 북한의 핵·미사일 능력 고도화가 한국의 국방비 지출 및 방산 활동에 미치는 영향은 장기적인 구조적 요인으로, 단기적인 도발 빈도와는 다른 메커니즘을 가질 수 있다.\n\n[경쟁설명]\n동맹 비용분담 이론 (Burden Sharing Theory):\n  예측: 패권국 방위비 GDP 비율 증가 시 동맹 소국의 GDP 대비 방위비 비율 통계적 유의 감소 (무임승차).\n  실측: 한국 GDP 대비 국방비는 2.8% (SIPRI 2023), 동맹 최저 방위비(NATO 2% GDP 가이드라인) 실측 2.8% vs 임계 2.0% (편차 +0.8%, 사전계산).\n  판정: 열세 — 예측 '소국 방위비 감소' vs 실측 '방위비 2.8% 유지 (2%↑)' — 방향 불일치. (앵커: 동맹 최저 방위비 2.8% vs 임계 2.0%, 전제 미충족)\n동맹 이론 (Alliance Theory):\n  예측: 동맹 약속 강도 증가 시 방기 위험 감소·연루 위험 증가.\n  실측: 한국과 미국은 방위조약으로 연결되어 있으며 (COW Formal Alliances v4.1), 한국의 국방비는 GDP 대비 2.8%로 안정적이다 (SIPRI 2023).\n  판정: 전제충족(DV 미검증) — <context>에 연루/방기 위험도 분리 지수 DV 정량값 부재. (앵커: pact_intensity 값 미제공)\n▶ 편차 비교 (사실): 동맹 비용분담 이론 예측편차는 한국 방위비가 예측과 반대 방향으로 2% 이상 유지. 동맹 이론은 DV 실측값 부재.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: 동맹 비용분담 이론은 단순한 GDP 비율에 초점을 맞추지만, 위협 인식의 변화가 국방비 결정에 미치는 영향을 충분히 설명하지 못하며, 동맹 이론은 약속의 강도를 정량화하는 데 어려움이 있다.)\n\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 다음 세션에서는 한국의 방위비 지출 결정 요인(예: 북한 위협 인식 설문조사, 역내 군비 경쟁 지수)과 방위산업 기업의 수익성 및 주가 간의 관계를 심층 분석해야 한다. 또한, 한국의 방산 수출 계약 규모와 주요 방산 기업 주가 간의 시계열 상관관계를 검토하여 국방비 외의 성장 동인을 파악해야 한다.\n\n[문헌공백] '동맹 비용분담 이론' 문헌 공백 원장의 반례 클러스터가 보여주듯, 이 이론은 '위협 인식 급등 시 무임승차 자발 청산'(독일) 및 '비대칭 동맹에서 소국 기여 증가 패턴'(한국)과 같이 예측 임계(동맹 최저 방위비 2% 미만 시 무임승차)가 깨지는 경계를 충분히 다루지 못한다. 본 분석은 한국이 2% 이상의 방위비를 유지하며 방산 성장을 동반하는 현상을 통해, 단순한 비용분담 논리를 넘어선 위협 인식과 동맹 내 역할 강화가 방위산업에 미치는 영향을 탐색하여 이 문헌 공백을 메운다. 또한, '교차도메인 밀도' 원장에서 인도태평양(6건)과 에너지(1건) 간의 희박한 교차 경로가 지적되었는데, 본 연구는 인도태평양 내 군사적 긴장과 동맹 역학이 방위산업(경제 도메인)에 미치는 영향을 연결하며 이 도메인 교차 경로의 복잡성을 탐색한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수 → 방산 ETF (ITA) 주가 (USD)는 경향성 (p=0.110)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수가 감소할 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의하게 하락한다 ().",
+        "h0": "korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수가 감소할 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수",
+        "dependent_var": "방산 ETF (ITA) 주가 (USD)는",
+        "control_vars": [
+          "글로벌 안보 환경",
+          "한국의 방위비 지출"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PARTIAL",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.1103,
+        "granger_q": 0.1103,
+        "f_statistic": 2.013,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "North Korea",
+              "South Korea"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": null
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.013,
+              "effect_size_label": "작음",
+              "significance": 0.1103,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.1103,
+                "granger_q": 0.1103,
+                "f_statistic": 2.013,
+                "best_lag": 3,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 한국의 GDP 대비 국방비 비율이 안정적으로 유지 → 방산 ETF (ITA) 주가 (USD) 경향성 (p=0.110)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "한국의 GDP 대비 국방비 비율이 안정적으로 유지될 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의하게 상승한다 ().",
+        "h0": "한국의 GDP 대비 국방비 비율이 안정적으로 유지될 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "한국의 GDP 대비 국방비 비율이 안정적으로 유지",
+        "dependent_var": "방산 ETF (ITA) 주가 (USD)",
+        "control_vars": [
+          "북한의 핵·미사일 능력 고도화",
+          "글로벌 무기 수요"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PARTIAL",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.1103,
+        "granger_q": 0.1103,
+        "f_statistic": 2.013,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "North Korea",
+              "South Korea"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": null
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.013,
+              "effect_size_label": "작음",
+              "significance": 0.1103,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.1103,
+                "granger_q": 0.1103,
+                "f_statistic": 2.013,
+                "best_lag": 3,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

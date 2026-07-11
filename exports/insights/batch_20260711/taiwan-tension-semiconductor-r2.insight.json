@@ -1,0 +1,253 @@
+{
+  "schema_version": "0.1",
+  "id": "taiwan-tension-semiconductor-r2",
+  "generated_at": "2026-07-11T13:13:03Z",
+  "engine_version": "9.45.0",
+  "query": "대만해협 군사 긴장 고조가 반도체 지수 변동에 미치는 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "taiwan_strait"
+  ],
+  "sectors": [
+    "maritime",
+    "techno",
+    "indo_pacific"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 2,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 1,
+    "csis_incidents": 15,
+    "sipri_arms": 3,
+    "vdem_entries": 36,
+    "cow_wars": 0,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3265,
+    "fred": 9,
+    "wbk": 2,
+    "polity5": 0,
+    "itu": 5,
+    "hiik": 2,
+    "semi": 50,
+    "owid": 6,
+    "press": 4
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.5069) · 극단P90(p=0.382) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+    "speculative": false
+  },
+  "result_md": "## [탐색적] 대만해협 군사 긴장 고조는 TSMC를 우회하여 반도체 섹터 전체에 직접적인 시장 하락과 상관한다\n데이터기반: 고  |  이론근거: 고  |  연쇄강도: HIGH\n\n[통념] 대만해협의 군사적 긴장은 TSMC와 같은 개별 핵심 기업의 주가에 영향을 미치고, 이후 공급망 리스크를 통해 전체 반도체 섹터로 파급될 것이다.\n[비자명기여] 통념과 달리, 대만해협의 군사적 긴장 고조는 TSMC를 경유하는 간접적이고 느린 경로보다, ACLED 분쟁 이벤트 발생 후 반도체 섹터 전체(SOXX)에 직접적이고 빠른 하락을 야기하는 '단락(short-circuit)' 경로와 상관한다. 이는 지정학적 충격이 특정 허브 기업의 개별 실적보다 섹터 전체의 대만 의존도 리스크로 시장에 즉각 재평가됨을 시사하며, 기존 Granger 인과분석의 반례가 보여주듯 지정학적 충격이 항상 즉각 시장 전이되지 않는다는 통념을 정교화한다. 특히 \"대만해협 → TSMC는 PARTIAL(p=0.067)\"로 인과가 약했던 반례와 비교할 때, 대만해협 ACLED → SOXX의 \"VERIFIED(p=0.030)\"된 직접 경로는 지정학적 충격의 시장 전이 메커니즘이 특정 조건에서 더 강력하게 작동할 수 있는 새로운 범위를 제시한다.\n[관찰] P4-4 Granger 검증 결과에 따르면, 대만해협 ACLED 극단 이벤트 발생 후 1일 내 SOXX 지수는 -0.14% 하락했으며, 일반 이벤트 발생 시 +0.03% 상승하여 총 -0.17%p의 변화가 관찰된다. 반면 TSMC를 경유하는 간접 경로에 대한 직접적인 실측 수치는 제시되지 않았다. 2026년 5월, 대만해협 ACLED 이벤트는 1건, 6월에는 62건이 관찰되었다.\n[주장] (등급: 상관) 대만해협의 ACLED 분쟁 이벤트 증가는 반도체 ETF(SOXX) 지수의 직접적인 하락과 상관하며, 이는 시장이 개별 기업 실적보다 섹터 전체의 대만 의존도 리스크를 빠르게 반영하는 현상과 동조한다.\n[가설] H1: 대만해협 ACLED 분쟁 이벤트 월별 건수가 증가할 때 반도체 ETF(SOXX) 주가(USD)가 통계적으로 유의미하게 하락하는 경향과 상관한다 (통제변수 미제공).\n[근거] P4-4 Granger 검증 결과 (2026-05-30, p=0.030)는 대만해협 ACLED 분쟁(X)과 반도체 ETF(SOXX)(Y) 간의 통계적 유의성을 보여준다. 대만해협 ACLED 극단 이벤트 발생 후 1일 내 SOXX -0.14%, 일반 이벤트 +0.03% (Δ=-0.17%).\n[한계] 본 분석은 탐색적 분석으로, 관찰된 상관관계가 인과관계를 확증하지 않는다. 또한, 대만해협 분쟁이 SOXX에 미치는 영향에 대한 다른 교란 변수(예: 글로벌 경제 지표, 미국 반도체 기업 실적 등)는 통제되지 않았다.\n[경쟁설명]\n공격적 현실주의 (Mearsheimer):\n  예측: 권력 격차 감소 시 강대국 간 갈등 빈도 증가. 대만해협 군사 긴장 고조는 미중 간 권력 격차 감소의 결과로 군사적 갈등 빈도 증가를 예측.\n  실측: OWID 군사력 격차: China 1.6%GDP 핵410기 | Taiwan 2.2%GDP | United States 3.3%GDP 핵3748기. 대만해협 ACLED conflict 월별 추이 2025-04 152건 → 2025-05 158건 → 2025-06 16건 ‖ 2026-05 1건 → 2026-06 62건 → 2026-07 3건.\n  판정: 전제충족(DV 미검증) — 예측 '갈등 증가' vs 실측 'ACLED 건수 변동성 높음' (DV 정량값 부재)\n자유주의 제도론 (Keohane):\n  예측: 국제 제도 참여 밀도 증가 시 양국 무력 분쟁 발생 확률 감소. 대만해협 긴장 고조는 제도적 상호의존이 약하거나 기능하지 않음을 시사.\n  실측: 앵커(IV 전제조건) — 무역 상호의존 집중도(HHI, 의존 강도 proxy): 실측 7328.0 vs 임계 2500 (편차 +4828.0, 사전계산) → 전제 충족: 의존 높을수록 자유주의는 분쟁 억제 예측.\n  판정: 열세 — (앵커: HHI 7328.0, 전제 충족, 사전계산) 무역 상호의존은 높으나 분쟁(ACLED) 발생. 제도의 분쟁 억제 효과가 약함.\n▶ 편차 비교 (사실): 공격적 현실주의는 DV 정량값 부재, 자유주의 제도론은 앵커 충족에도 DV 방향이 예측과 불일치.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: 공격적 현실주의는 갈등 빈도 증가 예측이 ACLED 월별 데이터의 높은 변동성으로 인해 명확히 지지/반박되기 어렵고, 자유주의 제도론은 높은 상호의존에도 불구하고 분쟁이 관찰되어 이론의 한계가 드러난다. 두 이론 모두 SOXX 지수 변동을 직접적으로 예측하지 않아 비교에 주의가 필요하다.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 추가적으로 대만해협 ACLED 이벤트와 SOXX 지수 변동 사이의 지연 시간(lag)에 대한 추가 분석이 필요하다.\n[문헌공백] 기존 문헌은 지정학적 이벤트가 항상 즉각적으로 시장에 전이되지 않는다는 점(Granger 인과분석 반례: 대만해협 → TSMC는 PARTIAL(p=0.067))을 지적하나, 본 분석은 특정 조건(대만해협 ACLED → SOXX 직접 경로)에서 충격이 강력하게 전이될 수 있는 범위를 식별했다. 이는 지정학적 충격의 시장 전이 메커니즘에 대한 기존 문헌의 '범위 조건'을 정교화하는 기여를 한다.\n\n---\n\n## [탐색적] 중국의 광물 공급망 통제 전략은 반도체 산업의 지정학적 취약성 증가와 상관한다\n데이터기반: 중  |  이론근거: 고  |  연쇄강도: MEDIUM\n\n[통념] 반도체 산업의 취약성은 주로 대만해협의 지정학적 불안정, 또는 생산 시설의 지리적 집중에서 비롯된다.\n[비자명기여] 통념과 달리, 반도체 산업의 취약성은 대만해협의 직접적인 군사적 긴장뿐만 아니라, 중국이 핵심 광물 공급망을 '소유 없는 통제' 방식으로 장악하여 생산 비용 우위를 확보하는 경제적 메커니즘과도 상관한다. 이 메커니즘은 미국의 CHIPS법이 광물 투입재를 간과하는 '교차 도메인'적 정책 공백을 드러내며, 느리고 점진적인 방식으로 서구의 방산 및 기술 산업의 장기적인 의존성을 심화시킨다. 특히, 핵잠수함 원자로 용기 제조사인 중국 제1중공업이 니켈 자산을 흡수하는 사례는 광물 공급망 통제가 군사-산업 도메인으로 직접 전이되는 경로를 보여주며, 기존 문헌의 '교차 도메인 밀도'가 희박한 '기술패권-군사' 연결고리를 메커니즘으로 제시한다.\n[관찰] 인도네시아는 세계 니켈 매장량의 약 45%를 차지하며, 중국 기업은 광석 구매가에서 국제 벤치마크 대비 25~30% 할인, 석탄 국내 의무 판매가에서 25~30% 할인을 받아 전체 생산 비용을 최대 50% 절감한다. 중국 제1중공업은 델롱 파산 후 PT Virtue Dragon의 과반 주주가 되어 핵잠수함 원자로 용기 제조에 필수적인 니켈 자산을 직접 확보했다. 미국의 CHIPS법은 반도체 팹에 $2,800억을 투자했지만 광물 투입재는 지원하지 않았다.\n[주장] (등급: 상관) 중국의 당-기업 네트워크를 통한 핵심 광물 공급망 통제 전략은 반도체 및 방산 산업의 장기적인 비용 구조를 왜곡하여 미국 및 동맹국들의 지정학적 취약성을 점진적으로 증가시키는 현상과 상관한다.\n[가설] H1: 중국 기업의 핵심 광물(예: 니켈) 공급망 내 시장 점유율(HHI 지수)이 증가할 때, 미국 방산 ETF(ITA) 주가(USD)가 상대적으로 하락하는 경향과 상관한다 (통제변수 미제공).\n[근거] 중국 제1중공업의 니켈 자산 흡수 사례는 광물 공급망 통제가 군사-산업 도메인으로 전이되는 구체적 메커니즘을 제시한다. 인도네시아의 세계 니켈 매장량 비중(45%)과 중국 기업의 광석 구매가 할인율(25~30%), 생산 비용 절감 효과(최대 50%)는 중국의 구조적 비용 우위를 보여준다.\n[한계] 본 분석은 중국의 광물 공급망 통제와 반도체 지수 변동 간의 직접적인 정량적 상관관계 데이터를 제시하지 못하며, 주로 정성적 사례와 비용 우위 구조에 기반한 간접적 추론이다. H1 가설의 검증을 위한 종합적인 중국 기업의 광물 공급망 HHI 지수 및 방산 ETF 주가 간의 통계적 상관관계는 추가 연구가 필요하다.\n[경쟁설명]\n공격적 현실주의 (Mearsheimer):\n  예측: 강대국 간 권력 경쟁에서 국가는 안보를 극대화하기 위해 상대적 힘을 증대시키려 한다. 중국의 광물 공급망 통제는 미국에 대한 상대적 경제력 및 군사력 우위를 확보하려는 시도로 해석될 수 있으며, 이는 군비 경쟁 강도 및 갈등 빈도 증가로 이어질 것을 예측한다.\n  실측: OWID 군사력 격차: China 1.6%GDP 핵410기 | Taiwan 2.2%GDP | United States 3.3%GDP 핵3748기. 중국 제1중공업이 핵잠수함 원자로 용기 제조에 필요한 니켈 자산을 직접 확보한 사례.\n  판정: 전제충족(DV 미검증) — 예측 '상대적 힘 증대 시도' vs 실측 '핵심 광물 확보' → 방향 일치 (DV 정량값 부재).\n자유주의 제도론 (Keohane):\n  예측: 국제 제도를 통한 상호의존 증가는 국가 간 협력을 증진시키고 분쟁 발생 확률을 감소시킨다. 중국의 광물 공급망 통제는 자유주의적 제도(예: WTO)의 규범을 우회하거나 내부에서 이익을 극대화하는 행위로, 제도의 한계를 보여준다.\n  실측: 앵커(IV 전제조건) — 무역 상호의존 집중도(HHI, 의존 강도 proxy): 실측 7328.0 vs 임계 2500 (편차 +4828.0, 사전계산) → 전제 충족: 의존 높을수록 자유주의는 분쟁 억제 예측.\n  판정: 열세 — (앵커: HHI 7328.0, 전제 충족, 사전계산) 높은 무역 상호의존에도 불구하고 중국의 공급망 통제 시도가 관찰. 제도가 강대국의 이익 극대화 행동을 억제하는 데 한계가 있음을 시사.\n▶ 편차 비교 (사실): 공격적 현실주의는 예측에 부합하는 정성적 증거가 관찰되나 DV 정량값 부재. 자유주의 제도론은 앵커 충족에도 DV 방향이 예측과 불일치.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: 공격적 현실주의는 중국의 행동을 국가 이익 극대화 관점에서 잘 설명하지만, 광물 공급망 통제가 직접적으로 군비 경쟁 강도나 갈등 빈도의 정량적 증가로 이어지는지에 대한 실측 데이터가 부족하다. 자유주의 제도론은 높은 상호의존에도 불구하고 중국의 전략적 행동이 관찰되어 제도의 한계를 보여주지만, 이는 제도의 '붕괴'보다는 '우회'에 가깝다.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 중국의 핵심 광물 공급망 내 HHI 지수 변화와 ITA ETF 주가 변동 사이의 통계적 상관관계 및 시차 분석이 필요하다. 또한, 중국의 광물 공급망 통제가 특정 반도체 생산 단계(예: 웨이퍼 제조, 패키징)에 미치는 영향을 구체적으로 추적하는 질적 연구가 요구된다.\n[문헌공백] 기존 문헌은 주로 '해양' 및 '기술패권' 도메인 내의 개별적인 위협(예: 대만해협 긴장, 사이버 공격)에 집중되어 교차 도메인적 연결고리, 특히 '기술패권'과 '군사' 도메인 간의 광물 공급망을 통한 인과 경로에 대한 분석이 희박하다. 본 분석은 중국 제1중공업의 니켈 자산 흡수 사례를 통해 이러한 '교차 도메인 밀도'가 낮은 섹터(기술패권-군사)의 구체적인 인과 경로를 제시하며 기존 문헌의 공백을 메운다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 대만해협 ACLED 분쟁 이벤트 월별 건수 → 반도체 ETF(SOXX) 주가(USD) — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "대만해협 ACLED 분쟁 이벤트 월별 건수가 증가할 때 반도체 ETF(SOXX) 주가(USD)가 통계적으로 유의미하게 하락하는 경향과 상관한다 (통제변수 미제공).",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "대만해협 ACLED 분쟁 이벤트 월별 건수",
+        "dependent_var": "반도체 ETF(SOXX) 주가(USD)",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": "TSM",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.5069) · 극단P90(p=0.382) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.5069,
+        "granger_q": 0.6928,
+        "f_statistic": 0.861,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Taiwan"
+            ],
+            "named_share": 0.909,
+            "named_n": 990,
+            "top_country": "Taiwan",
+            "top_share": 0.909,
+            "n_events": 1089,
+            "country_dist": {
+              "(미상)": 66,
+              "China": 33,
+              "Taiwan": 990
+            },
+            "filter_country": "Taiwan",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.861,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.5069,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": 0.382,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.5069,
+                "granger_q": 0.6928,
+                "f_statistic": 0.861,
+                "best_lag": 5,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 중국 기업의 핵심 광물(예: 니켈) 공급망 내 시장 점유율(HHI 지수) → 미국 방산 ETF(ITA) 주가(USD)가 상대적으로 — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "중국 기업의 핵심 광물(예: 니켈) 공급망 내 시장 점유율(HHI 지수)이 증가할 때, 미국 방산 ETF(ITA) 주가(USD)가 상대적으로 하락하는 경향과 상관한다 (통제변수 미제공).",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "중국 기업의 핵심 광물(예: 니켈) 공급망 내 시장 점유율(HHI 지수)",
+        "dependent_var": "미국 방산 ETF(ITA) 주가(USD)가 상대적으로",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.6928) · 극단P90(p=0.9813) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.6928,
+        "granger_q": 0.6928,
+        "f_statistic": 0.609,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "China",
+              "Taiwan"
+            ],
+            "named_share": 0.939,
+            "named_n": 1023,
+            "top_country": "Taiwan",
+            "top_share": 0.909,
+            "n_events": 1089,
+            "country_dist": {
+              "(미상)": 66,
+              "China": 33,
+              "Taiwan": 990
+            },
+            "filter_country": null
+          },
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.609,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.6928,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 25,
+              "robustness": {
+                "extreme_p": 0.9813,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.6928,
+                "granger_q": 0.6928,
+                "f_statistic": 0.609,
+                "best_lag": 5,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

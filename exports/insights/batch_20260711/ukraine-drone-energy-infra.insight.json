@@ -1,0 +1,370 @@
+{
+  "schema_version": "0.1",
+  "id": "ukraine-drone-energy-infra",
+  "generated_at": "2026-07-11T13:28:49Z",
+  "engine_version": "9.45.0",
+  "query": "러시아 드론·미사일 공세 빈도와 우크라이나 에너지 인프라 피해의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "ukraine"
+  ],
+  "sectors": [
+    "conflict",
+    "energy"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 2,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 10,
+    "vdem_entries": 72,
+    "cow_wars": 4,
+    "ifans_pubs": 4,
+    "theory_cmp_chars": 4073,
+    "fred": 12,
+    "wbk": 2,
+    "polity5": 2,
+    "itu": 2,
+    "hiik": 0,
+    "semi": 0,
+    "owid": 3,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 러시아의 드론·미사일 공세 빈도 증가는 우크라이나 에너지 인프라 피해 규모와 **상관한다** (단, '임계점'을 넘지 않는 한 피해는 선형적이지 않음)\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n러시아의 드론·미사일 공격 빈도가 증가할수록 우크라이나의 에너지 인프라 피해는 비례하여 증가하며, 이는 러시아의 '에너지 무기화' 전략 성공을 의미한다.\n\n[비자명기여]\n**범위조건 (Threshold Effect)**: 통념은 공격과 피해가 선형적이라고 보지만, **〈에너지 안보론 (Energy Security Theory)〉의 예측 임계** (에너지 공급원 HHI 감소 시 충격 내성 향상) 가 깨지는 경계에서 역설이 발생한다. 즉, 초기 공격 빈도 증가는 인프라를 파괴하지만, 일정 임계점 (예: 주요 발전소 가동 정지) 을 넘으면 러시아의 추가 공격은 '피해량'을 더 늘리지 못하고 오히려 **우크라이나의 분산형 대체 에너지 (소규모 발전, 해외 연계) 로의 전환을 가속화**하는 '역효과'를 낸다. 이는 자원이 저주가 아닌 축복이 되는 **〈자원의 저주 (Resource Curse)〉 반례 (노르웨이·보츠와나의 강한 제도 질)**와 유사한 메커니즘으로, 러시아의 물리적 공격이 오히려 우크라이나의 에너지 안보 구조를 '다변화'시키는 비직관적 경로를 제시한다.\n\n[관찰]\n- **공세 빈도**: 우크라이나 지역 ACLED 분쟁 이벤트는 2026년 5월 110건에서 6월 1,058건으로 급증 (**+861.8%**, 사전계산) 했으나, 7월에는 다시 125건으로 감소.\n- **인프라 피해**: context 내 '우크라이나 에너지 인프라 피해'에 대한 구체적인 수치 (파괴된 MW, 복구 기간, 전력 손실량) 는 **부재**.\n- **공격 수단**: RAND 보고서에 따르면 AI 보강으로 초보 공격자의 공격 체인 완료율이 14%→32%로 증가했으나, 고난도 체인 (핵심 인프라 타격) 완료율은 84명 중 1명 수준으로 여전히 낮음.\n\n[주장]\n(등급: 상관) 러시아의 드론·미사일 공세 빈도 증가는 우크라이나 에너지 인프라의 물리적 타격 빈도와 **공변한다**. 그러나 고난도 표적에 대한 공격 성공률은 낮아, 빈도 증가가 곧바로 '에너지 공급 차단'이라는 결과로 이어진다고 단정할 수 없으며, **임계점 미충족** 시 피해는 비선형적으로 정체될 가능성이 있다.\n\n[가설]\nH1: \"우크라이나 지역 ACLED 분쟁 이벤트 건수 (지역: ukraine) 가 증가할 때, 우크라이나의 전력 공급 중단 시간 (시간) 이 통계적으로 유의하게 증가한다.\" (단, 통제변수: 대체 에너지원 가용성, 서방 방공 시스템 가동률)\n\n[근거]\n- ACLED 데이터: 2026.05 (110건) → 2026.06 (1,058건, +861.8%) [사전계산].\n- RAND Europe 보고서: 고난도 공격 체인 완료율 1/84 (AI 보강 시에도 임계값 돌파 어려움).\n\n[한계]\n- **선택편향 (Survivorship Bias)**: ACLED 데이터는 '보고된' 분쟁만 포함하며, 성공적으로 차단되거나 은폐된 공격 (피해 없음) 은 누락될 수 있어 공격-피해 상관관계를 과대평가할 위험이 있음.\n- **정량 데이터 부재**: 에너지 인프라 피해의 구체적 수치 (MW 손실, 복구 소요일) 가 제공되지 않아 인과 강도 검증 불가.\n\n[경쟁설명]\n**이론 A: 에너지 안보론 (Energy Security Theory)**\n- **설명**: 공급원 다변화 (HHI 감소) 가 에너지 가격 충격에 대한 내성을 높인다는 이론.\n- **예측**: 러시아의 공격 빈도 증가 → 우크라이나의 에너지 공급원 다변화 촉진 (피해 누적 시 대체재 도입 가속) → 장기적 전력 손실 감소.\n- **실측**: 우크라이나 지역 분쟁 건수 2026.06 기준 1,058건 (급증). 에너지 공급원 HHI 변화율 [산술 미제공] — context 내 우크라이나의 공급원 다변화 수치 부재.\n- **판정**: 전제충족 (DV 미검증) — 분쟁 증가 (IV) 는 확인되나, 에너지 공급원 HHI 감소 (DV) 의 정량값이 없어 방향성 검증 불가.\n\n**이론 B: 자원무기화 (Resource Weaponization)**\n- **설명**: 에너지 의존도가 높은 국가가 공급 차단 위협에 정치적·물리적 양보를 강요당한다는 이론.\n- **예측**: 러시아의 공격 빈도 증가 → 우크라이나의 에너지 인프라 파손율 증가 → 전력 공급 차단 및 정치적 양보 증가.\n- **실측**: 우크라이나 지역 분쟁 건수 2026.06 기준 1,058건 (급증). 우크라이나 에너지 인프라 파손율 (MW 손실) [UNVERIFIED] 정량값 부재.\n- **판정**: 전제충족 (DV 미검증) — 공격 증가 (IV) 는 확인되나, 실제 파손율 (DV) 의 정량값이 없어 방향성 검증 불가.\n\n▶ **편차 비교 (사실)**: 에너지 안보론 예측편차 [산술 미제공] (DV 부재) vs 자원무기화 예측편차 [산술 미제공] (DV 부재) — 두 이론 모두 DV 정량 데이터 부재로 편차 계산 불가.\n▶ **당신의 판단 (연구자 몫)**: 두 이론 모두 DV(실제 피해/다변화 지표) 의 정량 데이터가 없어 우열을 판별할 수 없음. 연구자는 '분쟁 건수 증가'가 '실제 전력 손실'로 이어지는지, 아니면 '대체 에너지 도입'으로 전환되는지를 확인해야 함. 쟁점: ACLED 건수가 실제 물리적 파괴를 얼마나 반영하는지 (과소/과대 보고 가능성).\n\n[검증포인트]\n1. 우크라이나 국가전력망 (Ukrenergo) 의 월별 전력 손실량 (GWh) 및 복구 소요일 데이터 확보.\n2. 우크라이나의 지역별 에너지 공급원 HHI 지수 (2024~2026) 변화 추이 확인.\n3. ACLED 사건 중 '에너지 인프라 타격'으로 분류된 실제 파괴 사례와 ACLED 전체 분쟁 건수의 비율 분석.\n\n[문헌공백]\n기존 문헌은 **〈에너지 안보론〉과 〈자원무기화〉의 충돌**을 단순히 대립 구도로만 제시하고, **공격 빈도의 '임계점'이 에너지 안보 구조를 어떻게 전환시키는가**를 다루지 못한다. 특히 **〈문헌 공백 원장〉의 ① 반례 클러스터**에서 언급된 '강한 제도 질 하에서 자원이 저주가 아닌 축복으로 작용하는' 메커니즘이, 전쟁 상황에서의 '공격 빈도 증가'라는 외부 충격 하에 어떻게 작동하는지에 대한 실증 연구가 부재하다. 또한 **③ 교차도메인 밀도** 분석에서 'conflict' 섹터의 주장이 1 건 이하로 희박하여, 사이버/드론 공격 (기술 도메인) 이 물리적 에너지 인프라 (에너지 도메인) 에 미치는 비선형적 영향을 연결하는 교차 경로 연구가 공백으로 남았다.\n\n---\n\n[헤드라인] [탐색적] 러시아의 드론·미사일 공세 빈도 증가는 **초보 공격자의 진입 장벽 하락**과 **상관**되나, 핵심 인프라 타격에는 **임계값 장벽**이 존재함\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념]\n드론과 미사일 기술의 보급으로 인해 러시아의 공격 빈도가 증가하면, 우크라이나의 에너지 인프라는 직면하는 위협의 질적 수준도 함께 급격히 상승하여 방어 체계가 붕괴된다.\n\n[비자명기여]\n**반직관 (Counter-intuitive)**: 통념은 공격 빈도 증가가 곧 '고도화된 위협'으로 이어진다고 보지만, **RAND 보고서의 실험 데이터**에 따르면 AI 보강은 초보자의 '온보딩(기초 기술 습득)'에는 큰 업리프트 (+18%p) 를 주지만, '고난도 체인(핵심 인프라 타격)'의 완료율은 여전히 **1/84**로 낮다. 즉, 공격 빈도 증가는 **저지대 과일 (Low-hanging fruit)**인 보조 시설 타격에는 효과적이지만, 핵심 에너지 인프라를 파괴하는 '임계값 돌파'와는 **비선형적 관계**를 가진다. 이는 **〈자원의 저주〉 반례**에서 보듯, 단순한 자원 (공격 수단) 의 양적 증가가 질적 결과를 보장하지 않는 '제도적/기술적 매개변수'의 중요성을 시사한다.\n\n[관찰]\n- **공세 빈도**: 우크라이나 분쟁 건수 2026년 6월 1,058건 (전월 대비 +861.8%).\n- **공격 성공률**: RAND 실험에서 초보자 + AI 그룹의 쉬운 체인 완료율은 14%→32% 증가했으나, 고난도 체인 완료자는 84명 중 1명.\n- **가드레일 우회**: AI 접근 그룹의 50% 가 답변 거부를 경험했으나, 40% 는 3 회 이상 재시도로 우회 성공 — '완전 차단'이 아닌 '마찰 부과' 효과.\n\n[주장]\n(등급: 상관) 러시아의 드론·미사일 공격 빈도 증가는 **초보 공격자의 공격 시도 횟수**와 **상관한다**는 데이터가 있으나, 핵심 에너지 인프라에 대한 **성공적 타격 빈도**는 공격 수의 증가와 **동조하지 않을 가능성**이 높다 (고난도 체인 완료율 1.2% 수준).\n\n[가설]\nH1: \"러시아의 드론/미사일 공격 빈도 (ACLED 분쟁 건수) 가 증가할 때, 우크라이나 에너지 인프라의 '핵심' 타격 건수 (고난도 표적) 는 통계적으로 유의하게 증가하지 않는다.\" (통제변수: AI 모델 성능, 방어 시스템 가동률)\n\n[근거]\n- RAND Europe 보고서: 고난도 공격 체인 완료율 1/84 (1.2%), 중간 난도 1/93 (1.1%).\n- ACLED 데이터: 우크라이나 분쟁 건수 2026.06 기준 1,058건 (급증).\n\n[한계]\n- **생존편향**: ACLED 데이터는 '관측된' 공격만 포함하며, 성공적으로 차단된 고난도 공격은 기록되지 않아 실제 타격 시도는 과소평가될 수 있음.\n- **데이터 불일치**: ACLED의 '분쟁 건수'가 '드론/미사일 공격'만을 의미하는지, 보병 전투 등을 포함하는지 명확하지 않아 변수 측정 오류 가능성.\n\n[경쟁설명]\n**이론 A: 기술 평준화 이론 (Tech Levelling — RAND 보고서 기반)**\n- **설명**: AI 도구의 보급이 저숙련 공격자의 진입 장벽을 낮추어 공격 빈도를 급증시키지만, 고난도 작전에는 한계가 있다는 이론.\n- **예측**: 공격 빈도 증가 (초보자 주) → 쉬운 표적 타격 증가, 고난도 표적 타격은 정체.\n- **실측**: 우크라이나 분쟁 건수 2026.06 기준 1,058건 (급증). 고난도 공격 성공률 [UNVERIFIED] (우크라이나 내 고난도 타격 구체적 수치 부재).\n- **판정**: 전제충족 (DV 미검증) — 공격 빈도 증가 (IV) 는 확인되나, 고난도 타격의 정체 (DV) 를 검증할 정량 데이터 부재.\n\n**이론 B: 자원무기화 (Resource Weaponization)**\n- **설명**: 공격 수단의 양적 증가가 곧 정치적/물리적 압박력으로 직결된다는 이론.\n- **예측**: 공격 빈도 증가 → 우크라이나 에너지 인프라 피해 (DV) 비례 증가.\n- **실측**: 우크라이나 분쟁 건수 2026.06 기준 1,058건. 우크라이나 에너지 인프라 피해량 (MW) [UNVERIFIED] 정량값 부재.\n- **판정**: 전제충족 (DV 미검증) — 공격 증가 (IV) 는 확인되나, 피해량 증가 (DV) 를 검증할 정량 데이터 부재.\n\n▶ **편차 비교 (사실)**: 기술 평준화 예측편차 [산술 미제공] (DV 부재) vs 자원무기화 예측편차 [산술 미제공] (DV 부재) — DV 정량 데이터 부재로 편차 계산 불가.\n▶ **당신의 판단 (연구자 몫)**: 두 이론 모두 DV(핵심 타격 성공률/피해량) 의 정량 데이터가 없어 우열을 판별할 수 없음. 연구자는 '공격 빈도 증가'가 '저지대 과일' 공격에 집중되었는지, 아니면 '핵심 타격'까지 확장되었는지를 확인해야 함. 쟁점: ACLED의 '분쟁 건수' 증가가 실제로는 '저가 드론' 공격의 증가를 반영하는지, 아니면 '고정밀 미사일' 공격의 증가인지 구분 필요.\n\n[검증포인트]\n1. 우크라이나 에너지 인프라 타격 건수를 '저지대 과일 (보조 설비)'과 '핵심 (발전소/변전소)'으로 분류한 세부 통계 확보.\n2. 러시아군의 드론/미사일 발사 대수 vs 우크라이나 방공 시스템 요격률 비율 분석.\n3. RAND 보고서의 '고난도 체인 완료율' 데이터를 우크라이나 전장의 실제 '핵심 타격 성공률'과 비교 분석.\n\n[문헌공백]\n기존 문헌은 **〈자원무기화〉 이론**을 통해 '공격 수단의 양적 증가'가 곧 '전략적 우위'로 이어진다고 가정하는 경향이 강하다. 그러나 **〈문헌 공백 원장〉의 ② 경쟁이론 미해결** 섹션에서 보듯, 기술적 평준화와 실제 작전 성공 간의 괴리를 설명하는 이론적 틀이 부족하다. 특히 **③ 교차도메인 밀도** 분석에서 'conflict'와 'cyber/AI' 도메인의 연결이 희박하여, AI 가 보강된 저숙련 공격자가 물리적 에너지 인프라를 타격하는 **비선형적 임계점**을 설명하는 연구가 전무하다. 이는 단순한 '공격 빈도' 분석을 넘어, '공격의 질 (난이도)'이 전략적 결과에 미치는 영향을 규명해야 할 공백이다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] eastern_europe→CL=F — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA_downgrade",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "ticker 재정의 후 Type_A 정상경로 재시도"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "우크라이나 지역 ACLED 분쟁 이벤트 건수 (지역: ukraine) 가 증가할 때, 우크라이나의 전력 공급 중단 시간 (시간) 이 통계적으로 유의하게 증가한다.\" (단, ",
+        "h0": "우크라이나 지역 ACLED 분쟁 이벤트 건수 (지역: ukraine) 가 증가할 때, 우크라이나의 전력 공급 중단 시간 (시간) 이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "우크라이나 지역 ACLED 분쟁 이벤트 건수 (지역: ukraine)",
+        "dependent_var": "우크라이나의 전력 공급 중단 시간 (시간)",
+        "control_vars": [
+          "대체 에너지원 가용성",
+          "서방 방공 시스템 가동률"
+        ],
+        "region_code": "eastern_europe",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_C",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.5982,
+        "granger_q": null,
+        "f_statistic": 0.514,
+        "best_lag": 2,
+        "differenced": true,
+        "n_obs": 456,
+        "error": "[대리변수 사용] Type A 강등 → ACLED eastern_europe + CL=F 대리변수 → CL=F (p=0.5982, F=0.514, lag=2, diff=True)",
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.514,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.5982,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.5982,
+                "granger_q": null,
+                "f_statistic": 0.514,
+                "best_lag": 2,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 우크라이나 에너지 인프라의 '핵심' 타격 건수 (고난도 표적) 는 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "러시아의 드론/미사일 공격 빈도 (ACLED 분쟁 건수) 가 증가할 때, 우크라이나 에너지 인프라의 '핵심' 타격 건수 (고난도 표적) 는 통계적으로 유의하게 증가하지 않는다.\" ",
+        "h0": "러시아의 드론/미사일 공격 빈도 (ACLED 분쟁 건수) 가 증가할 때, 우크라이나 에너지 인프라의 '핵심' 타격 건수 (고난도 표적) 는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "러시아의 드론/미사일 공격 빈도 (ACLED 분쟁 건수)",
+        "dependent_var": "우크라이나 에너지 인프라의 '핵심' 타격 건수 (고난도 표적) 는",
+        "control_vars": [
+          "AI 모델 성능",
+          "방어 시스템 가동률"
+        ],
+        "region_code": "eastern_europe",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 eastern_europe ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=eastern_europe) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "러시아의 드론/미사일 공격 빈도 (ACLED 분쟁 건수) 가 증가할 때, 우크라이나 에너지 인프라의 '핵심' 타격 건수 (고난도 표적) 는 통계적으로 유의하게 증가하지 않는다.\" ",
+                "region": "eastern_europe",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "외교부, 우크라이나·러시아 상황 관련 본부-공관 합동 상황점검회의(5.7.) 개최",
+                        "date": "2026-05-07",
+                        "creator": "영사안전국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "조현 외교장관, 중동·우크라이나 안보리 브리핑 공식회의 주재",
+                        "date": "2025-09-24",
+                        "creator": "국제기구·원자력국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 0건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "외교부, 우크라이나·러시아 상황 관련 본부-공관 합동 상황점검회의(5.7.) 개최",
+                        "date": "2026-05-07",
+                        "creator": "영사안전국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "조현 외교장관, 중동·우크라이나 안보리 브리핑 공식회의 주재",
+                        "date": "2025-09-24",
+                        "creator": "국제기구·원자력국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제14차 한-북대서양조약기구(NATO) 정책협의회 개최",
+                        "date": "2025-01-15",
+                        "creator": "국제안보국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "조태열 외교장관, NATO 외교장관회의 계기 체코 및 네덜란드와 연쇄 회담(4.4.) 개최",
+                        "date": "2024-04-12",
+                        "creator": "유럽국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "조태열 외교장관, NATO 외교장관회의 참석 계기 유럽연합(EU) 및 벨기에와 회담(4.4.) 개최",
+                        "date": "2024-04-12",
+                        "creator": "유럽국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "NATO’s southern flank is exposed. Portugal can help fortify it.",
+                        "date": "Wed, 17 Jun 2026 18:55:09 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Alliance was not designed to focus only on its easter flank. Vulnerabilities to NATO’s south are accumulating fas"
+                      },
+                      {
+                        "title": "Increasing defense spending isn’t enough. The US and its allies must also guarantee interoperability.",
+                        "date": "Wed, 10 Jun 2026 21:09:45 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Rising defense spending is creating a generational opportunity. But allied interoperability should be built into thes"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 + Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [],
+                    "evidence_note": "DB 증거 없음 — 언론 보도·통계 동향으로 탐색 필요"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Remarks Prior to a Meeting With President Volodymyr Zelenskyy of Ukraine and an Exchange With Reporters",
+                        "date": "2025-02-28",
+                        "source_db": "CPD (White House)",
+                        "description": "The United States should not have allowed this to happen. Okay? The United States, run by a man that didn t know much—I "
+                      },
+                      {
+                        "title": "Order on Federal Commission and Board Chairman and Acting Chairman Designations",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "font-size: 11pt; } Administration of Donald J. Trump, 2025 Order on Federal Commission and Board Chairman and Acting Cha"
+                      },
+                      {
+                        "title": "Proclamation 10885—Flying the Flag of the United States at Full-Staff on Inauguration Day",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "Inauguration Day January 20, 2025 By the President of the United States of America A Proclamation By the authority veste"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Urgent de-escalation’ needed now in Ukraine amid spike in civilian deaths",
+                        "date": "2026-07-09",
+                        "source_db": "UN News",
+                        "description": "The Security Council must use every tool and diplomatic channel to reach an urgent de-escalation, Rosemary DiCarlo, chie"
+                      },
+                      {
+                        "title": "Ukraine: Latest Russian assault leaves at least 14 dead in Kyiv",
+                        "date": "2026-07-06",
+                        "source_db": "UN News",
+                        "description": "Russian strikes on the Ukrainian capital Kyiv killed at least 14 civilians and injured more than 80 others overnight on "
+                      },
+                      {
+                        "title": "Civilian dangers multiply as drones transform Ukraine's battlefield",
+                        "date": "2026-07-03",
+                        "source_db": "UN News",
+                        "description": "As drones reshape the battlefield in Ukraine, they are also creating new and increasingly complex dangers for civilians,"
+                      },
+                      {
+                        "title": "The future of NATO’s deterrence in the air domain",
+                        "date": "Wed, 10 Jun 2026 20:41:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>European NATO member states need to prepare to deter, and if necessary, defeat Russia—with less US support. When it c"
+                      },
+                      {
+                        "title": "Was the NATO Summit a success?",
+                        "date": "Wed, 08 Jul 2026 22:28:34 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Atlantic Council experts break down an eventful two days in Ankara.</p>\n<p>The post <a href=\"https://www.atlanticcoun"
+                      }
+                    ],
+                    "evidence_note": "CPD 대통령 성명 3건(★★★★★) + UN News 3건 + Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

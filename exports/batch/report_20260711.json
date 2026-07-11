@@ -1,0 +1,248 @@
+{
+  "generated_at": "2026-07-11T13:35:20Z",
+  "results": [
+    {
+      "id": "nk-provocation-defense-stocks-r2",
+      "provider": "gemini",
+      "purpose": "rerun_compare",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 51.4
+    },
+    {
+      "id": "houthi-babelmandeb-oil-r2",
+      "provider": "gemini",
+      "purpose": "rerun_compare",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 26.5
+    },
+    {
+      "id": "taiwan-tension-semiconductor-r2",
+      "provider": "gemini",
+      "purpose": "rerun_compare",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 24.4
+    },
+    {
+      "id": "redsea-suez-transit",
+      "provider": "nim",
+      "purpose": "issue8_path",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 60.6
+    },
+    {
+      "id": "redsea-war-risk-rerouting",
+      "provider": "nim",
+      "purpose": "issue8_path",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 63.0
+    },
+    {
+      "id": "berbera-somaliland-corridor",
+      "provider": "nim",
+      "purpose": "issue8_path",
+      "status": "PASS",
+      "completeness_ok": false,
+      "duration_s": 67.3
+    },
+    {
+      "id": "djibouti-basing-chokepoint",
+      "provider": "nim",
+      "purpose": "issue8_path",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 82.6
+    },
+    {
+      "id": "hormuz-iran-oil",
+      "provider": "nim",
+      "purpose": "packet",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 184.3
+    },
+    {
+      "id": "semiconductor-hhi-taiwan",
+      "provider": "nim",
+      "purpose": "packet",
+      "status": "PASS",
+      "completeness_ok": false,
+      "duration_s": 96.7
+    },
+    {
+      "id": "alliance-burden-sharing",
+      "provider": "nim",
+      "purpose": "packet",
+      "status": "PASS",
+      "completeness_ok": false,
+      "duration_s": 68.5
+    },
+    {
+      "id": "nk-russia-arms-ukraine",
+      "provider": "nim",
+      "purpose": "packet",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 75.4
+    },
+    {
+      "id": "ukraine-drone-energy-infra",
+      "provider": "nim",
+      "purpose": "packet",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 248.0
+    },
+    {
+      "id": "nk-missile-bp-gap",
+      "provider": "nim",
+      "purpose": "inventory",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 119.2
+    },
+    {
+      "id": "scs-grayzone-philippines",
+      "provider": "nim",
+      "purpose": "inventory",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 98.6
+    },
+    {
+      "id": "imec-redsea-revival",
+      "provider": "nim",
+      "purpose": "inventory",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 172.7
+    }
+  ],
+  "summary": "15/15 PASS",
+  "rerun_compare": [
+    {
+      "id": "nk-provocation-defense-stocks-r2",
+      "baseline_id": "nk-provocation-defense-stocks",
+      "baseline": {
+        "found": true,
+        "engine_version": "9.19.0",
+        "confidence_score": 100,
+        "completeness_ok": true,
+        "hypotheses": [
+          {
+            "h1": "ACLED korean_peninsula conflict 이벤트 월별 건수가 증가할 때 원/달러 환율(KRW/USD)이 통계적으로 유의하게 상승한다.",
+            "verification_status": "PARTIAL",
+            "inference_grade": "상관"
+          },
+          {
+            "h1": "현 데이터로 검증 가능한 정량 가설 없음.",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          }
+        ]
+      },
+      "new": {
+        "found": true,
+        "engine_version": "9.45.0",
+        "confidence_score": 100,
+        "completeness_ok": true,
+        "hypotheses": [
+          {
+            "h1": "korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수가 감소할 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의하게 하락한다 ().",
+            "verification_status": "PARTIAL",
+            "inference_grade": "상관"
+          },
+          {
+            "h1": "한국의 GDP 대비 국방비 비율이 안정적으로 유지될 때 방산 ETF (ITA) 주가 (USD)는 통계적으로 유의하게 상승한다 ().",
+            "verification_status": "PARTIAL",
+            "inference_grade": "상관"
+          }
+        ]
+      }
+    },
+    {
+      "id": "houthi-babelmandeb-oil-r2",
+      "baseline_id": "houthi-babelmandeb-oil",
+      "baseline": {
+        "found": true,
+        "engine_version": "9.19.0",
+        "confidence_score": 100,
+        "completeness_ok": true,
+        "hypotheses": [
+          {
+            "h1": "바브엘만데브 지역의 ACLED 분쟁 이벤트 월별 건수 증가가 Brent 유가(USD/배럴)의 급격한 상승과 상관하지만, 그 강도는 외부 완충 요인(전략비축유 방출, 대체 운송로 활용)의 존재에 따라 약화된다.",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          },
+          {
+            "h1": "이란-미국/이스라엘 간의 군사적 긴장 고조(예: 이란전 개전)가 중동 지역 ACLED 분쟁 이벤트 건수를 증가시키고, 이는 Brent 유가(USD/배럴)의 변동성 증가와 통계적으로 유의하게 상관한다.",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          }
+        ]
+      },
+      "new": {
+        "found": true,
+        "engine_version": "9.45.0",
+        "confidence_score": 100,
+        "completeness_ok": true,
+        "hypotheses": [
+          {
+            "h1": "이란-미국/이스라엘 전쟁(개전 2026.02.28)과 같은 대규모 지역 분쟁 발생 시 Brent 유가(USD/배럴)가 통계적으로 유의미하게 상승한다.",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          },
+          {
+            "h1": "이란과 미국/이스라엘 간의 전면전(2026.02.28 개전)과 같은 대규모 지역 분쟁 발생 시, bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수가 통계적으로 유의미하게 감소한다.",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          }
+        ]
+      }
+    },
+    {
+      "id": "taiwan-tension-semiconductor-r2",
+      "baseline_id": "taiwan-tension-semiconductor",
+      "baseline": {
+        "found": true,
+        "engine_version": "9.19.0",
+        "confidence_score": 100,
+        "completeness_ok": true,
+        "hypotheses": [
+          {
+            "h1": "대만해협 ACLED 분쟁 이벤트 건수가 증가할 때 반도체 ETF(SOXX) 주가(USD)가 통계적으로 유의하게 하락한다.",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          },
+          {
+            "h1": "현 데이터로 검증 가능한 정량 가설 없음. (종속변수로 직접 측정 가능한 광물 공급망 통제 지표나 중국의 비용 우위로 인한 미국의 반도체 산업 경쟁력 지표가 context에 제시되지 않음.)",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          }
+        ]
+      },
+      "new": {
+        "found": true,
+        "engine_version": "9.45.0",
+        "confidence_score": 100,
+        "completeness_ok": true,
+        "hypotheses": [
+          {
+            "h1": "대만해협 ACLED 분쟁 이벤트 월별 건수가 증가할 때 반도체 ETF(SOXX) 주가(USD)가 통계적으로 유의미하게 하락하는 경향과 상관한다 (통제변수 미제공).",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          },
+          {
+            "h1": "중국 기업의 핵심 광물(예: 니켈) 공급망 내 시장 점유율(HHI 지수)이 증가할 때, 미국 방산 ETF(ITA) 주가(USD)가 상대적으로 하락하는 경향과 상관한다 (통제변수 미제공).",
+            "verification_status": "PENDING",
+            "inference_grade": "기술적"
+          }
+        ]
+      }
+    }
+  ]
+}

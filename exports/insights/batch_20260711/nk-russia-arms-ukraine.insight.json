@@ -1,0 +1,372 @@
+{
+  "schema_version": "0.1",
+  "id": "nk-russia-arms-ukraine",
+  "generated_at": "2026-07-11T13:24:41Z",
+  "engine_version": "9.45.0",
+  "query": "북러 무기 이전 심화 지표와 우크라이나 전황 이벤트의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula",
+    "ukraine"
+  ],
+  "sectors": [
+    "military",
+    "conflict"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[RAND Europe / UK AISI] 프런티어 AI의 공세 사이버 업리프트: 인간 업리프트 실험 연구"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 0,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 5,
+    "cow_alliances": 38,
+    "kiel_donors": 12,
+    "eia_entries": 3,
+    "csis_incidents": 15,
+    "sipri_arms": 7,
+    "vdem_entries": 36,
+    "cow_wars": 3,
+    "ifans_pubs": 3,
+    "theory_cmp_chars": 3431,
+    "fred": 6,
+    "wbk": 3,
+    "polity5": 1,
+    "itu": 1,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 7,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.2885) · 극단P90(p=0.1033) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+    "speculative": false
+  },
+  "result_md": "[탐색적]\n[헤드라인] 북러 무기 이전 심화와 우크라이나 전황 이벤트는 '임계점 돌파' 시점에 상관하며 동반된다 (단, AI 기반 저숙련 공격자의 진입 장벽 하락이 전황 변동의 선행 조건으로 작용할 가능성)\n데이터기반: 중  |  이론근거: 중  |  연쇄강도: MEDIUM\n\n[통념] 우크라이나 전황(분쟁 건수)이 악화되면 러시아의 무기 이전이 자연스럽게 증가하여 공급망이 활성화된다.\n[비자명기여] 통념은 '전황 악화 → 무기 이전'의 단방향 인과를 가정하나, 본 분석은 **AI 기술 평준화 (초보자 업리프트 +18%p)**가 무기 이전의 '득실'을 결정하는 **범위조건 (Threshold Condition)**임을 제시한다. 즉, 전황이 악화되기 전이라도 AI로 인해 '저숙련 위협 행위자'가 공격 체인을 완료할 수 있는 임계값이 낮아지면, 기존에는 불가능했던 무기 이전 경로 (예: 사이버·드론 부품의 비공식 유통) 가 활성화되어 전황에 선행하거나 병렬로 작용할 수 있다. 이는 '무기 이전이 전황에 반응한다'는 통념을 '기술적 접근성 (AI) 이 무기 이전의 매개체 역할을 하여 전황을 재구성한다'는 반직관적 메커니즘으로 정교화한다.\n\n[관찰]\n- 우크라이나 분쟁 이벤트: 2026년 5월 (110건) → 2026년 6월 (1,058건) → 2026년 7월 (125건)로 급증 후 급감 (변화 +861.8% ▲, 사전계산).\n- 북한 (북러 연계 가능 행위자) 관련 사건: 2026년 7월 10일, 스페인이 러시아 화물선에 핵잠수함 부품 운반 주장 거부 (NK 동향 보도). 2026년 7월 10일, 북한-중국 정상 회담 (북한 총리 베이징 방문).\n- AI 공세 사이버 역량: 초보자의 쉬운 공격 체인 완료율이 14%에서 32%로 **+18%p** 상승 (RAND/UK AISI).\n- 북러 무기 이전 구체적 수치: <context> 내 '북러 무기 이전 건수' 또는 '이전량 (톤/달러)'에 대한 정량 데이터는 부재.\n\n[주장] (등급: 상관) 우크라이나 분쟁 건수의 급변 (+861.8%) 과 북러 간 군사적 협력 신호 (핵잠수함 부품 운반 주장, 정상 회담) 는 시점적으로 동반되며 관찰된다. 특히 AI에 의한 초보자 공격 역량 (+18%p) 상승이 저숙련 위협 행위자의 공격 체인 완료를 용이하게 하여, 무기 이전의 '실행 가능성'을 높이는 조건으로 공변한다.\n[가설] H1: 우크라이나 분쟁 이벤트 건수 (ACLED) 가 월간 100건 이상 급증할 때, 북러 간 군사 협력 관련 보도 건수 (또는 특정 무기品类 수출 규제 위반 신고 건수) 가 통계적으로 유의하게 증가한다 (통제변수: AI 모델 업데이트 주기, 국제 제재 강도).\n[근거] ACLED ukraine 월별 추이 (2026-05: 110건 → 2026-06: 1,058건), NK 동향 (2026-07-10 핵잠수함 부품 운반 주장), RAND Europe AI uplift (+18%p 초보자 완료율).\n[한계] 북러 무기 이전의 구체적 규모 (톤수, 금액) 에 대한 정량 데이터가 <context>에 없어 '전황 악화 → 무기 이전량 증가'의 정량적 상관관계를 직접 검증할 수 없다. 또한, 2026년 7월의 북러 관련 사건이 우크라이나 6월의 분쟁 급증에 대한 '반응'인지, 혹은 AI 기술 발전에 따른 '선제적' 조치인지 인과 방향을 확정할 수 없다. (선택편향: '발견된' 무기 이전 사례만 기록되어 실제 은폐된 이전은 과소평가될 수 있음).\n[경쟁설명]\n이론A명: 동맹 비용분담 이론 (Burden Sharing Theory)\n  예측: 우크라이나 분쟁 (전황 악화) 이 심화될수록 동맹국 (러시아) 은 전략적 비용 분담 차원에서 무기 이전을 급격히 증가시켜 전황을 지지할 것이다.\n  실측: 우크라이나 분쟁 건수 2026-06 기준 1,058건 (+861.8% 급증) — 그러나 북러 무기 이전의 정량적 증가율 (톤수/금액) 은 [UNVERIFIED] 정량값 부재.\n  판정: 전제충족 (DV 미검증) — (앵커: 동맹 최저 방위비 2% GDP, 실측 37.0% vs 임계 2.0%, 편차 +35.0%p, 사전계산) → 전제 미충족: 최저 동맹이 2% 미만이라는 전제 조건은 충족되지 않으나, 무기 이전량 (DV) 의 정량 데이터 부재로 방향성 검증 불가.\n\n이론B명: 공격적 현실주의 (Offensive Realism)\n  예측: 권력 격차 (GDP/군사력) 가 축소될 때 강대국 간 갈등 빈도가 증가하며, 이에 대응해 무기 이전이 '위협 균형'을 맞추기 위해 증가할 것이다.\n  실측: UKR 국방비 36.03% (2023), CHN 1.62%, KOR 2.60% — 권력 격차 존재. 우크라이나 분쟁 건수 2026-06 1,058건 (급증). 북러 무기 이전량 (DV) 은 [UNVERIFIED] 정량값 부재.\n  판정: 전제충족 (DV 미검증) — (앵커: UKR Polity 5(anocracy), 중국 1.62% 국방비) → 전제 조건 (권력 격차) 은 존재하나, 무기 이전의 정량적 반응 (DV) 데이터 부재로 이론의 예측적 정확도 검증 불가.\n\n▶ 편차 비교 (사실): 이론A 예측편차 (무기 이전량 증가 vs [UNVERIFIED]) vs 이론B 예측편차 (권력 격차에 따른 증가 vs [UNVERIFIED]) — 두 이론 모두 DV(무기 이전량) 의 실측 수치 부재로 편차 산출 불가.\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 '전황 악화 시 무기 이전 증가'를 예측하나, 실제 데이터가 부재하여 어느 이론이 우세한지 판단 불가. 쟁점: '무기 이전'을 단순한 '공급'으로 볼 것인지, '권력 균형'의 일부로 볼 것인지에 따라 해석이 갈리며, 이를 구분하려면 무기 품목별 (전략적 vs 전술적) 이전 데이터가 필요하다.\n\n[검증포인트] 1) UN/미국 재무부의 북러 무기 수출입 제재 위반 신고 건수 (월별) 2) 한국/대만 해협 인근에서 러시아 화물선의 궤적 변화 데이터 (AIS) 3) AI 모델 업데이트 시점과 사이버 공격 성공률의 상관관계 데이터.\n[문헌공백] 기존 문헌은 '국방비'나 '전황 건수' 같은 거시 지표에 집중하여, **③ 교차도메인 밀도**에서 지적한 대로 '기술 (AI) → 군사 (무기 이전)'의 교차 경로를 다루지 못한다. 특히, AI 가 초보자의 공격 체인 완료율을 +18%p 높여 '비공식적 무기 이전 (사이버/드론 부품)'의 진입 장벽을 낮추는 메커니즘은 기존 '동맹 비용분담'이나 '현실주의' 이론에서 설명하지 못하는 **기술적 비선형 변수**이다. 이는 '무기 이전'을 국가 간 공식 거래가 아닌, AI 로 인해 가능해진 분산형 네트워크로 재정의해야 할 문헌 공백을 보여준다.\n\n---\n\n[탐색적]\n[헤드라인] 우크라이나 전황의 '급격한 변동성'은 북러 무기 이전이 '전략적 임계점'을 넘었음을 시사하는 선행 지표일 수 있으나, AI 기반 사이버 역량 상승이 이를 가속화하는 교차 도메인 경로로 관찰된다.\n데이터기반: 중  |  이론근거: 중  |  연쇄강도: MEDIUM\n\n[통념] 무기 이전은 전쟁의 결과 (승패) 나 장기적 전략에 따라 점진적으로 결정되며, 전황의 단기 변동과 무관하다.\n[비자명기여] 통념은 무기 이전을 '선형적'인 공급 과정으로 보지만, 본 분석은 우크라이나 분쟁 건수의 **급변 (+861.8%)**이 북러 협력의 **비선형적 임계점**을 돌파한 신호일 수 있음을 제시한다. 특히, RAND/UK AISI 연구에서 밝혀진 **'온보딩 업리프트' (초보자 +18%p)**는 저숙련 행위자가 복잡한 무기 체계 (예: 드론, 사이버 무기고) 를 운용할 수 있게 하여, 기존에는 불가능했던 '소규모·고빈도' 무기 이전을 가능하게 한다. 이는 '전황 변동'이 단순히 무기 수요를 반영하는 것이 아니라, **기술적 접근성 (AI) 이 확보된 상태에서 전황 변동이 '실제 무기 이전'으로 전환되는 트리거** 역할을 함을 의미한다.\n\n[관찰]\n- 우크라이나 분쟁: 2026-05 (110건) → 2026-06 (1,058건) 급증 (변화 +861.8% ▲).\n- 북러 무기 이전 신호: 2026-07-10 스페인 화물선 핵잠수함 부품 운반 주장 (거부됨), 2026-07-10 북한-중국 정상회담.\n- AI 역량: 초보자 공격 체인 완료율 14%→32% (+18%p), AI 가드레이 우회율 50% (RAND/UK AISI).\n- 북러 무기 이전 정량 데이터: <context> 내 부재.\n\n[주장] (등급: 상관) 우크라이나 분쟁 건수의 급격한 변동 (+861.8%) 과 북러 간 군사 협력 신호는 시점적으로 공변하며 동반된다. AI 기반 초보자 역량 (+18%p) 상승은 이러한 공변 관계를 강화하는 조건으로 작용할 가능성이 있다.\n[가설] H1: 우크라이나 분쟁 이벤트 건수 (ACLED) 의 월간 변동률 (변동계수) 이 50% 이상일 때, 북러 간 군사 협력 관련 보도 건수 (또는 사이버 공격 시도 건수) 가 통계적으로 유의하게 증가한다 (통제변수: AI 모델 버전, 국제 제재 강도).\n[근거] ACLED ukraine 월별 추이 (2026-06 1,058건), NK 동향 (2026-07-10 핵잠수함 부품), RAND Europe AI uplift (+18%p).\n[한계] 북러 무기 이전의 정량적 데이터 (톤수, 금액) 가 부재하여 인과 방향 (전황→이전 vs 이전→전황) 을 확정할 수 없다. 또한, 2026 년 7 월의 사건이 우크라이나 6 월의 급증에 대한 '반응'인지, 혹은 AI 기술 발전에 따른 '선제적' 조치인지 구분 불가. (선택편향: '발견된' 무기 이전 사례만 기록되어 실제 은폐된 이전은 과소평가될 수 있음).\n[경쟁설명]\n이론A명: 동맹 이론 (Alliance Theory)\n  예측: 동맹 약속의 명시성 (pact_intensity) 이 높을수록 방기 위험이 줄어들어, 전황 악화 시 무기 이전이 신속하게 이루어질 것이다.\n  실측: 우크라이나 분쟁 건수 2026-06 1,058건 (급증). 북러 무기 이전 정량값은 [UNVERIFIED] 정량값 부재.\n  판정: 전제충족 (DV 미검증) — (앵커: pact_intensity 값 참조 필요, context 에 구체적 수치 미제공) → 전제 조건 (약속 명시성) 은 존재하나, 무기 이전량 (DV) 의 정량 데이터 부재로 예측 검증 불가.\n\n이론B명: 동맹 비용분담 이론 (Burden Sharing Theory)\n  예측: 우크라이나 분쟁 (전황 악화) 이 심화될수록 동맹국 (러시아) 은 전략적 비용 분담 차원에서 무기 이전을 급격히 증가시킬 것이다.\n  실측: 우크라이나 분쟁 건수 2026-06 1,058건 (+861.8% 급증). 북러 무기 이전량 (DV) 은 [UNVERIFIED] 정량값 부재.\n  판정: 전제충족 (DV 미검증) — (앵커: 동맹 최저 방위비 2% GDP, 실측 37.0% vs 임계 2.0%, 편차 +35.0%p, 사전계산) → 전제 미충족: 최저 동맹이 2% 미만이라는 전제 조건은 충족되지 않으나, 무기 이전량 (DV) 의 정량 데이터 부재로 방향성 검증 불가.\n\n▶ 편차 비교 (사실): 이론A 예측편차 (약속 명시성→이전 증가 vs [UNVERIFIED]) vs 이론B 예측편차 (전황 악화→이전 증가 vs [UNVERIFIED]) — 두 이론 모두 DV(무기 이전량) 의 실측 수치 부재로 편차 산출 불가.\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 '전황 악화 시 무기 이전 증가'를 예측하나, 실제 데이터가 부재하여 어느 이론이 우세한지 판단 불가. 쟁점: '동맹 약속'이 실제 행동 (무기 이전) 으로 이어지는지, 아니면 '비용 분담' 압력이 더 큰지 구분하려면 '약속 강도'와 '이전량'의 정량적 상관관계가 필요하다.\n\n[검증포인트] 1) 북러 간 군사 협력 관련 보도 건수 (월별) 2) AI 모델 업데이트 시점과 사이버 공격 성공률의 상관관계 데이터 3) 우크라이나-러시아 국경 지역의 사이버 공격 시도 건수 (ACLED 사이버 섹션).\n[문헌공백] 기존 문헌은 '국방비'나 '전황 건수' 같은 거시 지표에 집중하여, **③ 교차도메인 밀도**에서 지적한 대로 '기술 (AI) → 군사 (무기 이전)'의 교차 경로를 다루지 못한다. 특히, AI 가 초보자의 공격 체인 완료율을 +18%p 높여 '비공식적 무기 이전 (사이버/드론 부품)'의 진입 장벽을 낮추는 메커니즘은 기존 '동맹 비용분담'이나 '현실주의' 이론에서 설명하지 못하는 **기술적 비선형 변수**이다. 이는 '무기 이전'을 국가 간 공식 거래가 아닌, AI 로 인해 가능해진 분산형 네트워크로 재정의해야 할 문헌 공백을 보여준다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 우크라이나 분쟁 이벤트 건수 (ACLED) 가 월간 100건 이상 급증 → 북러 간 군사 협력 관련 보도 건수 (또는 특정 무기品类 수출 규제 위반 신고 건수) — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "우크라이나 분쟁 이벤트 건수 (ACLED) 가 월간 100건 이상 급증할 때, 북러 간 군사 협력 관련 보도 건수 (또는 특정 무기品类 수출 규제 위반 신고 건수) 가 통계적으로 유의하게 증가한다 ().",
+        "h0": "우크라이나 분쟁 이벤트 건수 (ACLED) 가 월간 100건 이상 급증할 때, 북러 간 군사 협력 관련 보도 건수 (또는 특정 무기品类 수출 규제 위반 신고 건수) 가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "우크라이나 분쟁 이벤트 건수 (ACLED) 가 월간 100건 이상 급증",
+        "dependent_var": "북러 간 군사 협력 관련 보도 건수 (또는 특정 무기品类 수출 규제 위반 신고 건수)",
+        "control_vars": [
+          "AI 모델 업데이트 주기",
+          "국제 제재 강도"
+        ],
+        "region_code": "eastern_europe",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.2885) · 극단P90(p=0.1033) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.2885,
+        "granger_q": null,
+        "f_statistic": 1.244,
+        "best_lag": 2,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 1.244,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.2885,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 25,
+              "robustness": {
+                "extreme_p": 0.1033,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.2885,
+                "granger_q": null,
+                "f_statistic": 1.244,
+                "best_lag": 2,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 미식별 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "우크라이나 분쟁 이벤트 건수 (ACLED) 의 월간 변동률 (변동계수) 이 50% 이상일 때, 북러 간 군사 협력 관련 보도 건수 (또는 사이버 공격 시도 건수) 가 통계적으로 유의하게 증가한다 ().",
+        "h0": "우크라이나 분쟁 이벤트 건수 (ACLED) 의 월간 변동률 (변동계수) 이 50% 이상일 때, 북러 간 군사 협력 관련 보도 건수 (또는 사이버 공격 시도 건수) 가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "우크라이나 분쟁 이벤트 건수 (ACLED) 의 월간 변동률 (변동계수) 이 50% 이상일 때, 북러 간 군사 협력 관련 보도 건수 (또는 사이버 공격 시도 건수) 가 통계적으로 유의하게 증가한다 ().",
+        "dependent_var": "미식별",
+        "control_vars": [
+          "AI 모델 버전",
+          "국제 제재 강도"
+        ],
+        "region_code": "eastern_europe",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 eastern_europe ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=eastern_europe) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "우크라이나 분쟁 이벤트 건수 (ACLED) 의 월간 변동률 (변동계수) 이 50% 이상일 때, 북러 간 군사 협력 관련 보도 건수 (또는 사이버 공격 시도 건수) 가 통계적으로 유의하게 증가한다 ().",
+                "region": "eastern_europe",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "한-우크라이나 외교장관회담 개최",
+                        "date": "2026-06-30",
+                        "creator": "유럽국, 한반도정책국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제5차 우크라이나 복구회의(URC) 참석",
+                        "date": "2026-06-27",
+                        "creator": "개발협력국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 0건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "한-우크라이나 외교장관회담 개최",
+                        "date": "2026-06-30",
+                        "creator": "유럽국, 한반도정책국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제5차 우크라이나 복구회의(URC) 참석",
+                        "date": "2026-06-27",
+                        "creator": "개발협력국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부, 우크라이나·러시아 상황 관련 본부-공관 합동 상황점검회의(5.7.) 개최",
+                        "date": "2026-05-07",
+                        "creator": "영사안전국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "한-우크라이나 외교장관 회담(3.27.) 결과",
+                        "date": "2026-04-22",
+                        "creator": "유럽국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제15차 한-NATO 정책협의회 개최",
+                        "date": "2026-01-16",
+                        "creator": "국제안보국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "NATO’s southern flank is exposed. Portugal can help fortify it.",
+                        "date": "Wed, 17 Jun 2026 18:55:09 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Alliance was not designed to focus only on its easter flank. Vulnerabilities to NATO’s south are accumulating fas"
+                      },
+                      {
+                        "title": "Increasing defense spending isn’t enough. The US and its allies must also guarantee interoperability.",
+                        "date": "Wed, 10 Jun 2026 21:09:45 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Rising defense spending is creating a generational opportunity. But allied interoperability should be built into thes"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 + Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [],
+                    "evidence_note": "DB 증거 없음 — 언론 보도·통계 동향으로 탐색 필요"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Remarks Prior to a Meeting With President Volodymyr Zelenskyy of Ukraine and an Exchange With Reporters",
+                        "date": "2025-02-28",
+                        "source_db": "CPD (White House)",
+                        "description": "The United States should not have allowed this to happen. Okay? The United States, run by a man that didn t know much—I "
+                      },
+                      {
+                        "title": "Order on Federal Commission and Board Chairman and Acting Chairman Designations",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "font-size: 11pt; } Administration of Donald J. Trump, 2025 Order on Federal Commission and Board Chairman and Acting Cha"
+                      },
+                      {
+                        "title": "Proclamation 10885—Flying the Flag of the United States at Full-Staff on Inauguration Day",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "Inauguration Day January 20, 2025 By the President of the United States of America A Proclamation By the authority veste"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Urgent de-escalation’ needed now in Ukraine amid spike in civilian deaths",
+                        "date": "2026-07-09",
+                        "source_db": "UN News",
+                        "description": "The Security Council must use every tool and diplomatic channel to reach an urgent de-escalation, Rosemary DiCarlo, chie"
+                      },
+                      {
+                        "title": "Ukraine: Latest Russian assault leaves at least 14 dead in Kyiv",
+                        "date": "2026-07-06",
+                        "source_db": "UN News",
+                        "description": "Russian strikes on the Ukrainian capital Kyiv killed at least 14 civilians and injured more than 80 others overnight on "
+                      },
+                      {
+                        "title": "Civilian dangers multiply as drones transform Ukraine's battlefield",
+                        "date": "2026-07-03",
+                        "source_db": "UN News",
+                        "description": "As drones reshape the battlefield in Ukraine, they are also creating new and increasingly complex dangers for civilians,"
+                      },
+                      {
+                        "title": "The future of NATO’s deterrence in the air domain",
+                        "date": "Wed, 10 Jun 2026 20:41:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>European NATO member states need to prepare to deter, and if necessary, defeat Russia—with less US support. When it c"
+                      },
+                      {
+                        "title": "Was the NATO Summit a success?",
+                        "date": "Wed, 08 Jul 2026 22:28:34 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Atlantic Council experts break down an eventful two days in Ankara.</p>\n<p>The post <a href=\"https://www.atlanticcoun"
+                      }
+                    ],
+                    "evidence_note": "CPD 대통령 성명 3건(★★★★★) + UN News 3건 + Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

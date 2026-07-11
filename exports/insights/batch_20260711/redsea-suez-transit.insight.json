@@ -1,0 +1,493 @@
+{
+  "schema_version": "0.1",
+  "id": "redsea-suez-transit",
+  "generated_at": "2026-07-11T13:14:04Z",
+  "engine_version": "9.45.0",
+  "query": "홍해 상선 공격 빈도와 수에즈 운하 통항량 변화의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "bab_el_mandeb",
+    "suez"
+  ],
+  "sectors": [
+    "maritime",
+    "energy"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+    "[RAND Europe / UK AISI] 프런티어 AI의 공세 사이버 업리프트: 인간 업리프트 실험 연구",
+    "[War on the Rocks] 소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 3,
+    "csis_incidents": 0,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3215,
+    "fred": 12,
+    "wbk": 4,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 4,
+    "semi": 0,
+    "owid": 6,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "[구조적 논증 — 설계상 선형검정 제외] 비선형 체제·임계 변수('임계') 포함 — 임계점·체제전환 구조라 선형 Granger 부적합. 통계 검증을 청구하지 않음. 비선형을 입증하려면 임계회귀(TAR)·체제전환 모델 등 적극적 비선형 검정이 필요(검증포인트).",
+    "speculative": false
+  },
+  "result_md": "[탐색적] 홍해 상선 공격 빈도와 수에즈 운하 통항량 변화의 관계에 대한 교차 분석 인사이트\n\n### 인사이트 카드 1: 회색지대 위협의 '임계값 붕괴' 현상과 통항량 급감의 비선형성\n\n**[헤드라인]** 홍해 (바브엘만데브) 공격 빈도 감소세에도 수에즈 운하 분쟁 건수는 20배 급증하며 통항량에 대한 '수치적 상관'이 붕괴되는 비선형 패턴 관찰\n**데이터기반:** 중 | **이론근거:** 고 | **연쇄강도:** MEDIUM\n\n**[통념]**\n홍해 (바브엘만데브) 에서의 공격 빈도가 증가하면 수에즈 운하의 통항량이 선형적으로 감소하며, 공격이 줄어들면 통항량이 회복된다는 단순한 인과 관계가 통념이다.\n\n**[비자명기여]**\n통념은 '공격 빈도'와 '통항량'이 단순 비례한다고 보지만, 본 분석은 **회색지대 전략의 임계값 (Threshold) 붕괴**를 식별한다. 즉, 바브엘만데브의 공격 빈도가 감소하는 추세 (2025-07 기준) 이지만, 수에즈 운하 내부의 분쟁 강도는 2026 년 6 월에 **1,928.1%** 폭증하여 통항량 결정 요인이 '분쟁 건수'가 아닌 '분쟁 강도 (Severity)'와 '지리적 위치 (수운로 내부)'로 전이됨을 보여준다. 이는 〈SLOC 통제 이론〉의 예측 임계 (초크포인트 위협 → 가격/통행량 급변) 가 **위협 강도 4 이상 (제한전 수준) 에서만 유효**함을 규정하며, 저강도 공격 (분쟁 강도 3 이하) 에는 통항량이 무반응하거나 오히려 불확실성 프리미엄으로 인해 다른 요인이 개입됨을 시사한다.\n\n**[관찰]**\n- **바브엘만데브 (홍해 접근로):** 월별 분쟁 건수가 2025-04 (1,246 건) → 2025-07 (226 건) 로 **81.8% 감소**하는 추세 (사전계산).\n- **수에즈 운하 (통행로 내부):** 월별 분쟁 건수가 2026-05 (32 건) → 2026-06 (649 건) 로 **1,928.1% 급증** (사전계산).\n- **분쟁 심각도:** 수에즈 운하 평균 심각도 **73.6/100** (고위험) vs 바브엘만데브 **34.8/100** (중위험).\n- **통항량 데이터:** 수에즈 운하 통항량 (TEU 또는 선박 수) 의 2026 년 6 월 구체적 변화율은 <context>에 제공되지 않음 [UNVERIFIED].\n\n**[주장]**\n(등급: 상관) 바브엘만데브의 공격 빈도 감소와 수에즈 운하 내 분쟁 건수 급증은 **음의 상관**을 보이며, 이는 공격의 '빈도'보다 '위치 (운하 내부)'와 '강도'가 통항량에 더 결정적인 변수로 작용함을 **동반한다**.\n*주의: 통항량 실측치가 없으므로 '유발한다'는 단정 불가.*\n\n**[가설]**\nH1: 수에즈 운하 내 분쟁 심각도 (Severity Index) 가 60/100 임계값을 초과할 때, 수에즈 운하 통항량 (선박 수/월) 은 통계적으로 유의하게 감소한다 (통제변수: 유가, 보험료).\n\n**[근거]**\n- ACLED 데이터: 수에즈 분쟁 건수 32 건→649 건 (+1,928.1%), 심각도 73.6/100 (사전계산).\n- 바브엘만데브 분쟁 건수 226 건 (2025-07) vs 1,246 건 (2025-04) 감소세.\n- CSIS 보고서: 2026.02.28 이란전 개전 이후 GCC 에너지 인프라 타격 및 카타르 LNG 파괴로 인한 혼란 배경.\n\n**[한계]**\n- **통항량 데이터 부재:** 본 분석은 분쟁 건수와 심각도만 관찰했지, 실제 통항량 변화 (DV) 를 확인하지 못함. 통항량이 '0'으로 급감했는지, 아니면 '보험료 상승'만 발생했는지 불명확 [UNVERIFIED].\n- **선택·생존편향:** ACLED 데이터는 '보고된' 분쟁만 포함. 실제 은폐된 통항 제재나 보험사 기피 (보고되지 않은 통행 중단) 가 있을 경우 통항량 감소를 과소평가할 위험.\n\n**[경쟁설명]**\n이론 A: 회색지대 전략 (Gray Zone Strategy)\n- 예측: 회색지대 행동 빈도 (건수) 증가 시 목표국 정책 양보 (통항량 감소) 증가 (예측 부호: ▲)\n- 실측: 바브엘만데브 공격 건수는 감소 (-81.8%) 하지만 수에즈 운하 내 분쟁 건수는 +1,928.1% 급증. (IV: 빈도 vs DV: 건수 불일치, 위치 전이 발생)\n- 판정: 전제충족 (DV 미검증) — 실측 DV(통항량) 부재로 방향성 검증 불가. 정성 증거: 수에즈 운하 내 분쟁 심각도 (73.6) 가 고도화되며 회색지대 임계값을 넘어선 것으로 보이나, 통항량 감소 여부는 미검증.\n\n이론 B: SLOC 통제 이론 (Chokepoint & Sea Lines of Communication)\n- 예측: 초크포인트 위협 강도 증가 시 운임·유가 단기 급등 및 통항량 감소 (통제: 대체 운송로)\n- 실측: 수에즈 운하 분쟁 강도 73.6/100 (고위험) 로 상승했으나, 통항량 변화율 [산술 미제공] — <context>에 통항량 감소율 데이터 부재.\n- 판정: 전제충족 (DV 미검증) — 위협 강도는 임계값 (60/100) 을 초과했으나, 실제 통항량 감소 (DV) 가 확인되지 않아 이론 검증 불가.\n\n▶ 편차 비교 (사실): 회색지대 전략 (빈도 감소 vs 강도 급증으로 인한 예측 불일치) vs SLOC 통제 이론 (강도 증가 예측 vs 통항량 데이터 부재) — 두 이론 모두 통항량 실측치 부족으로 판정 정지.\n▶ 당신의 판단 (연구자 몫): 현재 데이터만으로는 '빈도'가 중요한지 '강도'가 중요한지 판단 불가. 통항량 데이터가 확보되면, 수에즈 운하 내 분쟁 강도 (73.6) 가 통항량에 미치는 영향이 바브엘만데브 빈도 변화보다 클 것이라는 가설을 검증해야 함. 쟁점: '분쟁 건수'가 통항량에 미치는 영향의 임계값이 30 건인지 100 건인지 불명확.\n\n**[검증포인트]**\n- 수에즈 운하 당국 (SCA) 의 2026 년 6 월 선박 통과량 (TEU) 및 평균 대기 시간 데이터 확보.\n- 보험료 (War Risk Premium) 상승률과 통항량 감소율의 상관관계 분석.\n- 2026 년 6 월 수에즈 운하 내 분쟁의 구체적 유형 (선박 나포 vs 미사일 공격 vs 기뢰) 식별.\n\n**[문헌공백]**\n기존 문헌은 〈SLOC 통제 이론〉에서 \"초크포인트 위협 강도 증가 시 운임·유가 단기 급등\"을 예측하지만, **위협 강도의 '임계값'과 '지리적 위치'가 통항량에 미치는 비선형 영향**을 충분히 다루지 못한다. 특히, 바브엘만데브 (접근로) 의 저강도 분쟁과 수에즈 운하 (통행로) 의 고강도 분쟁이 공존할 때 어떤 메커니즘이 통항량을 결정하는지 설명하는 **교차 도메인 모델**이 부재하다. 본 분석은 '분쟁 빈도'가 아닌 '분쟁 강도 (Severity Index 73.6)'와 '위치 (운하 내부)'가 통항량 결정의 핵심 변수임을 제시하며, 기존 문헌의 선형적 예측 (위협↑→통항량↓) 을 **임계값 조건 (Severity > 60) 에서만 유효함**으로 정교화한다.\n\n---\n\n### 인사이트 카드 2: AI 기반 사이버-물리 연쇄와 해상 봉쇄의 '가상화' 전환\n\n**[헤드라인]** 물리적 공격 빈도 감소세에도 사이버 공격 기법 (AI 업리프트) 의 확산이 해상 봉쇄의 '실제성'을 높여 통항량 감소를 유발할 가능성 (가설적 상관) 관찰\n**데이터기반:** 중 | **이론근거:** 고 | **연쇄강도:** LOW\n\n**[통념]**\n해상 봉쇄나 통행 중단은 선박을 직접 격침하거나 미사일로 타격하는 물리적 공격 (Kinetic Attack) 에 의해 발생하며, 사이버 공격은 보조 수단일 뿐이다.\n\n**[비자명기여]**\n통념은 물리적 공격을 유일한 봉쇄 수단으로 보지만, 본 분석은 **AI 기반 사이버 업리프트**가 초보 공격자에게 '물리적 공격'을 가능하게 하는 **새로운 진입 장벽**을 낮추어, 물리적 공격 빈도가 낮아도 사이버-물리 연쇄 (Cyber-Physical Chain) 를 통해 통항량에 대한 위협을 증폭시킬 수 있음을 제시한다. 이는 〈코르벳 제한적 제해권 이론〉의 예측 임계 (해군력 열세 행위자가 함대 보존 + 해상 교통로 위협 전략 선택) 가 **AI 를 통해 비대칭적으로 구현**되는 경계를 보여준다. 즉, 물리적 공격 건수 (ACLED) 가 감소해도, AI 로 인한 '가상 봉쇄' (시스템 마비, 항해 정보 조작) 가 통항량 감소를 유발할 수 있는 **범위조건**이 형성됨을 시사한다.\n\n**[관찰]**\n- **AI 업리프트 효과:** 초보자 공격자의 쉬운 공격 체인 완료율이 **14% → 32%** (+18%p) 증가 (RAND/UK AISI).\n- **물리적 공격 추세:** 바브엘만데브 분쟁 건수는 2025-07 기준 **226 건**으로 감소세.\n- **사이버-물리 연계:** AI 가 '터미널 사용법' 등 기초 기술을 2.2 배 빠르게 습득하게 하여, 비숙련자가 대규모 팀 없이도 운영 규모를 달성 가능 (AWS 사례 언급).\n- **수에즈 운하 분쟁:** 2026-06 기준 **649 건** 급증 (물리적/혼합 위협).\n- **통항량 변화:** 수에즈 운하 통항량 데이터 부재 [UNVERIFIED].\n\n**[주장]**\n(등급: 기술적) AI 기반 사이버 공격 기법의 확산 (초보자 완료율 +18%p) 과 수에즈 운하 내 분쟁 건수 급증 (649 건) 은 **함께 관찰된다**. 이는 물리적 공격 빈도 감소에도 불구하고, 사이버-물리 연쇄를 통한 통항량 위협이 지속될 수 있음을 **수반한다**.\n\n**[가설]**\nH1: AI 모델의 공세 사이버 업리프트 지수 (초보자 완료율 증가율) 가 15%p 이상 상승할 때, 수에즈 운하 내 사이버-물리 혼성 공격 건수가 통계적으로 유의하게 증가한다 (통제변수: 물리적 전투력).\n\n**[근거]**\n- RAND/UK AISI 보고서: 초보자 공격 체인 완료율 14%→32% (+18%p), 속도 2.2 배 증가.\n- ACLED 데이터: 수에즈 운하 분쟁 건수 649 건 (2026-06), 심각도 73.6/100.\n- CSIS 보고서: 2026 년 2 월 이란전 개전 이후 이란의 사이버·드론 공격 확대 가능성.\n\n**[한계]**\n- **인과 관계 미검증:** AI 업리프트가 수에즈 운하 분쟁 증가의 직접적 원인인지, 아니면 이란전 개전 (2026.02.28) 과 같은 거시적 요인 때문인지 구분 불가.\n- **데이터 불일치:** AI 실험 (CTF 환경) 과 실제 해상 분쟁 (ACLED) 사이의 직접적 연결 고리가 부족함.\n- **선택편향:** AI 업리프트가 성공한 사례만 보고되고, 실패한 시도는 기록되지 않을 수 있음.\n\n**[경쟁설명]**\n이론 A: 회색지대 전략 (Gray Zone Strategy)\n- 예측: 회색지대 행동 빈도 증가 시 목표국 정책 양보 (통항량 감소) 증가\n- 실측: 바브엘만데브 물리적 공격 빈도 감소 (-81.8%) 와 수에즈 운하 분쟁 증가 (+1,928.1%) 는 회색지대 행동의 '형태' 변화 (물리→혼합) 를 시사하나, AI 기법의 직접적 기여도는 [UNVERIFIED].\n- 판정: 전제충족 (DV 미검증) — AI 업리프트가 실제 분쟁 증가로 이어졌는지 정량적 증거 부재.\n\n이론 B: 자원무기화 (Resource Weaponization)\n- 예측: 에너지·원자재 수입 의존도 증가 시 공급 차단 위협에 대한 정치적 양보 증가\n- 실측: 수에즈 운하 통과 원유량 5.8 Mbpd (EIA) 로 글로벌 공급의 핵심 경로이나, 통항량 감소에 따른 정치적 양보 (유가 상승 등) 는 [UNVERIFIED].\n- 판정: 전제충족 (DV 미검증) — AI 관련 데이터가 자원 무기화 이론의 핵심 변수 (의존도) 와 직접 연결되지 않음.\n\n▶ 편차 비교 (사실): 회색지대 전략 (형태 변화 예측 vs AI 기법 부재 증거) vs 자원무기화 (의존도 예측 vs AI 관련성 부재) — 두 이론 모두 AI 의 구체적 영향을 정량화하지 못함.\n▶ 당신의 판단 (연구자 몫): AI 업리프트가 실제 해상 분쟁 증가로 이어졌는지, 아니면 단순한 '위협 인식'만 높였는지 판단해야 함. 쟁점: AI 가 초보자에게 '저지대 과일' 공격을 가능하게 한다는 RAND 보고서의 주장이 실제 수에즈 운하의 고강도 분쟁 (73.6/100) 에 적용 가능한지 여부.\n\n**[검증포인트]**\n- 수에즈 운하 내 사이버 공격 시도 건수 (CSIRT 보고서 등) 와 AI 기반 공격 기법의 연관성 분석.\n- 2026 년 6 월 수에즈 운하 분쟁의 구체적 원인 (물리적 vs 사이버) 분류 데이터 확보.\n- AI 모델 (OpenAI, Claude 등) 의 사이버 공격 관련 거절 (Refusal) 비율과 실제 공격 성공률의 상관관계 분석.\n\n**[문헌공백]**\n기존 문헌은 〈코르벳 제한적 제해권 이론〉에서 \"해군력 열세 행위자가 함대 보존 + 해상 교통로 위협 전략 선택\"을 예측하지만, **AI 기술이 이 전략의 '실행 비용'을 어떻게 낮추는지**에 대한 정량적 분석이 부재하다. 특히, 〈SLOC 통제 이론〉은 초크포인트 위협을 물리적 공격으로 한정하는 경향이 있어, **AI 기반 사이버-물리 연쇄 (Cyber-Physical Chain) 가 통항량에 미치는 비선형 영향**을 간과한다. 본 분석은 AI 업리프트 (초보자 +18%p) 가 '비대칭 해군전'의 새로운 변수로 작용하여, 물리적 공격 빈도가 낮아도 통항량에 대한 위협을 유지할 수 있는 **기술적 범위조건**을 제시하며, 기존 문헌의 물리 중심적 접근을 보완한다.\n\n---\n\n### 도메인 교차 경로 (§19-B-2 ②)\n**[도메인A: AI/사이버 → 도메인B: 해상/물리]**\n- **경로 설명:** AI 모델의 '초보자 업리프트' (완료율 +18%p) → 비숙련 행위자의 사이버-물리 공격 능력 향상 → 수에즈 운하 내 고강도 분쟁 (73.6/100) 유발 → 통항량 감소 (가설적).\n- **전이 조건:** AI 가 '터미널 사용법' 등 기초 기술을 습득하게 하여, 대규모 팀 없이도 운영 규모를 달성할 수 있을 때 (AWS 사례).\n\n### [동사 자기검열 — 카드 완성 후 필수]\n- **카드 1:** [주장] 등급이 '상관'이므로 '유발한다' 사용 금지. \"동반한다\"로 수정 완료. [헤드라인] 에서 '붕괴되는'은 기술적 서술로 허용 (관찰된 현상 서술).\n- **카드 2:** [주장] 등급이 '기술적'이므로 '유발한다' 사용 금지. \"수반한다\"로 수정 완료. [헤드라인] 에서 '유발할 가능성'은 가설적 서술로 허용.\n\n### [참고] (연구자 판정을 위한 보조 의견)\n본 분석은 <context>에 제공된 ACLED 데이터와 RAND/UK AISI 실험 데이터를 결합하여, 물리적 공격 빈도와 사이버 기술 진보 간의 비선형 관계를 탐색했다. 특히, 바브엘만데브의 물리적 공격 감소와 수에즈 운하의 분쟁 급증이 동시에 발생한 점은 **위협의 '장소'와 '수단'이 전이**되었음을 시사한다. 연구자는 수에즈 운하의 실제 통항량 데이터를 확보하여, 이 전이가 실제 통행 중단으로 이어졌는지, 아니면 '위험 프리미엄' 상승만 발생했는지 검증해야 한다. AI 업리프트가 실제 분쟁 증가로 이어졌는지에 대해서는 추가적인 사이버 공격 데이터 (CSIRT 등) 가 필요하다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [과정추적] 수에즈 운하 내 분쟁 심각도 (Severity Index) 가 60/100 임계값을 초과 → 수에즈 운하 통항량 (선박 수/월) — Van Evera 4검정 스캐폴딩 제공 (정량 검정 불가, 판정은 연구자)",
+        "confidence_word": "검정불가",
+        "routing_method": "structural_arg",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-C 비선형검정(TAR·체제전환) — 적극적 양성 증거 필요"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "수에즈 운하 내 분쟁 심각도 (Severity Index) 가 60/100 임계값을 초과할 때, 수에즈 운하 통항량 (선박 수/월) 은 통계적으로 유의하게 감소한다 ().",
+        "h0": "수에즈 운하 내 분쟁 심각도 (Severity Index) 가 60/100 임계값을 초과할 때, 수에즈 운하 통항량 (선박 수/월) 은 통계적으로 유의한 관계가 없다.",
+        "independent_var": "수에즈 운하 내 분쟁 심각도 (Severity Index) 가 60/100 임계값을 초과",
+        "dependent_var": "수에즈 운하 통항량 (선박 수/월)",
+        "control_vars": [
+          "유가",
+          "보험료"
+        ],
+        "region_code": "suez",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": false,
+        "testability_reason": "비선형 체제·임계 변수('임계') 포함 — 임계점·체제전환 구조라 선형 Granger 부적합",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "[구조적 논증 — 설계상 선형검정 제외] 비선형 체제·임계 변수('임계') 포함 — 임계점·체제전환 구조라 선형 Granger 부적합. 통계 검증을 청구하지 않음. 비선형을 입증하려면 임계회귀(TAR)·체제전환 모델 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "선형검정 부적합(비선형 체제 변수) — Granger 미실행",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "수에즈 운하 내 분쟁 심각도 (Severity Index) 가 60/100 임계값을 초과할 때, 수에즈 운하 통항량 (선박 수/월) 은 통계적으로 유의하게 감소한다 ().",
+                "region": "suez",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 미상 세력 vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs GAZA (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: GAZA vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: PALESTINIAN vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [],
+                    "evidence_note": "1차 사료 없음 — 미 국무부·UN 문서·회의록으로 직접 탐색 필요"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 미상 세력 vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs GAZA (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: GAZA vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: PALESTINIAN vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [],
+                    "evidence_note": "공식 소스 없음 — 대통령 성명·UN 결의·공동성명으로 직접 탐색 필요"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 수에즈 운하 내 사이버-물리 혼성 공격 건수 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "AI 모델의 공세 사이버 업리프트 지수 (초보자 완료율 증가율) 가 15%p 이상 상승할 때, 수에즈 운하 내 사이버-물리 혼성 공격 건수가 통계적으로 유의하게 증가한다 ().",
+        "h0": "AI 모델의 공세 사이버 업리프트 지수 (초보자 완료율 증가율) 가 15%p 이상 상승할 때, 수에즈 운하 내 사이버-물리 혼성 공격 건수가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "AI 모델의 공세 사이버 업리프트 지수 (초보자 완료율 증가율) 가 15%p 이상",
+        "dependent_var": "수에즈 운하 내 사이버-물리 혼성 공격 건수",
+        "control_vars": [
+          "물리적 전투력"
+        ],
+        "region_code": "suez",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "verification_status": "PENDING",
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 suez ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=suez) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "AI 모델의 공세 사이버 업리프트 지수 (초보자 완료율 증가율) 가 15%p 이상 상승할 때, 수에즈 운하 내 사이버-물리 혼성 공격 건수가 통계적으로 유의하게 증가한다 ().",
+                "region": "suez",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 미상 세력 vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs GAZA (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: GAZA vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: PALESTINIAN vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Braw in Foreign Policy on the effects of the uncertainty of the Iran ceasefire on shipping",
+                        "date": "Wed, 17 Jun 2026 13:44:38 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>On June 17, Transatlantic Security Initiative senior fellow Elisabeth Braw published an article in Foreign Policy on "
+                      },
+                      {
+                        "title": "The future of NATO’s deterrence in the air domain",
+                        "date": "Wed, 10 Jun 2026 20:41:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>European NATO member states need to prepare to deter, and if necessary, defeat Russia—with less US support. When it c"
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 미상 세력 vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs GAZA (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 77,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: GAZA vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: 이스라엘 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Gaza, Israel (general), Israel: PALESTINIAN vs 이스라엘 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 72,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "New cholera outbreak alert for Sudan’s war-weary communities",
+                        "date": "2026-07-10",
+                        "source_db": "UN News",
+                        "description": "In war-torn Sudan, a deadly new cholera outbreak has already claimed more than 100 lives, heightening serious concerns f"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Lost continuity of knowledge’ on Iran’s nuclear programme since US-Israel attacks, top UN official warns",
+                        "date": "2026-07-10",
+                        "source_db": "UN News",
+                        "description": "Since the United States and Israel launched attacks on Iran in late February, there has been a “lost continuity of knowl"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Urgent de-escalation’ needed now in Ukraine amid spike in civilian deaths",
+                        "date": "2026-07-09",
+                        "source_db": "UN News",
+                        "description": "The Security Council must use every tool and diplomatic channel to reach an urgent de-escalation, Rosemary DiCarlo, chie"
+                      },
+                      {
+                        "title": "Dispatch from Kyiv: Russia is more vulnerable than it might seem",
+                        "date": "Wed, 03 Jun 2026 20:03:45 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>A recent trip to Ukraine reveals a country growing in strength and confidence, while Russia is increasingly on the ba"
+                      },
+                      {
+                        "title": "US nuclear power in state energy planning: A policy roadmap",
+                        "date": "Wed, 01 Jul 2026 20:19:59 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>To meet growing electricity demand in the US, states must shape the policy, economic, and regulatory environment nece"
+                      }
+                    ],
+                    "evidence_note": "UN News 3건 + Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}
