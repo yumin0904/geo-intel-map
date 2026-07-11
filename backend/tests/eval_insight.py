@@ -182,6 +182,67 @@ _JUDGE_RUBRIC_VERSION = os.getenv("JUDGE_RUBRIC", "v1").strip().lower()
 _JUDGE_PROVIDER = os.getenv("JUDGE_PROVIDER", "deepseek").strip().lower()
 _JUDGE_MODEL    = os.getenv("JUDGE_MODEL", "deepseek-ai/deepseek-v4-pro")
 
+# ── 회귀 워치독 (눈금 후속 위원회 2026-07-11) ──────────────────────────────
+# "게이트"가 아니라 워치독 — FAIL이 촉발하는 유일 합법 행동은 원인 분해 소집이며
+# 자동 보정·루브릭 재상정은 금지(계측기 거버넌스 3규약: 보정 트리거=골드 오벌점만).
+# 대응표본(동일 케이스 짝) 설계라 케이스 난이도 분산이 차감돼 횡단 CI보다 강력.
+# δ=0.2는 기존 4축 판독 규칙의 플로어 재사용 — se(≈0.03) 수준 마진은 판독 불가
+# 대역 안에서 오발하므로 금지(반박석 적발: ±0.2 플로어와 ±0.07 발동의 자기모순).
+# 신원 불일치(provider·rubric·패널)면 판정하지 않는다 — NIM→직영 +0.55 같은
+# 계측기 이동을 엔진 회귀로 오판하는 경로를 원천 차단(15σ 공통모드 반론의 해소).
+_WATCHDOG_BASELINE = _OUT_DIR / "baseline_watchdog_v1_deepseek.json"
+_WATCHDOG_MIN_PAIRED = 40   # 부분 패널 편향 방지 — 대응 케이스가 이보다 적으면 기권
+
+
+def _regression_watchdog(judged: list[dict]) -> dict | None:
+    """직영 judge 풀런의 케이스별 종합을 baseline 벡터와 대응 비교.
+
+    반환: verdict(PASS/WARN/FAIL/ABSTAIN)·d̄·CI·근거. baseline 파일 없으면 None.
+    """
+    if not _WATCHDOG_BASELINE.exists():
+        return None
+    try:
+        base = json.loads(_WATCHDOG_BASELINE.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"⚠️ 워치독 baseline 로드 실패: {e}")
+        return None
+    out = {"delta": base.get("delta_margin", 0.2), "baseline_mean": base.get("mean"),
+           "d_mean": 0.0, "ci_low": 0.0, "ci_high": 0.0, "n_paired": 0}
+    # 신원 게이트 — 계측기가 다르면 회귀/개선을 논할 눈금 자체가 없다
+    if _JUDGE_PROVIDER != base.get("judge_provider") or _JUDGE_RUBRIC_VERSION != base.get("judge_rubric"):
+        out.update(verdict="ABSTAIN",
+                   abstain_reason=f"계측기 신원 불일치 — 런 {_JUDGE_PROVIDER}/{_JUDGE_RUBRIC_VERSION} "
+                                  f"vs baseline {base.get('judge_provider')}/{base.get('judge_rubric')}")
+        return out
+    axes = ("non_obviousness", "inference_honesty", "competing_rigor", "falsifiability")
+    base_vec = base.get("case_composite", {})
+    diffs = []
+    for r in judged:
+        cid = r.get("id")
+        q = r.get("quality") or {}
+        if cid in base_vec and all(a in q for a in axes):
+            diffs.append(sum(q[a] for a in axes) / 4 - base_vec[cid])
+    n = len(diffs)
+    out["n_paired"] = n
+    if n < _WATCHDOG_MIN_PAIRED:
+        out.update(verdict="ABSTAIN",
+                   abstain_reason=f"대응 케이스 {n} < {_WATCHDOG_MIN_PAIRED} — 부분 패널은 편향 표본")
+        return out
+    d_mean = sum(diffs) / n
+    sd = (sum((d - d_mean) ** 2 for d in diffs) / (n - 1)) ** 0.5
+    se = sd / n ** 0.5
+    lo, hi = d_mean - 1.96 * se, d_mean + 1.96 * se
+    delta = out["delta"]
+    if lo >= -delta:
+        verdict = "PASS"          # 차이 CI 하한이 허용 마진 안 — 회귀 없음
+    elif hi < -delta:
+        verdict = "FAIL"          # CI 전체가 마진 밖 — 유의 하락, 원인 분해 소집
+    else:
+        verdict = "WARN"          # CI가 마진을 가로지름 — 노이즈로 판정 불가, 조사 대기
+    out.update(verdict=verdict, d_mean=round(d_mean, 4),
+               ci_low=round(lo, 4), ci_high=round(hi, 4))
+    return out
+
 
 def _judge_via_gemini(prompt: str) -> str | None:
     key = _resolve_gemini_key()
@@ -1119,6 +1180,16 @@ def _print_summary(results: list[dict]) -> None:
             overall += avg
             print(f"     {labels[ax]}: {avg:.2f}/5")
         print(f"     종합: {overall/4:.2f}/5  ← '박사 수준' 진짜 척도 (형식 무관)")
+        wd = _regression_watchdog(judged)
+        if wd:
+            print(f"\n🐕 [회귀 워치독] {wd['verdict']} — d̄={wd['d_mean']:+.3f} "
+                  f"(95% CI [{wd['ci_low']:+.3f}, {wd['ci_high']:+.3f}], δ=±{wd['delta']}, "
+                  f"대응 {wd['n_paired']}케이스, baseline {wd['baseline_mean']})")
+            if wd["verdict"] == "FAIL":
+                print("     ⚠️ 유일 합법 행동 = 원인 분해 소집(골드 가드쌍 비대칭·노이즈 대조·서빙 신원)."
+                      " 자동 보정·루브릭 재상정 금지 — 계측기 거버넌스 3규약.")
+            elif wd["verdict"] == "ABSTAIN":
+                print(f"     기권 사유: {wd['abstain_reason']} (계측기 변경은 회귀가 아니라 새 baseline 사건)")
 
     # ── 게이밍 감시 3종 (T6 채택위 2026-07-10 — 루브릭 v2의 load-bearing 가드) ──
     # 태깅률 단독 해석 금지: 상승 = 정직 강화 OR 부재선언 게이밍 양쪽 다 가능(양의적).
@@ -1477,6 +1548,8 @@ def main() -> None:
         "total_active": sum(1 for r in results if not r.get("dormant")),   # dormant 제외 분모
         "results": results,
         "diagnosis": diagnosis,
+        # 회귀 워치독 판정(눈금 후속 위원회 07-11) — FAIL=원인 분해 소집, 자동 보정 금지
+        "watchdog": _regression_watchdog([r for r in results if r.get("quality")]),
     }
 
     out_path = _OUT_DIR / f"{timestamp}.json"
