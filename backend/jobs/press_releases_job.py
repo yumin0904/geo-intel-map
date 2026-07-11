@@ -72,3 +72,15 @@ def run_mofa_press_batch() -> None:
         logger.info("[PressJob/MOFA] 완료 — %d건 처리", n)
     except Exception as exc:
         logger.warning("[PressJob/MOFA] 실패 (다음 회차 재시도): %s", exc)
+
+
+def run_bp_provocations_batch() -> None:
+    """CSIS Beyond Parallel 북한 도발 DB 수집 → bp_provocations 저장.
+
+    CNS 미사일 DB 단종(2026-04)의 병렬 후속 (채택위 2026-07-11).
+    의도적으로 예외를 삼키지 않는다 — 커넥터의 fail-loud 가드(행수·최신일자
+    assert)가 collect_standalone 실패 목록에 잡혀야 silent failure가 안 된다.
+    """
+    from connectors.bp_provocations_connector import collect
+    n = collect()
+    logger.info("[PressJob/BP] 완료 — %d건 신규", n)

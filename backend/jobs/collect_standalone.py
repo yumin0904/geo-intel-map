@@ -188,6 +188,7 @@ def main() -> int:
         run_policy_think_tank_batch,
         run_govinfo_batch,
         run_mofa_press_batch,
+        run_bp_provocations_batch,
     )
     from jobs.prediction_scoring_job import run_prediction_scoring_batch
 
@@ -205,6 +206,7 @@ def main() -> int:
         ("policy_think_tank", run_policy_think_tank_batch),
         ("govinfo", run_govinfo_batch),                  # 대통령 성명 (1차 사료)
         ("mofa_press", run_mofa_press_batch),             # 외교부 보도자료 (20일 미배선 배선)
+        ("bp_provocations", run_bp_provocations_batch),   # CSIS BP 북한 도발 (CNS 병렬 후속, fail-loud)
         ("archive_cycle", archive.run_full_cycle),       # TTL 이관·삭제
         ("prediction_scoring", run_prediction_scoring_batch),  # Phase 10-2 만기 예측 채점
     ]

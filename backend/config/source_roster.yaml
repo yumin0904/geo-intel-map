@@ -291,7 +291,20 @@ sources:
     max_staleness_hours: null
     trigger: manual
     backfillable: true
-    notes: "구조적 미관측(폐쇄국가) — ⚠️ CNS DB는 2026-04 공식 갱신 중단(단종, 웹 실측 07-11): 2024-11까지 불변 사료로 유지. 대체 후보 조사: geo-os docs/CNS_ALTERNATIVE_SURVEY_20260711.md (채택은 위원회). ACLED가 북한을 커버 못 해 도입된 대안이었음"
+    notes: "구조적 미관측(폐쇄국가) — ⚠️ CNS DB는 2026-04 공식 갱신 중단(단종, 웹 실측 07-11): 2024-11까지 불변 사료로 유지. 병렬 후속 = bp_provocations (채택위 07-11, geo-os 판례 20260711-bp-adoption-committee). ACLED가 북한을 커버 못 해 도입된 대안이었음"
+
+  - source_id: bp_provocations
+    name: "CSIS Beyond Parallel 북한 도발 DB"
+    kind: live
+    connector: connectors/bp_provocations_connector.py
+    job: bp_provocations
+    db_table: bp_provocations
+    timestamp_col: fetched_at
+    filter: null
+    max_staleness_hours: 168
+    trigger: launchd
+    backfillable: true
+    notes: "CNS 단종의 병렬 후속(채택위 07-11, geo-os 판례 20260711-bp-adoption-committee) — 사건 발생·유형층이지 제원 소스 아님(서술 정규식 추출률 33~43% 실측). ⚠️ 접합 금지: CNS와 단일 연속 카운트 생성 금지, 기간별 단일 소스(≤2024-11 CNS / 이후 BP), 겹침 구간(BP 106 vs CNS 185, 사건 단위 vs 발사 단위)은 브리지 검증 전용. 'provocation' 코딩 = CSIS 관점 프레임 캐비엇. fail-loud 가드(행수 400·최신 365d) 커넥터 내장"
 
   # ── seed CSV/API 1회 적재 (scripts/load_external_data.py) ───────────────
   # kind=seed는 정체가 정상 상태임을 선언하는 것 자체가 목적 — staleness null.
