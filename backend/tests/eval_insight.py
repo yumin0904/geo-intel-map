@@ -1369,6 +1369,10 @@ def main() -> None:
                         help="대기 시간 단축 — 케이스간격 5s→2s, 재시도 15/40s→5/15s")
     parser.add_argument("--parallel", type=int, default=1,
                         help="동시 실행 케이스 수 (I/O 바운드 — 4~5 권장. NIM RPM·yfinance 한도 고려)")
+    parser.add_argument("--no-latest-write", action="store_true",
+                        help="latest.json 갱신 생략 — 주기 무심판 런(예측 축적용)이 "
+                             "judge 점수 없는 리포트로 baseline 슬롯을 덮지 않게 한다 "
+                             "(축적루틴위 2026-07-11). 타임스탬프 파일은 항상 저장")
     args = parser.parse_args()
 
     global _JUDGE_ENABLED
@@ -1477,10 +1481,12 @@ def main() -> None:
 
     out_path = _OUT_DIR / f"{timestamp}.json"
     out_path.write_text(json.dumps(report, ensure_ascii=False, indent=2))
-    (_OUT_DIR / "latest.json").write_text(json.dumps(report, ensure_ascii=False, indent=2))
-
     print(f"\n💾 저장: {out_path}")
-    print(f"💾 최신: {_OUT_DIR / 'latest.json'}")
+    if args.no_latest_write:
+        print("💾 최신: 생략 (--no-latest-write — baseline 슬롯 보호)")
+    else:
+        (_OUT_DIR / "latest.json").write_text(json.dumps(report, ensure_ascii=False, indent=2))
+        print(f"💾 최신: {_OUT_DIR / 'latest.json'}")
 
     # 실패 케이스가 있으면 종료 코드 1 (CI 대응)
     failed = sum(1 for r in results if not r.get("passed") and not r.get("error") and not r.get("dormant"))

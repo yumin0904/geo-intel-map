@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.geo-intel.eval</string>
+
+    <!-- 주 1회 수요일 03:00 — 심야(세션과 NIM 쿼터 충돌 회피)·일요 백업(22시)과 분산.
+         목적: 예측-신뢰도 쌍 축적 (축적루틴위 2026-07-11, geo-os 판례
+         20260711-calibration-accumulation-committee). 무심판이라 비용 0 -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>3</integer>
+        <key>Hour</key><integer>3</integer>
+        <key>Minute</key><integer>0</integer>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/kang-yumin/Projects/geo-intel-map/backend/ops/eval_wrapper.sh</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend/logs/eval_launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/kang-yumin/Projects/geo-intel-map/backend/logs/eval_launchd.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

@@ -80,6 +80,7 @@
 | 외교부 LOD (IFANS) | `connectors/mofa_lod.py` | 한국 시각 발간자료(SPARQL) |
 | GovInfo.gov CPD | `connectors/govinfo_connector.py` | 미 대통령 성명·기자회견·의회 연설 원문(1차 사료) → `govinfo_releases`. 스케줄러 12시간 주기(`jobs/press_releases_job.py::run_govinfo_batch`) |
 | 외교부 보도자료 (공공데이터포털 15141564) | `connectors/mofa_press.py` | 한국 정부 1차 사료, 22,483건 전체 적재 → `mofa_press_releases`. 스케줄러 미등록 — CLI 수동 실행(`python3 -m connectors.mofa_press`), 주기 미확인 |
+| CSIS Beyond Parallel 북한 도발 DB | `connectors/bp_provocations_connector.py` | 북한 도발 사건·유형층(1958~, CNS 단종 병렬 후속 — 채택위 07-11) → `bp_provocations`. launchd 일 2회 수집잡 내 배선(`jobs/press_releases_job.py::run_bp_provocations_batch`). ⚠️ CNS와 접합 금지(로스터 노트) |
 | NKNews + 38 North | `connectors/nk_news_connector.py` | 북한 전문 뉴스·학술 분석 → `nk_press_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_nk_press_batch`) |
 | UN News | `connectors/un_news_connector.py` | UN 공식 뉴스(다자 시각, 이중결정 검정 보강) → `un_news_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_un_news_batch`) |
 | Atlantic Council + Arms Control Assoc | `connectors/policy_think_tank_connector.py` | 워싱턴 외교안보 싱크탱크 정책 분석 → `policy_releases`. 스케줄러 6시간 주기(`jobs/press_releases_job.py::run_policy_think_tank_batch`) |
