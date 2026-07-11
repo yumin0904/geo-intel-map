@@ -221,3 +221,17 @@ NIM 눈금(종합 3.84)과 절대 비교 불가. 차기 풀런부터 latest.json
   PASS(fable·sonnet과 동일 패턴)**. 수치맹은 judge 모델 불문 구조적 — 정량-위조 방어는
   결정론 검사(impossible_hhi·zero_deviation·dv_gate)가 유일층임을 3모델 교차 확증.
   결과: deepseek_gold_20260711_1233.json
+
+## 2026-07-11 — 패킷 ①·③ 발효 (모드·판정 분리 표기, v9.40.0 — 사용자 승인)
+
+- **생성 계약 변경(splice)**: verify 결론 표기 `[확증] 지지/반증/불확실` → **`[확증 모드]
+  판정: 지지/반증/불확실`** 분리 표기. 431행 무조건 명령 조건화·498행 스왑 조항([확증]→
+  [탐색적] — 모드 오표기 유발) 폐기. **이후 verify 산출물의 결론 형식은 과거와 표기 비교
+  불가.** lint dual_label은 legacy 자기모순("[확증] 불확실")을 계속 잡고 신 표기는 원리상
+  비발화(정규식 `\[확증\]`이 `[확증 모드]`에 미매치) — 재조준 불요 실측.
+- **export 계약**: confidence.speculative 신설(result_md [SPECULATIVE] 실측) — shared
+  insight/article 스키마 + geo-os insight_to_draft/editorial.md v0.4와 동시 발효(게이트
+  사각 봉쇄 세트). 파급: 발행 게이트가 exploratory OR speculative 이중 키.
+- **판별 정확도 계기 배선(패킷 ③, report-only)**: eval_cases.yaml v2 14건에
+  hedge_expected 초벌 태깅(reserve 9·engage 5 — **사용자 비준 대기**), 요약에 판별
+  정확도 보고. 유보율 절대치의 결론 도구 강등을 대체하는 계기.

@@ -952,6 +952,9 @@ def evaluate_case(
         # 과잉유보 카운터 (개선위 P3) — P4 강등 게이트의 부작용 감시 짝:
         # 게이트가 판정을 깎기만 하면 판정 회피로 최적화될 수 있어 결단율을 함께 계측.
         "verdict_stats": _verdict_stats(text),
+        # [계측위 2026-07-11] 판별 정확도 골드라벨 — reserve(유보 정답)/engage(결단 정답).
+        # 케이스 설계문 기반 초벌(사용자 비준 대기), 미태깅 케이스는 계기 제외.
+        "hedge_expected": case.get("hedge_expected"),
         "full_text": text,  # 상세 분석용 (JSON에 포함)
         "expected_min_score": exp_score,
         "retries": retries,
@@ -1072,6 +1075,20 @@ def _print_summary(results: list[dict]) -> None:
         h_v2 = _hedge_of([(r, v) for r, v in pairs if r["id"].startswith("v2_")])
         h_leg = _hedge_of([(r, v) for r, v in pairs if not r["id"].startswith("v2_")])
         print(f"   유보율 분해 — v2(유보정답 설계 포함): {h_v2} · 비-v2: {h_leg}")
+
+        # [계측위 2026-07-11] 판별 정확도 — 유보율 절대치 대신 "부재-DV에서 유보하고
+        # present-DV에서 결단하는가"를 계측 (골드라벨 초벌·비준 대기, report-only)
+        disc_ok, disc_all = 0, 0
+        for r, v in pairs:
+            exp = r.get("hedge_expected")
+            if not exp or not v.get("verdicts"):
+                continue
+            disc_all += 1
+            ratio = v.get("hedge_ratio") or 0.0
+            if (exp == "reserve" and ratio >= 0.5) or (exp == "engage" and v.get("decisive", 0) >= 1):
+                disc_ok += 1
+        if disc_all:
+            print(f"   판별 정확도(기대방향 골드 {disc_all}건): {disc_ok}/{disc_all}")
         if over:
             print(f"   ⚠️ 과잉유보(>70%) 케이스: " + ", ".join(over))
 

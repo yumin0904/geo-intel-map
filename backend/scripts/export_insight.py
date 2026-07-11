@@ -206,6 +206,10 @@ def main() -> int:
             "provisional": bool(score.get("provisional", False)),
             "inference_grade": score.get("inference_grade", "기술적"),
             "inference_caveat": score.get("inference_caveat", ""),
+            # [계측위 2026-07-11] 연쇄강도 저신뢰 — 모드·판정 분리 표기 발효로
+            # "[확증 모드]+[SPECULATIVE]"가 합법 조합이 되어, 발행 게이트가 exploratory만
+            # 보면 저신뢰 확증 글이 사전 승인을 우회한다. 게이트 키 확장용 실측 필드.
+            "speculative": "[SPECULATIVE]" in result_md,
         },
         "result_md": result_md,
         "hypotheses": run["hypotheses"],
