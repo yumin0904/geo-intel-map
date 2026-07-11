@@ -431,6 +431,17 @@ async def _run_granger_for_spec(
         # 캐시된 수치 필드만 덮어쓰고 나머지(h1·h0·var 등)는 현재 spec 유지
         for _k, _v in _cached.items():
             setattr(spec, _k, _v)
+        # [밤샘 사이클 3, 2026-07-13] 캐시 조기 반환이 함수 꼬리의 치환 잠금을
+        # 우회하던 구멍 — 동일쌍 선행 주자(정상 Type_A)가 심은 verification_status·
+        # inference_grade가 치환 spec에 통째로 복사돼 VERIFIED 승격 실측
+        # (batch_20260713_cycle1/hormuz H2). 잠금은 캐시 경로에서도 동일 적용한다.
+        _lock_pending_if_substituted(spec)
+        # 대리 검정 감사흔적도 캐시 경로에서 동일 보존 (미적용 시 error 공백 실측)
+        if proxy_label and not spec.error:
+            spec.error = (
+                f"[대리변수 사용] {proxy_label} → {spec.ticker} "
+                f"(p={spec.granger_p}, 캐시 공유 검정)"
+            )
         return spec
 
     try:
