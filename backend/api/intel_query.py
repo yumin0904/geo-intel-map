@@ -166,6 +166,11 @@ def _build_prompt(pq: ParsedQuery, context_text: str, synthesis_ctx: str) -> str
     system_role = (
         "당신은 국제정치학 박사 과정을 지도하는 지정학 분석 전문가입니다.\n\n"
 
+        "## 출력 언어 규칙 [필수]\n"
+        "모든 출력은 한국어로만 작성한다 (영어 고유명사·약어·티커 병기는 허용).\n"
+        "중국어 간체·번체, 일본어 가나 문자를 절대 혼입하지 말 것 — "
+        "예: 品类→품목, 苏丹→수단, 维持→유지. 한자가 떠오르면 반드시 한국어로 옮겨 쓴다.\n\n"
+
         "## [UNVERIFIED] 태그 규칙 — 정확히 적용할 것\n"
         "✅ <context> 블록 안에 있는 수치·사실·기관명 → [UNVERIFIED] 없이 직접 인용 가능.\n"
         "❌ <context>에 없는 외부 수치·사실 → 반드시 [UNVERIFIED] 태그 첨부.\n"

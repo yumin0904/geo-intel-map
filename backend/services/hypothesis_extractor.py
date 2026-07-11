@@ -347,6 +347,25 @@ _RE_WHEN_THEN = re.compile(
     re.IGNORECASE,
 )
 
+def _normalize_h1_surface(text: str) -> str:
+    """H1 표면 잔재의 결정론 정규화 — 내용 무손실 (빈 괄호·고아 따옴표·공백만).
+
+    [밤샘 사이클 1, 2026-07-13] E2 F2 관찰 결함의 원인 분해 실측:
+    빈 괄호 '한다 ().'는 생성 결함이 아니라 _RE_CONTROL.sub("")가 괄호 속만 비우고
+    껍데기를 남긴 파서 자해다 — 베이스라인 20/30가설, gemini 산출에도 존재(provider
+    무관 확증), result_md 본문에는 0. 고아 따옴표 '한다 ()".'는 _RE_H1의 끝 따옴표
+    스트립이 '따옴표 뒤 마침표' 순서를 못 다루는 사각지대. 속이 있는 괄호(hormuz)·
+    부속절(단, …)은 건드리지 않는다.
+    """
+    text = re.sub(r"\s*\(\s*\)", "", text)
+    # 문장 끝의 따옴표·마침표·공백 혼합 꼬리: 따옴표가 섞여 있을 때만 정규화
+    tail = re.search(r'[\s."“”]+$', text)
+    if tail and any(q in tail.group(0) for q in '"“”'):
+        text = text[: tail.start()] + ("." if "." in tail.group(0) else "")
+    text = re.sub(r"  +", " ", text).strip()
+    return text
+
+
 # 경계 마커 기반 폴백 — 정규식 실패 시 조건절 경계로 IV·DV 분리
 # 질/을 때: 높아질 때, 작아질 때 (ㄹ 받침 복합 동사)
 _RE_CONDITION_BOUNDARY = re.compile(
@@ -482,9 +501,12 @@ def extract_hypotheses(
         if ctrl_m:
             control_vars = [v.strip() for v in ctrl_m.group(1).split(",") if v.strip()]
             # 통제변수 괄호 제거한 순수 H1
-            h1_clean = _RE_CONTROL.sub("", h1_raw).strip().rstrip("()")
+            h1_clean = _RE_CONTROL.sub("", h1_raw)
         else:
             h1_clean = h1_raw
+        # [밤샘 사이클 1] 표면 잔재 정규화 — 구 rstrip("()")은 문장 끝이 '.'라서
+        # 무동작했고, 빈 괄호가 h1 필드에 그대로 남았다 (베이스라인 20/30가설)
+        h1_clean = _normalize_h1_surface(h1_clean)
 
         # 독립/종속변수 추출 — 정규식 → 경계 마커 폴백 2단계 파싱 [9-P-1]
         wt_m = _RE_WHEN_THEN.search(h1_clean)
