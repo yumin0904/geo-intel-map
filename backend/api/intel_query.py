@@ -999,6 +999,22 @@ async def intel_query(req: IntelQueryRequest):
     # ── 4. 프롬프트 구성 → Gemini SSE ────────────────────────────────────
     prompt = _build_prompt(pq, context_text, synthesis_ctx)
 
+    # [밤샘 2026-07-13] false-hedge 표본 감사 재료 — EVAL_CAPTURE_CONTEXT=1이면
+    # 생성 입력(context)을 쿼리 해시 파일로 보존한다. 감사 질문("데이터 없음 유보가
+    # 정직했나")은 모델이 실제로 본 context 없이는 판정 불능(계측위 07-11 이월).
+    # 계측 아닌 로깅 — 눈금·생성 무영향, eval 하니스가 같은 해시로 역참조.
+    if os.getenv("EVAL_CAPTURE_CONTEXT"):
+        try:
+            import hashlib
+            _cap_dir = Path(__file__).resolve().parents[1] / "tests" / "eval_results" / "context_capture"
+            _cap_dir.mkdir(parents=True, exist_ok=True)
+            _qh = hashlib.sha1(req.query.encode("utf-8")).hexdigest()[:12]
+            (_cap_dir / f"{_qh}.txt").write_text(
+                f"query: {req.query}\n\n=== synthesis_ctx ===\n{synthesis_ctx}\n\n"
+                f"=== context_text ===\n{context_text}", encoding="utf-8")
+        except Exception as _cap_exc:
+            logger.warning("[intel] context 캡처 실패(생성은 계속): %s", _cap_exc)
+
     async def event_stream() -> AsyncGenerator[str, None]:
         # 메타 정보 먼저 전송 (프론트 소스 표시용)
         yield _sse({
