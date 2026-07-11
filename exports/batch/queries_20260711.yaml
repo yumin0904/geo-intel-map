@@ -1,0 +1,128 @@
+# E1 후보 쿼리 배치 — 2026-07-11 설계 (W1 발효 publishing v2 #1, 로드맵 v3 E1)
+# 설계 원문·근거: geo-os/docs/E1_QUERY_BATCH_20260711.md
+# 실행: E2 래퍼(geo-intel-map 내부 소관)가 이 파일을 소비 — 순차 실행, completeness.ok 집계.
+# 저장 규약: 구 export 3건(exports/insights/*.insight.json)은 기사 근거 감사추적(불변 사료) —
+#   재실행·신규 전부 exports/insights/batch_20260711/ 하위에 저장, 덮어쓰기 금지.
+# provider 통제(E1 규정): 재실행 3건=gemini 고정(엔진 격차 격리) / 신규 12건=nim(현행 스택).
+#   두 그룹은 한 리포트에서 혼합 비교 금지.
+
+meta:
+  designed_at: "2026-07-11"
+  engine_at_design: "9.45.0"
+  out_dir: exports/insights/batch_20260711/
+  rerun_baseline: [nk-provocation-defense-stocks, houthi-babelmandeb-oil, taiwan-tension-semiconductor]
+  compare_axes: [engine_version, inference_grade, inference_caveat_text, completeness.ok]
+
+queries:
+  # ── A. 신구 비교 재실행 (gemini 고정 — 쿼리·regions·sectors 구판과 자구 동일) ──
+  - id: nk-provocation-defense-stocks-r2
+    query: "북한 미사일 도발 빈도 증가가 한국 방위산업 주가에 미치는 영향"
+    regions: [korean_peninsula]
+    sectors: [indo_pacific]
+    provider: gemini
+    purpose: rerun_compare
+    baseline: nk-provocation-defense-stocks
+  - id: houthi-babelmandeb-oil-r2
+    query: "후티의 밥엘만데브 공격 빈도와 유가 변동의 관계"
+    regions: [bab_el_mandeb]
+    sectors: [energy, maritime, gray_zone]
+    provider: gemini
+    purpose: rerun_compare
+    baseline: houthi-babelmandeb-oil
+  - id: taiwan-tension-semiconductor-r2
+    query: "대만해협 군사 긴장 고조가 반도체 지수 변동에 미치는 영향"
+    regions: [taiwan_strait]
+    sectors: [maritime, techno, indo_pacific]
+    provider: gemini
+    purpose: rerun_compare
+    baseline: taiwan-tension-semiconductor
+
+  # ── B. 8호 경로 — 홍해·아덴만 인접 (소말릴란드 직접은 게이트 미달 판례 — 인접·교차 근거 경로) ──
+  - id: redsea-suez-transit
+    query: "홍해 상선 공격 빈도와 수에즈 운하 통항량 변화의 관계"
+    regions: [bab_el_mandeb, suez]
+    sectors: [maritime, energy]
+    provider: nim
+    purpose: issue8_path
+    expect: "상관 후보 — 통항량 지표 조달 가능 시 PARTIAL 겨냥"
+  - id: redsea-war-risk-rerouting
+    query: "홍해 전쟁위험 보험료 급등과 희망봉 우회 항로 전환의 동학"
+    regions: [bab_el_mandeb, indian_ocean]
+    sectors: [maritime, energy]
+    provider: nim
+    purpose: issue8_path
+    expect: "6호(발트 보험)와 축 상이 — 이어읽기 연결 후보"
+  - id: berbera-somaliland-corridor
+    query: "소말릴란드 베르베라 항 개발이 아덴만 물류 재편에서 갖는 위치"
+    regions: [indian_ocean, bab_el_mandeb]
+    sectors: [maritime, chokepoints]
+    provider: nim
+    purpose: issue8_path
+    expect: "교차 근거 서사 경로(ACLED 랙 14개월 — 이벤트 검정 미달 예상, 기술적 rung 허용)"
+  - id: djibouti-basing-chokepoint
+    query: "지부티 군사기지 밀집과 밥엘만데브 초크포인트 통제 경쟁"
+    regions: [bab_el_mandeb]
+    sectors: [military, chokepoints]
+    provider: nim
+    purpose: issue8_path
+    expect: "서사형 — 기술적 rung"
+
+  # ── C. 전문가 패킷 케이스 (P 재료 — expert-questions D절 매핑) ──
+  - id: hormuz-iran-oil
+    query: "이란 군사 긴장 국면과 호르무즈 해협 유가·유조선 통항의 관계"
+    regions: [hormuz, middle_east]
+    sectors: [energy, maritime]
+    provider: nim
+    purpose: packet
+    expert: "윤강현(7/21) — 계쟁 hormuz_oil 현행 엔진 재실증"
+  - id: semiconductor-hhi-taiwan
+    query: "반도체 공급망 집중도와 대만해협 긴장이 시장에 전달되는 경로"
+    regions: [taiwan_strait, east_china_sea]
+    sectors: [techno, indo_pacific]
+    provider: nim
+    purpose: packet
+    expert: "이종혁(7/20) — HHI 단일시장 재설계(v9.36.0) 후 실증 + Q3 구성개념"
+  - id: alliance-burden-sharing
+    query: "주한미군 방위비 분담 협상 국면과 한국 국방예산·방위산업 지표의 관계"
+    regions: [korean_peninsula]
+    sectors: [indo_pacific, military]
+    provider: nim
+    purpose: packet
+    expert: "윤영관(7/20) — 동맹 분담 케이스 + Q1·Q2·Q4·Q5 방법론"
+  - id: nk-russia-arms-ukraine
+    query: "북러 무기 이전 심화 지표와 우크라이나 전황 이벤트의 관계"
+    regions: [korean_peninsula, ukraine]
+    sectors: [military, conflict]
+    provider: nim
+    purpose: packet
+    expert: "박노벽(7/21) — Q7 폐쇄국가 공백. 정직 PENDING도 패킷 가치(공백 실물)"
+  - id: ukraine-drone-energy-infra
+    query: "러시아 드론·미사일 공세 빈도와 우크라이나 에너지 인프라 피해의 관계"
+    regions: [ukraine]
+    sectors: [conflict, energy]
+    provider: nim
+    purpose: packet
+    expert: "박노벽(7/21) — 우크라 케이스"
+
+  # ── D. 발행 재고 보충·신규 데이터 실증 ──
+  - id: nk-missile-bp-gap
+    query: "2025년 말 이후 북한 미사일 활동 공백기의 재구성과 도발 패턴 변화"
+    regions: [korean_peninsula]
+    sectors: [military]
+    provider: nim
+    purpose: inventory
+    expect: "BP 대체소스 34건 실증(v9.42.0) — LLM 제원 파싱(14-A)은 이월 상태, 제원 주장 회피"
+  - id: scs-grayzone-philippines
+    query: "남중국해 회색지대 활동과 필리핀-중국 마찰 빈도의 추이"
+    regions: [south_china_sea]
+    sectors: [gray_zone, maritime]
+    provider: nim
+    purpose: inventory
+    expect: "이장근(7/23) 인태 여유 케이스 겸용"
+  - id: imec-redsea-revival
+    query: "홍해 위기 장기화가 IMEC 회랑 논의 재점화에 미치는 영향"
+    regions: [bab_el_mandeb, middle_east]
+    sectors: [maritime, energy]
+    provider: nim
+    purpose: inventory
+    expect: "6호 IMEC 이어읽기 연결"
