@@ -282,11 +282,74 @@ def score_due_predictions(as_of: date | None = None, dry_run: bool = False) -> d
         "hit": hits,
         "miss": len(judged) - hits,
         "unresolved": unresolved,
+        # ⚠️ 런 단위 값 — 누적 적중률로 승격 금지 ("0.526" 오승격 사고, T3 채택위 07-11).
+        # 누적·기준선 대비는 skill 블록(cumulative_skill_summary)이 유일 원천.
         "hit_rate_eligible": round(hits / len(judged), 3) if judged else None,
+        "skill": cumulative_skill_summary(con),
         "dry_run": dry_run,
     }
     con.close()
     return summary
+
+
+def _wilson_ci(hits: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """이항 비율의 Wilson 95% 신뢰구간 — 소표본에서 정규근사보다 정직."""
+    if n == 0:
+        return (0.0, 1.0)
+    p = hits / n
+    denom = 1 + z * z / n
+    center = (p + z * z / (2 * n)) / denom
+    half = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / denom
+    return (round(center - half, 3), round(center + half, 3))
+
+
+def cumulative_skill_summary(con: sqlite3.Connection) -> dict:
+    """누적 적중률을 base rate 기준선 대비로 보고 — T3 채택위(2026-07-11) 후보② 집행.
+
+    문헌 근거(Ward 2010 동형): 원시 적중률은 base rate 대비 skill 없인 정보가 아니다.
+    기준선 3종 병기(단일 기준선 선택의 자의성 해소 — 반박석 조건):
+      coin           — 0.5 (무정보 동전)
+      const_majority — 실현 방향 분포의 다수 방향만 내는 상수 예측기
+      persistence    — 동일 target의 직전 실현 방향을 그대로 내는 예측기(계산 가능 쌍만)
+    ⚠️ 이 수치도 최적화 표적 아님. 독립성 주의: 표본이 소수 티커에 클러스터링돼
+    (T6 판례: 유사복제) 유의성 해석은 클러스터 보정 전 잠정 — n_targets 병기.
+    """
+    rows = con.execute(
+        "SELECT target, status, realized_direction, scored_at FROM prediction_log "
+        "WHERE status IN ('HIT','MISS') AND IFNULL(eligible_for_calibration, 1) = 1 "
+        "ORDER BY scored_at"
+    ).fetchall()
+    n = len(rows)
+    if not n:
+        return {"n": 0}
+    hits = sum(1 for r in rows if r[1] == "HIT")
+    realized = [r[2] for r in rows if r[2] in ("up", "down")]
+    maj = max(set(realized), key=realized.count) if realized else None
+    const_rate = round(realized.count(maj) / len(realized), 3) if realized else None
+    prev: dict = {}
+    persist_ok = persist_n = 0
+    for tgt, _st, rdir, _at in rows:
+        if rdir not in ("up", "down"):
+            continue
+        if tgt in prev:
+            persist_n += 1
+            persist_ok += int(prev[tgt] == rdir)
+        prev[tgt] = rdir
+    lo, hi = _wilson_ci(hits, n)
+    best_base = max(0.5, const_rate or 0.5)
+    return {
+        "n": n,
+        "n_targets": len({r[0] for r in rows}),
+        "hit_rate": round(hits / n, 3),
+        "wilson95": [lo, hi],
+        "baseline_coin": 0.5,
+        "baseline_const_majority": const_rate,
+        "baseline_const_direction": maj,
+        "baseline_persistence": ([round(persist_ok / persist_n, 3), persist_n] if persist_n else None),
+        "verdict": ("기준선 상회 — 클러스터 보정 전 잠정"
+                    if lo > best_base
+                    else "skill 검출 불가 — CI가 기준선 이하 포함"),
+    }
 
 
 def main() -> None:

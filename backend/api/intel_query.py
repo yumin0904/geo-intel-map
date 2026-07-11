@@ -838,7 +838,9 @@ async def _stream_gemini(
                 # 계측 실패가 SSE 흐름을 막지 않도록 log_predictions 내부에서 흡수됨.
                 try:
                     from services.prediction_instrument import log_predictions
-                    log_predictions(specs, source_query)
+                    # [T3 채택위 07-11] 서버 신뢰도(0~100) 동결 — 확률 아님, 기록/보고 분리
+                    log_predictions(specs, source_query,
+                                    confidence=score_result.get("confidence"))
                 except Exception as _pred_exc:  # noqa: BLE001
                     logger.warning("[10-1] 예측 계측 호출 실패: %s", _pred_exc)
 

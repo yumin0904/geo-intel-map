@@ -90,6 +90,11 @@ class PredictionRecord:
     status: str = "PENDING"    # PENDING → HIT | MISS | UNRESOLVED (10-2)
     outcome_value: float | None = None  # 채점 시 실측값
     scored_at: str | None = None
+    # [T3 채택위 2026-07-11, 후보① 축소 채택 — 기록/보고 분리] 생성 시점 서버 신뢰도(0~100).
+    # ⚠️ 확률이 아니다 — LLM 표명이 아닌 서버 결정론 산출(§19-D)의 무보정 원값. Brier·캘리브레이션
+    # 보고층은 원전 정독 게이트(Ward·Hegre 본문+LLM-확률 타당성 문헌) 뒤 — 이 필드는 유량 보존만
+    # 한다(생성 ~434건/일, 지연 1일 = 수백 건 원값 유실 — 반박석 실측).
+    confidence_at_creation: int | None = None
 
 
 def _detect_direction(spec: "HypothesisSpec") -> str:
@@ -221,6 +226,11 @@ def _ensure_table(con: sqlite3.Connection) -> None:
         )
         """
     )
+    # [T3 채택위 07-11] 기존 DB에 confidence_at_creation 소급 추가 (idempotent —
+    # 구 행은 NULL 유지: 생성 시점 원값이 없으므로 소급 부여 금지, 원칙 ③ retrodiction 격리)
+    cols = {r[1] for r in con.execute("PRAGMA table_info(prediction_log)")}
+    if "confidence_at_creation" not in cols:
+        con.execute("ALTER TABLE prediction_log ADD COLUMN confidence_at_creation INTEGER")
     # 채점 배치(10-2)가 만기 예측을 빠르게 찾도록 인덱스
     con.execute(
         "CREATE INDEX IF NOT EXISTS idx_prediction_resolve "
@@ -229,19 +239,31 @@ def _ensure_table(con: sqlite3.Connection) -> None:
 
 
 def _is_duplicate(con: sqlite3.Connection, rec: PredictionRecord) -> bool:
-    """같은 H1·타깃·방향의 PENDING 예측이 이미 있으면 중복 (재실행 스팸 방지)."""
+    """같은 채점 신원의 PENDING 예측이 이미 있으면 중복 (재실행 스팸 방지).
+
+    [T3 채택위 2026-07-11] h1 정확 문자열 비교 제거 — 재생성 런마다 문구 변형 h1이
+    dedup을 우회해 PENDING이 증식(605→807 실측, 반박석 원인 특정: 231행 구 키).
+    채점 신원 = (target, direction, threshold_pct, horizon_days): 이 4필드가 같으면
+    만기 시 동일하게 채점되므로 문구가 달라도 같은 예측이다. 서로 다른 논지의 진짜
+    별개 예측은 임계·기간·타깃 중 하나는 다르다.
+    """
     row = con.execute(
         "SELECT 1 FROM prediction_log "
-        "WHERE h1 = ? AND target = ? AND direction = ? AND status = 'PENDING' LIMIT 1",
-        (rec.h1, rec.target, rec.direction),
+        "WHERE target = ? AND direction = ? "
+        "AND IFNULL(threshold_pct, -1) = IFNULL(?, -1) AND horizon_days = ? "
+        "AND status = 'PENDING' LIMIT 1",
+        (rec.target, rec.direction, rec.threshold_pct, rec.horizon_days),
     ).fetchone()
     return row is not None
 
 
-def log_predictions(specs: list["HypothesisSpec"], query: str) -> list[PredictionRecord]:
+def log_predictions(specs: list["HypothesisSpec"], query: str,
+                    confidence: int | None = None) -> list[PredictionRecord]:
     """
     검증 완료된 specs → 반증가능 예측 적재. 적재된 레코드 목록 반환.
 
+    confidence: 생성 시점 서버 신뢰도(0~100, §19-D 결정론 산출·패널티 반영) —
+    confidence_at_creation에 동결. 확률 아님(기록/보고 분리 — T3 채택위 07-11).
     호출부(intel_query)에서 try/except로 감싸 실패해도 SSE 흐름을 막지 않도록 한다.
     """
     if not specs:
@@ -253,6 +275,8 @@ def log_predictions(specs: list["HypothesisSpec"], query: str) -> list[Predictio
         skipped = 0
         for spec in specs:
             rec = build_prediction(spec, query)
+            if rec is not None:
+                rec.confidence_at_creation = confidence
             if rec is None:            # 추출 실패 산물 — 미등재 (관측성은 카운터로 보존)
                 skipped += 1
                 continue
@@ -264,12 +288,12 @@ def log_predictions(specs: list["HypothesisSpec"], query: str) -> list[Predictio
                     prediction_id, created_at, query, h1, independent_var, dependent_var,
                     target, target_kind, direction, threshold_pct, horizon_days, resolve_by,
                     region_code, data_signature, inference_grade, method, exploratory,
-                    scorable, status, outcome_value, scored_at
+                    scorable, status, outcome_value, scored_at, confidence_at_creation
                 ) VALUES (
                     :prediction_id, :created_at, :query, :h1, :independent_var, :dependent_var,
                     :target, :target_kind, :direction, :threshold_pct, :horizon_days, :resolve_by,
                     :region_code, :data_signature, :inference_grade, :method, :exploratory,
-                    :scorable, :status, :outcome_value, :scored_at
+                    :scorable, :status, :outcome_value, :scored_at, :confidence_at_creation
                 )
                 """,
                 {**asdict(rec), "exploratory": int(rec.exploratory), "scorable": int(rec.scorable)},

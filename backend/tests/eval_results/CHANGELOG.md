@@ -260,3 +260,23 @@ NIM 눈금(종합 3.84)과 절대 비교 불가. 차기 풀런부터 latest.json
   유지, 구조화 필드 正道는 큐) · 스키마 required 승격(구 export 불변 원증거 소급 수정 요구).
 - geo-os 측 동시 수리: insight_to_draft parse_sections 숫자 허용+예약 라벨 제외(잠복 절단).
 - 판례: geo-os [[20260711-final-review-committee]]
+
+## 2026-07-11 — T3 채택위 집행 (skill 기준선·확률 원값 동결·dedup 수리, v9.41.0)
+
+- **후보② 채택 집행**: `cumulative_skill_summary`(prediction_scorer) — 누적 적중률을
+  기준선 3종(동전 0.5·상수-다수 0.639 down·persistence 0.933/30쌍)+Wilson 95% CI로 보고.
+  실측 첫 판정: **hit 0.472(17/36), CI [0.32, 0.63] — "skill 검출 불가"**. 부수: 표제
+  "0.526"은 런 단위 hit_rate_eligible의 누적 오승격으로 판명(2석 독립 발견) — 정정,
+  런 단위 필드에 승격 금지 주석 명문화. persistence 0.933은 중첩 창 클러스터 반영치
+  (n_targets=6 병기 — 유의성 해석은 클러스터 보정 전 잠정).
+- **후보① 축소 채택(기록/보고 분리)**: `confidence_at_creation` 필드 신설 — LLM 확률
+  표명이 아니라 서버 결정론 신뢰도(§19-D, 패널티 반영)의 무보정 원값 동결(유량 보존:
+  생성 ~434건/일). Brier·캘리브레이션 보고층은 원전 정독 게이트(Ward·Hegre 본문+LLM-확률
+  타당성 문헌) 뒤 이월. 구 행은 NULL(소급 부여 금지 — 원칙 ③).
+- **dedup 수리(후보① 선행 조건)**: `_is_duplicate` h1 정확 문자열 → 채점 신원
+  (target·direction·threshold·horizon) — 문구 변형 우회로 인한 PENDING 증식(605→807)
+  차단. 문구 변형 중복 판정 스모크 통과.
+- **기각·이월(판례 기재)**: ③주간 위험 지수 기각(소비처 0·발발 라벨 0·평가 설계 본문
+  미확보 — 재상정 3조건) · ④집계층 기각(구성원 0 — 재상정 트리거 명문화) · ⑤Tetlock
+  루프 이월 유지(10-3 소집 시 8-F 3가드+표본화 규약 전제, 질적 큐 231→355 발산 실측).
+- 판례: geo-os [[20260711-t3-adoption-committee]]
