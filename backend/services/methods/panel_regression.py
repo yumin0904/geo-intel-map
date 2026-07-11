@@ -58,11 +58,17 @@ _MIN_PERIODS = 2 # 패널 FE 최소 연도 수
 # ── 변수 카탈로그 ──────────────────────────────────────────────────────────────
 # (정규식 패턴, SQL 쿼리 템플릿, 컬럼명, 조인키, 데이터 유형)
 # data_type: "panel" = iso3+year 두 키 / "cross" = iso3만
+# is_count: 카운트 DV — 포아송류 분기 (King 1989 원전 게이트 통과 2026-07-11:
+#   OLS/log(y+c)는 카운트에 편향·비효율 [King 1989:126], E(Y)=exp(xβ) 포아송이 正道).
+# exposure_col: 노출 통제 컬럼 — King 식(1)의 T·λ 구조. GDELT는 국가별 커버리지
+#   총량 차가 커서(보도량≠사건 성향) log(exposure)를 통제항으로 동봉.
 class _VarEntry(NamedTuple):
     pattern: str
     sql: str
     val_col: str
     data_type: str  # "panel" | "cross"
+    is_count: bool = False
+    exposure_col: str = ""
 
 
 _VAR_CATALOG: list[_VarEntry] = [
@@ -168,6 +174,23 @@ _VAR_CATALOG: list[_VarEntry] = [
         "SELECT primary_country_iso3 AS iso3, intensity AS val FROM hiik_conflict",
         "val", "cross",
     ),
+    # ── 카운트 DV (GDELT 국가-연 집계 — §18-A: 국가급 이상 집계만) ──────────
+    # 당해년 제외: 부분 연도 집계가 "급감" 아티팩트를 만든다 (큐 10② 당월제외와 동형).
+    # exposure=n_total: 미통제 시 시위 성향이 아니라 GDELT 보도량을 추정하게 됨.
+    _VarEntry(
+        r"시위.*건수|시위.*빈도|시위.*발생|protest.*count|protest.*event|n_protest",
+        "SELECT country AS iso3, CAST(substr(day,1,4) AS INTEGER) AS year, "
+        "SUM(n_protest) AS val, SUM(n_total) AS exposure FROM gdelt_country_daily "
+        "WHERE substr(day,1,4) < strftime('%Y','now') GROUP BY 1, 2",
+        "val", "panel", True, "exposure",
+    ),
+    _VarEntry(
+        r"물리.*충돌.*건수|무력.*충돌.*건수|material.*conflict.*count|물리적.*분쟁.*빈도",
+        "SELECT country AS iso3, CAST(substr(day,1,4) AS INTEGER) AS year, "
+        "SUM(n_material_conflict) AS val, SUM(n_total) AS exposure FROM gdelt_country_daily "
+        "WHERE substr(day,1,4) < strftime('%Y','now') GROUP BY 1, 2",
+        "val", "panel", True, "exposure",
+    ),
 ]
 
 
@@ -244,8 +267,25 @@ def from_spec(spec) -> MethodResult:
     n_periods = int(df["year"].nunique()) if "year" in df.columns else 1
 
     # ── 4. 회귀 실행 ─────────────────────────────────────────────────────
+    # 카운트 DV → 포아송류 분기 (King 1989 원전 게이트 통과 — OLS 갈래 기각)
+    is_count = dv_entry.is_count
     try:
-        if is_panel:
+        if is_count and is_panel:
+            stats = _run_poisson(df, iv_col, dv_col, fixed_effects=True)
+            rung  = RUNG_QUASI_EXP
+            caveat = (
+                "포아송 FE(국가 더미): 시불변 교란·보도량(log exposure) 통제. "
+                "과분산은 HC1 강건 SE로 보정(진단치 robustness.dispersion). "
+                "시변 교란·역인과 잔존. GDELT 국가급 집계층(§18-A)."
+            )
+        elif is_count:
+            stats = _run_poisson(df, iv_col, dv_col, fixed_effects=False)
+            rung  = RUNG_CORRELATIONAL
+            caveat = (
+                "횡단 포아송: 카운트 DV의 국가간 비교(OLS 부적합 — King 1989). "
+                "보도량 통제에도 OVB 잔존, 상관 칸."
+            )
+        elif is_panel:
             stats = _run_panel_fe(df, iv_col, dv_col)
             rung  = RUNG_QUASI_EXP
             caveat = (
@@ -265,6 +305,14 @@ def from_spec(spec) -> MethodResult:
 
     p_value = stats["p_value"]
     coef    = stats["coef"]
+
+    # within-method 강건성 (§9-0 ④): NB2 교차 계수의 부호가 뒤집히면
+    # 결론이 분포 가정에 민감하다는 뜻 — 신뢰도 강등 + 캐비엇 명시
+    nb2_flip = False
+    if is_count and stats.get("nb2_coef") is not None and coef != 0:
+        nb2_flip = (stats["nb2_coef"] * coef) < 0
+        if nb2_flip:
+            caveat += " ⚠️ NB2 교차 계수 부호 반전 — 분포 가정 민감, 결론 유보."
 
     logger.info(
         "[panel_reg] is_panel=%s n=%d×%d coef=%.4f p=%.4f rung=%s",
@@ -290,8 +338,13 @@ def from_spec(spec) -> MethodResult:
             "is_panel_fe": is_panel,
             "iv_source":  iv_entry.val_col,
             "dv_source":  dv_entry.val_col,
+            # 카운트 DV(포아송) 전용 진단 — dispersion=Pearson χ²/df(1=정합),
+            # nb2_coef=음이항 교차 계수(부호·크기 유지 여부가 within-method 강건성)
+            **({"model": stats.get("model"),
+                "dispersion": stats.get("dispersion"),
+                "nb2_coef": stats.get("nb2_coef")} if is_count else {}),
         },
-        confidence_within_rung=_confidence(p_value, n_units, is_panel),
+        confidence_within_rung=max(_confidence(p_value, n_units, is_panel) - (20 if nb2_flip else 0), 0),
         native_stats={
             "coef":     round(coef, 4),
             "p_value":  round(p_value, 4),
@@ -334,6 +387,10 @@ def _load_and_join(iv: _VarEntry, dv: _VarEntry) -> pd.DataFrame | None:
         logger.warning("[9-B] DB 로드 실패: %s", exc)
         return None
 
+    # 카운트 DV의 노출 컬럼은 조인을 관통해 보존한다 (포아송 분기에서 통제항)
+    if dv.exposure_col and dv.exposure_col in df_dv.columns and dv.exposure_col != "exposure":
+        df_dv = df_dv.rename(columns={dv.exposure_col: "exposure"})
+
     both_panel = iv.data_type == "panel" and dv.data_type == "panel"
 
     if both_panel:
@@ -352,12 +409,83 @@ def _load_and_join(iv: _VarEntry, dv: _VarEntry) -> pd.DataFrame | None:
         if iv.data_type == "panel" and "year" in df_iv.columns:
             df_iv = df_iv.groupby("iso3", as_index=False)["iv"].mean()
         if dv.data_type == "panel" and "year" in df_dv.columns:
-            df_dv = df_dv.groupby("iso3", as_index=False)["dv"].mean()
-        merged = pd.merge(df_iv[["iso3", "iv"]], df_dv[["iso3", "dv"]], on="iso3", how="inner")
+            if dv.is_count:
+                # 카운트는 평균이 아니라 합산 — 평균은 비정수 "카운트"를 만들어
+                # 포아송 우도와 어긋난다. 노출도 같이 합산해 비율 구조 유지.
+                agg_cols = {"dv": "sum"}
+                if "exposure" in df_dv.columns:
+                    agg_cols["exposure"] = "sum"
+                df_dv = df_dv.groupby("iso3", as_index=False).agg(agg_cols)
+            else:
+                df_dv = df_dv.groupby("iso3", as_index=False)["dv"].mean()
+        dv_cols = ["iso3", "dv"] + (["exposure"] if "exposure" in df_dv.columns else [])
+        merged = pd.merge(df_iv[["iso3", "iv"]], df_dv[dv_cols], on="iso3", how="inner")
 
     if "iso3" not in merged.columns:
         return None
     return merged.dropna(subset=["iv", "dv"])
+
+
+def _run_poisson(df: pd.DataFrame, iv_col: str, dv_col: str,
+                 fixed_effects: bool = False) -> dict:
+    """포아송 회귀 (King 1989 원전 게이트 통과 — 2026-07-11 정독).
+
+    E(Y)=λ=exp(xβ), 로그우도 전역 오목[식 5] — OLS/log(y+c)의 편향·비효율
+    [King 1989:126]을 피하는 카운트 正道.
+    - 노출 통제: 'exposure' 컬럼 존재 시 log(exposure)를 공변량으로 (식 1의 T·λ 구조.
+      offset 고정 대신 통제항 — 탄력성 1 강제를 피하고 데이터가 결정).
+    - 과분산: HC1 강건 표준오차 + Pearson χ²/df 진단 보고. 경미한 과분산에서
+      포아송 계수는 일치추정·SE만 보정하면 된다는 각주 6(Gourieroux 1984) 지침의
+      샌드위치 일반화. 강한 과분산은 NB2 교차 강건성으로 노출.
+    - 패널 FE: 국가 더미 포아송 — 포아송 FE는 부수 모수 문제 없이 일치추정
+      (로짓과 다름). 시불변 교란(국가 크기·언어권 보도 편향 등) 소거.
+    - 원인 단정 금지: 과분산의 원인(전염 vs 이질성)은 집계 수준에서 관측 동치
+      [King 1989:127, Cramér 정리] — 진단 수치만 보고하고 해석은 유보.
+    """
+    import statsmodels.api as sm
+
+    work = df.copy()
+    cols = [iv_col]
+    if "exposure" in work.columns:
+        work = work[work["exposure"] > 0]
+        work["log_exposure"] = np.log(work["exposure"].astype(float))
+        cols.append("log_exposure")
+
+    y = work[dv_col].astype(float)
+    X = work[cols].astype(float)
+    if fixed_effects:
+        dummies = pd.get_dummies(work["iso3"], prefix="fe", drop_first=True, dtype=float)
+        X = pd.concat([X, dummies], axis=1)
+    X = sm.add_constant(X)
+
+    model = sm.GLM(y, X, family=sm.families.Poisson())
+    res = model.fit(cov_type="HC1")
+
+    beta = float(res.params[iv_col])
+    se   = float(res.bse[iv_col])
+    p    = float(res.pvalues[iv_col])
+    ci   = res.conf_int().loc[iv_col]
+    # 과분산 진단: Pearson χ²/df — 1이면 등분산(포아송 정합), >1 과분산
+    dispersion = float(res.pearson_chi2 / res.df_resid) if res.df_resid > 0 else float("nan")
+
+    # NB2 교차 강건성 — 계수 방향·크기 유지 여부 (실패해도 주 결과는 유효)
+    nb_coef = None
+    try:
+        nb_res = sm.GLM(y, X, family=sm.families.NegativeBinomial(alpha=1.0)).fit()
+        nb_coef = round(float(nb_res.params[iv_col]), 4)
+    except Exception:
+        pass
+
+    return {
+        "coef": beta, "se": se, "t_stat": beta / se if se > 0 else 0.0,
+        "p_value": p, "r2": float(1 - res.deviance / res.null_deviance)
+                           if res.null_deviance > 0 else 0.0,  # pseudo-R² (deviance)
+        "n_obs": int(res.nobs),
+        "ci_low": float(ci[0]), "ci_high": float(ci[1]),
+        "dispersion": round(dispersion, 2),
+        "nb2_coef": nb_coef,
+        "model": "poisson_fe" if fixed_effects else "poisson",
+    }
 
 
 def _run_ols(df: pd.DataFrame, iv_col: str, dv_col: str) -> dict:
