@@ -1,128 +1,128 @@
 {
-  "generated_at": "2026-07-11T13:35:20Z",
+  "generated_at": "2026-07-11T13:44:13Z",
   "results": [
     {
       "id": "nk-provocation-defense-stocks-r2",
       "provider": "gemini",
       "purpose": "rerun_compare",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 51.4
+      "duration_s": 0
     },
     {
       "id": "houthi-babelmandeb-oil-r2",
       "provider": "gemini",
       "purpose": "rerun_compare",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 26.5
+      "duration_s": 0
     },
     {
       "id": "taiwan-tension-semiconductor-r2",
       "provider": "gemini",
       "purpose": "rerun_compare",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 24.4
+      "duration_s": 0
     },
     {
       "id": "redsea-suez-transit",
       "provider": "nim",
       "purpose": "issue8_path",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 60.6
+      "duration_s": 0
     },
     {
       "id": "redsea-war-risk-rerouting",
       "provider": "nim",
       "purpose": "issue8_path",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 63.0
+      "duration_s": 0
     },
     {
       "id": "berbera-somaliland-corridor",
       "provider": "nim",
       "purpose": "issue8_path",
       "status": "PASS",
-      "completeness_ok": false,
-      "duration_s": 67.3
+      "completeness_ok": true,
+      "duration_s": 100.0
     },
     {
       "id": "djibouti-basing-chokepoint",
       "provider": "nim",
       "purpose": "issue8_path",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 82.6
+      "duration_s": 0
     },
     {
       "id": "hormuz-iran-oil",
       "provider": "nim",
       "purpose": "packet",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 184.3
+      "duration_s": 0
     },
     {
       "id": "semiconductor-hhi-taiwan",
       "provider": "nim",
       "purpose": "packet",
       "status": "PASS",
-      "completeness_ok": false,
-      "duration_s": 96.7
+      "completeness_ok": true,
+      "duration_s": 68.6
     },
     {
       "id": "alliance-burden-sharing",
       "provider": "nim",
       "purpose": "packet",
       "status": "PASS",
-      "completeness_ok": false,
-      "duration_s": 68.5
+      "completeness_ok": true,
+      "duration_s": 86.7
     },
     {
       "id": "nk-russia-arms-ukraine",
       "provider": "nim",
       "purpose": "packet",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 75.4
+      "duration_s": 0
     },
     {
       "id": "ukraine-drone-energy-infra",
       "provider": "nim",
       "purpose": "packet",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 248.0
+      "duration_s": 0
     },
     {
       "id": "nk-missile-bp-gap",
       "provider": "nim",
       "purpose": "inventory",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 119.2
+      "duration_s": 0
     },
     {
       "id": "scs-grayzone-philippines",
       "provider": "nim",
       "purpose": "inventory",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 98.6
+      "duration_s": 0
     },
     {
       "id": "imec-redsea-revival",
       "provider": "nim",
       "purpose": "inventory",
-      "status": "PASS",
+      "status": "SKIP-exists",
       "completeness_ok": true,
-      "duration_s": 172.7
+      "duration_s": 0
     }
   ],
-  "summary": "15/15 PASS",
+  "summary": "3/15 PASS",
   "rerun_compare": [
     {
       "id": "nk-provocation-defense-stocks-r2",
