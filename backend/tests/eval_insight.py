@@ -971,6 +971,14 @@ def _verdict_stats(text: str) -> dict:
 
     유보 자체는 정직한 종결(채택② 2026-07-08)이라 감점하지 않는다 — 이 카운터는
     점수가 아니라 분포 감시다: 결단(우세/열세) 0에 수렴하면 게이트 과보정 신호.
+
+    [계측위 2026-07-11] 오용 금지 2칙:
+    1. 이 수치는 최적화 표적이 아니다 — 유보 대부분은 규칙 준수 자필('실측 [UNVERIFIED]면
+       우세/열세 금지')이라 유보율은 DV 실측 커버리지의 판독값이다. 어휘·임계 조정으로
+       낮추면 affirming-the-null 제조(Goodhart). 정당한 하향 경로는 DV 데이터 조달뿐.
+    2. 합산 유보율의 런 간 추세를 단일 원인에 귀속하지 마라 — 07-08→07-11 상승은 모델
+       마이그레이션·DV게이트 기계 치환·프롬프트 수리가 confound(실측석 07-11). v2 케이스는
+       유보가 정답인 적대 설계 포함이라 합산치를 끌어올린다 — v2/비-v2 분리 보고 참조.
     """
     verdicts = _VERDICT_LINE.findall(text or "")
     n = len(verdicts)
@@ -1053,6 +1061,17 @@ def _print_summary(results: list[dict]) -> None:
         hedge = f"{(tot_v - tot_d) / tot_v:.0%}" if tot_v else "—"
         print(f"\n🔧 [P3 결정론] 린트 결함 {n_lint}건 · DV게이트 잔여 {n_gate}건 "
               f"· 판정 {tot_v}건(결단 {tot_d}, 유보율 {hedge})")
+
+        # [계측위 2026-07-11] v2는 유보가 정답인 적대 설계 포함 — 합산 유보율을 부풀리므로
+        # 분리 보고 (합산치의 런 간 추세 해석 금지, _verdict_stats docstring 오용 금지 2칙)
+        def _hedge_of(pairs):
+            v_ = sum(v.get("verdicts", 0) for _, v in pairs)
+            d_ = sum(v.get("decisive", 0) for _, v in pairs)
+            return f"{(v_ - d_) / v_:.0%}" if v_ else "—"
+        pairs = list(zip(valid, vs))
+        h_v2 = _hedge_of([(r, v) for r, v in pairs if r["id"].startswith("v2_")])
+        h_leg = _hedge_of([(r, v) for r, v in pairs if not r["id"].startswith("v2_")])
+        print(f"   유보율 분해 — v2(유보정답 설계 포함): {h_v2} · 비-v2: {h_leg}")
         if over:
             print(f"   ⚠️ 과잉유보(>70%) 케이스: " + ", ".join(over))
 

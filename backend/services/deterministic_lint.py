@@ -21,11 +21,18 @@ _CJK_ALLOWLIST: set[str] = set()
 _SCAFFOLD = re.compile(r"↳\s*\[[^\]]*?(재료|쓰라)[^\]]*\]|비자명기여 재료 —")
 _SCAFFOLD_LINE = re.compile(r"^.*(↳\s*\[비자명기여 재료|중 1개를 ③ 범위조건으로 쓰라).*$", re.M)
 
-# [확증]과 [SPECULATIVE]가 최종판정 인접부(600자 창)에 공존 — 인식론 모드와
-# 연쇄강도 라벨의 프롬프트 충돌 산물(intel_query 431·497행, 실측석 확정).
-_DUAL_WINDOW = 600
+# [계측위 2026-07-11] dual_label 재정의 — 구 정의([확증]+[SPECULATIVE] 600자 창 공존)는
+# 정상 층분리(모드 표기 "[확증] 지지/반증" + 하위 연쇄에만 [SPECULATIVE])까지 잡는 오탐:
+# 07-11 런 13건 중 최소 7건이 오탐 실측(6건 층분리 정상 + 1건 각주 인용). 진짜 자기모순은
+# 모드 토큰이 결과 신뢰로 오독되는 "[확증] 불확실" 조합뿐이라 이것만 잡는다.
+# 눈금 변경(splice): 구·신 정의 건수는 종단 비교 불가 — eval_results/CHANGELOG 기재.
+_DUAL_CONTRADICTION = re.compile(r"\[확증\]\s*[*_]{0,2}\s*불확실")
 
 _HHI_NUM = re.compile(r"HHI[^\d\n]{0,20}(\d[\d,]{2,})")
+
+# [계측위 2026-07-11] 골드 v2_nk 실패모드(편차 0 위조 — 예측·실측 완전일치를 주장해 판정
+# 근거를 제조). 정확한 0 편차는 원리상 가능하나 실코퍼스 전례 없음 — report-only 감사 표면화.
+_ZERO_DEVIATION = re.compile(r"편차[^\d\n]{0,8}0(?:\.0+)?(?![\d.,%])")
 _VERDICT_UNVERIFIED = re.compile(r"판정[:：]\s*(우세|열세)[^\n]{0,120}(미검증|\[UNVERIFIED\])")
 
 
@@ -42,11 +49,8 @@ def lint(text: str) -> list[dict]:
     if _SCAFFOLD.search(text):
         problems.append({"code": "scaffold_leak", "detail": "지시문 잔존(↳ 비자명기여 재료…쓰라)"})
 
-    for m in re.finditer(r"\[확증\]", text):
-        window = text[m.start(): m.start() + _DUAL_WINDOW]
-        if "[SPECULATIVE]" in window:
-            problems.append({"code": "dual_label", "detail": "[확증]+[SPECULATIVE] 공존(최종판정 절)"})
-            break
+    if _DUAL_CONTRADICTION.search(text):
+        problems.append({"code": "dual_label", "detail": "[확증] 불확실 — 모드 표기를 결과 신뢰로 오용한 자기모순"})
 
     for m in _HHI_NUM.finditer(text):
         try:
@@ -59,6 +63,10 @@ def lint(text: str) -> list[dict]:
     for m in _VERDICT_UNVERIFIED.finditer(text):
         problems.append({"code": "verdict_on_unverified_stamp",
                          "detail": f"'{m.group(1)}' 판정과 미검증 선언 동시 발급"})
+
+    for m in _ZERO_DEVIATION.finditer(text):
+        problems.append({"code": "zero_deviation",
+                         "detail": f"편차 0 주장 — 위조 의심 감사 대상: '{text[m.start():m.start()+30]}'"})
 
     return problems
 
