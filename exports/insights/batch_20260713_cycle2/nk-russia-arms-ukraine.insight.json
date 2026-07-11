@@ -1,0 +1,390 @@
+{
+  "schema_version": "0.1",
+  "id": "nk-russia-arms-ukraine",
+  "generated_at": "2026-07-11T16:50:10Z",
+  "engine_version": "9.46.2",
+  "query": "북러 무기 이전 심화 지표와 우크라이나 전황 이벤트의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula",
+    "ukraine"
+  ],
+  "sectors": [
+    "military",
+    "conflict"
+  ],
+  "briefing_refs": [
+    "[WotR] 북한의 치명적 드론 대박 — 한반도에 이식되는 우크라이나 실전 드론전 교리",
+    "사례: 2022 러시아 우크라이나 전면 침공 — 자원무기화의 집대성",
+    "[INSS] 북한의 다극세계론 — 이념적 구성·전략적 기능·한계 (전략보고 382호)",
+    "[WotR] 우크라이나 전장 혁신 루프 — 피드백 구조의 우위와 서방 협력 모델 재설계",
+    "[War on the Rocks] 한국의 50만 드론 전사는 공허한 전력이 될 것이다"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 0,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 5,
+    "cow_alliances": 38,
+    "kiel_donors": 12,
+    "eia_entries": 3,
+    "csis_incidents": 15,
+    "sipri_arms": 7,
+    "vdem_entries": 36,
+    "cow_wars": 3,
+    "ifans_pubs": 3,
+    "theory_cmp_chars": 3431,
+    "fred": 6,
+    "wbk": 3,
+    "polity5": 1,
+    "itu": 1,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 7,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음 | Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 북러 무기 이전 심화와 우크라이나 전황 이벤트는 단순한 인과가 아닌, '실전 데이터 피드백 루프'를 통해 공변하는 구조로 관측된다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n북러 무기 이전이 심화되면 우크라이나 전황이 악화되어 분쟁 건수가 증가한다는 단순한 '공급-수요' 인과 관계가 통념이다.\n\n[비자명기여]\n통념은 '무기 공급'이 결과(전황 악화)의 유일한 원인이라 보지만, 본 분석은 **북한의 무기 이전이 우크라이나의 '전장 혁신 루프'를 가속화하는 '반직관적' 매개체**임을 지적한다. 즉, 북러의 무기 이전은 우크라이나 방산이 '실전 테스트'와 '기술 피드백'을 얻는 창구가 되어, 오히려 우크라이나의 전술 적응 속도를 높이는 요인으로 작용할 수 있다. 이는 무기 이전이 단순히 전쟁을 연장하는 것이 아니라, 전쟁의 양상(드론전 교리)을 구조적으로 변형시킨다는 교차도메인(군사-기술) 통찰이다.\n\n[관찰]\n- 우크라이나 분쟁 ACLED 이벤트는 2026-05(110건)에서 2026-06(1058건)로 **861.8%** 급증했으나, 2026-07(125건)로 다시 급감하는 변동성을 보임.\n- 북한은 2024년 15,000명을 쿠르스크 전선에 파병해 우크라이나 드론전 교훈을 습득하고, 2024년 대규모 자폭 드론 생산 명령을 내렸으며, 2025년 3월 AI 자폭 드론 테스트를 참관함.\n- 우크라이나의 '전장 혁신 루프'는 WhatsApp 등을 통해 제조사에 영상 전송 후 수일 내 하드웨어 수정이 가능한 구조로, 서방 방산의 월~년 단위 조달 주기와 대조됨.\n- 한국 부사관 충원율은 2020년 95%에서 2024년 42%로 붕괴하여, 50만 드론 전사 계획의 실행력을 제한하는 변수로 작용함.\n\n[주장]\n(등급: 상관) 북러 무기 이전 심화(북한 파병 및 기술 이전)와 우크라이나 전황 이벤트의 급변(2026-06 급증)은 **동조한다**는 관측이 가능하나, 이는 북러의 공급이 우크라이나의 전술 혁신을 유도하는 '피드백 루프'의 일부로 공변하는 현상일 뿐, 단순한 인과(공급→악화)로 단정할 수 없다. 특히 우크라이나 전선의 급격한 이벤트 변동(110건→1058건→125건)은 북러의 무기 이전이 우크라이나의 '적응 속도'를 높여 전황을 더 역동적으로 만들었음을 시사하는 정성적 증거와 함께 관찰된다.\n\n[가설]\nH1: 북러 무기 이전 건수 (X)가 증가할 때 우크라이나 ACLED 분쟁 이벤트의 월별 변동성 (Y, 표준편차)이 통계적으로 유의하게 증가한다 (통제변수: 서방 지원금 규모).\n※ 단, 현재 데이터는 ACLED 이벤트 건수만 제공되며, 북러 무기 이전의 정량적 '건수'는 [UNVERIFIED]이므로 정량 검정은 불가능함.\n\n[근거]\n- ACLED 우크라이나 월별 추이: 2026-05 110건 → 2026-06 1058건 (+861.8%) → 2026-07 125건 (사전계산).\n- 북한 파병 병력: 15,000명 (쿠르스크), 드론 공장 파견: 25,000명 (context).\n- 우크라이나 혁신 루프 속도: 수일 내 패치 (context).\n\n[한계]\n- **선택·생존편향**: ACLED 데이터는 '관측된' 분쟁만 기록하므로, 성공적으로 은폐된 북러 무기 이전이나 우크라이나의 비공식적 대응은 누락될 수 있어 연쇄 강도를 과소평가할 위험이 있음.\n- **데이터 부재**: 북러 무기 이전의 구체적인 '건수'나 '단위' 데이터가 context에 없어 H1의 독립변수를 정량화할 수 없음.\n\n[경쟁설명]\n이론A: 동맹 비용분담 이론 (Burden Sharing Theory)\n  예측: 동맹국(러시아)의 군사적 개입(북한 파병 등)이 증가하면, 우크라이나와 서방의 방위비 부담 증가로 인해 우크라이나의 전황 악화(분쟁 건수 증가)가 예상됨.\n  실측: 우크라이나 분쟁 건수 2026-06 1058건 (2026-05 대비 +861.8%) — 그러나 이는 1개월의 급변이며 2026-07 125건으로 급감하여 지속적 악화 경향은 불명확함.\n  판정: 전제충족 (DV 미검증) — 실측 데이터가 1개월의 급격한 변동에 불과하여 '지속적 악화'라는 예측을 검증할 장기적 추이가 부재함. (앵커: 우크라이나 국방비 36.03% GDP, 2023)\n\n이론B: 공격적 현실주의 (Offensive Realism)\n  예측: 강대국(러시아)의 군사력 강화(북한 무기 이전)로 권력 격차가 줄어들면, 갈등 빈도가 증가하여 우크라이나 전황이 악화됨 (분쟁 건수 증가).\n  실측: 우크라이나 분쟁 건수 2026-06 1058건 — 그러나 2026-07 125건으로 급감하여 권력 격차 감소가 갈등 증가로 이어졌다는 일관된 추이가 아님.\n  판정: 전제충족 (DV 미검증) — 실측 데이터가 단기 변동성만 보여 장기적 권력 격차와 갈등 빈도의 인과 관계를 검증할 수 없음. (앵커: 중국 1.6% GDP vs 한국 2.6% GDP, 2023)\n\n▶ 편차 비교 (사실): 이론A 예측 '지속적 악화' vs 실측 '1개월 급증 후 급감' (편차 방향 불일치) vs 이론B 예측 '갈등 증가' vs 실측 '변동성 심화' (편차 불명확). 두 이론 모두 장기적 추이를 예측했으나, 실측은 단기 변동성만 제공하여 편차 비교가 정량적으로 제한됨.\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 '분쟁 건수 증가'를 예측했으나, 실측 데이터가 1개월의 급변과 직후 감소를 보여 '지속적 악화'를 입증하지 못함. 연구자는 우크라이나의 '적응 속도'가 북러의 '공급'을 상쇄하는지, 아니면 오히려 전황을 더 혼란스럽게 만드는지 추가 데이터(장기 시계열)를 통해 판단해야 함.\n\n[검증포인트]\n- 북러 무기 이전의 정량적 지표 (건수, 중량, 금액)와 우크라이나 ACLED 이벤트의 6개월 이상 시계열 데이터 매칭 필요.\n- 우크라이나 방산 혁신 루프의 구체적 사례 (수정 주기, 전술 변경 로그)와 북러 무기 도입 시점의 상관관계 분석.\n\n[문헌공백]\n기존 문헌은 '자원무기화'나 '동맹 비용분담'과 같은 거시적 구조에 집중하여, **군사-기술 교차 도메인**에서 발생하는 '실전 피드백 루프'의 미시적 메커니즘을 다루지 못함.\n- **③ 교차도메인 밀도** 원장에 따르면, 'military, conflict' 섹터는 라이브러리 주장이 1건 이하로 희박하며, '인도태평양'이나 '에너지' 섹터와의 연결고리가 부족함.\n- 본 분석은 북러 무기 이전이 단순한 '공급'이 아니라 우크라이나의 '기술 혁신'을 자극하는 '촉매제'로 작용할 수 있다는 교차 도메인 경로를 제시하여, 기존 문헌의 단일 도메인 접근 한계를 보완함.\n- 특히, 북러의 무기 이전이 우크라이나의 '적응 속도'를 높여 전쟁의 양상을 변화시킨다는 메커니즘은 기존 '자원무기화' 이론이 예측하지 못한 **반직관적 경로**임.\n\n---\n\n[헤드라인] [탐색적] 북러 무기 이전 심화는 우크라이나 전황의 '변동성'과 공변하지만, 한국의 '부사관 붕괴'는 이 전황 변화를 수용할 수 있는 내부 수용력을 약화시키는 상관 관계로 관측된다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n북러 무기 이전이 심화되면 한국은 우크라이나 전황의 교훈을 배워 드론 전력을 강화할 수 있으며, 이는 한미 동맹의 안정성을 높일 것이라는 예상이다.\n\n[비자명기여]\n통념은 '교훈 학습'이 자동으로 '전력 강화'로 이어진다고 보지만, 본 분석은 **북러 무기 이전 심화가 우크라이나 전황을 복잡하게 만들면서, 한국 내부의 '인력 구조 붕괴'와 결합하여 전력화 실패 가능성을 높인다**는 반직관적 경로를 제시한다. 즉, 외부 위협(북러 무기)이 커질수록 내부 수용력(부사관 충원)이 약화되는 **역방향 상관**이 관찰될 수 있으며, 이는 '학습'과 '적용' 사이의 괴리를 확대한다.\n\n[관찰]\n- 한국 육군 부사관 충원율은 2020년 95%에서 2024년 42%로 붕괴했으며, 자발적 조기 전역 부사관은 2020년 1,147명에서 2024년 2,480명 (+116%) 증가함.\n- 한국 합계출산율은 2025년 0.80로 대체율(2.1) 대비 현저히 낮아 징집 풀이 감소함.\n- 북한은 2024년 말부터 수천 명을 우크라이나 전선에 파견해 실전 검증된 드론 부대와 함께했고, 귀환 병사들은 이미 교관 역할을 맡고 있음.\n- 우크라이나 'Victory Drones' 훈련 인원은 150,000명+ (2025년 중반 기준)이나, 한국은 민간 드론 자격증 보유자(127,000명+)가 있어도 FPV 드론 교관으로 활용 불가능한 기술적 격차 존재.\n\n[주장]\n(등급: 상관) 북러 무기 이전 심화 (북한 파병 등)와 한국의 '부사관 붕괴' (충원율 감소)는 **동조한다**는 관측이 가능하다. 즉, 외부 위협이 커질수록 내부 인력 구조가 약화되는 상관 관계가 관찰되나, 이는 인과 관계라기보다 구조적 제약(출산율, 인구 감소)과 외부 충격이 동시에 작용하는 결과로 해석됨.\n\n[가설]\nH1: 한국 부사관 충원율 (X, %)이 감소할 때, 한국 정부의 드론 전력화 계획 추진 속도 (Y, 예산 집행률 또는 훈련 인원 증가율)가 통계적으로 유의하게 감소한다 (통제변수: 국방비 지출).\n※ 단, 현재 데이터는 부사관 충원율만 제공되며, 드론 전력화 추진 속도의 정량적 지표는 [UNVERIFIED]이므로 정량 검정은 불가능함.\n\n[근거]\n- 한국 육군 부사관 충원율: 2020년 95% → 2024년 42% (사전계산).\n- 자발적 조기 전역 부사관: 2020년 1,147명 → 2024년 2,480명 (+116%).\n- 한국 합계출산율: 2025년 0.80 (context).\n- 북한 파병 병력: 15,000명 (쿠르스크), 드론 공장 파견: 25,000명.\n\n[한계]\n- **선택·생존편향**: '부사관 붕괴' 사례만 강조되어, 드론 전력화 성공 사례나 다른 보상 메커니즘은 과소평가될 수 있음.\n- **데이터 부재**: 드론 전력화 추진 속도의 정량적 지표 (예산 집행률, 훈련 인원 증가율)가 context에 없어 H1의 종속변수를 정량화할 수 없음.\n\n[경쟁설명]\n이론A: 동맹 이론 (Alliance Theory)\n  예측: 동맹국(미국)의 지원이 증가하면, 한국은 부사관 충원 어려움에도 불구하고 드론 전력화를 가속화할 수 있음 (방기 위험 감소).\n  실측: 한국 부사관 충원율 2024년 42% — 그러나 미국 지원 증가에도 불구하고 인력 문제 해결未见 (정성 증거: 50만 드론 전사 계획이 공허할 수 있다는 주장).\n  판정: 전제충족 (DV 미검증) — 실측 데이터가 인력 문제만 제공하여 동맹 지원이 전력화를 가속화했는지 검증할 수 없음. (앵커: 미국 방위비 3.29% GDP, 2023)\n\n이론B: 공격적 현실주의 (Offensive Realism)\n  예측: 위협(북러 무기 이전)이 증가하면 국가는 군사력 증강을 위해 인력 동원을 극대화할 것임 (충원율 증가 또는 대체 병력 동원).\n  실측: 한국 부사관 충원율 2024년 42% — 위협 증가에도 불구하고 충원율 감소 (방어적 현실주의 예측과 상반).\n  판정: 열세 — 예측 '충원율 증가' vs 실측 '충원율 42%로 붕괴' — 방향 불일치. (앵커: 한국 국방비 2.60% GDP, 2023)\n\n▶ 편차 비교 (사실): 이론A 예측 '가속화' vs 실측 '인력 문제 미해결' (편차 불명확) vs 이론B 예측 '충원율 증가' vs 실측 '충원율 42%로 붕괴' (편차 -53%p, 방향 반대). 이론B는 명확한 방향 불일치를 보임.\n▶ 당신의 판단 (연구자 몫): 이론B는 위협 증가 시 군사력 증강을 예측했으나, 한국은 인력 구조적 제약으로 인해 오히려 충원율이 감소함. 이는 '인구 구조'라는 변수가 '군사적 위협'보다 더 강력한 제약 조건임을 시사함. 연구자는 인구 구조와 군사적 위협의 상대적 중요도를 판단해야 함.\n\n[검증포인트]\n- 한국 드론 전력화 추진 속도의 정량적 지표 (예산 집행률, 훈련 인원, 장비 도입 건수)와 부사관 충원율의 시계열 상관관계 분석.\n- 미국 지원 증가와 한국 인력 문제 해결 사이의 인과 관계 검증 (동맹 이론 검증).\n\n[문헌공백]\n기존 문헌은 '동맹 비용분담'이나 '공격적 현실주의'와 같은 거시적 이론에 집중하여, **인구 구조**와 **군사 전력화** 사이의 미시적 연결고리를 다루지 못함.\n- **③ 교차도메인 밀도** 원장에 따르면, 'military, conflict' 섹터는 라이브러리 주장이 1건 이하로 희박하며, '인구'나 '사회' 섹터와의 연결고리가 부족함.\n- 본 분석은 '북러 무기 이전'이라는 외부 충격이 '한국 부사관 붕괴'라는 내부 구조와 결합하여 전력화 실패 가능성을 높인다는 교차 도메인 경로를 제시하여, 기존 문헌의 단일 도메인 접근 한계를 보완함.\n- 특히, 인구 구조가 군사적 위협에 대한 대응 능력을 제한한다는 메커니즘은 기존 '공격적 현실주의'가 예측하지 못한 **범위조건**임.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 우크라이나 ACLED 분쟁 이벤트의 월별 변동성 (Y, 표준편차) — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "북러 무기 이전 건수 (X)가 증가할 때 우크라이나 ACLED 분쟁 이벤트의 월별 변동성 (Y, 표준편차)이 통계적으로 유의하게 증가한다.",
+        "h0": "북러 무기 이전 건수 (X)가 증가할 때 우크라이나 ACLED 분쟁 이벤트의 월별 변동성 (Y, 표준편차)이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "북러 무기 이전 건수 (X)",
+        "dependent_var": "우크라이나 ACLED 분쟁 이벤트의 월별 변동성 (Y, 표준편차)",
+        "control_vars": [
+          "서방 지원금 규모"
+        ],
+        "region_code": "eastern_europe",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 eastern_europe ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=eastern_europe) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "북러 무기 이전 건수 (X)가 증가할 때 우크라이나 ACLED 분쟁 이벤트의 월별 변동성 (Y, 표준편차)이 통계적으로 유의하게 증가한다.",
+                "region": "eastern_europe",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "2018년 아세안 관련 외교장관회의 계기 한-러시아 외교장관회담 결과",
+                        "date": "2018-08-02",
+                        "creator": "유라시아과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "한-우크라이나 외교장관회담 개최",
+                        "date": "2026-06-30",
+                        "creator": "유럽국, 한반도정책국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 0건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "2018년 아세안 관련 외교장관회의 계기 한-러시아 외교장관회담 결과",
+                        "date": "2018-08-02",
+                        "creator": "유라시아과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "한-우크라이나 외교장관회담 개최",
+                        "date": "2026-06-30",
+                        "creator": "유럽국, 한반도정책국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "｢한-EU-NATO 스페이스 데이｣ 개최",
+                        "date": "2026-06-30",
+                        "creator": "기후환경과학외교국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제5차 우크라이나 복구회의(URC) 참석",
+                        "date": "2026-06-27",
+                        "creator": "개발협력국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "EU·NATO 및 동유럽에 우주 민관사절단 파견",
+                        "date": "2026-06-26",
+                        "creator": "기후환경과학외교국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "NATO’s southern flank is exposed. Portugal can help fortify it.",
+                        "date": "Wed, 17 Jun 2026 18:55:09 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Alliance was not designed to focus only on its easter flank. Vulnerabilities to NATO’s south are accumulating fas"
+                      },
+                      {
+                        "title": "Increasing defense spending isn’t enough. The US and its allies must also guarantee interoperability.",
+                        "date": "Wed, 10 Jun 2026 21:09:45 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Rising defense spending is creating a generational opportunity. But allied interoperability should be built into thes"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 + Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [],
+                    "evidence_note": "DB 증거 없음 — 언론 보도·통계 동향으로 탐색 필요"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Remarks Prior to a Meeting With President Volodymyr Zelenskyy of Ukraine and an Exchange With Reporters",
+                        "date": "2025-02-28",
+                        "source_db": "CPD (White House)",
+                        "description": "The United States should not have allowed this to happen. Okay? The United States, run by a man that didn t know much—I "
+                      },
+                      {
+                        "title": "Order on Federal Commission and Board Chairman and Acting Chairman Designations",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "font-size: 11pt; } Administration of Donald J. Trump, 2025 Order on Federal Commission and Board Chairman and Acting Cha"
+                      },
+                      {
+                        "title": "Proclamation 10885—Flying the Flag of the United States at Full-Staff on Inauguration Day",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "Inauguration Day January 20, 2025 By the President of the United States of America A Proclamation By the authority veste"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Urgent de-escalation’ needed now in Ukraine amid spike in civilian deaths",
+                        "date": "2026-07-09",
+                        "source_db": "UN News",
+                        "description": "The Security Council must use every tool and diplomatic channel to reach an urgent de-escalation, Rosemary DiCarlo, chie"
+                      },
+                      {
+                        "title": "Ukraine: Latest Russian assault leaves at least 14 dead in Kyiv",
+                        "date": "2026-07-06",
+                        "source_db": "UN News",
+                        "description": "Russian strikes on the Ukrainian capital Kyiv killed at least 14 civilians and injured more than 80 others overnight on "
+                      },
+                      {
+                        "title": "Civilian dangers multiply as drones transform Ukraine's battlefield",
+                        "date": "2026-07-03",
+                        "source_db": "UN News",
+                        "description": "As drones reshape the battlefield in Ukraine, they are also creating new and increasingly complex dangers for civilians,"
+                      },
+                      {
+                        "title": "The future of NATO’s deterrence in the air domain",
+                        "date": "Wed, 10 Jun 2026 20:41:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>European NATO member states need to prepare to deter, and if necessary, defeat Russia—with less US support. When it c"
+                      },
+                      {
+                        "title": "Was the NATO Summit a success?",
+                        "date": "Wed, 08 Jul 2026 22:28:34 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Atlantic Council experts break down an eventful two days in Ankara.</p>\n<p>The post <a href=\"https://www.atlanticcoun"
+                      }
+                    ],
+                    "evidence_note": "CPD 대통령 성명 3건(★★★★★) + UN News 3건 + Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] korean_peninsula→KRW=X — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA_downgrade",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "ticker 재정의 후 Type_A 정상경로 재시도"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "한국 부사관 충원율 (X, %)이 감소할 때, 한국 정부의 드론 전력화 계획 추진 속도 (Y, 예산 집행률 또는 훈련 인원 증가율)가 통계적으로 유의하게 감소한다.",
+        "h0": "한국 부사관 충원율 (X, %)이 감소할 때, 한국 정부의 드론 전력화 계획 추진 속도 (Y, 예산 집행률 또는 훈련 인원 증가율)가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "한국 부사관 충원율 (X, %)",
+        "dependent_var": "한국 정부의 드론 전력화 계획 추진 속도 (Y, 예산 집행률 또는 훈련 인원",
+        "control_vars": [
+          "국방비 지출"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "KRW=X",
+        "var_type": "Type_C",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": true,
+        "verification_status": "PENDING",
+        "partial_basis": "TREND_P15",
+        "inference_grade": "기술적",
+        "inference_caveat": "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음 | Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0981,
+        "granger_q": null,
+        "f_statistic": 2.103,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 460,
+        "error": "[대리변수 사용] Type A 강등 → ACLED korean_peninsula + KRW=X 대리변수 → KRW=X (p=0.0981, F=2.103, lag=3, diff=True)",
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "South Korea",
+              "Ukraine"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": null
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.103,
+              "effect_size_label": "작음",
+              "significance": 0.0981,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 75,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0981,
+                "granger_q": null,
+                "f_statistic": 2.103,
+                "best_lag": 3,
+                "n_obs": 460
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

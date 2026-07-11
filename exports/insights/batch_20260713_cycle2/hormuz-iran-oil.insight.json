@@ -1,0 +1,263 @@
+{
+  "schema_version": "0.1",
+  "id": "hormuz-iran-oil",
+  "generated_at": "2026-07-11T16:59:36Z",
+  "engine_version": "9.46.2",
+  "query": "이란 군사 긴장 국면과 호르무즈 해협 유가·유조선 통항의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "hormuz",
+    "middle_east"
+  ],
+  "sectors": [
+    "energy",
+    "maritime"
+  ],
+  "briefing_refs": [
+    "사례: 2023 이스라엘-하마스 전쟁 — 중동 분쟁과 리스크오프 메커니즘",
+    "[INSS] 중동 전쟁과 글로벌 복합 위기: 평가와 시사점 (전략보고 379호)",
+    "[War on the Rocks] 러시아의 호르무즈 플레이북: 발트해·흑해에 보험 연쇄 봉쇄가 온다",
+    "[CFR] 이란전이 아시아에 야기하는 에너지 혼란",
+    "[ECFR] 해협 우회: IMEC의 전시 재설계 — 단일 초크포인트 의존의 전략적 함정"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 4,
+    "cow_alliances": 37,
+    "kiel_donors": 0,
+    "eia_entries": 7,
+    "csis_incidents": 15,
+    "sipri_arms": 3,
+    "vdem_entries": 36,
+    "cow_wars": 4,
+    "ifans_pubs": 2,
+    "theory_cmp_chars": 4427,
+    "fred": 12,
+    "wbk": 4,
+    "polity5": 1,
+    "itu": 1,
+    "hiik": 7,
+    "semi": 0,
+    "owid": 1,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "[탐색적] 데이터 관찰 후 가설 생성(HARKing) — 같은 데이터로 검정하면 순환이라 선행성·준실험 주장 불가, '상관'에서 상한. 확증하려면 가설을 데이터 보기 전 선언(검증 모드). · VIX(글로벌 위험) 통제 조건부 선행성 — 공통 교란 완화했으나 여전히 구조적 인과는 아님",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 호르무즈 분쟁 건수 폭증과 유가 상승이 동반되나, 보험·비축 메커니즘이 가격 충격을 차단하는 '전이 임계'가 존재할 가능성\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 호르무즈 해협에서 군사적 긴장이나 공격 사건이 발생하면, 공급 차단 우려로 인해 유가가 즉각적으로 폭등한다.\n[비자명기여] 통념은 초크포인트 위협이 자동으로 가격 충격으로 전이된다고 보지만, <context>의 'SLOC 통제 이론' 반례(2024~2025 홍해 공격 시 유가 급등 제한)가 보여주듯, **전략비축유 방출·OPEC+ 여유 생산능력·우회 항로**라는 3가지 완충 조건이 충족될 때 전이는 차단된다. 즉, 물리적 위협 증가가 가격 상승으로 이어지는 것은 '상수'가 아니라 '조건부'이며, 이 **임계값(완충 재고 및 대체 경로 가용성)**이 깨질 때만 유가 폭등이 발생한다.\n[관찰]\n- 호르무즈 지역 ACLED 분쟁 건수: 2026년 4월 1건 → 5월 18건 → 6월 284건 → 7월 33건 (6월 급증, 사전계산).\n- 중동 지역 ACLED 분쟁 건수: 2026년 4월 1건 → 5월 180건 → 6월 3,342건 → 7월 424건 (6월 정점, 사전계산).\n- WTI 유가: 2024년 1월 기준 76.96 USD/barrel (최근 추세 +85.6%, 사전계산) [FRED].\n- 한국 선박 호르무즈 피격: 2026년 5월 4일 발생.\n- 아시아 원유 수입 의존도: 일본 95%, 한국 70%, 필리핀 98% (호르무즈 경유).\n[주장] (등급: 상관) 호르무즈 및 중동 지역의 분쟁 건수 급증과 유가 상승 추이는 **공변한다**. 분쟁 건수가 6월 284건(호르무즈) 및 3,342건(중동)으로 폭증한 시기와 유가 상승 추세(+85.6%)가 시간적으로 일치하나, <context> 내 '홍해 공격 시 유가 제한적 상승' 반례가 시사하듯 물리적 분쟁 증가가 가격 상승을 **유발한다**는 인과 관계는 **완충 재고 및 대체 경로**라는 외부 변수에 의해 조절될 가능성이 높다.\n[가설] H1: 호르무즈 해협 (hormuz) 지역 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 는 통계적으로 유의하게 상승한다 (통제변수: 전략비축유 방출량, OPEC+ 여유 생산능력).\n[근거] ACLED 분쟁 통계 (2026-06 hormuz: 284건, 중동: 3,342건), FRED WTI 유가 추세 (+85.6%), War on the Rocks 보고서 (홍해 공격 시 유가 제한적 상승 사례).\n[한계]\n- **선택·생존편향**: 현재 데이터는 '공격이 발생하고 보고된 사례'에 기반하며, 성공적으로 은폐되거나 차단 실패로 이어지지 않은 공격은 누락되어 복원력 과대평가 위험 존재.\n- **교란 변수**: 유가 상승이 호르무즈 분쟁 때문인지, 글로벌 수요 회복이나 OPEC+ 생산 조정 때문인지 분리 검증 불가 (단일 시계열 분석의 한계).\n[경쟁설명]\n이론A: 자원무기화 (Hirschman)\n  예측: 호르무즈 봉쇄 위협 (공급 차단) 이 발생하면 피의존국 (아시아) 의 정치적 양보와 에너지 가격 급등이 동반된다 (예측 부호: ▲).\n  실측: WTI 유가 76.96 USD/barrel (2024-01 기준, 최근 +85.6% 상승) [FRED] / 호르무즈 분쟁 2026-06 284건 (사전계산).\n  판정: 우세 — 예측 '분쟁 증가→가격 상승' vs 실측 '분쟁 284건(+1756.7% vs 전월) + 유가 +85.6% 상승' — 방향 일치 (단, 홍해 반례로 인해 전이 강도 불확실).\n  (앵커: HHI 9398.0 vs 임계 2500, 전제충족, 사전계산)\n\n이론B: 상호의존의 무기화 (Farrell & Newman)\n  예측: 공급망 집중도 (HHI) 가 높을수록 피의존국은 외교적 양보 (정치적 비용) 를 하거나, 공급망 다변화를 통해 무기화 효과를 무력화하려 한다.\n  실측: SAU 수출 희토류 공급원 HHI 9398 (독과점, 사전계산) / IRN 수입 에너지 HHI 4713 (사전계산).\n  판정: 전제충족(DV 미검증) — IV(공급망 집중) 는 HHI 9398 로 독과점 임계 초과 (전제 충족) 이나, DV(외교 양보 빈도) 의 정량값은 [UNVERIFIED] 로 부재.\n  (앵커: HHI 9398.0 vs 임계 2500, 전제충족, 사전계산)\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 (방향 일치, 실측 존재) vs 상호의존 무기화 예측편차 (DV 부재로 편차 산출 불가) — 자원무기화 쪽 편차만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 두 이론 중 어떤 것이 우세한지는 연구자가 판정. (쟁점: 자원무기화는 '가격'을 DV로, 상호의존 무기화는 '외교 양보'를 DV로 삼아 직접 비교 불가. 또한 홍해 사례에서 유가가 급등하지 않은 점은 자원무기화 이론의 예측 임계 조건을 어떻게 재설정해야 하는지 문제 제기.)\n[검증포인트] 2026년 6월 호르무즈 분쟁 발생 전후, OPEC+ 의 생산량 조정 기록 및 미국 전략비축유 (SPR) 방출 여부 확인. 또한 아시아 국가들의 유가 상승률과 정치적 입장 변화 (예: 대이란 제재 찬반 표결) 상관관계 분석.\n[문헌공백] 기존 문헌은 초크포인트 위협과 가격 상승을 단순 인과로 연결하지만, <context>의 'SLOC 통제 이론' 반례 클러스터가 지적하듯 **전략비축유 방출·OPEC+ 여유 생산능력·우회 항로**라는 3가지 완충 메커니즘이 작동하는 **임계 조건**을 체계적으로 다루지 못한다. 특히 '위협 인식 ≠ 실제 가격 충격'이라는 비선형 전이 패턴이 단일 도메인 (에너지/군사) 문헌의 사각지대에 놓여 있으며, 교차도메인 (에너지+보험+지정학) 분석이 필요한 공백이다.\n\n---\n\n[헤드라인] [탐색적] 호르무즈 위기 시 아시아 해군의 연합 대응 부재는 '능력 부족'이 아닌 '연루 공포'에 기인한 전략적 선택으로 동반된다\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 호르무즈 해협 봉쇄 위기에 아시아 국가들이 참여하지 않는 것은 해군 전력 부족이나 기뢰전 능력 결여 때문이다.\n[비자명기여] 통념은 '능력 (Capacity)'의 부재를 원인으로 보지만, <context>의 '글렌 스나이더 동맹 딜레마' 분석이 보여주듯, 아시아 해군은 유럽을 능가하는 잠수함·주요 수상함·기뢰전 능력을 보유함에도 **연루 공포 (Entrapment)**가 방기 공포 (Abandonment) 를 압도하여 전략적 소극성을 선택한다. 즉, **동맹 구조의 비대칭성**이 능력 활용을 억제하는 제2의 장벽으로 작용하며, 이는 단순한 군사력 문제가 아니라 **동맹 정치의 구조적 한계**임을 정교화한다.\n[관찰]\n- 호르무즈 통과 원유·LNG 중 아시아行 비중: 80% 이상 (2024 기준).\n- 일본 원유 수입 중 페르시아만 의존도: 95%, 한국: 70%, 필리핀: 98%.\n- 한국 선박 호르무즈 피격: 2026년 5월 4일.\n- 아시아 해군 능력: 냉전 이후 유럽 해군 주요 함정 3분의 1 감소 vs 아시아 해군 잠수함·주요함·초계기 수량 우세.\n- 다자 연합 참여국: 싱가포르, 스리랑카 2개국만 의미 있는 참여 (Operation Prosperity Guardian).\n- 인도: Operation Urja Suraksha(독자 수행) 로 비동맹 원칙 고수.\n[주장] (등급: 상관) 호르무즈 해협 분쟁 심화와 아시아 국가들의 연합 작전 참여 부재는 **공변한다**. 아시아 국가들이 높은 에너지 의존도 (95%~98%) 와 우수한 해군 능력을 보유함에도 불구하고, 미국 주도 연합에 소극적으로 대응하거나 독자 작전을 선택하는 현상은 **연루 공포**라는 정치적 변수와 **상관**하며, 이는 단순한 군사력 부족과 무관하게 관찰된다.\n[가설] H1: 호르무즈 해협 (hormuz) 분쟁 건수 증가 시, 아시아 국가 (일본, 한국, 인도) 의 다자 연합 작전 참여 건수는 통계적으로 유의하게 감소하거나 0 에 수렴한다 (통제변수: 자국 해군 전력 규모, 에너지 수입 의존도).\n[근거] War on the Rocks 보고서 (아시아 해군 능력 vs 참여 부재), ACLED 호르무즈 분쟁 데이터 (2026-06 284건), 아시아 국가별 에너지 의존도 수치.\n[한계]\n- **선택·생존편향**: '참여하지 않음'이라는 데이터는 침묵의 증거이며, 비공식적 지원이나 후방 지원 등 은폐된 협력은 누락되어 '완전한 불참'으로 오해할 위험.\n- **인과 방향 불명**: 연루 공포가 참여를 막았는지, 아니면 참여 실패가 공포를 증폭시켰는지 시간적 인과성 확인 필요.\n[경쟁설명]\n이론A: 자원무기화 (Resource Weaponization)\n  예측: 에너지 의존도가 높은 국가 (일본 95%, 한국 70%) 는 공급 차단 위협 시 미국 주도 연합에 적극적으로 참여하여 에너지 안보를 확보하려 할 것이다 (예측 부호: ▲).\n  실측: 호르무즈 분쟁 2026-06 284건 (사전계산) 및 유가 상승 (+85.6%) 이 발생했으나, 아시아 주요국 (일본, 한국, 인도) 의 다자 연합 참여는 싱가포르·스리랑카 2개국뿐 (실측: 참여 빈도 극히 낮음).\n  판정: 열세 — 예측 '의존도 높음→참여 증가' vs 실측 '의존도 90% 이상 + 참여 2개국' — 방향 불일치.\n  (앵커: HHI 9398.0 vs 임계 2500, 전제충족, 사전계산)\n\n이론B: 상호의존의 무기화 (Weaponized Interdependence)\n  예측: 공급망 집중 (아시아의 중동 의존) 이 심화될수록, 피의존국은 중국·이란과의 양자 관계 훼손을 우려하여 미국 주도 연합 참여를 자제하고 '중립' 또는 '독자적 대응'을 선택할 것이다 (예측 부호: ▼).\n  실측: 한국 선박 피격 (2026-05-04) 및 인도 Operation Urja Suraksha(독자 수행) / 필리핀 국가 에너지 비상사태 선포 (2026-03-24) — 다자 연합 불참.\n  판정: 우세 — 예측 '의존도 높음→연합 회피/독자 대응' vs 실측 '고수준 의존도 + 다자 연합 불참/독자 작전' — 방향 일치.\n  (앵커: HHI 9398.0 vs 임계 2500, 전제충족, 사전계산)\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 (방향 반대) vs 상호의존 무기화 예측편차 (방향 일치) — 상호의존 무기화 쪽이 실측 (참여 부재) 에 더 가까움\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점: 자원무기화는 '공급 차단'을 전제로 하지만, 아시아 국가는 '양자 관계 훼손'을 더 큰 리스크로 인식하는지 여부. 또한 인도의 독자 작전이 '연루 회피'인지 '대안적 리더십'인지 해석의 차.)\n[검증포인트] 아시아 국가들의 연합 참여 거부 의사표시 (공식 성명) 와 동시점의 중국/이란과의 양자 경제 협상 건수 비교. 또한 미국과 아시아 국가 간 '방기 (Abandonment)' 우려와 '연루 (Entrapment)' 우려에 대한 여론조사 데이터 확보.\n[문헌공백] 기존 문헌은 '군사력 부족'을 연합 실패의 주된 원인으로 간주하지만, <context>의 '경쟁이론 미해결' 섹션이 지적하듯 **SLOC 통제 이론**과 **상호의존의 무기화** 이론 간의 충돌 (물리적 통제 vs 정치적 레버리지) 을 실측으로 판정하지 못하고 있다. 특히 아시아의 전략 문화 (비동맹, 연루 공포) 가 어떻게 **공급망 의존도**라는 경제적 변수를 정치적 '불참'으로 전환시키는지 그 **교차 도메인 메커니즘** (에너지→동맹 정치) 을 체계화하지 못한 공백이 존재한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 호르무즈 해협 (hormuz) 지역 ACLED 분쟁 이벤트 건수가 월간 100건을 초과 → WTI 유가 (USD/배럴) 경향성 (p=0.042)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "호르무즈 해협 (hormuz) 지역 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 는 통계적으로 유의하게 상승한다.",
+        "h0": "호르무즈 해협 (hormuz) 지역 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "호르무즈 해협 (hormuz) 지역 ACLED 분쟁 이벤트 건수가 월간 100건을 초과",
+        "dependent_var": "WTI 유가 (USD/배럴)",
+        "control_vars": [
+          "전략비축유 방출량",
+          "OPEC+ 여유 생산능력"
+        ],
+        "region_code": "hormuz",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "VERIFIED",
+        "partial_basis": null,
+        "inference_grade": "상관",
+        "inference_caveat": "[탐색적] 데이터 관찰 후 가설 생성(HARKing) — 같은 데이터로 검정하면 순환이라 선행성·준실험 주장 불가, '상관'에서 상한. 확증하려면 가설을 데이터 보기 전 선언(검증 모드). · VIX(글로벌 위험) 통제 조건부 선행성 — 공통 교란 완화했으나 여전히 구조적 인과는 아님",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0423,
+        "granger_q": 0.0423,
+        "f_statistic": 2.308,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 456,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Iran"
+            ],
+            "named_share": 0.45,
+            "named_n": 277,
+            "top_country": "(미상)",
+            "top_share": 0.545,
+            "n_events": 615,
+            "country_dist": {
+              "(미상)": 335,
+              "Iran": 277,
+              "United Arab Emirates": 3
+            },
+            "filter_country": "Iran",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.308,
+              "effect_size_label": "작음",
+              "significance": 0.0423,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "선행성",
+              "confidence_within_rung": 100,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0423,
+                "granger_q": 0.0423,
+                "f_statistic": 2.308,
+                "best_lag": 5,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ],
+          "epistemic_cap": "[탐색적] 선행성→상관 (HARKing 방어, 원본 추정치는 all_results 보존)"
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [사건→사건] hormuz→east_china_sea 경향성 (p=0.000)",
+        "confidence_word": "보통",
+        "routing_method": "event_to_event",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-A 이벤트스터디 (사건 전후 비정상변동 포착)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "호르무즈 해협 (hormuz) 분쟁 건수 증가 시, 아시아 국가 (일본, 한국, 인도) 의 다자 연합 작전 참여 건수는 통계적으로 유의하게 감소하거나 0 에 수렴한다.",
+        "h0": "호르무즈 해협 (hormuz) 분쟁 건수 증가 시, 아시아 국가 (일본, 한국, 인도) 의 다자 연합 작전 참여 건수는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "호르무즈 해협 (hormuz) 분쟁 건수",
+        "dependent_var": "아시아 국가 (일본, 한국, 인도) 의 다자 연합 작전 참여 건수는",
+        "control_vars": [
+          "자국 해군 전력 규모",
+          "에너지 수입 의존도"
+        ],
+        "region_code": "hormuz",
+        "dependent_region": "east_china_sea",
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PARTIAL",
+        "partial_basis": null,
+        "inference_grade": "상관",
+        "inference_caveat": "이론적 인과 메커니즘이 약한 대리쌍 — 허위상관 가능성, 상관 이상 주장 불가",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "글로벌 분쟁 baseline",
+        "granger_p": 0.0,
+        "granger_q": 0.0,
+        "f_statistic": 19.943,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 720,
+        "error": "[사건→사건] hormuz→east_china_sea (글로벌 분쟁 통제, p=0.0, grounded=False)",
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Iran"
+            ],
+            "named_share": 0.45,
+            "named_n": 277,
+            "top_country": "(미상)",
+            "top_share": 0.545,
+            "n_events": 615,
+            "country_dist": {
+              "(미상)": 335,
+              "Iran": 277,
+              "United Arab Emirates": 3
+            },
+            "filter_country": "Iran",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 19.943,
+              "effect_size_label": "큼",
+              "significance": 0.0,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 75,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0,
+                "granger_q": 0.0,
+                "f_statistic": 19.943,
+                "best_lag": 5,
+                "n_obs": 720
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

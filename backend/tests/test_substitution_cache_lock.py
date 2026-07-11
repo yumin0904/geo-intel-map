@@ -1,5 +1,5 @@
 """
-tests/test_substitution_cache_lock.py — 치환 잠금의 캐시 우회 회귀 (밤샘 사이클 3, 2026-07-13)
+tests/test_substitution_cache_lock.py — 치환 잠금의 캐시 우회 회귀 (밤샘 사이클 3, 2026-07-12 새벽)
 
 실행: cd backend && PYTHONPATH=. .venv/bin/python tests/test_substitution_cache_lock.py
 

@@ -1,0 +1,381 @@
+{
+  "schema_version": "0.1",
+  "id": "djibouti-basing-chokepoint",
+  "generated_at": "2026-07-11T16:22:28Z",
+  "engine_version": "9.46.1",
+  "query": "지부티 군사기지 밀집과 밥엘만데브 초크포인트 통제 경쟁",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "bab_el_mandeb"
+  ],
+  "sectors": [
+    "military",
+    "chokepoints"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+    "[RAND Europe / UK AISI] 프런티어 AI의 공세 사이버 업리프트: 인간 업리프트 실험 연구"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 0,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 0,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 2754,
+    "fred": 0,
+    "wbk": 4,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 4,
+    "semi": 0,
+    "owid": 0,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 bab_el_mandeb ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 지부티 기지 밀집과 바브엘만데브 통제 경쟁은 물리적 억지 강화와 **상관**한다 — 그러나 AI·사이버 평준화로 인한 '비국가 행위자'의 초크포인트 교란 능력 증대가 **동반**됨 (연쇄강도: MEDIUM)\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n지부티에 미국·중국 등 강대국 군사기지가 밀집하면 바브엘만데브 해협의 해상 통제는 강화되어 비국가 행위자 (후티 등) 의 봉쇄 시도가 억제된다.\n\n[비자명기여]\n통념은 '강대국 군사력 집중 = 초크포인트 안전'이라는 선형적 가정을 갖지만, 본 분석은 **AI 기반 사이버 업리프트**가 초크포인트를 통제하는 주체를 '국가'에서 '저숙련 비국가 행위자'로 분산시키고 있음을 지적한다.\n- **반직관 메커니즘**: 기지 밀집이 물리적 방어선 (Hard Power) 을 강화할수록, 공격자는 AI 를 통해 기초 기술 장벽을 낮춘 채 '저비용·고빈도' 사이버/드론 공격 (Soft Power) 으로 전환하여 초크포인트 통제 경쟁의 양상이 **물리적 대결에서 비대칭 교란으로 전이**된다.\n- **범위조건**: 이 패턴은 AI 모델의 '온보딩 업리프트'가 발생하는 **쉬운 난도 체인** 구간에서 최대 +18%p 의 공격 성공률 증가를 보일 때 성립하나, 고난도 물리 차단 (High Hardness) 에서는 효과가 제한된다.\n\n[관찰]\n- 지부티 내 군사기지 밀집: 미국 (레온idas), 중국, 프랑스, 일본 등 다국적 기지 존재 (context 내 명시적 수치 부재, 일반적 사실).\n- 바브엘만데브 분쟁 건수: 2025 년 4 월 1,246 건 → 2025 년 6 월 372 건 → 2026 년 6 월 2 건으로 급감 (ACLED 데이터).\n- AI 공격 업리프트: 초보자 기준 쉬운 공격 체인 완료율이 **14% → 32%** (+18%p) 로 두 배 증가 (RAND/UK AISI 실험).\n- AI 공격 속도: 초보자 속도 **2.2 배** 향상 (기술 참가자 1.4 배 대비).\n- 중동 위협 환경: 2026 년 2 월 28 일 미-이란 전쟁 개전 가능성으로 이란-proxy 네트워크 (후티 등) 재가동 위험 (CSIS).\n\n[주장]\n(등급: 상관) 지부티의 군사기지 밀집과 바브엘만데브의 물리적 분쟁 건수 감소는 **상관**하나, AI 를 활용한 비국가 행위자의 사이버/드론 교란 능력 증대는 **동반**된다.\n- 물리적 억지 (기지 밀집) 는 해상 봉쇄 건수를 감소시키는 경향과 **동행**하지만 (2025.04~2026.07 분쟁 급감), 동시에 AI 기반의 '온보딩 업리프트'로 인해 **저숙련 공격자의 진입 장벽이 하락**하여 새로운 형태의 교란 위협이 **공변**한다.\n- 이는 물리적 통제력이 강화될수록 공격 방식이 '물리적 차단'에서 'AI 증폭된 비대칭 교란'으로 **전환**될 가능성을 시사한다.\n\n[가설]\nH1: 바브엘만데브 지역에서 ACLED 분쟁 이벤트 건수가 감소할 때, 해당 지역을 타겟으로 한 AI 기반 사이버 공격 시도 건수 (또는 성공률) 는 통계적으로 유의하게 증가한다 (통제변수: 미국 해군 함정 배치 수).\n*(참고: 현재 context 에 AI 공격 시도 건수의 시계열 데이터가 없으므로, 이 가설은 검증 가능한 정량 지표가 부재하여 현 데이터로 검증 불가)*\n\n[근거]\n- ACLED: bab_el_mandeb 분쟁 건수 2025-04 (1,246건) → 2026-07 (1건) [ACLED].\n- RAND/UK AISI: 초보자 AI 공격 완료율 14%→32% (+18%p), 속도 2.2 배 향상 [RAND/UK AISI].\n- CSIS: 2026 년 이란전 개전 시 후티 등-proxy 네트워크 재가동 위험 [CSIS].\n\n[한계]\n- **선택·생존편향**: ACLED 데이터는 '발견된' 물리적 분쟁만 기록하며, AI 를 이용한 은밀한 사이버 공격이나 드론 교란 시도는 과소보고될 수 있어 실제 위협 규모를 과소평가할 위험이 있다.\n- **데이터 단절**: AI 기반 공격 건수와 분쟁 건수의 직접적인 시계열 상관관계를 검증할 수 있는 데이터가 context 에 부재함.\n\n[경쟁설명]\n이론 A: 자원무기화 (Resource Weaponization)\n- 설명: 바브엘만데브 통제 경쟁이 심화되면 에너지 수송로 차단 위협이 증가하여 유가 상승 및 정치적 양보를 유발한다.\n- 예측: 분쟁/긴장 증가 시 유가 상승 및 목표국 양보 증가 (방향: ▲)\n- 실측: Brent Crude Oil Price 80.22 USD/barrel (2024-01-01, 최근 추세 +91.7% 사전계산) [FRED]; 바브엘만데브 분쟁 건수 2025.04 (1,246건) → 2026.07 (1건, 사전계산) [ACLED].\n- 판정: 열세 — 예측 '분쟁 증가→양보/유가급등' vs 실측 '분쟁 -99.9% 급감 (2025.04~2026.07)' — 방향 불일치 (앵커: 분쟁건수 -1,245건, 전제충족 미확인, 사전계산).\n  *(주: 분쟁 건수 급감은 유가 급등의 전제조건인 '공급 차단 위협'이 해소되었음을 시사하므로, 자원무기화 이론의 '위협→양보' 메커니즘이 현재 데이터에서는 작동하지 않음)*\n\n이론 B: 회색지대 전략 (Gray Zone Strategy)\n- 설명: 강대국 간 직접 충돌을 피하기 위해 군사 이하 강압 행동 (회색지대) 을 통해 목표국의 정책 변화를 유도한다.\n- 예측: 회색지대 행동 빈도 증가 시 목표국 정책 양보 증가 (방향: ▲)\n- 실측: HIIK 분쟁강도 Sudan Civil War 강도 5 (전쟁, 2024) [HIIK]; 바브엘만데브 분쟁 건수 2026.07 기준 1건 [ACLED].\n- 판정: 전제충족 (DV 미검증) — 회색지대 행동 빈도 (분쟁 건수) 는 감소했으나, 목표국의 정책 양보 빈도 (DV) 에 대한 정량값이 [UNVERIFIED] 부재.\n  *(주: 분쟁 건수 감소가 정책 양보를 의미하는지, 아니면 단순한 군사적 우위 확보인지 DV 데이터 부재로 판정 불가)*\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 -99.9% (분쟁 감소 vs 예측 증가) vs 회색지대 전략 [DV 미검증] — 자원무기화 이론의 전제조건 (분쟁 지속) 이 현재 데이터와 명백히 상반됨\n▶ 당신의 판단 (연구자 몫): 현재 데이터는 '분쟁 건수 감소'라는 현상만 보여주며, 이것이 '평화'인지 '은폐된 회색지대 전쟁'인지 구분할 DV(정책 양보 건수) 가 없음. 연구자는 ACLED 의 '분쟁 건수'가 실제 통제력을 반영하는지, 아니면 AI/사이버 전이로 인해 전통적 분쟁 지표가 무의미해졌는지를 판단해야 함.\n\n[검증포인트]\n- 2025~2026 년 바브엘만데브 통과 선박의 사이버 공격 시도 로그 (CSIRT 보고서).\n- 후티 등 비국가 행위자의 AI/드론 활용에 대한 구체적 작전 기록 (UN 안보리 보고서).\n- 유가 변동과 분쟁 건수의 Granger 인과관계 검정을 위한 시계열 데이터 확보.\n\n[문헌공백]\n기존 문헌은 **③ 교차도메인 밀도**에서 '회색지대'와 '해양' 섹터는 포화 상태이나, **'military'와 'chokepoints'가 'AI/사이버'와 교차하는 경로**를 다루지 못함 (라이브러리 주장 ≤1 건).\n- **구조적 이유**: 기존 연구는 초크포인트 통제를 '함대 배치'나 '해상 봉쇄' 같은 물리적 변수로만 접근하여, AI 가 비국가 행위자의 '온보딩 장벽'을 낮추어 초크포인트를 위협하는 **비대칭적 경로**를 간과함.\n- **본 분석 기여**: RAND/UK AISI 실험에서 확인된 **'초보자 +18%p 업리프트'** 수치를 바탕으로, 물리적 기지 밀집이 오히려 공격 방식을 '저숙련 AI 공격'으로 전이시키는 **범위조건**을 제시함. 이는 단일 도메인 문헌이 놓친 'AI 평준화 → 초크포인트 취약성 재구성' 메커니즘을 구체화한다.\n\n---\n\n[헤드라인] [탐색적] 지부티 기지 밀집은 물리적 봉쇄를 **상관**하지만, 이란-proxy 네트워크의 **AI 증폭된 교란** 가능성은 **동반**될 수 있음 (연쇄강도: MEDIUM)\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n미국과 중국의 지부티 기지 경쟁은 초크포인트 통제권을 둘러싼 '영토/영해' 경쟁이며, 기지 밀집도는 해당 해역의 안정성을 높이는 유일한 변수다.\n\n[비자명기여]\n통념은 '기지 밀집 = 안정'이라는 정적 가정을 갖지만, 본 분석은 **이란-proxy 네트워크**의 재가동 위험과 **AI 기술 평준화**가 결합할 경우, 기지 밀집이 **새로운 형태의 복합 위협 (물리+사이버)**을 유발할 수 있음을 지적한다.\n- **교차도메인 메커니즘**: 지부티의 군사적 경쟁 (military) 이 고조될수록 이란-proxy 네트워크 (헤즈볼라, 후티) 는 **UAS(드론) 및 AI 활용**을 통해 초크포인트를 교란하는 '복합·분산' 위협으로 진화함 (CSIS 보고서).\n- **범위조건**: 2026 년 2 월 28 일 미-이란 전쟁 개전 시, 이란의 자제력이 해제되어 **AI 기반 선전 및 드론 공격**이 급증할 수 있으며, 이는 기존 기지 방어 체계 (Hard Power) 를 우회하는 **범위조건**을 형성함.\n\n[관찰]\n- 지부티 군사기지: 미국, 중국, 프랑스, 일본 등 다국적 기지 밀집 (일반적 사실).\n- 이란-proxy 네트워크: 후티, 헤즈볼라, 이라크 PMF 등 이란의 축 재가동 위험 (CSIS).\n- AI/드론 위협: 아프리카 지하디스트의 무장 드론 채택, 이슬람국가의 AI 플랫폼 활용 테러 모의 지침 배포 (CSIS).\n- 분쟁 강도: 소말리아-알샤바브 강도 4 (제한전, 2024), 수단 내전 강도 5 (전쟁, 2024) [HIIK].\n- 바브엘만데브 분쟁 건수: 2025.04 (1,246건) → 2026.07 (1건) [ACLED].\n\n[주장]\n(등급: 상관) 지부티 기지 밀집과 이란-proxy 네트워크의 교란 가능성은 **상관**하며, AI/드론 기술의 확산은 이 교란의 **비대칭적 성격을 강화**할 수 있음.\n- 기지 밀집이 물리적 통제력을 높일수록, 비국가 행위자는 **AI 증폭된 비대칭 공격**으로 대응하여 초크포인트 통제 경쟁의 양상이 **복합화**될 가능성이 **동행**한다.\n- 이는 물리적 억지력이 강화될수록 공격 방식이 **전환**될 수 있음을 시사함.\n\n[가설]\nH1: 이란-proxy 네트워크의 활동 강도 (분쟁 건수) 가 증가할 때, 바브엘만데브 해역의 UAS(드론) 공격 시도 건수는 통계적으로 유의하게 증가한다 (통제변수: 미국 해군 함정 배치 수).\n*(참고: 현재 context 에 UAS 공격 시도 건수의 시계열 데이터가 없으므로, 이 가설은 검증 가능한 정량 지표가 부재하여 현 데이터로 검증 불가)*\n\n[근거]\n- CSIS: 이란-proxy 네트워크 재가동 위험, UAS/AI 테러 활용 급증 [CSIS].\n- HIIK: 소말리아-알샤바브 강도 4, 수단 내전 강도 5 [HIIK].\n- ACLED: 바브엘만데브 분쟁 건수 2025.04 (1,246건) → 2026.07 (1건) [ACLED].\n\n[한계]\n- **선택·생존편향**: UAS 공격 시도 중 '발견되지 않음' 또는 '은폐됨' 사례는 과소보고되어 실제 위협 규모를 과소평가할 위험이 있음.\n- **데이터 단절**: 이란-proxy 네트워크 활동과 UAS 공격 건수의 직접적인 시계열 상관관계를 검증할 수 있는 데이터가 context 에 부재함.\n\n[경쟁설명]\n이론 A: 자원무기화 (Resource Weaponization)\n- 설명: 이란-proxy 네트워크의 초크포인트 통제 시도는 에너지 수송로 차단 위협을 통해 유가 상승 및 정치적 양보를 유발한다.\n- 예측: 분쟁/긴장 증가 시 유가 상승 및 목표국 양보 증가 (방향: ▲)\n- 실측: Brent Crude Oil Price 80.22 USD/barrel (2024-01-01, 최근 추세 +91.7% 사전계산) [FRED]; 바브엘만데브 분쟁 건수 2025.04 (1,246건) → 2026.07 (1건, 사전계산) [ACLED].\n- 판정: 열세 — 예측 '분쟁 증가→양보/유가급등' vs 실측 '분쟁 -99.9% 급감 (2025.04~2026.07)' — 방향 불일치 (앵커: 분쟁건수 -1,245건, 전제충족 미확인, 사전계산).\n\n이론 B: 회색지대 전략 (Gray Zone Strategy)\n- 설명: 이란-proxy 네트워크는 군사 이하 강압 행동 (회색지대) 을 통해 목표국의 정책 변화를 유도하려 한다.\n- 예측: 회색지대 행동 빈도 증가 시 목표국 정책 양보 증가 (방향: ▲)\n- 실측: HIIK 분쟁강도 Sudan Civil War 강도 5 (전쟁, 2024) [HIIK]; 바브엘만데브 분쟁 건수 2026.07 기준 1건 [ACLED].\n- 판정: 전제충족 (DV 미검증) — 회색지대 행동 빈도 (분쟁 건수) 는 감소했으나, 목표국의 정책 양보 빈도 (DV) 에 대한 정량값이 [UNVERIFIED] 부재.\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 -99.9% (분쟁 감소 vs 예측 증가) vs 회색지대 전략 [DV 미검증] — 자원무기화 이론의 전제조건 (분쟁 지속) 이 현재 데이터와 명백히 상반됨\n▶ 당신의 판단 (연구자 몫): 현재 데이터는 '분쟁 건수 감소'라는 현상만 보여주며, 이것이 '평화'인지 '은폐된 회색지대 전쟁'인지 구분할 DV(정책 양보 건수) 가 없음. 연구자는 ACLED 의 '분쟁 건수'가 실제 통제력을 반영하는지, 아니면 AI/사이버 전이로 인해 전통적 분쟁 지표가 무의미해졌는지를 판단해야 함.\n\n[검증포인트]\n- 이란-proxy 네트워크의 UAS 공격 시도 로그 및 AI 활용 보고서 (CSIRT, UN 안보리).\n- 바브엘만데브 통과 선박의 사이버 공격 시도 건수 (CSIRT 보고서).\n- 이란-proxy 네트워크 활동 강도와 UAS 공격 건수의 Granger 인과관계 검정을 위한 시계열 데이터 확보.\n\n[문헌공백]\n기존 문헌은 **③ 교차도메인 밀도**에서 '회색지대'와 '해양' 섹터는 포화 상태이나, **'military'와 'chokepoints'가 'AI/사이버'와 교차하는 경로**를 다루지 못함 (라이브러리 주장 ≤1 건).\n- **구조적 이유**: 기존 연구는 초크포인트 통제를 '함대 배치'나 '해상 봉쇄' 같은 물리적 변수로만 접근하여, AI 가 비국가 행위자의 '온보딩 장벽'을 낮추어 초크포인트를 위협하는 **비대칭적 경로**를 간과함.\n- **본 분석 기여**: RAND/UK AISI 실험에서 확인된 **'초보자 +18%p 업리프트'** 수치를 바탕으로, 물리적 기지 밀집이 오히려 공격 방식을 '저숙련 AI 공격'으로 전이시키는 **범위조건**을 제시함. 이는 단일 도메인 문헌이 놓친 'AI 평준화 → 초크포인트 취약성 재구성' 메커니즘을 구체화한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 해당 지역을 타겟으로 한 AI 기반 사이버 공격 시도 건수 (또는 성공률) 는 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "바브엘만데브 지역에서 ACLED 분쟁 이벤트 건수가 감소할 때, 해당 지역을 타겟으로 한 AI 기반 사이버 공격 시도 건수 (또는 성공률) 는 통계적으로 유의하게 증가한다.",
+        "h0": "바브엘만데브 지역에서 ACLED 분쟁 이벤트 건수가 감소할 때, 해당 지역을 타겟으로 한 AI 기반 사이버 공격 시도 건수 (또는 성공률) 는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "바브엘만데브 지역에서 ACLED 분쟁 이벤트 건수",
+        "dependent_var": "해당 지역을 타겟으로 한 AI 기반 사이버 공격 시도 건수 (또는 성공률) 는",
+        "control_vars": [
+          "미국 해군 함정 배치 수"
+        ],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 bab_el_mandeb ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=bab_el_mandeb) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "바브엘만데브 지역에서 ACLED 분쟁 이벤트 건수가 감소할 때, 해당 지역을 타겟으로 한 AI 기반 사이버 공격 시도 건수 (또는 성공률) 는 통계적으로 유의하게 증가한다.",
+                "region": "bab_el_mandeb",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Europe and the Gulf have untapped strengths to counter great-power chaos",
+                        "date": "Wed, 01 Jul 2026 19:17:52 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The two regions should work together to increase their strategic autonomy through infrastructure projects, free trade"
+                      },
+                      {
+                        "title": "“Shoot everybody”: US contractors in San Diego court",
+                        "date": "Thu, 18 Jun 2026 19:56:44 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>In Season 2, Episode 16 of the Guns for Hire podcast, host Alia Brahimi is joined by Daniel McLaughlin, an internatio"
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "2026 Global Energy Agenda full survey results",
+                        "date": "Mon, 08 Jun 2026 19:07:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Global Energy Agenda takes the pulse of the energy community, revealing expert views on global energy security, a"
+                      },
+                      {
+                        "title": "Countering terrorist propaganda in the age of AI",
+                        "date": "Fri, 05 Jun 2026 16:35:13 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>More people are being exposed to violent propaganda online, and the time between seeing such content, recruitment by "
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [사건→사건] hormuz→bab_el_mandeb — 통계 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "event_to_event",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-A 이벤트스터디 (사건 전후 비정상변동 포착)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "이란-proxy 네트워크의 활동 강도 (분쟁 건수) 가 증가할 때, 바브엘만데브 해역의 UAS(드론) 공격 시도 건수는 통계적으로 유의하게 증가한다.",
+        "h0": "이란-proxy 네트워크의 활동 강도 (분쟁 건수) 가 증가할 때, 바브엘만데브 해역의 UAS(드론) 공격 시도 건수는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "이란-proxy 네트워크의 활동 강도 (분쟁 건수)",
+        "dependent_var": "바브엘만데브 해역의 UAS(드론) 공격 시도 건수는",
+        "control_vars": [
+          "미국 해군 함정 배치 수"
+        ],
+        "region_code": "hormuz",
+        "dependent_region": "bab_el_mandeb",
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "글로벌 분쟁 baseline",
+        "granger_p": 0.3401,
+        "granger_q": null,
+        "f_statistic": 1.134,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 720,
+        "error": "[사건→사건] hormuz→bab_el_mandeb (글로벌 분쟁 통제, p=0.3401, grounded=True)",
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Iran"
+            ],
+            "named_share": 0.45,
+            "named_n": 277,
+            "top_country": "(미상)",
+            "top_share": 0.545,
+            "n_events": 615,
+            "country_dist": {
+              "(미상)": 335,
+              "Iran": 277,
+              "United Arab Emirates": 3
+            },
+            "filter_country": "Iran",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 1.134,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.3401,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.3401,
+                "granger_q": null,
+                "f_statistic": 1.134,
+                "best_lag": 5,
+                "n_obs": 720
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

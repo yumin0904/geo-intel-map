@@ -1,0 +1,264 @@
+{
+  "schema_version": "0.1",
+  "id": "hormuz-iran-oil",
+  "generated_at": "2026-07-11T16:23:26Z",
+  "engine_version": "9.46.1",
+  "query": "이란 군사 긴장 국면과 호르무즈 해협 유가·유조선 통항의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "hormuz",
+    "middle_east"
+  ],
+  "sectors": [
+    "energy",
+    "maritime"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 4,
+    "cow_alliances": 37,
+    "kiel_donors": 0,
+    "eia_entries": 7,
+    "csis_incidents": 15,
+    "sipri_arms": 3,
+    "vdem_entries": 36,
+    "cow_wars": 4,
+    "ifans_pubs": 2,
+    "theory_cmp_chars": 4427,
+    "fred": 12,
+    "wbk": 4,
+    "polity5": 1,
+    "itu": 1,
+    "hiik": 7,
+    "semi": 0,
+    "owid": 1,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "[탐색적] 데이터 관찰 후 가설 생성(HARKing) — 같은 데이터로 검정하면 순환이라 선행성·준실험 주장 불가, '상관'에서 상한. 확증하려면 가설을 데이터 보기 전 선언(검증 모드). · VIX(글로벌 위험) 통제 조건부 선행성 — 공통 교란 완화했으나 여전히 구조적 인과는 아님",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 호르무즈 해협 분쟁 건수 급증과 유가 상승이 동반되나, 후티의 홍해 사태 (2024~2025) 가 보여준 '전이 차단 메커니즘'으로 인해 통념적 가격 충격은 발생하지 않을 가능성\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 호르무즈 해협에서 군사 긴장이나 봉쇄 시도가 발생하면, 글로벌 원유 공급의 약 20% 가 차단될 우려로 인해 유가가 즉시 폭등한다.\n\n[비자명기여] 통념은 초크포인트 위협이 자동으로 가격 충격으로 전이된다고 보지만, 실제 메커니즘은 **대체 공급원 가동과 비축유 방출이라는 '완충 조건'에 의해 차단**될 수 있다. 〈SLOC 통제 이론〉의 예측 임계(초크포인트 위협 강도 증가 시 유가 단기 급등)는 2024~2025 년 후티의 홍해 공격 사례에서 깨진 바 있다. 당시 유가 급등이 제한적이었던 이유는 미국 전략비축유 (SPR) 방출과 OPEC+ 의 여유 생산능력 (21.0 Mbpd 중 여유분), 그리고 우회 항로 (아프리카 남단绕行) 가 위협을 흡수했기 때문이다. 즉, 호르무즈 긴장이 발생하더라도 **비축유 방출 여부와 OPEC+ 의 여유 생산량 (Buffer Capacity) 이 임계값을 초과하지 않으면** 가격 충격은 전이되지 않는다. 이는 '위협 인식'과 '실제 가격 변동' 사이의 비선형적 단절을 의미한다.\n\n[관찰] \n1. **호르무즈 분쟁 건수 급증**: ACLED 데이터에 따르면, hormuz 지역 분쟁 건수가 2026 년 5 월 18 건에서 6 월 284 건으로 급증했다 (+1477.8%, 사전계산). 이는 2025 년 평균 (약 27 건) 대비 약 10 배 이상 증가한 수치다.\n2. **중동 전체 분쟁 확대**: middle_east 지역 분쟁 건수도 2026 년 5 월 180 건에서 6 월 3342 건으로 급증 (+1756.7%, 사전계산) 했다.\n3. **유가 동향**: FRED 데이터에 따르면, 2024 년 기준 WTI 는 76.96 USD/barrel, Brent 는 80.22 USD/barrel 로 집계되었으며 최근 추세는 각각 +85.6%, +91.7% 상승세다. 하지만 2026 년 6 월 호르무즈 분쟁 급증 시점의 즉각적인 유가 변동률에 대한 정량 데이터는 <context>에 명시되어 있지 않다.\n\n[주장] (등급: 상관) 호르무즈 해협의 분쟁 건수 급증과 유가 상승 추세는 **공변한다**. 하지만 후티의 홍해 사태 사례가 시사하듯, 분쟁 건수 증가가 유가 급등으로 **동조**하는 정도는 **비축유 방출 및 대체 운송로 가동 여부**라는 조건에 따라 제한될 수 있다.\n\n[가설] H1: 호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 월 100 건 이상 증가할 때, WTI 유가 (USD/배럴) 가 통계적으로 유의하게 상승한다 (통제변수: 미국 전략비축유 방출량, OPEC+ 여유 생산능력).\n\n[근거] ACLED (middle_east, hormuz 월별 추이), FRED (WTI/Brent 가격 시계열), EIA (Strait of Hormuz 통과량 21.0 Mbpd).\n\n[한계] 본 분석은 2026 년 6 월 분쟁 증가 시점의 **실시간 유가 반응 데이터**가 <context>에 포함되지 않아 정량적 인과 검증이 불가능하다. 또한, '차단에 성공한' 공격 사례 (은폐된 봉쇄 시도) 는 ACLED 에 기록되지 않을 수 있어 **선택편향 (생존편향)**이 발생할 위험이 있다.\n\n[경쟁설명]\n이론A: 자원무기화 (Hirschman)\n  예측: 호르무즈 봉쇄 위협 (의존도 증가) 시 피의존국 정치적 양보 및 가격 급등 (공급 차단 비용 부과)\n  실측: WTI Crude Oil Price 76.96 USD/barrel (2024, 최근 추세 +85.6%); IRN 수입 에너지 HHI 4713 (독과점) — 하지만 2026 년 6 월 분쟁 급증 시점의 유가 변동률은 [UNVERIFIED] 정량값 부재\n  판정: 전제충족 (DV 미검증) — IV(의존도) 는 충족되었으나, DV(가격 급등) 의 2026 년 6 월 실측값 부재로 방향성 검증 불가\n\n이론B: 에너지 안보론 (Energy Security Theory)\n  예측: 공급원 다변화 (비축유, 대체로) 및 HHI 감소 시 가격 충격 민감도 감소 (공급 충격 흡수)\n  실측: 에너지 공급원 집중도 HHI 9398.0 vs 임계 2500 (편차 +6898.0, 사전계산) — 전제충족 (집중도 초과로 취약성 존재); 하지만 OPEC+ 여유 생산능력 및 비축유 방출 데이터는 [UNVERIFIED] 정량값 부재\n  판정: 전제충족 (DV 미검증) — IV(집중도) 는 취약하나, 완충 메커니즘 작동 여부 (DV) 는 [UNVERIFIED]\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 [2026 년 6 월 유가 변동률 미제공] vs 에너지 안보론 예측편차 [완충 메커니즘 작동 여부 미확인] — 두 이론 모두 2026 년 6 월 DV(유가 변동) 실측값 부재로 편차 산출 불가\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 2026 년 6 월 분쟁 급증 시점의 유가 반응 데이터를 필요로 한다. 연구자는 OPEC+ 의 실제 여유 생산량과 미국 SPR 방출 기록을 확인하여, '자원무기화 (가격 상승)'가 '에너지 안보 (충격 흡수)'에 의해 상쇄되었는지 판정해야 한다. 쟁점: 분쟁 건수 증가가 가격에 미치는 영향이 선형적인가, 아니면 비축유 방출 임계값을 넘으면 급격히 상승하는 비선형적인가?\n\n[검증포인트] 1) 2026 년 6 월~7 월 WTI/Brent 일별 가격 변동률 데이터 (FRED/EIA); 2) OPEC+ 의 2026 년 6 월 생산량 및 여유 생산능력 (Slack Capacity) 보고; 3) 미국 에너지정보청 (EIA) 의 전략비축유 (SPR) 방출 명령 및 실행 데이터.\n\n[문헌공백] 기존 〈SLOC 통제 이론〉은 초크포인트 위협이 가격 급등으로 직결된다고 가정하지만, 2024~2025 년 후티 사태 반례가 보여주듯 **완충 재고와 대체 항로의 전이 차단 효과**를 충분히 설명하지 못한다. 본 분석은 호르무즈 긴장이라는 물리적 위협과 유가 변동이라는 경제 결과 사이의 **비선형적 단절 (Threshold Effect)**을 규명함으로써, 단순한 '위협-반응' 모델을 넘어 '완충 조건'이 작용하는 경계 조건을 제시한다. 이는 단일 도메인 (군사/해상) 문헌이 간과한 **경제적 완충 메커니즘의 교차도메인 역할**을 규명하는 기여다.\n\n---\n\n[헤드라인] [탐색적] 호르무즈 해협 유조선 통항 차단 시도와 이란의 비대칭 전력 (드론·미사일) 증가는 **통항 비용 상승**과 동반되나, **유조선 운항 중단**은 해군력 우위 (미국) 에 의해 제한될 가능성\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 이란이 호르무즈 해협을 봉쇄하면 유조선 통항이 즉시 중단되고, 이로 인해 글로벌 에너지 공급이 마비된다.\n\n[비자명기여] 통념은 이란의 봉쇄 시도가 곧바로 '통항 중단'으로 이어진다고 보지만, 실제 메커니즘은 **이란의 비대칭 전력 (드론·미사일) 과 미국 해군의 제해권 (Command of the Commons) 간의 경쟁 결과**에 따라 결정된다. 〈코르벳 제한적 제해권 이론〉의 예측 임계(해군력 열세 행위자가 SLOC 위협 시 우세 행위자의 이용 비용 증가) 는 러시아 흑해 사례에서 보여주듯, 열세에도 드론·미사일로 우세 함대를 교란할 수 있음을 시사한다. 그러나 미국 해군의 압도적 제해권 (Command of the Commons) 이 존재하는 한, **완전한 통항 중단 (Blockade) 은 발생하지 않고 '보험료 상승'과 '경로 변경' 형태의 비용 증가만 동반**될 가능성이 높다. 즉, 통항 중단 여부는 **이란의 공격 성공률 vs 미 해군 요격 효율**의 비율에 의존하며, 완전 봉쇄보다는 **비용 전가 (Cost Shifting)**가 주된 결과다.\n\n[관찰] \n1. **이란의 비대칭 전력**: IRN 은 후티, 헤즈볼라 등 proxy 네트워크를 통해 드론 및 미사일 전력을 비대칭적으로 투사하고 있다. CSIS 보고서에 따르면 2026 년 2 월 28 일 이란전이 개전되면서 이란의 대리전 재가동 위험이 급증했다.\n2. **분쟁 건수**: 호르무즈 해협에서 2026 년 6 월 분쟁 건수가 284 건으로 급증했다. 이는 미 해군과 이란 proxy 간의 회색지대 충돌을 시사한다.\n3. **통항 데이터 부재**: <context>에는 호르무즈 해협의 실제 유조선 통항 건수 (건수/톤수) 나 보험료 변동 데이터가 포함되어 있지 않다.\n\n[주장] (등급: 상관) 호르무즈 해협의 분쟁 건수 증가와 **통항 비용 (보험료, 우회 운임) 상승**은 **동반**된다. 하지만 완전한 **유조선 통항 중단**은 미 해군의 제해권 유지 능력에 의해 **제한**될 가능성이 높으며, 이는 **비용 상승**으로 대체될 수 있다.\n\n[가설] H1: 호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 증가할 때, 중동 지역 유조선 보험료 (War Risk Premium) 가 통계적으로 유의하게 상승한다 (통제변수: 미 해군 전함 배치 수, OPEC+ 생산량).\n\n[근거] ACLED (hormuz 분쟁 건수), CSIS (이란 proxy 네트워크 및 이란전 개전), War on the Rocks (제해권 혁명 및 해양 통제 패러다임 전환).\n\n[한계] 유조선 통항 건수 및 보험료 데이터가 <context>에 부재하여 **[UNVERIFIED] 정량값 부재** 상태다. 또한, 이란의 공격이 성공적으로 차단된 사례는 기록되지 않을 수 있어 **선택편향 (생존편향)**이 존재한다.\n\n[경쟁설명]\n이론A: 자원무기화 (Hirschman)\n  예측: 이란의 봉쇄 시도 (공급 차단) 시 유조선 통항 중단 및 가격 폭등 (공급 완전 차단)\n  실측: 호르무즈 분쟁 건수 284 건 (2026.06, 사전계산); 하지만 유조선 통항 중단 건수 및 보험료 변동률 [UNVERIFIED] 정량값 부재\n  판정: 전제충족 (DV 미검증) — IV(봉쇄 위협) 는 존재하나, DV(통항 중단) 의 실측값 부재\n\n이론B: 공유지 지배권 (Command of the Commons)\n  예측: 미국 해군의 압도적 제해권이 존재하는 한, 이란의 비대칭 공격은 완전 봉쇄 실패로 끝나고 통항은 유지됨 (비용만 증가)\n  실측: 미 해군 전함 배치 수 및 요격 성공률 [UNVERIFIED] 정량값 부재; 호르무즈 분쟁 건수 284 건은 미 해군과의 교전을 시사하나, 통항 중단 여부 [UNVERIFIED]\n  판정: 전제충족 (DV 미검증) — IV(제해권) 는 이론상 존재하나, DV(통항 유지) 의 실측값 부재\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 [통항 중단 여부 미확인] vs 공유지 지배권 예측편차 [통항 유지 여부 미확인] — 두 이론 모두 2026 년 6 월 DV(통항 중단/유지) 실측값 부재로 편차 산출 불가\n▶ 당신의 판단 (연구자 몫): 연구자는 Lloyd's List 또는 미국 해군 (US Navy) 의 작전 보고서를 통해 실제 유조선 통항 중단 건수와 보험료 상승 폭을 확인해야 한다. 쟁점: 이란의 공격이 미 해군의 요격 능력을 초과하는 임계점 (Tipping Point) 에 도달했는가? 아니면 여전히 '비용 증가' 수준에 머물렀는가?\n\n[검증포인트] 1) 2026 년 6 월~7 월 중동 지역 유조선 전쟁 위험 보험료 (War Risk Premium) 데이터 (Lloyd's List); 2) 미국 해군 (US Navy) 의 호르무즈 해협 작전 보고서 (전함 배치 및 요격 기록); 3) 주요 유조선 회사의 운항 경로 변경 및 우회 항로 사용률 데이터.\n\n[문헌공백] 기존 〈마한의 해양력 이론〉과 〈공유지 지배권〉은 미국의 압도적 제해권을 전제로 하지만, 2024~2025 년 러시아 흑해 사례와 후티의 홍해 공격이 보여주듯 **비대칭 전력 (드론·미사일) 이 제해권을 형해화할 수 있는 가능성**을 간과한다. 본 분석은 **비대칭 전력의 임계점**이 언제 '비용 증가'에서 '통항 중단'으로 전환되는지 규명하는 **경계 조건 (Boundary Condition)**을 제시함으로써, 기존 단일 해양력 문헌의 한계를 보완한다. 이는 해양력 (Mahan) 과 비대칭전 (Corbett/A2/AD) 이 교차하는 **회색지대에서의 통항 통제 역학**을 규명하는 기여다.\n\n[도메인 교차 경로] [군사 (비대칭전) → 경제 (보험료/운임)] 경로: 이란의 드론/미사일 공격 (군사) → 유조선 보험료 상승 및 우회 항로 증가 (경제) → 전이 조건: 미 해군의 요격 효율이 임계점 이하일 때만 통항 중단으로 전이됨.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 월 100 건 이상 → WTI 유가 (USD/배럴) 경향성 (p=0.042)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 월 100 건 이상 증가할 때, WTI 유가 (USD/배럴) 가 통계적으로 유의하게 상승한다.",
+        "h0": "호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 월 100 건 이상 증가할 때, WTI 유가 (USD/배럴) 가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 월 100 건 이상",
+        "dependent_var": "WTI 유가 (USD/배럴)",
+        "control_vars": [
+          "미국 전략비축유 방출량",
+          "OPEC+ 여유 생산능력"
+        ],
+        "region_code": "hormuz",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "VERIFIED",
+        "partial_basis": null,
+        "inference_grade": "상관",
+        "inference_caveat": "[탐색적] 데이터 관찰 후 가설 생성(HARKing) — 같은 데이터로 검정하면 순환이라 선행성·준실험 주장 불가, '상관'에서 상한. 확증하려면 가설을 데이터 보기 전 선언(검증 모드). · VIX(글로벌 위험) 통제 조건부 선행성 — 공통 교란 완화했으나 여전히 구조적 인과는 아님",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0423,
+        "granger_q": 0.0423,
+        "f_statistic": 2.308,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 456,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Iran"
+            ],
+            "named_share": 0.45,
+            "named_n": 277,
+            "top_country": "(미상)",
+            "top_share": 0.545,
+            "n_events": 615,
+            "country_dist": {
+              "(미상)": 335,
+              "Iran": 277,
+              "United Arab Emirates": 3
+            },
+            "filter_country": "Iran",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.308,
+              "effect_size_label": "작음",
+              "significance": 0.0423,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "선행성",
+              "confidence_within_rung": 100,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0423,
+                "granger_q": 0.0423,
+                "f_statistic": 2.308,
+                "best_lag": 5,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ],
+          "epistemic_cap": "[탐색적] 선행성→상관 (HARKing 방어, 원본 추정치는 all_results 보존)"
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] hormuz→CL=F 경향성 (p=0.042)",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA_downgrade",
+        "routing_confidence": "LOW",
+        "routing_alternatives": [
+          "ticker 재정의 후 Type_A 정상경로 재시도"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 증가할 때, 중동 지역 유조선 보험료 (War Risk Premium) 가 통계적으로 유의하게 상승한다.",
+        "h0": "호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수가 증가할 때, 중동 지역 유조선 보험료 (War Risk Premium) 가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "호르무즈 해협 (hormuz) 에서 ACLED 분쟁 이벤트 건수",
+        "dependent_var": "중동 지역 유조선 보험료 (War Risk Premium)",
+        "control_vars": [
+          "미 해군 전함 배치 수",
+          "OPEC+ 생산량"
+        ],
+        "region_code": "hormuz",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_C",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": true,
+        "verification_status": "VERIFIED",
+        "partial_basis": null,
+        "inference_grade": "상관",
+        "inference_caveat": "[탐색적] 데이터 관찰 후 가설 생성(HARKing) — 같은 데이터로 검정하면 순환이라 선행성·준실험 주장 불가, '상관'에서 상한. 확증하려면 가설을 데이터 보기 전 선언(검증 모드). · [동일 검정 공유] 이 가설의 검정은 H1과 동일 변수쌍 (region=hormuz, ticker=CL=F) — 검정이 가설을 판별하지 않음 | [방법점검-P3] 표면 DV 치환(is_substituted_target=True)에서 유의 결과. 허위상관 가능성 있음. 직접 DV 시계열 확보 또는 9-A 이벤트스터디 고려. VIX(글로벌 위험) 통제 조건부 선행성 — 공통 교란 완화했으나 여전히 구조적 인과는 아님",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0423,
+        "granger_q": 0.0423,
+        "f_statistic": 2.308,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 456,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Iran"
+            ],
+            "named_share": 0.45,
+            "named_n": 277,
+            "top_country": "(미상)",
+            "top_share": 0.545,
+            "n_events": 615,
+            "country_dist": {
+              "(미상)": 335,
+              "Iran": 277,
+              "United Arab Emirates": 3
+            },
+            "filter_country": "Iran",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.308,
+              "effect_size_label": "작음",
+              "significance": 0.0423,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "선행성",
+              "confidence_within_rung": 100,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0423,
+                "granger_q": 0.0423,
+                "f_statistic": 2.308,
+                "best_lag": 5,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ],
+          "epistemic_cap": "[탐색적] 선행성→상관 (HARKing 방어, 원본 추정치는 all_results 보존)"
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

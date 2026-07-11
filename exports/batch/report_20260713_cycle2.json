@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-07-11T16:59:36Z",
+  "results": [
+    {
+      "id": "hormuz-iran-oil",
+      "provider": "nim",
+      "purpose": "packet",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 62.9
+    }
+  ],
+  "summary": "1/1 PASS",
+  "rerun_compare": []
+}

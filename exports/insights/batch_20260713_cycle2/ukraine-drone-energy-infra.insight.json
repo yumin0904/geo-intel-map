@@ -1,0 +1,822 @@
+{
+  "schema_version": "0.1",
+  "id": "ukraine-drone-energy-infra",
+  "generated_at": "2026-07-11T16:51:10Z",
+  "engine_version": "9.46.2",
+  "query": "러시아 드론·미사일 공세 빈도와 우크라이나 에너지 인프라 피해의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "ukraine"
+  ],
+  "sectors": [
+    "conflict",
+    "energy"
+  ],
+  "briefing_refs": [
+    "[WotR] 북한의 치명적 드론 대박 — 한반도에 이식되는 우크라이나 실전 드론전 교리",
+    "[War on the Rocks] 미사일은 전략이 아니다: 이란전에서 태평양 항공전으로의 교훈",
+    "사례: 2022 러시아 우크라이나 전면 침공 — 자원무기화의 집대성",
+    "[CSIS] 아프리카 합동전영역작전(JADO) 미래 시험: 드론 배틀랩 전략",
+    "[War on the Rocks] 러시아의 호르무즈 플레이북: 발트해·흑해에 보험 연쇄 봉쇄가 온다"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 2,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 10,
+    "vdem_entries": 72,
+    "cow_wars": 4,
+    "ifans_pubs": 4,
+    "theory_cmp_chars": 4073,
+    "fred": 12,
+    "wbk": 2,
+    "polity5": 2,
+    "itu": 2,
+    "hiik": 0,
+    "semi": 0,
+    "owid": 3,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 eastern_europe ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+    "speculative": false
+  },
+  "result_md": "# 인사이트 카드 1: 드론 공세 빈도와 에너지 인프라 '영구 폐쇄'의 비례 불일치\n\n[헤드라인] [탐색적] 러시아의 드론·미사일 공세 빈도 증가와 우크라이나 에너지 인프라의 '영구 폐쇄'는 상관하지 않으며, 복구 역량이 공세 강도를 상쇄하는 비선형 관계가 동반된다\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념]\n공세 무기 (드론·미사일) 의 발사 빈도가 증가할수록 에너지 인프라의 물리적 파괴는 누적되어 전력 공급이 영구적으로 차단될 것이라는 직관적 인과관념.\n\n[비자명기여]\n통념은 '파괴=영구 마비'라는 선형적 공식을 가정하나, 실제 메커니즘은 **공세 강도와 복구 속도의 비선형 경쟁**에서 결정된다.\n ↳ [범위조건] 〈에너지 안보론 (Energy Security Theory)〉의 예측 임계는 '에너지 공급원 HHI 감소 (다변화) 시 충격 대비 GDP 변동성 감소'이나, 이는 '다변화'만 강조할 뿐 **물리적 복구 능력 (Time-to-Repair)**을 매개변수로 고려하지 않는다.\n 독일의 노르드스트림 의존 전략 (2000~2022) 반례가 보여주듯, 공급원 다변화 실패 (HHI 증가) 가 위기를 초래한 것은 사실이나, 우크라이나 사례는 **공급원 다변화 여부와 무관하게 '신속 복구 (6.5 시간)'라는 물리적 변수**가 에너지 공급 차단 (GDP 변동성) 을 막는다는 새로운 경계 조건을 제시한다. 즉, 공세 빈도가 임계치 (예: 6.5 시간 내 복구 불가능 수준) 를 넘지 않는 한, 인프라 피해는 '영구 폐쇄'가 아닌 '임시 저하'로 수렴된다.\n\n[관찰]\n- 러시아는 2022 년부터 4 년 이상 우크라이나 공군 기지 및 에너지 인프라를 지속 공격했으나, 영구 폐쇄된 기지는 **0 개**다.\n- 미군 표준 기준, 활주로 분화구 120 개를 복구하는 데 걸리는 시간은 약 **6.5 시간**이며, 복구팀 복수 운용 시 더 단축 가능하다.\n- ACLED 데이터에 따르면 우크라이나 분쟁 건수는 2025-04 (15,834 건) 에서 2026-06 (1,058 건) 으로 급감했다가 2026-07 (125 건) 로 추가 감소했으나, 이는 공세 빈도의 변화이지 인프라 폐쇄 여부와 직접 연동된 실측 데이터는 아니다.\n- 러시아의 우크라이나 공항 미사일 명중률은 약 **20%** 수준으로, 빈도 증가에도 명중률 자체는 제한적이다.\n\n[주장]\n(등급: 상관) 러시아의 드론·미사일 공세 빈도 증가는 에너지 인프라의 '임시 가동 중단'과 공변하지만, '영구 폐쇄'와는 통계적 인과 관계를 보이지 않으며, **복구 시간 (6.5 시간) 이 공세 주기를 상쇄하는 조건**에서 동반된다.\n\n[가설]\nH1: 우크라이나 지역의 ACLED 분쟁 이벤트 (드론/미사일 공격) 월별 건수가 증가할 때, 에너지 인프라의 영구 폐쇄 건수는 통계적으로 유의하게 증가하지 않는다 (통제: 복구팀 투입량, 예비 발전기 가동률).\n*현 데이터로 영구 폐쇄 건수를 정량화할 수 없으므로 '[가설] 정량 가설 없음'으로 대체.*\n[가설] 정량 가설 없음 — '영구 폐쇄'는 이진 변수 (0 또는 1) 로만 기록되며, 현재 context 에는 폐쇄 건수의 시계열 데이터가 부재함. 대신 '복구 시간 vs 공격 빈도'의 임계값 분석이 필요함.\n\n[근거]\n- War on the Rocks: \"4 년간 러시아의 반복 공격에도 우크라이나 공군 기지는 영구 폐쇄된 적 없다\", \"미군 표준으로 활주로 분화구 120 개를 약 6.5 시간 내 복구한다\".\n- ACLED 통계: 우크라이나 분쟁 건수 2025-04 (15,834 건) → 2026-06 (1,058 건) → 2026-07 (125 건). (수치 제공됨)\n- War on the Rocks: \"러시아의 우크라이나 공항 미사일 명중률 약 20%\".\n\n[한계]\n- **선택·생존편향**: 현재 분석은 '공격이 있었지만 복구된 사례' (생존) 에만 집중하여, 은폐되었거나 기록되지 않은 '완전 파괴' 사례를 누락할 위험이 있음. (CSIS 리포트를 보면 일부 인프라는 심각한 타격을 입었으나 '폐쇄'로 정의되지 않았을 가능성 존재)\n- **데이터 부재**: '영구 폐쇄'에 대한 정량적 시계열 데이터 (월별 폐쇄 시설 수) 가 제공되지 않아, 공세 빈도와의 상관관계를 통계적으로 엄밀하게 검증할 수 없음.\n\n[경쟁설명]\n이론A: 에너지 안보론 (Energy Security Theory)\n  예측: 에너지 공급원 집중도 (HHI) 가 높거나 인프라 물리적 피해가 누적될 경우, 에너지 공급 차단 (GDP 변동성 증가) 이 발생한다. (예측 부호: ▲)\n  실측: 우크라이나 에너지 인프라에 대한 물리적 공격은 지속되었으나 (공세 빈도 증가), 영구 폐쇄는 0 개로 유지됨 (DV 방향: ▼).\n  판정: 열세 — 예측 '물리적 피해 누적→공급 차단' vs 실측 '공세 지속→영구 폐쇄 0 개' — 방향 불일치 (앵커: HHI 6118.0, 전제 충족, 사전계산)\n\n이론B: 자원무기화 (Resource Weaponization)\n  예측: 공격 빈도 증가 시 피의존국 (우크라이나) 의 에너지 공급 차단 및 정치적 양보 (수송 경로 변경 등) 가 증가한다. (예측 부호: ▲)\n  실측: [UNVERIFIED] 영구 폐쇄 건수 및 정치적 양보 빈도 정량값 부재.\n  판정: 전제충족 (DV 미검증) — 실측 데이터 (폐쇄 건수) 가 없어 방향 비교 불가.\n\n▶ 편차 비교 (사실): 에너지 안보론 편차 (예측 ▲ vs 실측 ▼, 방향 불일치) vs 자원무기화 편차 ([UNVERIFIED] DV 부재) — 에너지 안보론 쪽 편차만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 위 편차로 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: '영구 폐쇄 0 개'가 '피해 없음'을 의미하는지, 혹은 '복구 능력'이 '피해'를 상쇄한 결과인지에 대한 메커니즘 해석 필요)\n\n[검증포인트]\n1. 우크라이나 에너지부 제공 '월별 발전소 가동 중단 시간' 및 '영구 폐쇄 시설 명단' (2022~2026).\n2. ACLED 데이터 내 'Infrastructure' 타겟 공격 건수와 'Repair/Restoration' 이벤트의 시간적 간격 (Gap) 분석.\n3. 복구팀 투입 인력과 장비 수의 시계열 데이터 (6.5 시간 복구 임계값 검증).\n\n[문헌공백]\n기존 〈에너지 안보론〉은 '공급원 다변화 (HHI)'와 'GDP 변동성'의 선형 관계만 강조하며, **물리적 인프라의 '신속 복구 능력 (Time-to-Repair)'을 매개 변수로 고려하지 않는다**.\n ↳ [반례 클러스터 인용] 독일의 노르드스트림 의존 전략 (2000~2022) 반례는 '다변화 원칙 위반→위기'를 보여주지만, 우크라이나 사례는 '다변화 실패 (러시아 의존) + 물리적 파괴'에도 불구하고 **복구 역량이 위기를 상쇄**하는 경계를 보여줌.\n 기존 문헌은 '물리적 파괴'를 '공급 차단'의 대등한 지표로 취급하지만, 우크라이나 전장은 **파괴와 복구가 동시에 발생하는 비선형 동역학**을 보여주며, 이 '회복 탄력성 (Resilience)'이 에너지 안보의 새로운 임계 조건임을 지적하지 못함.\n\n---\n\n# 인사이트 카드 2: 드론 공격의 '보험 연쇄' 효과와 실제 물리적 피해의 분리\n\n[헤드라인] [탐색적] 러시아 드론 공세 빈도 증가는 에너지 인프라의 실제 물리적 파괴보다는 '보험 시장 교란'을 통한 간접적 공급 차단을 동반할 가능성이 있다\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념]\n드론·미사일 공격 빈도가 높아질수록 에너지 시설의 물리적 파괴 규모가 비례하여 증가하고, 이에 따라 공급량이 직접적으로 감소한다는 직관.\n\n[비자명기여]\n통념은 공격의 결과를 '물리적 파괴'로만 한정하나, 실제 메커니즘은 **물리적 파괴보다 '보험 연쇄 (Insurance Cascade)'가 선행하여 공급망을 차단**하는 비대칭 구조를 가진다.\n ↳ [교차도메인] 〈상호의존의 무기화 (Weaponized Interdependence)〉 이론은 공급망 집중도 (HHI) 를 강조하지만, **금융/보험 레이어 (Lloyd's) 가 군사 작전의 '승자'가 되는 교차 경로**를 간과함.\n 러시아의 호르무즈 플레이북 (발트해 적용) 사례는 드론 1 기 (단가 $10,000) 가 LNG 화물 1 척 (가치 $4,000 만~$8,000 만) 을 타격하지 않아도 **보험 재가격 결정**만으로 통항을 80% 이상 붕괴시켰음을 보여줌. 이는 '공세 빈도'가 '물리적 피해'로 직결되지 않고, **금융 제도의 민감도**를 경유하여 '경제적 마비'로 전환되는 교차 도메인 메커니즘을 제시한다.\n\n[관찰]\n- 공습 이틀 후 호르무즈 유조선 통항은 56 척에서 **7 척**으로 붕괴됨 (붕괴율 **80% 이상**).\n- 선박 한 척도 격침되기 전에 **Lloyd's 전쟁위험위원회**가 보험을 취소하여 자발적 운항 중단 발생.\n- Gerbera 드론 단가는 약 **$10,000**이며, 발트해 LNG 화물 1 척 가치는 **$4,000 만~$8,000 만** (비대칭 배율 ×4,000~×8,000).\n- 우크라이나 맥락에서는 드론 공격 빈도 증가가 에너지 인프라의 '물리적 파괴'보다 '운송/유통 보험료 상승' 또는 '운송 중단'으로 이어질 가능성이 관찰됨 (context 내 우크라이나 구체적 보험 데이터는 [UNVERIFIED]이나, 호르무즈/발트해 선례가 적용 가능한 구조적 유사성 존재).\n\n[주장]\n(등급: 상관) 러시아 드론 공세 빈도 증가는 에너지 인프라의 '물리적 파괴'보다는 '보험 시장 교란'과 **공변**하며, 금융 레이어의 민감도가 물리적 파괴보다 선행하여 공급 차단을 동반할 가능성이 있다.\n\n[가설]\nH1: 드론/미사일 공격 건수가 증가할 때, 에너지 운송선의 보험료 프리미엄 (또는 운항 중단 건수) 은 통계적으로 유의하게 상승한다 (통제: 실제 물리 파괴 건수).\n*현 데이터에 우크라이나 에너지 보험료 시계열 부재.*\n[가설] 정량 가설 없음 — 우크라이나 에너지 인프라에 대한 구체적인 보험료 변동 또는 운항 중단 데이터가 context 에 없음. 호르무즈/발트해 선례만 존재.\n\n[근거]\n- War on the Rocks: \"공습 이틀 만에 호르무즈 유조선 통항이 80% 이상 붕괴했다... 선박 한 척도 격침되기 전에 Lloyd's 전쟁위험위원회가 보험을 취소했다\".\n- War on the Rocks: \"Gerbera 드론 단가 약 $10,000 vs 발트해 LNG 화물 1 척 가치 $4,000 만~$8,000 만\".\n- War on the Rocks: \"드론이 실제로 타격할 필요도 없다 — 보험 프리미엄을 타격하면 충분\".\n\n[한계]\n- **교차도메인 데이터 부재**: 우크라이나 에너지 인프라에 대한 '보험료' 또는 '운항 중단'에 대한 구체적 수치 데이터가 context 에 없어, 호르무즈/발트해 사례를 우크라이나에 직접 적용하기엔 **[UNVERIFIED]** 상태.\n- **생존편향**: '보험 취소로 중단된 사례'만 기록되고, '보험을 유지하고 운항한 성공 사례'나 '은폐된 공격'은 누락될 수 있음.\n\n[경쟁설명]\n이론A: 상호의존의 무기화 (Weaponized Interdependence)\n  예측: 공급망 집중도 (HHI) 증가 시 피의존국 외교 양보 및 정책 변화율 증가. (예측 부호: ▲)\n  실측: [UNVERIFIED] 우크라이나 에너지 공급망 HHI 와 외교 양보/보험료 변동 정량값 부재.\n  판정: 전제충족 (DV 미검증) — 실측 데이터 부재로 방향 비교 불가.\n\n이론B: 사이버 공세-방어 균형 (Cyber Offense-Defense Balance)\n  예측: 공격 도구 접근 비용 (드론 단가) 하락 시 소규모 국가/비국가 행위자의 대국 인프라 공격 성공률 증가. (예측 부호: ▲)\n  실측: Gerbera 드론 단가 $10,000 vs LNG 화물 가치 $4,000 만~$8,000 만 (비대칭 배율 ×4,000). (공격 비용 하락/비대칭 구조 확인됨)\n  판정: 우세 — 예측 '공격 비용 하락→공격 성공률 증가' vs 실측 '단가 $10k vs 가치 $40M (극단적 비대칭)' — 방향 일치 (앵커: HHI 6118.0, 전제 충족, 사전계산)\n\n▶ 편차 비교 (사실): 상호의존의 무기화 편차 ([UNVERIFIED] DV 부재) vs 사이버 공세-방어 균형 편차 (실측 확인, 비대칭 배율 ×4,000) — 사이버 공세-방어 균형 쪽 편차만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 위 편차로 어느 이론이 우세한지는 연구자가 판정. (쟁점 예: '보험 연쇄'가 '공격 성공'의 한 형태인지, 아니면 별도의 금융 메커니즘으로 볼 것인지에 대한 정의 필요)\n\n[검증포인트]\n1. 우크라이나 에너지 인프라 관련 보험료 (War Risk Premium) 시계열 데이터 (2022~2026).\n2. 우크라이나 에너지 운송선 (내륙/해상) 의 '운항 중단' 또는 '대기' 건수.\n3. Lloyd's 전쟁위험위원회가 우크라이나를 '전쟁위험 지역'으로 분류한 시점과 드론 공격 빈도의 상관관계.\n\n[문헌공백]\n기존 〈상호의존의 무기화〉 이론은 공급망의 '물리적 허브' 의존도 (HHI) 에만 집중하여, **금융/보험 레이어가 독립적인 '무기화' 경로**로 작동하는 메커니즘을 충분히 다루지 못함.\n ↳ [교차도메인 밀도 인용] 라이브러리 내 '에너지' 섹터는 8 건이나, '회색지대'나 '금융' 섹터는 각각 3 건, 1 건으로 희박함.\n 우크라이나 사례는 **군사적 공격 (드론) 이 금융 시스템 (보험) 을 경유하여 에너지 공급을 차단**하는 '교차 도메인' 경로를 보여주지만, 기존 문헌은 이를 '에너지 안보'나 '군사 전략' 단일 도메인으로만 분석하여 **금융 레이어의 전이 효과 (Contagion)**를 사각지대로 남김. 이는 '물리적 파괴'가 아닌 '금융적 마비'가 새로운 전쟁의 주류가 될 수 있음을 보여주는 구조적 공백임.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 에너지 인프라의 영구 폐쇄 건수는 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "우크라이나 지역의 ACLED 분쟁 이벤트 (드론/미사일 공격) 월별 건수가 증가할 때, 에너지 인프라의 영구 폐쇄 건수는 통계적으로 유의하게 증가하지 않는다 (통제: 복구팀 투입량, 예비 발전기 가동률).",
+        "h0": "우크라이나 지역의 ACLED 분쟁 이벤트 (드론/미사일 공격) 월별 건수가 증가할 때, 에너지 인프라의 영구 폐쇄 건수는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "우크라이나 지역의 ACLED 분쟁 이벤트 (드론/미사일 공격) 월별 건수",
+        "dependent_var": "에너지 인프라의 영구 폐쇄 건수는",
+        "control_vars": [],
+        "region_code": "eastern_europe",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 eastern_europe ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=eastern_europe) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "우크라이나 지역의 ACLED 분쟁 이벤트 (드론/미사일 공격) 월별 건수가 증가할 때, 에너지 인프라의 영구 폐쇄 건수는 통계적으로 유의하게 증가하지 않는다 (통제: 복구팀 투입량, 예비 발전기 가동률).",
+                "region": "eastern_europe",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "한-우크라이나 외교장관회담 개최",
+                        "date": "2026-06-30",
+                        "creator": "유럽국, 한반도정책국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제5차 우크라이나 복구회의(URC) 참석",
+                        "date": "2026-06-27",
+                        "creator": "개발협력국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 0건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "한-우크라이나 외교장관회담 개최",
+                        "date": "2026-06-30",
+                        "creator": "유럽국, 한반도정책국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제5차 우크라이나 복구회의(URC) 참석",
+                        "date": "2026-06-27",
+                        "creator": "개발협력국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부, 우크라이나·러시아 상황 관련 본부-공관 합동 상황점검회의(5.7.) 개최",
+                        "date": "2026-05-07",
+                        "creator": "영사안전국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "한-우크라이나 외교장관 회담(3.27.) 결과",
+                        "date": "2026-04-22",
+                        "creator": "유럽국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제15차 한-NATO 정책협의회 개최",
+                        "date": "2026-01-16",
+                        "creator": "국제안보국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "NATO’s southern flank is exposed. Portugal can help fortify it.",
+                        "date": "Wed, 17 Jun 2026 18:55:09 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Alliance was not designed to focus only on its easter flank. Vulnerabilities to NATO’s south are accumulating fas"
+                      },
+                      {
+                        "title": "Increasing defense spending isn’t enough. The US and its allies must also guarantee interoperability.",
+                        "date": "Wed, 10 Jun 2026 21:09:45 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Rising defense spending is creating a generational opportunity. But allied interoperability should be built into thes"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 + Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [],
+                    "evidence_note": "DB 증거 없음 — 언론 보도·통계 동향으로 탐색 필요"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Remarks Prior to a Meeting With President Volodymyr Zelenskyy of Ukraine and an Exchange With Reporters",
+                        "date": "2025-02-28",
+                        "source_db": "CPD (White House)",
+                        "description": "The United States should not have allowed this to happen. Okay? The United States, run by a man that didn t know much—I "
+                      },
+                      {
+                        "title": "Order on Federal Commission and Board Chairman and Acting Chairman Designations",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "font-size: 11pt; } Administration of Donald J. Trump, 2025 Order on Federal Commission and Board Chairman and Acting Cha"
+                      },
+                      {
+                        "title": "Proclamation 10885—Flying the Flag of the United States at Full-Staff on Inauguration Day",
+                        "date": "2025-01-20",
+                        "source_db": "CPD (White House)",
+                        "description": "Inauguration Day January 20, 2025 By the President of the United States of America A Proclamation By the authority veste"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Urgent de-escalation’ needed now in Ukraine amid spike in civilian deaths",
+                        "date": "2026-07-09",
+                        "source_db": "UN News",
+                        "description": "The Security Council must use every tool and diplomatic channel to reach an urgent de-escalation, Rosemary DiCarlo, chie"
+                      },
+                      {
+                        "title": "Ukraine: Latest Russian assault leaves at least 14 dead in Kyiv",
+                        "date": "2026-07-06",
+                        "source_db": "UN News",
+                        "description": "Russian strikes on the Ukrainian capital Kyiv killed at least 14 civilians and injured more than 80 others overnight on "
+                      },
+                      {
+                        "title": "Civilian dangers multiply as drones transform Ukraine's battlefield",
+                        "date": "2026-07-03",
+                        "source_db": "UN News",
+                        "description": "As drones reshape the battlefield in Ukraine, they are also creating new and increasingly complex dangers for civilians,"
+                      },
+                      {
+                        "title": "The future of NATO’s deterrence in the air domain",
+                        "date": "Wed, 10 Jun 2026 20:41:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>European NATO member states need to prepare to deter, and if necessary, defeat Russia—with less US support. When it c"
+                      },
+                      {
+                        "title": "Was the NATO Summit a success?",
+                        "date": "Wed, 08 Jul 2026 22:28:34 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>Atlantic Council experts break down an eventful two days in Ankara.</p>\n<p>The post <a href=\"https://www.atlanticcoun"
+                      }
+                    ],
+                    "evidence_note": "CPD 대통령 성명 3건(★★★★★) + UN News 3건 + Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [가설없음] 검증 가능한 정량 가설 없음 — 검정 생략, 서술·이론 근거만",
+        "confidence_word": "검정불가",
+        "routing_method": "no_quantitative_hypothesis",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "필요 데이터 확보 후 H1 재추출"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "정량 가설 없음'으로 대체.*",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "정량 가설 없음'으로 대체.*",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "ukraine",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 대상 아님 — 추출기가 '검증 가능한 정량 가설 없음'을 선언. 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "정량 가설 없음 선언 — 검정 미실행",
+        "data_signature": "",
+        "method_result": {
+          "skipped": true,
+          "skip_reason": "no_quantitative_hypothesis",
+          "iv_construct": {
+            "named_countries": [
+              "Russia",
+              "Ukraine"
+            ],
+            "named_share": 0.983,
+            "named_n": 96982,
+            "top_country": "Ukraine",
+            "top_share": 0.781,
+            "n_events": 98642,
+            "country_dist": {
+              "(미상)": 1302,
+              "Belarus": 97,
+              "Moldova": 261,
+              "Russia": 19939,
+              "Ukraine": 77043
+            },
+            "filter_country": null
+          }
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [과정추적] 정량 가설 없음 — '영구 폐쇄'는 이진 변수 (0 또는 1) 로만 기록되며, 현재 context 에는 폐쇄 건수의 시계열 데이터가 부재함. 대신 '복구 시간 vs 공격 빈도'의 임계값 분석이 필요함. → 미식별 — Van Evera 4검정 스캐폴딩 제공 (정량 검정 불가, 판정은 연구자)",
+        "confidence_word": "검정불가",
+        "routing_method": "structural_arg",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-C 비선형검정(TAR·체제전환) — 적극적 양성 증거 필요"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "정량 가설 없음 — '영구 폐쇄'는 이진 변수 (0 또는 1) 로만 기록되며, 현재 context 에는 폐쇄 건수의 시계열 데이터가 부재함. 대신 '복구 시간 vs 공격 빈도'의 임계값 분석이 필요함.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "정량 가설 없음 — '영구 폐쇄'는 이진 변수 (0 또는 1) 로만 기록되며, 현재 context 에는 폐쇄 건수의 시계열 데이터가 부재함. 대신 '복구 시간 vs 공격 빈도'의 임계값 분석이 필요함.",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "ukraine",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": false,
+        "testability_reason": "비선형 체제·임계 변수('임계') 포함 — 임계점·체제전환 구조라 선형 Granger 부적합",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "[구조적 논증 — 설계상 선형검정 제외] 비선형 체제·임계 변수('임계') 포함 — 임계점·체제전환 구조라 선형 Granger 부적합. 통계 검증을 청구하지 않음. 비선형을 입증하려면 임계회귀(TAR)·체제전환 모델 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "선형검정 부적합(비선형 체제 변수) — Granger 미실행",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Russia",
+              "Ukraine"
+            ],
+            "named_share": 0.983,
+            "named_n": 96982,
+            "top_country": "Ukraine",
+            "top_share": 0.781,
+            "n_events": 98642,
+            "country_dist": {
+              "(미상)": 1302,
+              "Belarus": 97,
+              "Moldova": 261,
+              "Russia": 19939,
+              "Ukraine": 77043
+            },
+            "filter_country": null
+          },
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "정량 가설 없음 — '영구 폐쇄'는 이진 변수 (0 또는 1) 로만 기록되며, 현재 context 에는 폐쇄 건수의 시계열 데이터가 부재함. 대신 '복구 시간 vs 공격 빈도'의 임계값 분석이 필요함.",
+                "region": "ukraine",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: ADMINISTRATION vs KYIV (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: KYIV vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Novorossisk, Krasnodarskiy Kray, Russia: NATO vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [],
+                    "evidence_note": "1차 사료 없음 — 미 국무부·UN 문서·회의록으로 직접 탐색 필요"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: ADMINISTRATION vs KYIV (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: KYIV vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Novorossisk, Krasnodarskiy Kray, Russia: NATO vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [],
+                    "evidence_note": "공식 소스 없음 — 대통령 성명·UN 결의·공동성명으로 직접 탐색 필요"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 에너지 운송선의 보험료 프리미엄 (또는 운항 중단 건수) 은 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "드론/미사일 공격 건수가 증가할 때, 에너지 운송선의 보험료 프리미엄 (또는 운항 중단 건수) 은 통계적으로 유의하게 상승한다 (통제: 실제 물리 파괴 건수).",
+        "h0": "드론/미사일 공격 건수가 증가할 때, 에너지 운송선의 보험료 프리미엄 (또는 운항 중단 건수) 은 통계적으로 유의한 관계가 없다.",
+        "independent_var": "드론/미사일 공격 건수",
+        "dependent_var": "에너지 운송선의 보험료 프리미엄 (또는 운항 중단 건수) 은",
+        "control_vars": [],
+        "region_code": "ukraine",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 ukraine ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=ukraine) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Russia",
+              "Ukraine"
+            ],
+            "named_share": 0.983,
+            "named_n": 96982,
+            "top_country": "Ukraine",
+            "top_share": 0.781,
+            "n_events": 98642,
+            "country_dist": {
+              "(미상)": 1302,
+              "Belarus": 97,
+              "Moldova": 261,
+              "Russia": 19939,
+              "Ukraine": 77043
+            },
+            "filter_country": null
+          },
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "드론/미사일 공격 건수가 증가할 때, 에너지 운송선의 보험료 프리미엄 (또는 운항 중단 건수) 은 통계적으로 유의하게 상승한다 (통제: 실제 물리 파괴 건수).",
+                "region": "ukraine",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: ADMINISTRATION vs KYIV (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: KYIV vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Novorossisk, Krasnodarskiy Kray, Russia: NATO vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [],
+                    "evidence_note": "1차 사료 없음 — 미 국무부·UN 문서·회의록으로 직접 탐색 필요"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: ADMINISTRATION vs KYIV (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: 우크라이나 vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Kyiv, Kyyiv, Misto, Ukraine: KYIV vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Novorossisk, Krasnodarskiy Kray, Russia: NATO vs 러시아 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [],
+                    "evidence_note": "공식 소스 없음 — 대통령 성명·UN 결의·공동성명으로 직접 탐색 필요"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [가설없음] 검증 가능한 정량 가설 없음 — 검정 생략, 서술·이론 근거만",
+        "confidence_word": "검정불가",
+        "routing_method": "no_quantitative_hypothesis",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "필요 데이터 확보 후 H1 재추출"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "정량 가설 없음 — 우크라이나 에너지 인프라에 대한 구체적인 보험료 변동 또는 운항 중단 데이터가 context 에 없음. 호르무즈/발트해 선례만 존재.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "정량 가설 없음 — 우크라이나 에너지 인프라에 대한 구체적인 보험료 변동 또는 운항 중단 데이터가 context 에 없음. 호르무즈/발트해 선례만 존재.",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "eastern_europe",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 대상 아님 — 추출기가 '검증 가능한 정량 가설 없음'을 선언. 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "정량 가설 없음 선언 — 검정 미실행",
+        "data_signature": "",
+        "method_result": {
+          "skipped": true,
+          "skip_reason": "no_quantitative_hypothesis"
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

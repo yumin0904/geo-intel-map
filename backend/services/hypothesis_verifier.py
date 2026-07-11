@@ -385,7 +385,7 @@ def _lock_pending_if_substituted(spec: "HypothesisSpec") -> None:
     섹터 proxy) 3곳에 각각 되돌림 로직을 심는 것보다 회귀 위험이 낮다(스펙 지시).
     호출 전 is_substituted_target=False인 정상 Type_A 경로는 no-op.
 
-    [조달 어의 — 게이트 재정의위 2026-07-13, 치환게이트위 이월 통일]
+    [조달 어의 — 게이트 재정의위 2026-07-12, 치환게이트위 이월 통일]
     조달 = 표면 가설의 IV·DV 그 자체를 측정하는 데이터·경로 확보. 치환 검정은
     조달이 아니다. 이 사후 잠금과 CROSS_SECTION의 사전 게이트
     (methods.panel_regression.can_procure)는 같은 원칙의 두 형태다.
@@ -431,7 +431,7 @@ async def _run_granger_for_spec(
         # 캐시된 수치 필드만 덮어쓰고 나머지(h1·h0·var 등)는 현재 spec 유지
         for _k, _v in _cached.items():
             setattr(spec, _k, _v)
-        # [밤샘 사이클 3, 2026-07-13] 캐시 조기 반환이 함수 꼬리의 치환 잠금을
+        # [밤샘 사이클 3, 2026-07-12 새벽] 캐시 조기 반환이 함수 꼬리의 치환 잠금을
         # 우회하던 구멍 — 동일쌍 선행 주자(정상 Type_A)가 심은 verification_status·
         # inference_grade가 치환 spec에 통째로 복사돼 VERIFIED 승격 실측
         # (batch_20260713_cycle1/hormuz H2). 잠금은 캐시 경로에서도 동일 적용한다.

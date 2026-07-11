@@ -1,0 +1,378 @@
+query: 러시아와 중국의 북극항로 법전쟁과 그림자 선단 운용이 북극 지정학에 미치는 구조적 영향을 분석해줘
+
+=== synthesis_ctx ===
+### 참조 브리핑
+- [War on the Rocks] 북극의 또 다른 국경 문제: 러시아·중국 법전쟁이 북극을 위협하는 방법
+- [War on the Rocks] 기계 압도: 솔트 타이푼이 드러낸 중국의 데이터 중심 정보전 전략
+- [RAND / Foreign Policy] 일본은 중국의 침공 함대를 격침하는 데 도움을 줘야 한다
+- [Chatham House] AI 버블 붕괴가 미국 기술 패권을 잠식하고 중국의 부상을 가속하는 방식
+- [War on the Rocks] 소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법
+
+=== context_text ===
+## 분석 쿼리 요약
+- 지역: 미지정
+## 브리핑·이론 원문 (3개 전문 포함)
+
+- 행위자: CHN, RUS
+- 섹터: 전체
+
+### [War on the Rocks (Cogs of War)] [War on the Rocks] 소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법
+[event_refs: China Hongqiao aluminum Indonesia alumina party network control Tsingshan nickel stainless Indonesia political partner network Jiangsu Delong bankruptcy China First Heavy Industries nickel acquisition 2024 Indonesia 45 percent world nickel reserves Chinese company control nickel ore price discount 25 30 percent international benchmark CHIPS Act 280 billion semiconductor no mineral feedstock IRA 45X Sibanye Stillwater palladium 680 layoffs regulation error Defense Production Act Title III mineral SPV special purpose vehicle CATL party advisory committee battery policy influence Project Vault 10 billion Export-Import Bank critical mineral]
+
+## 핵심 주장
+
+- **중국의 광물 전략은 소유권이 아닌 당-기업 네트워크를 통한 통제다**: 두 가지 메커니즘 — ①기업 내 당 간부 배치 + 당 조직 내 기업 임원 배치, ②국유기업이 민간 기업 배후에서 또는 병행 운영 — 이 정보 공유(민→당)와 저금리 신용·판매 보장(당→민)의 쌍방향 교환을 만든다.
+- **인도네시아는 이 전략의 실증 교과서다**: 홍차오(가족 연계형 당 네트워크), 칭산홀딩(정치적 파트너 네트워크), 장쑤 델롱(국유기업 인수형)이 서로 다른 방식으로 같은 결과를 달성했다. 델롱 파산 후 핵잠수함 원자로 용기 제조사인 중국 제1중공업이 니켈 자산을 흡수한 것이 가장 직접적인 군사-광물 연계 사례다.
+- **4중 비용 우위 구조가 생산 비용을 최대 50% 절감한다**: ①5~15년 세금 혜택, ②광석 국제 벤치마크 대비 25~30% 할인, ③석탄 국내 의무 판매가 25~30% 할인, ④광산 인근 처리로 물류·폐석 비용 절감.
+- **미국의 대응은 파편화되어 조율 아키텍처가 없다**: CHIPS법은 반도체 팹에 $2,800억을 투자했지만 광물 투입재는 지원하지 않았다. IRA 45X 초기 규정이 채굴 비용을 제외해 미국 유일의 팔라듐 광산에서 680명이 해고됐다. 단일 조율 기관이 없다.
+- **SPV 모델이 미국이 채택 가능한 대안이다**: 소유·운영이 아닌 비용 흡수·정보 조율·가격 하한선 제공을 담당하는 국방생산법 기반 특수목적법인. 2차대전 당시 Metals Reserve Company의 현대판.
+
+## 주요 수치·데이터
+
+| 항목 | 수치 |
+|------|------|
+| 인도네시아 세계 니켈 매장량 비중 | 약 **45%** |
+| 중국 기업의 광석 구매가 할인율 | 국제 벤치마크 대비 **25~30%** |
+| 석탄 국내 의무 판매가 할인율 | 국제 벤치마크 대비 **25~30%** |
+| 전체 생산 비용 절감 효과 | 최대 **50%** |
+| 인도네시아 세금 혜택 기간 | **5~15년** |
+| CHIPS법 반도체 투자액 | **$2,800억** (광물 투입재 미포함) |
+| IRA 45X 규정 오류로 인한 해고 | Sibanye Stillwater **680명** |
+| 알베말 리튬 가격 폭락 | **80%** 하락 (중국 저가 생산 급증) |
+| 알베말 해고 | 약 **400명** (2024) |
+| 중국 제1중공업의 PT Virtue Dragon | 소수 지분 → **과반 주주** (2024 델롱 파산 후) |
+| Project Vault 규모 | **$100억** (Export-Import Bank) |
+
+## 3대 핵심 기업 비교
+
+| 기업 | 네트워크 유형 | 통제 방식 | 군사 연계 |
+|------|-------------|----------|----------|
+| **홍차오** | 가족-당 네트워크형 | 창업자 가족 = 당 간부, 국유기업과 협력 | 알루미늄 → 항공기 구조재 |
+| **칭산홀딩** | 정치적 파트너형 | 정치 연계 파트너가 인·허가 확보 | 니켈 → 스테인리스 → 해군강 |
+| **장쑤 델롱** | 국유기업 인수형 | 파산 후 제1중공업이 자산 흡수 | **핵잠수함 원자로 용기 제조사의 직접 니켈 확보** |
+
+## 주요 행위자
+
+| 행위자 | 역할 |
+|--------|------|
+| **중국 홍차오** | 세계 최대 1차 알루미늄 생산자, 가족-당 네트워크로 인도네시아 알루미나 통제 |
+| **칭산홀딩** | 세계 최대 스테인리스 생산자, 정치 연계 파트너로 니켈 통제 |
+| **중국 제1중공업** | 핵잠수함 원자로 용기 제조사, 델롱 파산 통해 니켈 자산 흡수 |
+| **CATL** | 당 자문 기구 회원, 배터리 정책 직접 영향력 행사 |
+| **인도네시아** | 니켈·보크사이트 수출 금지, 다운스트림 투자 유치, 조세 혜택 제공 |
+| **미국 (DPA·IRA·CHIPS)** | 파편화된 대응 주체 — 단일 조율 아키텍처 부재 |
+| **일본 JOGMEC·EU CRMA** | 미국 SPV 모델의 비교 참조 |
+
+## 위협의 성격
+
+| 위협 유형 | 강도 | 설명 |
+|-----------|------|------|
+| 경제·공급망 | ██████████░░░░ 주(主) | 핵심 광물 upstream 통제, 비용 구조 왜곡, 가격 무기화 |
+| 군사·산업 | ████████░░░░░░ 부(副) | 핵잠수함 원자로 제조사의 니켈 확보, 방산 소재 의존성 |
+| 정책·제도 | ██████░░░░░░░░ 부(副) | 미국 대응의 파편화, 조율 아키텍처 부재 |
+
+**핵심 위협 성격**: 급격한 공급 단절이 아닌 **느리고 조용한 비용 우위 구조화** — 미국 방산·항공우주 업체가 더 비싸고, 더 느리고, 더 의존적이 되는 점진적
+...(이하 생략)
+
+### [Foreign Affairs] [Foreign Affairs] 중국의 AI 절도: 유통 패권 경쟁에서 지고 있는 미국
+[event_refs: DeepSeek Moonshot MiniMax Claude Anthropic 16 million extraction 24000 fake accounts China AI distillation industrial scale capability theft 2026 DeepSeek-R1 HarmBench safety test failure security vulnerability 50 percent Google Gemini 100000 data extraction campaign detection OpenClaw marketplace 340 malicious extensions Iran drone AWS UAE Bahrain data center attack March 2026 China local model distribution Huawei Alibaba cloud dependency chain FDPR foreign direct product rule AI expansion export control open weight model distribution default intelligence billions devices US China AI competition training versus distribution]
+
+## 핵심 주장
+
+- **AI 경쟁의 전선이 개발에서 유통으로 이동했다**: 누가 더 뛰어난 모델을 만드느냐가 아니라, 어느 나라의 모델·칩·소프트웨어 프레임워크가 수십억 대 기기의 **기본값(default)**이 되느냐가 다음 단계의 승패를 결정한다. 미국은 훈련에서 이기고 있지만 유통에서 지고 있다.
+- **중국은 산업 규모의 증류로 미국 첨단 AI를 조직적으로 탈취하고 있다**: DeepSeek·Moonshot·MiniMax는 2만 4,000개 가짜 계정을 통해 Anthropic Claude에서 1,600만 건 이상의 거래를 발생시켜 고가치 추론·코딩·도구 사용 기능을 추출했다. 미국 기업은 서비스 약관에 묶여 동일한 방식을 사용할 수 없다 — 구조적 비대칭이다.
+- **증류된 로컬 모델은 안전 장치 없이 확산된다**: 증류는 핵심 기능은 이전하지만 정렬 튜닝·레드팀·안전 필터링은 이전하지 않는다. DeepSeek-R1은 HarmBench 표준 안전 테스트를 통과하지 못했고, 민감 키워드 포함 시 보안 취약 코드 생성 확률이 최대 50% 높아졌다.
+- **로컬 AI의 부상이 중앙집중식 데이터센터의 취약성을 부각시켰다**: 2026년 3월 이란 드론의 UAE·바레인 AWS 타격으로 금융·결제·기업 소프트웨어가 동시 마비됐다. AI 시스템이 군사 작전을 지원할수록 데이터센터는 군사 표적이 된다 — 로컬 분산 모델이 더 회복탄력적이다.
+- **초기 비용 우위가 기술 전반의 지속적 의존으로 전환되는 패턴이다**: 로컬 모델 → 호스팅 클라우드(알리바바) → 칩(화웨이)으로 이어지는 의존 연쇄가 5G·일대일로·디지털 인프라에서 이미 실증된 패턴이다.
+
+## 주요 수치·데이터
+
+| 항목 | 수치 |
+|------|------|
+| DeepSeek 등 중국 AI의 Claude 무단 추출 건수 | **1,600만 건 이상** (가짜 계정 **2만 4,000개** 활용) |
+| 로컬 모델 정확 답변율 변화 | 2023년 **23%** → 2025년 **71%** (스탠포드 연구) |
+| DeepSeek-R1 보안 취약 코드 생성 증가율 | 민감 키워드 추가 시 최대 **50%** 상승 |
+| Google Gemini 대상 탐지된 데이터 추출 캠페인 | **10만 건 이상** |
+| OpenClaw 마켓플레이스 악성 확장 프로그램 | **340개 이상** |
+| 이란 드론 UAE·바레인 AWS 타격 | **2026년 3월** |
+
+## 주요 행위자
+
+| 행위자 | 역할 |
+|--------|------|
+| **중국** (DeepSeek·Moonshot·MiniMax) | 산업 규모 증류·탈취 주체, 로컬 모델 유통 장악 시도 |
+| **미국** (Anthropic·Google·OpenAI) | 피탈취 주체, 민간 방어 노력 중 — 구조적 비대칭에 묶임 |
+| **이란** | AWS 데이터센터 물리적 타격, 중앙집중 취약성 실증 |
+| **화웨이·알리바바 클라우드** | 로컬 모델 의존 연쇄의 최종 수혜자 |
+| **미국 정부·의회** | 정책 수신자 — FDPR 확대·수출 통제 강화 권고 대상 |
+| **유럽·일본·아시아 동맹** | 공통 기준·연합 구축 협력 대상 |
+
+## 위협의 성격
+
+| 위협 유형 | 강도 | 설명 |
+|-----------|------|------|
+| 기술·정보전 | ██████████░░░░ 주(主) | 산업 규모 AI 기능 탈취, 증류 기반 역량 무임승차 |
+| 경제·산업 | ████████░░░░░░ 부(副) | 오픈웨이트 유통 장악, 기술 의존 연쇄 구축 |
+| 사이버·안보 | ██████░░░░░░░░ 부(副) | 안전 장치 없는 모델 확산, 악성 에이전트 프레임워크 |
+| 군사·인프라 | ████░░░░░░░░░░ 부(副) | 데이터센터 물리적 취약성, 분산 AI의 전략적 우위 |
+
+**핵심 위협 성격**: 직접 해킹이 아닌 **합법과 불법의 경계를 교란하는 구조적 탈취** — 서비스 약관을 지키는 쪽이 지는 비대칭 경쟁 구조.
+
+## 정책 권고사항
+
+**단기 — 문 닫기:**
+
+| 수단 | 내용 |
+|------|------|
+| 수출 통제 | 대규모 증류를 가능하게 하는 칩에 대한 통제 유지·강화 |
+| FDPR 확대 | 미국 기술 기반 중국 모델에 라이선스 요건, 거부 시 상업적 배포·수출 전면 금지 |
+| IEEPA 활용 | 조직적 탈취 중국 AI 연구소 자산 동결·거래 금지·2차 제재 |
+
+**중기 — 가속 페달:**
+
+| 수단 | 내용 |
+|------|------|
+| 서비스 약관 개정 | 미국·동맹국 기업의 제한적·책임 있는 데이터 추출 허용 조항 신설 |
+| 오픈웨이트 공개 장려 | 경쟁력 있는 미국산 오픈웨이트 모델 공개 — 공공 자원·연구 자금 활용 |
+| 민간 협력 | 증류 탐지 도구
+...(이하 생략)
+
+### [War on the Rocks] [War on the Rocks] 러시아의 호르무즈 플레이북: 발트해·흑해에 보험 연쇄 봉쇄가 온다
+[event_refs: Hormuz blockade insurance cascade Lloyd's war risk 2026 tanker traffic collapse 80 percent Hormuz 2026 Russia Gerbera drone Baltic Sea Denmark Strait threat Geran-2 drone range 1300km Kaliningrad Alabuga drone facility 3000 per month production Black Sea grain corridor Russia open close 2022 2023 NATO collective defense threshold below ambiguous drone attack Poland Lithuania airspace Russian drone intrusion 19 drones shadow fleet Russia Baltic LNG Baltic LNG cargo value 40-80 million per ship Ukraine Black Sea drone counterexample Montreux Convention Turkey Black Sea access]
+
+## 핵심 주장
+
+- **보험 연쇄 붕괴가 새로운 초크포인트 무기**: 공습 이틀 만에 호르무즈 유조선 통항이 80% 이상 붕괴했다. 선박 한 척도 격침되기 전에 Lloyd's 전쟁위험위원회가 보험을 취소했고, 보험 없이 항해할 수 없는 선박회사들이 자발적으로 운항을 중단했다. 초크포인트 폐쇄의 메커니즘이 물리적 파괴에서 **보험 연쇄 봉쇄(insurance cascade)**로 바뀌었다.
+- **러시아의 발트해 적용 능력과 동기**: Gerbera 드론은 이미 리투아니아·폴란드 영공에 침투했고, 칼리닌그라드에서 덴마크 해협까지 약 700km는 Geran-2(사정거리 1,300km+) 사정권 내다. 단 한 번의 타격 위협만으로 발트해 LNG 수입 인프라 전체를 경제적으로 마비시킬 수 있다.
+- **흑해에서 이미 실전 검증 완료**: 러시아는 2022~2023년 흑해 곡물 회랑을 반복적으로 열고 닫으며 보험 시장 교란을 통한 초크포인트 무기화를 실전 검증했다. 흑해는 가설이 아닌 현재 진행형 위협이다.
+- **극단적 비용 비대칭**: Gerbera 드론 단가 약 $1만 vs. 발트해 LNG 화물 1척 가치 $4,000만~$8,000만. 드론이 실제로 타격할 필요도 없다 — 보험 재가격 결정을 유발하는 것만으로 전략 목표 달성이 가능하다.
+- **NATO 집단방위 체계의 구조적 취약**: 모호하고 부인 가능한 드론 공격은 32개 동맹국의 합의를 요구하는 집단방위 발동 임계값 아래에서 작동한다. 보험 연쇄는 NATO 합의 속도를 기다리지 않는다.
+
+## 근거와 데이터
+
+| 항목 | 수치 |
+|------|------|
+| 공습 직전 호르무즈 통과 유조선 | **56척** |
+| 공습 이틀 후 통과 유조선 | **7척** (소형 + 그림자 선단 3척 포함) |
+| 유조선 통항 붕괴율 | **80% 이상** |
+| Geran-2 드론 사정거리 | **1,300km 이상** |
+| Alabuga 시설 월 생산량 | **3,000기** |
+| Gerbera 드론 단가 | 약 **$10,000** |
+| 발트해 LNG 화물 1척 가치 | **$4,000만~$8,000만** |
+| 칼리닌그라드 → 덴마크 해협 거리 | 약 **700km** |
+| 2025.09 폴란드 영공 침입 드론 수 | **19기** → NATO Article 4 협의 발동 |
+
+## 비용 비대칭 구조
+
+```
+공격 비용  : Gerbera 드론 1기 ≈ $10,000
+방어 비용  : LNG 화물 1척   ≈ $40,000,000 ~ $80,000,000
+비대칭 배율:                  ×4,000 ~ ×8,000
+
+→ 드론이 타격하지 않아도 된다 — 보험 프리미엄을 타격하면 충분
+```
+
+## 주요 행위자
+
+| 행위자 | 역할 |
+|--------|------|
+| **러시아** | 호르무즈 플레이북 적용 잠재 주체, 칼리닌그라드·그림자 선단 보유 |
+| **이란** | 호르무즈 봉쇄 실행 주체, 플레이북 원형 제공 |
+| **후티** | 홍해 선례 제공(2023~2025) |
+| **Lloyd's 전쟁위험위원회** | 보험 연쇄의 핵심 제도적 행위자 |
+| **독일·폴란드·핀란드·리투아니아** | 덴마크 해협 의존 LNG 수입국 |
+| **NATO·Allied Maritime Command** | 대응 주체, 현재 역량 부족 |
+| **우크라이나** | 흑해 드론 전술 역검증 데이터 제공 |
+| **터키** | 몽트뢰 협약 관리국, 터키 해협 통제권 보유 |
+
+## 위협의 성격
+
+| 위협 유형 | 강도 | 설명 |
+|-----------|------|------|
+| 경제·에너지 | ██████████░░░░ 주(主) | 보험 연쇄 봉쇄, LNG·곡물 공급망 차단 |
+| 군사·회색지대 | ████████░░░░░░ 부(副) | 드론 영공 침범, 그림자 선단, 부인 가능 공격 |
+| 외교·제도적 | ██████░░░░░░░░ 부(副) | NATO 합의 메커니즘의 구조적 지연 취약성 |
+
+**핵심**: 물리적 파괴 없이 상업 논리를 이용해 에너지 공급망을 차단하는 충돌 역치 이하의 경제적 강압 — 기존 방어 프레임워크가 설계되지 않은 영역.
+
+## 지정학적 함의
+
+**회색지대 전략의 금융 레이어 확장**:
+하이브리드전이 이제 보험 시장이라는 민간 금융 제도를 전장으로 삼는다. Lloyd's 전쟁위험위원회는 군사 지휘 계통 밖에서 독자적으로 작동하지만, 그 결정이 NATO 동맹국 전체의 에너지 공급을 결정할 수 있다. 이는 Farrell & Newman의 무기화된 상호의존을 금융·보험 인프라 차원으로 확장한 사례다.
+
+**호르무즈-발트해-홍해 삼각 연쇄**:
+이란(호르무즈) → 후티(홍해) → 러시아(발트해) 순서로 동일 플레이북이 확산되는 패턴이 보인다. 각 행위자가 선행 사례에서 학습하고 있으며, 보험 연쇄 봉쇄는 점차 표준화된 회색지대 강압 도구가 되고
+...(이하 생략)
+
+## 추가 관련 브리핑 (요약)
+- [RAND Corporation / Foreign Policy] [RAND / Foreign Policy] 일본은 중국의 침공 함대를 격침하는 데 도움을 줘야 한다
+  일본은 중국의 대만 침공 함대를 격침하겠다는 약속을 명확히 해야 한다. CSIS 워게임은 미국 단독으로 첫 주 안에 대함 미사일이 소진된다는 것을 24회 반복 시뮬레이션으로 확인했다. 일본은 Tomahawk 400기·F-35·Type 12 대함 미사일로 역량을 구축 중
+- [Chatham House] [Chatham House] AI 버블 붕괴가 미국 기술 패권을 잠식하고 중국의 부상을 가속하는 방식
+  AI 버블 붕괴는 단순 시장 조정이 아니라 글로벌 AI 생태계의 구조적 재편 트리거다. LLM 수익화 딜레마(성능 정체 + 유료 전환 실패)가 미국 AI 기업을 가격 인상 또는 군사화 경로로 몰아넣는 반면, 중국은 국가보조금·오픈소스·실용적 응용의 다층 구조로 버블 충
+- [War on the Rocks] [War on the Rocks] 북극의 또 다른 국경 문제: 러시아·중국 법전쟁이 북극을 위협하는 방법
+  북극이 군사 점령이 아닌 러시아·중국의 조율된 법률전(Lawfare)으로 경쟁 공간으로 전환되고 있다. 러시아는 UNCLOS 자의적 해석으로 북극항로를 주권적 초크포인트로 재규정하고, 그림자 선단으로 해저 케이블을 공격하며, 중국은 이 법적 서사를 동조함으로써 미국의 
+- [War on the Rocks] [War on the Rocks] 기계 압도: 솔트 타이푼이 드러낸 중국의 데이터 중심 정보전 전략
+  중국의 정보 우위는 개별 스파이 포섭이 아닌 디지털 배기 데이터의 대규모 수집·융합·모델링에서 나온다. Salt Typhoon의 미국 통신망 침투는 사이버-HUMINT 융합의 실증이며, AI·양자컴퓨팅이 결합될 경우 실시간 사회·공급망 모델링이 가능해지는 '기계 압도'
+- 반접근/지역거부 전략 (A2/AD Strategy)
+  강대국의 군사력 투사를 막기 위해 미사일·잠수함·사이버 등 비대칭 전력으로 접근 자체를 차단하는 전략 — 중국의 대미 억제 핵심.
+
+## 이론 프로파일 (예측 도구)
+### 반접근/지역거부 전략 (A2/AD Strategy)
+- 독립변수: A2/AD 무기 체계 배치 밀도 (역내 미사일·기뢰·잠수함 수량)
+- 종속변수: 상대국 전력 투사 비용 (항모 작전 운용 비용 지수)
+- 반증 가능 예측: A2/AD 밀도 증가 시 상대국 항모 타격단 운용 비용 증가 (통제: 상대국 방어 돌파 능력)
+- 알려진 반례: 우크라이나·하마스 드론이 저비용으로 정규 방어선 침투 — 비대칭 저비용 수단이 A2/AD 비용 구조를 역전 가능
+- 경쟁 이론: Power Projection Theory, AirSea Battle Doctrine (JOAC), Mahan Sea Power Theory
+### 자유항행작전 FONOP (Freedom of Navigation Operations)
+- 독립변수: FONOP 빈도·강도 (미 해군 자유항행 작전 횟수)
+- 종속변수: 중국 회색지대 활동 변화 (인공섬 군사화 속도, 해경 충돌 건수)
+- 반증 가능 예측: FONOP 빈도 증가가 중국 영유권 주장 활동을 억제하는가 (통제: 미중 관계 전반)
+- 알려진 반례: 2015~ FONOP 정례화에도 중국 남중국해 인공섬 군사화 지속·가속 — 항행작전이 회색지대 기정사실화를 억제하지 못함. 규범의 '선언적 확인'이 상대 행동 변화로 이어지지 않는 한계
+- 경쟁 이론: Gray Zone Strategy (FONOP은 무력충돌 임계 이하라 억지 효과 없음), Lawfare (실제 통제는 항행이 아니라 법적 주장 경쟁이 결정), Sea Control (실효 지배가 통항 시위보다 우선)
+### 공격적 현실주의 (Offensive Realism)
+- 독립변수: 강대국 상대 GDP 비율 (권력 격차 지수)
+- 종속변수: 군비 경쟁 강도 및 갈등 빈도 (ACLED 고강도 이벤트 수)
+- 반증 가능 예측: 권력 격차 감소 시 강대국 간 갈등 빈도 증가 (통제: 핵억지 유무)
+- 알려진 반례: 중-미 경제 상호의존이 군사 충돌을 억제하는 사례 — 자유주의적 평화(Liberal Peace)로 부분 설명; 2008년 이후 중국의 부상에도 군사 충돌 미발생
+- 경쟁 이론: Defensive Realism (Waltz), Liberal Interdependence (Keohane & Nye), Hegemonic Stability Theory
+
+## 행위자 국가 프로파일
+- **CHN**: 인도-태평양의 수정주의 강대국. 제1열도선 돌파와 대만 통일을 핵심 목표로 A2/AD 전략 구사.
+  포지션=revisionist | 주요수단=economic
+  주요위험: 대만해협 군사 충돌 (A2/AD vs. 미해군 개입), 남중국해 인공섬 분쟁 (필리핀·베트남·말레이시아), 반도체 수출통제 — ASML EUV 차단, 기술패권 압박
+- **RUS**: 유라시아 육상 강대국. 에너지 수출과 핵 억제력으로 영향권 유지, 우크라이나 전쟁으로 NATO와 직접 대립.
+  포지션=revisionist | 주요수단=military
+  주요위험: 우크라이나 전쟁 장기화 — 서방 제재·공급망 차단, 에너지 무기화 역풍 — 유럽 의존도 탈피 가속, 핵 위협 상시화 — 전술핵 사용 가능성과 확전 억제
+
+
+## 문헌 공백 원장 (결정론적 추출 — [문헌공백] 작성 근거)
+  ⚠️ 아래는 라이브러리가 실제로 담은 주장·반례 지도다. [문헌공백]은 반드시 이 원장의 구체적 항목을 인용해 작성하라. 원장에 없는 막연한 '추가 연구 필요'는 금지.
+
+### ① 반례 클러스터 (이론이 깨지는 경계 — 논쟁 지점)
+- 〈구성주의 (Constructivism)〉 예측 임계: UN 총회 투표 동조율 80%+ 국가쌍 간 군사 충돌 확률이 60~79% 국가쌍 대비 통계적 유의 수준으로 낮음 (통제: 지리적 거리·경제 상호의존, COW MID 데이터) | 반례: 미중 관계(1970년대~2010년대): 경제 상호의존 심화에도 정체성 적대화 가속 — 상호의존이 정체성 수렴을 자동 보장하지 않음; 유럽 안보 공동체(OSCE 신뢰 체계): 2022년 러시아 침공으로 규범 붕괴 —…
+- 〈Granger 인과분석 (Granger Causality)〉 예측 임계: 지정학 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화 (p<0.05) | 반례: 한반도 긴장 → KRW 환율 인과는 VERIFIED(p=0.048)이지만 대만해협 → TSMC는 PARTIAL(p=0.067) — 지정학 충격이 항상 즉각 시장 전이되지 않음
+- 〈전망 이론 (Prospect Theory in IR)〉 예측 임계: 손실 도메인에 있는 지도자(기준점 이하 영토·동맹·경제 상태)가 이익 도메인 지도자 대비 군사 위기 고조(escalation) 선택 확률 1.5배 이상 (통제: 힘의 균형·국내 … | 반례: 미국의 쿠바 미사일 위기(1962): 케네디가 손실 도메인에서도 해상 봉쇄(중간 옵션) 선택 → 최대 위험 감수 아닌 중간 위험 — 손실 도메인 → 자동 극단 위험 감수 예측의 반례; 이라크 쿠웨이트 침공(1990…
+- 〈SLOC 통제 이론 (Chokepoint & Sea Lines of Communicati…〉 예측 임계: 초크포인트 위협 강도 증가 시 운임·유가 단기 급등 (통제: 비축유 방출·대체 운송로·완충 재고) | 반례: 후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025 — 미국 전략비축유 방출·OPEC+ 여유 생산능력·우회 항로 흡수로 전이 차단. 초크포인트 위협이 자동으로 가격 충격이 되지 않음 (위협 인식 ≠ 실…
+- 〈공유지 지배권 (Command of the Commons)〉 예측 임계: 중국 A2/AD 투자 증가(SIPRI) 시 미국 공유지 지배력 지수 약화 → 타국의 공유지 이용 제한 효과 감소 (통제: 미국 국방비) | 반례: 중국 ASBM(대함 탄도미사일) DF-21D·DF-26 개발 (2009~): 미 항모의 남중국해 접근 비용 급증 → 공유지 지배권의 지리적 후퇴 실증; 러시아 S-400·Iskander 시스템: 동유럽 상공 '공중…
+
+### ② 경쟁이론 미해결 (라이브러리가 충돌만 적고 판정 안 함)
+- 〈구성주의 (Constructivism)〉 ↔ Realism (Waltz·Mearsheimer) — 물질적 힘의 분포가 규범·정체성을 결정, 역 인과, Liberal Institutionalism (Keohane) — 제도·상호의존이 행동 변화의 주 동인, 규범은 부수적, Democratic Peace Theory (Doyle) — 정체성(민주 vs 비민주) 구분이 행동 변화의 핵심 — 구성주의와 부분 중첩
+- 〈Granger 인과분석 (Granger Causality)〉 ↔ Structural VAR (Sims), Cointegration Analysis (Engle-Granger), Counterfactual Causal Inference (Rubin)
+- 〈전망 이론 (Prospect Theory in IR)〉 ↔ Expected Utility Theory (Bueno de Mesquita) — 지도자는 기대 효용 극대화 합리 행위자, Poliheuristic Theory (Mintz) — 두 단계 결정: 국내 수용성 필터 → 합리 최적화 선택, Psychological Realism (Jervis) — 인지 편향·이미지·역사 오인이 위기 결정의 핵심 동인
+- 〈SLOC 통제 이론 (Chokepoint & Sea Lines of Communicati…〉 ↔ Resource Weaponization (초크포인트는 물리 통제가 아니라 자원 무기화 수단), Command of the Commons (미 해군의 압도적 제해권이 초크포인트 봉쇄를 무력화), Self-deterrence / Insurance Markets (실제 봉쇄보다 보험·자기억지 인식이 교란을 결정)
+  → 위 이론쌍 중 본 분석 쿼리에 해당하는 충돌을 실측으로 판정하면 그것이 기여.
+
+### ③ 교차도메인 밀도 (섹터별 주장 건수)
+- 분포: 기술패권 3건, 인도태평양 3건, 에너지 1건, 회색지대 1건, 사이버 1건, 해양 1건…
+## 국방비 추이 (SIPRI 2023, % of GDP / USD billion)
+- **China** (CHN): 2023년 GDP 1.7% $296.0bn
+  5년 추이: 2019:1.9% → 2020:1.7% → 2021:1.7% → 2022:1.6% → 2023:1.7%
+- **Russia** (RUS): 2023년 GDP 5.9% $109.0bn
+  5년 추이: 2019:3.9% → 2020:4.3% → 2021:4.1% → 2022:4.1% → 2023:5.9%
+  출처: SIPRI Military Expenditure Database 2024
+
+## 공식 동맹 관계 (COW Formal Alliances v4.1)
+**방위조약 (Defense Pact)**
+- China ↔ North Korea (1961~현재)
+- Russia ↔ Belarus (1992~현재)
+- Russia ↔ Kazakhstan (1992~현재)
+- Russia ↔ Kyrgyzstan (1992~현재)
+- Russia ↔ Tajikistan (1992~현재)
+- Russia ↔ Armenia (1992~현재)
+  출처: Correlates of War Formal Alliances v4.1
+
+## 에너지 생산·수출 현황 (EIA International Energy Statistics 2023)
+**주요 산유국 생산량 / 수출량 (Mbpd)**
+- **Russia** (RUS): 원유 9.5 / 수출 4.8 / 천연가스 58.0 Bcfd
+- **China** (CHN): 원유 4.2 / 천연가스 22.4 Bcfd
+  출처: EIA International Energy Statistics 2024
+
+## 주요 사이버 사건 (CSIS Significant Cyber Incidents DB)
+- [2024-11] **Treasury Department Breach** | 행위자: Unknown → 피해: USA(government) | 유형: supply_chain
+  중국의 미국 재무부 BeyondTrust 공급망 공격. 재무장관 오피스 문서 접근
+- [2024-10] **Russian Election Interference 2024** | 행위자: GRU → 피해: MULTI(election) | 유형: disinformation
+  러시아의 미국·EU 선거 개입. 딥페이크·허위정보 AI 강화 캠페인
+- [2024-09] **Salt Typhoon Telecom Breach** | 행위자: Salt Typhoon → 피해: USA(telecom) | 유형: espionage
+  중국 Salt Typhoon의 미국 통신사 9곳 침투. FBI·NSA 고위 관리 감청
+- [2024-08] **Volt Typhoon 2 - Infrastructure Persistence** | 행위자: Volt Typhoon → 피해: USA(critical_infra) | 유형: espionage
+  볼트 타이푼의 미국 항구·수도·에너지 인프라 내 장기 잠복 확인 (CISA 경고)
+- [2024-06] **EU Election Interference 2024** | 행위자: APT28 → 피해: MULTI(election) | 유형: disinformation
+  APT28의 유럽의회 선거 개입 캠페인. 독일·체코·폴란드 피해
+- [2024-05] **Germany SPD Hack** | 행위자: APT29 → 피해: DEU(government) | 유형: espionage
+  러시아 Cozy Bear의 독일 사민당(SPD) 이메일 시스템 침투. 독일 외무부 공개 귀속
+- [2024-04] **Volt Typhoon Guam Cyber Pre-positioning** | 행위자: Volt Typhoon → 피해: USA(military) | 유형: espionage
+  미국 괌 군사 기지 OT 네트워크 침투 확인. 대만 분쟁 시 조기 마비 포석
+- [2024-03] **China European Parliament Hack** | 행위자: APT31 → 피해: EUR(government) | 유형: espionage
+  중국 APT31의 유럽의회·EU 외교부 이메일 시스템 침투. 대중 정책 심의 내용 탈취
+  출처: CSIS Strategic Technologies Program 2024
+
+## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)
+- **Russia-Ukraine War** (2022~2025) | RUS vs UKR | 사망: 500,000 | 결과: 진행 중
+- **Ukraine-Donbas** (2014~2021) | UKR vs RUS_proxy | 사망: 14,000 | 결과: 진행 중
+- **Georgia War** (2008~2008) | GEO vs RUS | 사망: 850 | 결과: B측 승
+- **Soviet-Afghan War** (1979~1989) | AFG vs RUS | 사망: 15,000 | 결과: B측 승
+- **Korean War** (1950~1953) | USA|KOR vs PRK|CHN | 사망: 36,940 | 결과: 정전
+  출처: Correlates of War Project v4.0
+
+## 국가 거버넌스 지수 (World Bank WGI 2022)
+점수 범위: -2.5(최하) ~ +2.5(최상)
+- **China** (CHN): 정치안정=-0.15 | 부패통제=0.09 | 법치=-0.58
+- **Russian Federation** (RUS): 정치안정=-0.90 | 부패통제=-0.89 | 법치=-1.16
+  출처: World Bank Worldwide Governance Indicators 2023
+
+## 정치체제 지수 (Polity5 2022)
+점수: -10(완전권위) ~ +10(완전민주)
+- **China** (CHN): -7점 (autocracy)
+- **Russia** (RUS): -6점 (autocracy)
+  출처: Center for Systemic Peace, Polity5 Dataset
+
+## ICT 발전 지수 (ITU IDI 2023) ⚠️ 보급·접근성 지표 — 사이버 방어력과 직접 동치 금지
+IDI 점수: 0-100 (인터넷 보급·접근성·이용 종합). 사이버 역량 주장 시 반드시 '간접 proxy'임을 명시할 것. 방어력 직접 근거로는 GCI·NCSI가 더 타당함.
+- **Russia** (RUS): IDI 72.8 (전세계 45위, 2티어)
+- **China** (CHN): IDI 71.5 (전세계 50위, 2티어)
+  출처: ITU ICT Development Index 2023
+
+## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)
+**국방비 (% of GDP, 최신연도)**
+- Russia (RUS): 5.27% (2023)
+- China (CHN): 1.62% (2023)
+**핵탄두 보유량 (최신연도)**
+- Russia (RUS): 4489기 (2023)
+- China (CHN): 410기 (2023)
+  출처: Our World in Data (ourworldindata.org)
+
+## 무역 의존도 (UN Comtrade — Weaponized Interdependence IV)
+dependency_ratio: 해당 양자 무역액 ÷ 보고국 전체 무역액 (0~1). 0.1 이상 = 10%+ 의존 → 비대칭 구조. 이 수치가 높을수록 Farrell & Newman의 '공급망 집중 → 레버리지' 예측 지지.
+**희토류·광물 (HS 26)**
+- RUS 수출 ← CHN: 의존도 83.2% (2020)
+- RUS 수출 ← CHN: 의존도 77.3% (2021)
+- RUS 수입 ← CHN: 의존도 31.6% (2020)
+- RUS 수입 ← CHN: 의존도 13.9% (2021)
+**반도체 (HS 8542)**
+- RUS 수입 ← CHN: 의존도 50.3% (2021)
+- RUS 수입 ← CHN: 의존도 42.6% (2020)
+- RUS 수출 ← CHN: 의존도 16.7% (2020)
+- RUS 수출 ← CHN: 의존도 15.8% (2021)
+**에너지(원유·가스) (HS 27)**
+- CHN 수입 ← RUS: 의존도 38.4% (2024)
+- CHN 수입 ← RUS: 의존도 37.0% (2023)
+- RUS 수출 ← CHN: 의존도 34.5% (2021)
+- RUS 수출 ← CHN: 의존도 34.3% (2020)
+- CHN 수입 ← RUS: 의존도 33.0% (2022)
+- CHN 수입 ← RUS: 의존도 29.4% (2021)
+  출처: UN Comtrade Database (2020-2025, HS 8542·27·26)
+
+## 무기 공급망 (SIPRI Arms Transfers Database)
+- 2023 | China → Pakistan | naval | TIV 650.0mn
+  Type 054AP 호위함 2척
+- 2023 | China → Saudi Arabia | missile | TIV 340.0mn
+  CH-4 드론, Wing Loong II
+- 2023 | China → Russia | other | TIV 450.0mn
+  드론 부품, 반도체 우회 공급
+- 2023 | Russia → Iran | other | TIV 120.0mn
+  무기 거래 제재 우회 경로
+- 2023 | Russia → India | aircraft | TIV 890.0mn
+  부품 공급망 제재 영향
+- 2022 | China → Pakistan | aircraft | TIV 780.0mn
+  J-10CE, JF-17 Block III
+  출처: SIPRI Arms Transfers Database 2020-2024

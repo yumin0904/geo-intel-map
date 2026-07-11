@@ -1,0 +1,199 @@
+{
+  "schema_version": "0.1",
+  "id": "nk-missile-bp-gap",
+  "generated_at": "2026-07-11T16:30:21Z",
+  "engine_version": "9.46.1",
+  "query": "2025년 말 이후 북한 미사일 활동 공백기의 재구성과 도발 패턴 변화",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula"
+  ],
+  "sectors": [
+    "military"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+    "[INSS] 시진핑 방북 가능성 및 북중 정상회담의 전략적 함의 (이슈브리프 848호)"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 0,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 3,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 0,
+    "vdem_entries": 36,
+    "cow_wars": 1,
+    "ifans_pubs": 3,
+    "theory_cmp_chars": 3281,
+    "fred": 6,
+    "wbk": 2,
+    "polity5": 1,
+    "itu": 1,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 6,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "[구성타당도] IV 지목 대상(North Korea) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 South Korea(99%). [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 78건 실재. 데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 2025 년 말 북한 미사일 활동 공백기는 '억지 실패'가 아닌 '전략적 재구축'과 동반되며, 이 시기는 서태평양 미사일 재고 소진으로 인한 미국의 '취약 창'과 공변한다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n북한의 미사일 발사 공백기는 자력 고갈, 제재 효과, 또는 내부 혼란으로 인한 도발 능력의 일시적 정지 또는 억지 실패로 해석된다.\n\n[비자명기여]\n통념은 공백을 '약점'으로 보지만, 본 분석은 이 공백이 **미국의 서태평양 미사일 재고 소진 (취약 창) 과의 시간적 공변**을 통해 오히려 '전략적 재구축의 기회'로 작용할 수 있음을 제시한다 (반직관). 특히 2026 년 2 월 이란전으로 인한 미국 정밀유도무기 소진이 서태평양 억지력을 약화시키는 시점과 북한의 미사일 활동 정지 (2025.06~2026.07) 가 겹치며, 이는 북한이 미국 방어 체계의 재고 공백을 노리고 새로운 전술핵/ICBM 고도화를 진행할 가능성을 시사한다. 즉, 공백은 '무기 고갈'이 아니라 '공격 타이밍의 전략적 조정'일 수 있다.\n\n[관찰]\n- ACLED 한반도 분쟁 이벤트 건수: 2025.03 (1,348 건) → 2025.04 (1,244 건) → 2025.05 (848 건) → 2025.06 (177 건) → 2026.06 (56 건) → 2026.07 (2 건).\n- 2025 년 6 월 이후 급격한 활동 감소 (공백기) 가 관측됨.\n- CSIS 보고서에 따르면, 이란전 (Operation Epic Fury, 2026.02.28 개전) 으로 인해 THAAD, 패트리어트 등 정밀유도무기 재고가 소진되었으며, 서태평양 억지력에 '다년 프로젝트' 수준의 취약 창이 형성됨.\n- 북한은 2026 년 7 월 기준 중국 전승절 80 주년 기념식 참석 등 대중 외교를 강화하며, 로씨아와의 군사협력 (포탄 수출·파병) 이 지속되고 있음.\n\n[주장]\n(등급: 상관) 2025 년 하반기부터 관측된 북한의 미사일 활동 공백기는 미국의 서태평양 미사일 재고 소진 시기와 **상관한다**. 이는 북한이 미국의 방어 체계 공백기를 포착하여 발사 주기를 조절하거나, 내부 전술핵 고도화 작업을 진행하는 '전략적 정지'일 가능성이 있다.\n\n[가설]\nH1: \"2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula conflict events) 가 감소할 때, 미국의 서태평양 정밀유도무기 재고 부족으로 인한 억지력 약화 지수 (미사일 재고 보고서 기반) 가 상승한다.\" (통제변수: 중·러 군사협력 수준, 국제사회 제재 강도)\n\n[근거]\n- ACLED 데이터: 2025.06 (177 건) → 2026.07 (2 건) 급감.\n- CSIS 보고서: 이란전 소진 후 서태평양 취약 창 형성 (THAAD/패트리어트 재고 부족).\n- NK 동향: 2026.07.10 중국 전승절 참석 (외교적 고도화 시도), 러시아와의 군사협력 지속.\n\n[한계]\n- **선택·생존편향**: ACLED 데이터는 '관측된' 분쟁 이벤트만 기록하므로, 은밀하게 진행된 지하 핵실험이나 미사일 시험 발사 (은폐된 경우) 는 누락될 수 있어 북한의 실제 능력을 과소평가할 위험이 있음.\n- **교란 변수**: 북한의 공백이 내부 경제 위기나 리더십 교체 등 내부 요인 때문일 가능성도 배제할 수 없음.\n\n[경쟁설명]\n대안 이론 A (공격적 현실주의 - Offensive Realism):\n- 예측: 권력 격차 (미-북) 가 확대되거나 미국의 전략적 공백이 드러날 때, 북한은 도발 빈도를 증가시켜 체제 생존을 위한 억지력을 강화하려 할 것이다.\n- 실측: ACLED 데이터상 2025.06 이후 분쟁 건수 177 건 → 2 건 (급감).\n- 판정: 열세 — 예측 '도발 증가' vs 실측 '급감' — 방향 불일치 (공격적 현실주의는 공백기를 공격 기회로 보아야 하나, 실제 행동은 정지).\n\n대안 이론 B (동맹 이론 - Alliance Theory):\n- 예측: 동맹 (북-중-러) 의 약속 강도가 유지되거나 강화될 때, 북한은 전략적 파트너 (중국) 의 외교 일정 (예: 전승절) 에 맞춰 도발을 자제하며 '전략적 동조'를 보일 것이다.\n- 실측: 2026.07 중국 전승절 80 주년 기념식 참석 (이재명 정부 시기 중국 방문), 공백기 유지.\n- 판정: 전제충족 (DV 미검증) — 정성 증거 (중국 방문, 외교적 협력) 는 예측 방향과 일치하나, '도발 자제'가 동맹 약속으로 인한 것인지는 정량적 인과 검증 불가.\n\n▶ 편차 비교 (사실): 공격적 현실주의 예측편차 (예측 '증가' vs 실측 '감소'로 방향 불일치) vs 동맹 이론 예측편차 (예측 '자제' vs 실측 '자제'로 방향 일치, 단 DV 미검증).\n▶ 당신의 판단 (연구자 몫): 공백이 '공격적 현실주의'의 기회 포착 실패인지, '동맹 이론'의 외교적 동조인지 연구자가 판정. (쟁점: 동맹 약속의 강도가 도발 자제의 유일한 원인인지, 혹은 내부 고도화 필요성인지 구분 불가)\n\n[검증포인트]\n- 2026 년 8 월 이후 북한의 미사일 발사 재개 여부 및 유형 (ICBM vs 전술핵) 확인.\n- 중국-북한 간 군사협력 밀도 (교역량, 고위급 방문 빈도) 의 정량 데이터 확보.\n- 미국 태평양 사령부의 미사일 재고 회복 보고서 (C-130 수송 빈도, 생산 라인 가동률) 확인.\n\n[문헌공백]\n기존 문헌은 '교차도메인 밀도'가 희박한 **military(군사) 섹터**와 **경제/외교 섹터**의 연결을 충분히 다루지 못한다. 특히 '③ 교차도메인 밀도' 원장에 명시된 바와 같이, 군사적 공백이 외교적 일정 (중국 전승절) 과 미국의 재고 소진 (이란전 파급) 이 동시에 교차하는 지점을 분석한 연구가 부재하다. 기존 연구는 공백을 단순한 '도발 정지'로만 해석하거나, 특정 도메인 (군사 또는 외교) 에만 국한하여 분석했으나, 본 분석은 **군사적 공백이 외교적 동조와 미국 방어 공백의 '결합'으로 재구성될 수 있음**을 지적하여, 단일 도메인 분석의 사각지대를 메우는 기여를 한다.\n\n---\n\n[헤드라인] [탐색적] 2025 년 말 이후 북한 미사일 활동 공백기는 '비확산'의 신호가 아닌, **비대칭 전력 (드론·사이버) 으로 도발 패턴이 전이**되는 과도기적 현상과 동반된다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n미사일 발사가 중단되면 북한의 위협 수준이 전체적으로 하락하며, 이는 평화적 분위기 조성 또는 대화 국면 진입의 신호로 해석된다.\n\n[비자명기여]\n통념은 '미사일 발사 중단 = 위협 감소'로 단순화하지만, 본 분석은 **CSIS 테러 보고서 (2026)** 에서 지적한 'UAS(무인기)·AI 테러 활용 급증' 트렌드가 한반도에도 적용될 가능성을 제기한다. 즉, 미사일 공백기는 고비용·고위험인 미사일 도발 대신, 저비용·저탐지성인 **드론 및 사이버 도발로 패턴이 전이 (Contagion Shift)** 되고 있음을 의미할 수 있다. 이는 '위협 감소'가 아닌 '위협 양상의 비대칭적 변화'라는 범위조건을 제공한다.\n\n[관찰]\n- ACLED 한반도 분쟁 이벤트: 2025.06 (177 건) → 2026.07 (2 건) — 전통적 군사 충돌 감소.\n- CSIS 글로벌 테러 위협 평가 2026: 아프리카 지하디스트가 무장 드론을 빠르게 채택하고 있으며, 이슬람국가는 AI 플랫폼 활용 테러 모의 지침 배포. 미국 내 테러 공격은 2025 년 40 건 (전년 대비 +60%) 으로 증가.\n- 북한 행위자 프로파일: 전술핵 다종화 (핵 어뢰·포탄·순항미사일) 및 러시아·중국과의 군사협력 지속.\n- 2026 년 7 월 기준, 북한은 남한 측에 댐 방류 등 '비군사적'이지만 긴장을 유발하는 행위를 보임.\n\n[주장]\n(등급: 상관) 전통적 미사일 발사 건수의 감소는 **UAS(무인기) 및 사이버 도발 빈도 증가**와 **상관한다**는 가설 하에, 북한의 도발 패턴이 고강도 군사 행동에서 저강도 비대칭 행동으로 전이되는 과도기적 현상과 동반된다.\n\n[가설]\nH1: \"2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula) 가 감소할 때, 북한 유래 사이버 공격 또는 드론 침범 사건 건수 (CSIS 테러 DB 또는 한국 국방부 발표) 가 통계적으로 유의하게 증가한다.\" (통제변수: 국제사회의 감시 강도, 남한 방공망 상태)\n\n[근거]\n- ACLED: 미사일 관련 분쟁 건수 급감 (2025.06~2026.07).\n- CSIS 테러 보고서: 전 세계적으로 UAS·AI 테러 활용 급증 트렌드 (아프리카 사례).\n- 북한 프로파일: 순항미사일, 핵 어뢰 등 비대칭 전력 다종화.\n\n[한계]\n- **데이터 부재**: context 에 북한-specific UAS/사이버 도발 건수의 정량 데이터가 없으므로, 전이 현상은 CSIS 의 일반적 트렌드와 북한의 프로파일링에 기반한 추론에 그침.\n- **생존편향**: 사이버 공격이나 드론 침범은 은폐되기 쉬워 ACLED 등 공개 DB 에 기록되지 않을 수 있어 실제 전이 규모를 과소평가할 위험.\n\n[경쟁설명]\n대안 이론 A (공격적 현실주의 - Offensive Realism):\n- 예측: 권력 격차가 발생할 때, 북한은 기존 무기를 고도화하거나 새로운 무기 체계 (핵 어뢰 등) 를 집중적으로 개발하여 대미 억지력을 극대화하려 할 것이다.\n- 실측: ACLED 상 미사일 발사 건수 감소 (2 건).\n- 판정: 전제충족 (DV 미검증) — '개발'이라는 행위는 ACLED 의 '분쟁 이벤트'로 직접 포착되지 않으므로, 개발 중인지 전이 중인지 DV(도발 건수) 미검증.\n\n대안 이론 B (자유주의 상호의존 - Liberal Interdependence):\n- 예측: 경제적 상호의존 (중·러와의 교역) 이 심화될수록 군사적 충돌 비용이 증가하여 도발 빈도가 감소할 것이다.\n- 실측: 2026.07 북중 정상회담 (전승절 참석) 및 북러 군사협력 지속.\n- 판정: 전제충족 (DV 미검증) — 상호의존이 도발 감소로 이어졌을 가능성은 있으나, '경제적 동기'만으로 도발 패턴의 '비대칭 전이'를 설명하지는 못함.\n\n▶ 편차 비교 (사실): 공격적 현실주의 (예측 '고도화' vs 실측 '건수 감소' — 개발 중일 가능성 열어둠) vs 자유주의 (예측 '감소' vs 실측 '감소' — 방향 일치).\n▶ 당신의 판단 (연구자 몫): 도발 감소가 '경제적 억제' 때문인지, 아니면 '무기 체계 전이 (고도화)'를 위한 시간 확보인지 연구자가 판정. (쟁점: '건수 감소'라는 DV 가 '전체 위협'의 대리지표가 될 수 있는가?)\n\n[검증포인트]\n- 한국 국방부 및 합동참모본부의 '북한 드론 침범' 및 '사이버 공격' 관련 월별 통계 확보 (2025.06~2026.07).\n- 북한 내 드론 생산 시설 또는 사이버 부대 (121 국 등) 의 활동 관련 위성 이미지 또는 탈북자 증언 수집.\n- CSIS 테러 보고서의 UAS 활용 트렌드가 동북아에 적용되는지 확인.\n\n[문헌공백]\n기존 문헌은 **③ 교차도메인 밀도** 원장에서 지적한 바와 같이 'military(군사)' 섹터에 집중되어 있어, **군사적 공백이 '사이버/드론' 도메인으로의 전이**를 설명하는 교차 경로를 다루지 못한다. 기존 연구는 미사일 발사 중단 자체를 종속변수로만 분석했으나, 본 분석은 **군사 도발의 공백이 다른 도메인 (UAS/사이버) 의 활성화로 전이되는 메커니즘**을 제시하여, 단일 도메인 분석의 한계를 보완한다. 특히 CSIS 가 지적한 'UAS·AI 테러' 트렌드가 국가 행위자 (북한) 에게 어떻게 적용되는지에 대한 문헌 공백을 메우는 기여를 한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [검정불가] 2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula conflict events) → 미국의 서태평양 정밀유도무기 재고 부족으로 인한 억지력 약화 지수 (미사일 재고 보고서 기반) — 데이터 매핑 실패",
+        "confidence_word": "검정불가",
+        "routing_method": "construct_validity_fail",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "질문 대상을 커버하는 데이터 확보 후 재검정"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula conflict events) 가 감소할 때, 미국의 서태평양 정밀유도무기 재고 부족으로 인한 억지력 약화 지수 (미사일 재고 보고서 기반) 가 상승한다.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula conflict events)",
+        "dependent_var": "미국의 서태평양 정밀유도무기 재고 부족으로 인한 억지력 약화 지수 (미사일 재고 보고서 기반)",
+        "control_vars": [
+          "중·러 군사협력 수준",
+          "국제사회 제재 강도"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "ZW=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "[구성타당도] IV 지목 대상(North Korea) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 South Korea(99%). [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 78건 실재. 데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "[구성타당도] IV 지목 대상(North Korea) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 South Korea(99%). [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 78건 실재. 데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]",
+        "data_signature": "",
+        "method_result": {
+          "skipped": true,
+          "skip_reason": "construct_validity_fail",
+          "iv_construct": {
+            "named_countries": [
+              "North Korea"
+            ],
+            "named_share": 0.0,
+            "named_n": 0,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": "North Korea",
+            "global_named_n": 78,
+            "fail_kind": "IV_MISROUTE"
+          }
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [검정불가] 2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula) → 북한 유래 사이버 공격 또는 드론 침범 사건 건수 (CSIS 테러 DB 또는 한국 국방부 발표) — 데이터 매핑 실패",
+        "confidence_word": "검정불가",
+        "routing_method": "construct_validity_fail",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "질문 대상을 커버하는 데이터 확보 후 재검정"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula) 가 감소할 때, 북한 유래 사이버 공격 또는 드론 침범 사건 건수 (CSIS 테러 DB 또는 한국 국방부 발표) 가 통계적으로 유의하게 증가한다.",
+        "h0": "2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula) 가 감소할 때, 북한 유래 사이버 공격 또는 드론 침범 사건 건수 (CSIS 테러 DB 또는 한국 국방부 발표) 가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "2025 년 6 월 이후 북한 미사일 발사 건수 (ACLED korean_peninsula)",
+        "dependent_var": "북한 유래 사이버 공격 또는 드론 침범 사건 건수 (CSIS 테러 DB 또는 한국 국방부 발표)",
+        "control_vars": [
+          "국제사회의 감시 강도",
+          "남한 방공망 상태"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "[구성타당도] IV 지목 대상(North Korea) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 South Korea(99%). [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 78건 실재. 데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "[구성타당도] IV 지목 대상(North Korea) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 South Korea(99%). [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 78건 실재. 데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]",
+        "data_signature": "",
+        "method_result": {
+          "skipped": true,
+          "skip_reason": "construct_validity_fail",
+          "iv_construct": {
+            "named_countries": [
+              "North Korea"
+            ],
+            "named_share": 0.0,
+            "named_n": 0,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": "North Korea",
+            "global_named_n": 78,
+            "fail_kind": "IV_MISROUTE"
+          }
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

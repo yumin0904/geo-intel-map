@@ -1,0 +1,363 @@
+{
+  "schema_version": "0.1",
+  "id": "berbera-somaliland-corridor",
+  "generated_at": "2026-07-11T16:45:59Z",
+  "engine_version": "9.46.2",
+  "query": "소말릴란드 베르베라 항 개발이 아덴만 물류 재편에서 갖는 위치",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "indian_ocean",
+    "bab_el_mandeb"
+  ],
+  "sectors": [
+    "maritime",
+    "chokepoints"
+  ],
+  "briefing_refs": [
+    "[War on the Rocks] 승인의 문제: 소말릴란드, 이스라엘 안보 기하학, 홍해 패권 경쟁",
+    "사례: 2023 후티 홍해 공격 — 비국가 행위자의 SLOC 차단",
+    "제재: 후티 (예멘) (US, UK, UN)",
+    "SLOC 통제 이론 (Chokepoint & Sea Lines of Communication)",
+    "하이브리드 전쟁 (Hybrid Warfare)"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 0,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3215,
+    "fred": 0,
+    "wbk": 4,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 4,
+    "semi": 0,
+    "owid": 6,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.898) · 극단P90(p=0.9816) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+    "speculative": false
+  },
+  "result_md": "## 인사이트 카드 1: 초크포인트 물리적 통제 vs. 대체 항로 흡수력\n\n```markdown\n[헤드라인] [탐색적] 소말릴란드 베르베라 항 개발은 바브엘만데브 초크포인트의 전략적 가치 약화와 동반된다 (대체 항로 가용성 증가)\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 소말릴란드 베르베라 항의 개발은 홍해-수에즈 경로의 대체항로로 작용하여, 바브엘만데브 해협 (후티 등 비국가 행위자 위협) 에서의 봉쇄 리스크가 발생했을 때 물류 재편의 핵심 해법이 될 것이다. 즉, '초크포인트 통제 위협'이 '대체항로 필요성'을 직접적으로 유발한다.\n\n[비자명기여] 통념은 '위협 발생 → 대체항로 활성화'라는 단순 선형 인과를 가정하나, 실측 데이터는 '위협 발생에도 유가/운임 급등이 제한적 (2024~2025)'임을 보여준다. 베르베라 항의 전략적 가치는 단순히 '물리적 대체'가 아니라, **초크포인트 위협이 가격 충격 (Price Shock) 으로 전이되는 임계값을 상향시키는 '완충 메커니즘'**으로 작동한다. 즉, 초크포인트가 물리적으로 차단되더라도, 기존에 존재하던 (또는 빠르게 구축 가능한) 우회 항로 (희망봉 등) 와 비축유 방출, OPEC+ 여유 생산능력이 결합되어 가격 전이를 차단하는 '이중 안전장치'가 존재할 때, 베르베라 항의 가치는 '필수 대체항'이 아닌 '비용 최적화 수단'으로 제한된다.\n ↳ [비자명기여 재료] 〈SLOC 통제 이론〉 예측 임계: 초크포인트 위협 강도 증가 시 운임·유가 단기 급등. 반례: 후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025 — 미국 전략비축유 방출·OPEC+ 여유 생산능력·우회 항로 흡수로 전이 차단.\n\n[관찰] \n1. 바브엘만데브 해협 통과량: 6.2 백만 배럴/일 (Mbpd) [EIA].\n2. 2025 년 4 월~7 월 ACLED 바브엘만데브 분쟁 건수 급감: 2025-04 (1,246 건) → 2025-07 (226 건) [ACLED].\n3. 2026 년 6 월~7 월 분쟁 건수: 2 건 → 1 건 (분쟁 강도 급감) [ACLED].\n4. Brent 원유 가격: 80.22 USD/배럴 (2024-01-01 기준, 최근 추세 +91.7% 변동성 존재하나 초크포인트 위협과 직접 연동성 미확인) [FRED].\n5. 이스라엘의 소말릴란드 승인 (2025.12) 은 베르베라 항을 통한 정보·감시·해군 접근권 확보를 목적으로 함 [War on the Rocks].\n\n[주장] (등급: 상관) 바브엘만데브 해협의 분쟁 강도 감소와 소말릴란드 베르베라 항의 전략적 가치 상승 (이스라엘 승인 등) 은 공변한다. 그러나 초크포인트 위협 강도 증가는 반드시 유가 급등 (가격 전이) 을 유발하지 않으며, 이는 대체 항로 및 비축 시스템의 존재와 상관한다.\n\n[가설] H1: 바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 분쟁 건수가 월 1,000 건 이상일 때, WTI 유가가 통계적으로 유의하게 상승하나 (통제: OPEC+ 생산량, 비축유 방출), 2024~2025 년 데이터는 이 상관관계를 약화시키는 교란변수 (대체항로·비축) 의 존재를 시사한다.\n(참고: 현 데이터로 검증 가능한 정량 가설은 '분쟁 건수'와 '유가'의 상관관계이나, 교란통제 데이터가 부족하여 인과 검증은 전제충족(DV 미검증) 단계)\n\n[근거] \n- ACLED: bab_el_mandeb 분쟁 건수 2025-04 (1,246) → 2025-07 (226) [사전계산].\n- EIA: Bab el-Mandeb 통과량 6.2 Mbpd.\n- War on the Rocks: 이스라엘의 소말릴란드 승인 및 베르베라 항의 안보 아키텍처화.\n- FRED: Brent Crude Price 80.22 USD/barrel (2024-01-01).\n\n[한계] \n1. 선택편향: '차단에 성공한' 공격 (유가 상승) 과 '차단 실패' (유가 안정) 를 구분하여 분석하지 않음. 후티의 공격이 실패했기 때문에 유가가 안정된 것인지, 아니면 대체항로가 작동했는지를 분리하기 어려움.\n2. 데이터 부재: 베르베라 항의 실제 화물 처리량 증가율과 이 항로를 이용한 선박 수의 구체적 데이터가 [UNVERIFIED] 상태.\n\n[경쟁설명]\n이론: SLOC 통제 이론 (Chokepoint & Sea Lines of Communication)\n예측: 바브엘만데브 초크포인트 위협 강도 증가 (분쟁 건수 증가) 시, 글로벌 무역/에너지 흐름 교란 (유가/운임 급등) 발생.\n실측: 2025-04 (1,246 건) → 2025-07 (226 건) 분쟁 감소. 유가는 80.22 USD/barrel 수준 유지 (급등 제한적). (전제충족: 분쟁 감소 예측과 일치하나, 위협이 있었을 때의 유가 반응은 [UNVERIFIED] DV 정량값 부재)\n판정: 전제충족 (DV 미검증) — 분쟁 감소는 관찰되나, '위협 발생 시 유가 급등'이라는 핵심 예측에 대한 실측 데이터 (2024~2025 후티 공격 시 유가 반응) 는 [UNVERIFIED]로, 방향성만 확인됨.\n\n이론: 자원무기화 (Resource Weaponization) (Hirschman)\n예측: 초크포인트 통제력 (물리적 봉쇄 능력) 증가는 피의존국 (수입국) 의 정치적 양보 (가격 수용, 군사적 타협) 를 유발.\n실측: 2024~2025 후티 공격에도 유가 급등이 제한됨. (전제충족: DV 미검증)\n판정: 전제충족 (DV 미검증) — 초크포인트 위협이 증가했음에도 가격 무기화 (유가 급등) 가 실패했으므로, 이 이론의 예측과 실측 편차 발생 (예측 '가격 상승' vs 실측 '제한적 상승').\n\n▶ 편차 비교 (사실): SLOC 통제 이론 (분쟁 감소→유가 안정, 방향 일치) vs 자원무기화 이론 (위협 증가→가격 상승, 방향 불일치/제한적).\n▶ 당신의 판단 (연구자 몫): 두 이론 중 어느 것이 '초크포인트 위협이 가격에 미치는 영향'을 더 잘 설명하는가? (쟁점: 후티 공격이 '위협'이었으나 '실질 봉쇄'가 아니었으므로, 자원무기화 이론의 전제조건인 '봉쇄'가 충족되지 않아 비교가 불가능한가?)\n\n[검증포인트]\n1. 2024~2025 후티 홍해 공격 기간 중 WTI/Brent 유가의 일별 변동률과 ACLED 해상 인시던트 건수의 상관분석 (교란변수: OPEC+ 생산량, 전략비축유 방출량).\n2. 베르베라 항의 실제 화물 처리량 (TEU) 및 통과 선박 수 (2024~2026) 데이터 확보.\n3. 대체 항로 (희망봉) 이용 선박의 연료 비용 증가분과 베르베라 항 이용 비용 비교 데이터.\n\n[문헌공백]\n기존 문헌은 '초크포인트 통제'를 물리적 차단 (Physical Blockade) 과 가격 충격 (Price Shock) 의 자동적 연결로 간주하나, 〈SLOC 통제 이론〉의 반례 클러스터에서 보듯 2024~2025 년 후티 공격 시 유가 급등이 제한된 사례가 이를 반박한다. 기존 연구는 '대체항로 가용성'과 '비축 시스템'이 초크포인트 위협의 전이를 차단하는 '임계값 (Threshold)'을 충분히 다루지 못했다. 소말릴란드 베르베라 항의 가치는 단순한 대체항로가 아니라, 이러한 '전이 차단 메커니즘'을 가동하는 **구조적 완충제**로서 기능하는 점을 기존 문헌 (물리적 통제 중심) 이 놓치고 있다. 이는 〈교차도메인 밀도〉에서 'chokepoints' 섹터가 '에너지 시장'과 '대체항로 인프라'의 연결고리를 다루지 못한 사각지대와 일치한다.\n```\n\n## 인사이트 카드 2: 해군력 투자 vs. 비국가 행위자의 비대칭 위협\n\n```markdown\n[헤드라인] [탐색적] 소말릴란드 베르베라 항 개발은 해군력 투자의 한계를 보완하는 '비국가 행위자 억제' 아키텍처와 동반된다 (Mahan 이론의 비국가 확장 필요성)\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 소말릴란드 베르베라 항의 개발은 미국이나 동맹국의 해군력 (Mahan 의 해양력) 이 미치지 못하는 빈 공간을 메꾸기 위해, 해당 국가 (소말릴란드) 에 군사 기지를 설치하여 해군력을 투명한 것으로 확장하는 전략이다. 즉, '해군력 투자 증가'가 'SLOC 통제 범위 확대'를 직접 유발한다.\n\n[비자명기여] 통념은 '해군력 = 함대 규모'라는 Mahan 식 정량적 접근을 따르지만, 소말릴란드 사례는 **비국가 행위자 (후티 등) 에 대한 억지는 함대 규모가 아닌 '정보·감시·접근권 (Access)'의 국지적 확보**에 달려 있음을 보여준다. 베르베라 항의 가치는 거대 함대를 정박시키는 것이 아니라, **비국가 행위자의 회색지대 작전을 실시간으로 감시하고 선제적으로 제압할 수 있는 '정보 허브'**로 기능하는 것이다. 이는 〈코르벳 제한적 제해권 이론〉의 현대적 변형으로, 열세 행위자 (비국가) 가 우세 해군력 (미국) 을 무력화하는 비대칭 전술 (드론·기뢰) 에 대응하기 위해, 거대 함대 대신 '소규모·고정밀·정보중심'의 접근권을 확보하는 전략적 전환이 필요하다.\n ↳ [비자명기여 재료] 〈코르벳 제한적 제해권 이론〉 예측 임계: 해군력 열세 행위자가 함대 보존 + 해상 교통로 위협 전략 선택 시 우세 행위자의 SLOC 이용 비용 증가. 반례: 러시아 흑해 함대 (우크라이나전) — 열세에도 드론·미사일로 우세 흑해 함대 일부 격침.\n\n[관찰]\n1. 바브엘만데브 분쟁 건수: 2025-04 (1,246 건) → 2025-07 (226 건) 급감 [ACLED].\n2. 이스라엘의 소말릴란드 승인 (2025.12): 베르베라 항을 통한 정보·감시·해군 접근권 확보 [War on the Rocks].\n3. 미국 해군력: 군비 3.3% GDP (2023), 핵탄두 3,748 기 [Our World in Data].\n4. 후티의 비국가 해상 위협: 회색지대 전술 (기뢰, 드론, 나포) 로 SLOC 통제 시도 [War on the Rocks].\n5. CSIS 보고서: 중국의 조선 지배력 (50%) 이 미국의 SLOC 통제에 실존적 위협 [CSIS].\n\n[주장] (등급: 상관) 소말릴란드 베르베라 항의 개발 (정보·접근권 확보) 과 바브엘만데브 해협의 분쟁 강도 감소는 공변한다. 이는 거대 해군력 (Mahan) 만으로는 비국가 행위자의 회색지대 위협을 완전히 통제할 수 없으며, 국지적 정보 접근권이 보완적으로 작용할 가능성을 시사한다.\n\n[가설] H1: 소말릴란드 베르베라 항의 정보·감시 인프라 가동률 증가 시, 바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수가 통계적으로 유의하게 감소한다 (통제: 미국 해군 순찰 빈도, 동맹군 증파).\n(참고: 베르베라 항의 가동률 데이터가 [UNVERIFIED] 이므로, 현 데이터로 검증 가능한 정량 가설은 '정보 접근권 확보'와 '분쟁 감소'의 상관관계만 확인됨)\n\n[근거]\n- ACLED: bab_el_mandeb 분쟁 건수 2025-04 (1,246) → 2025-07 (226) [사전계산].\n- War on the Rocks: 이스라엘의 소말릴란드 승인 및 베르베라 항의 안보 아키텍처화.\n- Our World in Data: 미국 군비 3.3% GDP.\n- CSIS: 미국 조선 점유율 0.1%, 중국 50% (해양력 경제 위기).\n\n[한계]\n1. 인과 방향 불명확: 분쟁 감소가 베르베라 항 개발 때문인지, 아니면 후티의 전술 변화나 지역 정치 상황 변화 때문인지 구분 불가.\n2. 생존편향: '차단에 성공한' 사례 (분쟁 감소) 만 관찰되고, '차단 실패' (분쟁 지속) 사례는 기록되지 않았을 수 있어 과대평가 위험.\n3. 데이터 부재: 베르베라 항의 구체적인 군사·정보 활동 데이터가 [UNVERIFIED].\n\n[경쟁설명]\n이론: 마한의 해양력 이론 (Sea Power Theory)\n예측: 해군력 투자 증가 (함대 규모, 기지 수) 시 SLOC 통제 범위 확대 및 상업 운송 안전도 향상.\n실측: 미국 군비 3.3% GDP (2023), 핵탄두 3,748 기. 그러나 바브엘만데브 분쟁 건수 2025-04 (1,246) → 2025-07 (226) 감소. (전제충족: DV 미검증)\n판정: 전제충족 (DV 미검증) — 해군력 투자와 분쟁 감소가 관찰되나, '해군력 증가가 직접적으로 분쟁을 감소시켰다'는 인과관계는 DV(분쟁 감소의 원인) 가 [UNVERIFIED] 로 확인되지 않음.\n\n이론: 코르벳 제한적 제해권 이론 (Corbett's Limited Sea Control)\n예측: 해군력 열세 행위자 (비국가) 가 함대 보존 + 해상 교통로 위협 전략 선택 시, 우세 행위자의 SLOC 이용 비용 증가.\n실측: 후티 (열세) 가 비국가 작전으로 SLOC 위협. 분쟁 건수 2025-04 (1,246) → 2025-07 (226) 감소. (전제충족: DV 미검증)\n판정: 전제충족 (DV 미검증) — 열세 행위자의 위협 전략이 존재했으나, SLOC 이용 비용 (유가/운임) 이 급등하지 않고 분쟁이 감소한 점은 이 이론의 예측과 상반될 수 있음 (즉, 우세 행위자의 대응이 효과적이었거나, 위협이 제한적임).\n\n▶ 편차 비교 (사실): 마한 이론 (해군력 투자→분쟁 감소, 방향 일치) vs 코르벳 이론 (열세 위협→SLOC 비용 증가, 방향 불일치/제한적).\n▶ 당신의 판단 (연구자 몫): 두 이론 중 어느 것이 '비국가 행위자에 대한 SLOC 통제'를 더 잘 설명하는가? (쟁점: 마한 이론은 '규모'를 강조하지만, 코르벳 이론은 '비대칭 대응'을 강조하는데, 베르베라 항은 어느 쪽에 더 부합하는가?)\n\n[검증포인트]\n1. 베르베라 항의 정보·감시 활동 개시일과 ACLED 해상 인시던트 발생 시점의 시계열 분석 (Granger 인과검정).\n2. 미국 해군 순찰 빈도 (Patrol Frequency) 와 베르베라 항 가동률의 상관관계 분석.\n3. 후티의 드론·기뢰 공격 성공률과 베르베라 항의 정보 공유 데이터 비교.\n\n[문헌공백]\n기존 문헌은 '해양력'을 해군의 함대 규모와 기지 수 (Mahan) 로 정의하나, 〈코르벳 제한적 제해권 이론〉의 반례 클러스터 (러시아 흑해 함대, 우크라이나전) 에서 보듯, 현대 전쟁에서는 **비국가 행위자 (드론, 기뢰) 가 거대 함대를 무력화**할 수 있음을 보여준다. 기존 연구는 '비국가 행위자에 대한 SLOC 통제'를 해군력의 단순 확장으로만 보거나, 아예 비국가 행위자의 위협을 과소평가하는 경향이 있다. 소말릴란드 베르베라 항의 개발은 **비국가 행위자의 비대칭 위협을 '정보·감시'라는 비군사적 수단에 의해 억제**하는 새로운 메커니즘을 제시하며, 이는 〈교차도메인 밀도〉에서 '해양'과 '정보전'의 연결고리가 부족했던 문헌 공백을 메우는 사례이다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 분쟁 건수가 월 1,000 건 이상일 때, WTI 유가가 통계적으로 유의하게 상승하나 (통제: OPEC+ 생산량, 비축유 방출), 2024~2025 년 데이터는 이 상관관계를 약화시키는 교란변수 (대체항로·비축) 의 존재를 시사한다. → 미식별 — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 분쟁 건수가 월 1,000 건 이상일 때, WTI 유가가 통계적으로 유의하게 상승하나 (통제: OPEC+ 생산량, 비축유 방출), 2024~2025 년 데이터는 이 상관관계를 약화시키는 교란변수 (대체항로·비축) 의 존재를 시사한다.",
+        "h0": "바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 분쟁 건수가 월 1,000 건 이상일 때, WTI 유가가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 분쟁 건수가 월 1,000 건 이상일 때, WTI 유가가 통계적으로 유의하게 상승하나 (통제: OPEC+ 생산량, 비축유 방출), 2024~2025 년 데이터는 이 상관관계를 약화시키는 교란변수 (대체항로·비축) 의 존재를 시사한다.",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.898) · 극단P90(p=0.9816) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.898,
+        "granger_q": null,
+        "f_statistic": 0.269,
+        "best_lag": 4,
+        "differenced": true,
+        "n_obs": 456,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.269,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.898,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": 0.9816,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.898,
+                "granger_q": null,
+                "f_statistic": 0.269,
+                "best_lag": 4,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "소말릴란드 베르베라 항의 정보·감시 인프라 가동률 증가 시, 바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수가 통계적으로 유의하게 감소한다 (통제: 미국 해군 순찰 빈도, 동맹군 증파).",
+        "h0": "소말릴란드 베르베라 항의 정보·감시 인프라 가동률 증가 시, 바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "소말릴란드 베르베라 항의 정보·감시 인프라 가동률",
+        "dependent_var": "바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수",
+        "control_vars": [],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 bab_el_mandeb ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=bab_el_mandeb) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "소말릴란드 베르베라 항의 정보·감시 인프라 가동률 증가 시, 바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수가 통계적으로 유의하게 감소한다 (통제: 미국 해군 순찰 빈도, 동맹군 증파).",
+                "region": "bab_el_mandeb",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Europe and the Gulf have untapped strengths to counter great-power chaos",
+                        "date": "Wed, 01 Jul 2026 19:17:52 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The two regions should work together to increase their strategic autonomy through infrastructure projects, free trade"
+                      },
+                      {
+                        "title": "“Shoot everybody”: US contractors in San Diego court",
+                        "date": "Thu, 18 Jun 2026 19:56:44 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>In Season 2, Episode 16 of the Guns for Hire podcast, host Alia Brahimi is joined by Daniel McLaughlin, an internatio"
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "2026 Global Energy Agenda full survey results",
+                        "date": "Mon, 08 Jun 2026 19:07:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Global Energy Agenda takes the pulse of the energy community, revealing expert views on global energy security, a"
+                      },
+                      {
+                        "title": "Countering terrorist propaganda in the age of AI",
+                        "date": "Fri, 05 Jun 2026 16:35:13 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>More people are being exposed to violent propaganda online, and the time between seeing such content, recruitment by "
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

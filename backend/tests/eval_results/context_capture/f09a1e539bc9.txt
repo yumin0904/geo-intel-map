@@ -1,0 +1,364 @@
+query: 쿠바의 정권 불안정 징후가 미국-쿠바 관계 긴장에 미치는 영향을 분석해줘
+
+=== synthesis_ctx ===
+### 참조 브리핑
+- [CSIS] 경제력과 해양력의 관계 재검토 — 미국 조선 위기와 MAP·SHIPS법
+- [CSIS] 미국-태평양 안보 협력: 태평양의 시각 높이기
+- [War on the Rocks] 사라진 해군: 호르무즈 위기와 미국 인도-태평양 파트너십의 한계
+- [Chatham House] AI 버블 붕괴가 미국 기술 패권을 잠식하고 중국의 부상을 가속하는 방식
+- [War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다
+
+=== context_text ===
+## 분석 쿼리 요약
+- 지역: 미지정
+## 브리핑·이론 원문 (3개 전문 포함)
+
+- 행위자: USA
+- 섹터: 전체
+
+### [War on the Rocks (Cogs of War)] [War on the Rocks] 미국은 갈륨나이트라이드에서 실리콘 실수를 반복하고 있다
+[event_refs: China gallium export ban December 2024 US defense stockpile zero China gallium production 99 percent global share weaponization Innoscience GaN power device 30 percent market share 8-inch foundry US CHIPS Act Intel 7.8 billion subsidy 35500 layoffs failure NATCAST closure August 2025 GaN AN/SPY-6 radar Aegis BMD EA-18G Growler jammer defense systems heterogeneous integration 3D packaging GaN silicon digital backend Project Vault Trump 12 billion critical mineral stockpile 2026 ElementUS Minerals DPA Title III 299 million gallium support gallium nitride defense production act Title III manufacturing]
+
+## 핵심 주장
+
+- **중국은 갈륨 공급망을 이미 무기화했고, 미국 방위 시스템이 인질 상태다**: 2023년 수출 통제 → 2024년 12월 완전 금수 → 2025년 11월 일시 유예(군사 최종 사용자는 금수 유지, 2026년 11월 만료)로 단계적으로 압박을 강화했다. 금수 당시 미국 국방비축물자의 갈륨 보유량은 **0**이었다.
+- **GaN은 현대 레이더·전자전의 심장이다**: 고전압·고주파·극한 온도를 동시에 처리하는 GaN은 AN/SPY-6 해군 레이더, Aegis BMD, EA-18G Growler 재머에 이미 탑재됐다. 공급망 단절은 현역 방위 시스템의 유지·보수·확장을 동시에 위협한다.
+- **이종 집적이 해법이지만 미국은 설계만 하고 제조를 외주화하고 있다**: GaN 고주파 파워와 실리콘 디지털 백엔드를 3D 패키징으로 결합하는 이종 집적이 차세대 레이더의 핵심이다. 미국은 설계 IP를 보유하나 고용량 제조 인프라가 없다. 중국 Innoscience는 세계 최대 8인치 GaN 파운드리를 운영 중이다.
+- **실리콘 역사가 반복되고 있으나, 이번엔 질적으로 다른 위협이다**: 실리콘 실수는 대만(동맹)에 제조를 넘긴 것이었다. GaN 실수는 중국(직접 전략 경쟁자)에 제조 우위를 허용하는 것이다. 중국은 스위치를 언제든 다시 끌 수 있다.
+- **CHIPS법은 이미 실패 신호를 보이고 있다**: Intel $78억 지원 후 35,500명 해고, NATCAST 2025년 8월 폐쇄, TSMC 애리조나 팹 일정 2배 초과·비용 폭등. GaN에는 연구 프로토타입이 아닌 국방생산법 Title III 기반 생산 규모 이종 집적 인프라가 필요하다.
+
+## 주요 수치·데이터
+
+| 항목 | 수치 |
+|------|------|
+| 중국의 세계 1차 갈륨 생산 비중 | **99%** |
+| 중국 갈륨 수출 금수 발효 | **2024년 12월** |
+| 금수 당시 미국 국방비축물자 갈륨 | **0** |
+| 금수 일시 유예 | **2025년 11월** (군사 최종 사용자 금수 유지, 만료 **2026년 11월**) |
+| 중국 알루미늄 생산 증가 | 2000~2025년 **260만 → 4,500만 톤** |
+| 중국 갈륨 생산 증가 | 2000~2025년 **20 → 900 메트릭톤** |
+| Innoscience GaN 파워 디바이스 시장 점유율 | **30%** |
+| TSMC 글로벌 파운드리 시장 점유율 | 약 **70%** (2024) |
+| Intel CHIPS법 보조금 | **$78억** → 35,500명 해고 |
+| Project Vault (트럼프 행정부) | **$120억** 공공-민간 핵심 광물 비축 이니셔티브 (2026.02) |
+| 2030년 국내 갈륨 생산 목표 | 국내 소비의 **10~15%** (낙관적 전망) |
+| ElementUS Minerals DPA Title III 지원 | **$2억 9,900만** |
+
+## 주요 행위자
+
+| 행위자 | 역할 |
+|--------|------|
+| **중국** | 갈륨 공급망 무기화 주체, Innoscience 통한 GaN 파운드리 장악 |
+| **미국** | GaN 설계 강자이나 제조 인프라 부재 |
+| **Qorvo·Wolfspeed** | 미국 GaN 주요 기업 — 정부 지분 투자 권장 대상 |
+| **TSMC (대만)** | 실리콘 파운드리 지배, GaN 이종 집적 미진 |
+| **Intel** | CHIPS법 최대 수혜자이나 실질 성과 미흡 |
+| **MIT·UT Austin** | GaN 이종 집적 프로토타입 연구 — 생산 규모 미달 |
+| **국방부 경제방위유닛(EDU)** | 저자가 GaN 공급망 전략 실행 기관으로 제안 |
+
+## 위협의 성격
+
+| 위협 유형 | 강도 | 설명 |
+|-----------|------|------|
+| 경제·공급망 | ██████████░░░░ 주(主) | 갈륨 원자재 99% 중국 독점, 제조 역량 외주화 |
+| 군사·기술적 | ████████░░░░░░ 부(副) | 레이더·전자전 핵심 부품 공급 단절 위험 |
+| 산업정책 | ██████░░░░░░░░ 부(副) | CHIPS법 실패 반복, 이종 집적 인프라 부재 |
+
+**핵심 위협 성격**: 원자재 독점 + 제조 우위의 복합 장악 — 중국이 갈륨 스위치를 끄는 순간 미국 현역 방위 시스템의 유지·보수·확장이 동시에 위협받는다.
+
+## 정책 권고사항
+
+| # | 권고 |
+|---|------|
+| 1 | **DPA Title III 기반 이종 집적 전용 생산 시설 구축** — 보스턴·헌츠빌·DFW·샌디에이고 인근 이중 용도(방산+민수) 시설, 마일스톤 기반 생산 목표 의무화 |
+| 2 | **풀스택 GaN 공급망 스타트업 보조금·지분 투자 프로그램** — 웨이퍼 성장부터 첨단 패키징까지 전 단계 정부 직접 투자,
+...(이하 생략)
+
+### [CSIS] [CSIS] 경제력과 해양력의 관계 재검토 — 미국 조선 위기와 MAP·SHIPS법
+[event_refs: US shipbuilding decline 0.1 percent market share China CSSC shipbuilding 50 percent global 2023 MAP Maritime Action Plan White House 2026 SHIPS for America Act Congress EO 14269 maritime dominance Trump 2025 USTR China shipbuilding unfair practices investigation 2025 China port fees surcharge US ships 2025 US Navy shipyard cost overrun delay SLOC sea lane protection capacity allied shipbuilding Korea Japan investment strategic commercial fleet competitive bidding maritime sealift capacity wartime logistics]
+
+## 핵심 주장
+
+- **경제력-해양력 단절이 구조적 함정을 만들었다**: 낮은 수요 → 투자 억제 → 역량 저하 → 비용·시간 상승 → 수요 재억제의 악순환. 함정을 군사력으로만 해결하려는 시도는 근본적으로 실패한다.
+- **중국의 조선 지배력이 미국 해양 전략에 실존적 위협**: 중국 점유율 2000년 5% → 2023년 50% 이상. 미국은 0.1%(세계 19위). 중국은 세계 20대 수리조선소 17개 보유. CSSC는 2024년 한 해에만 WW2 이후 미국 조선업 전체 상업 건조량보다 더 많이 건조.
+- **상업 조선 재건이 해군 조선 비용 문제 해결의 핵심 레버**: 상업·해군 조선은 공급업체·인력 생태계 공유. 상업 조선 회복 없이 해군 조선소 만성 비용·역량 문제 해결 불가.
+- **MAP·SHIPS법은 올바른 방향이나 경쟁 강제 설계가 관건**: "국가 주도이지만 시장 설계로 읽혀야 한다." 수요·금융·인력·인프라·규제 확실성·동맹 채널을 자극하되, 경쟁이 비용을 낮추도록 강제해야 한다.
+- **Mahan의 해양력 사슬은 현재도 유효**: 생산→시장→해운→해양 안보의 연결. 현대 사슬은 조선소·항구·해기사·금융·소프트웨어·수리 역량·자율 시스템·동맹국 생산·상업 함대로 이어진다.
+
+## 근거와 데이터
+
+### 미-중 조선 역량 비교
+
+| 항목 | 미국 | 중국 |
+|------|------|------|
+| 세계 시장 점유율(2023) | **0.1%** (19위) | **50% 이상** (1위) |
+| 조선소 수 | **66개** (활성 건조 8개) | **300개+** |
+| 연간 상업 선박 건조 | **5척** | **1,700척** |
+| 세계 20대 수리조선소 보유 | 소수 | **17개** |
+| 국제 상업 운항 선적 선박 | **약 80척** | 세계 최대 |
+
+### 조선 시장 점유율 변화
+
+| 연도 | 중국 점유율 | 미국 점유율 |
+|------|-----------|-----------|
+| 2000 | **5%** | 상위권 |
+| 2023 | **50% 이상** | **0.1%** |
+
+### 주요 정책 타임라인
+
+| 날짜 | 정책 |
+|------|------|
+| 2025.01 | USTR 대중 조선·물류 섹터 불공정 지배 조사 개시 |
+| 2025.04 | EO 14269 — 트럼프 해양 지배력 회복 행정명령 |
+| 2025.11 | 중국 관련 선박 항만 수수료 부과 + **1년 유예** |
+| 2026.02 | 백악관 해양행동계획(MAP) 발표 |
+| 진행 중 | SHIPS for America Act 의회 발의 |
+
+## 주요 행위자
+
+| 구분 | 국가·기관 |
+|------|---------|
+| **재건 주체** | 미국 (USTR, 해사청, 해군, 운수사령부, 해안경비대) |
+| **경쟁 대상** | 중국 (CSSC — 세계 최대 조선 그룹) |
+| **잠재 동맹 파트너** | 한국·일본 (세계 2~3위 조선국, 미국 내 투자·기술 이전 후보) |
+| **국제 감시** | OECD (국가 보조금 효과 분석), USTR (대중 조사) |
+| **민간 생태계** | 조선소·해운사·해기사·금융기관·소프트웨어 공급업체 |
+
+## 위협의 성격
+
+| 위협 유형 | 강도 |
+|-----------|------|
+| 경제·산업 | ██████████ 주요 (시장 점유율 0.1%, 악순환 함정) |
+| 군사·전략 | ████████░░ 주요 (해군 건조 지연, 전시 병참 역량 부족) |
+| 공급망 | ██████░░░░ 중간 (조선소·인력·부품 생태계 공동화) |
+| 외교적 | ███░░░░░░░ 부차 (동맹 조선 역량 연계 여부) |
+
+## 지정학적 함의
+
+**Mahan 이론의 21세기 실증 — 생산 없이 해양력 없다**:
+`maritime_sea_power_mahan` 이론의 핵심인 '해양 상업→해군력→해양 안보'의 연결이 이 보고서에서 현대적으로 실증된다.
+중국이 세계 조선의 50%를 장악한 것은 단순한 산업 경쟁이 아니라 SLOC 통제 역량의 구조적 우위 확보다.
+→ 대만 유사시 미국의 전력 투사 역량이 조선소 생산성에 직접 의존.
+
+**경제전쟁 보고서와의 연결**:
+`briefing_20260500_csis_economic_warfare_military_power`에서 분석한 전환함수(conversion function) 표적화가 조선업에 그대로 적용된다.
+중국이 세계 조선을 장악 → 미국의 전쟁 수행 능력(conversion function)이 평시부터 잠식되는 구조.
+→ 제재·수출 통제보다 더 근본적인 "생산 역량 장악"이 최강의 경제전쟁.
+
+**미사일 재고 보고서·배틀랩과의 3중 연결**:
+미사일 재고 공백(재고) + 드론 배틀랩(교리) + 해양력 경제 위기(플랫폼·병참)가 삼위일체.
+군함 건조 지연 + 상업 해운 부재 = 전시 병참 역량(sealift)의 구조적 취약.
+→ 이 세 보고서가 모두 Benjamin Jensen 참여 — 동일 전략 서사의 세 레이어.
+
+**한국·일본의 전략적 가치 재
+...(이하 생략)
+
+### [War on the Rocks] [War on the Rocks] 사라진 해군: 호르무즈 위기와 미국 인도-태평양 파트너십의 한계
+[event_refs: South Korea vessel attacked Hormuz May 4 2026 US coalition request review Japan March 19 2026 Hormuz statement signed minesweeping capability India Operation Urja Suraksha independent non-aligned Hormuz escort Operation Prosperity Guardian Red Sea Asia participation Singapore Sri Lanka only Philippines national energy emergency March 24 2026 98 percent Middle East oil China Iran bilateral transit negotiation coalition non-participation Indonesia Malacca toll idea Indo-Pacific diplomatic friction Asia 80 percent Hormuz oil LNG Japan 95 percent Korea 70 percent dependency Asian navies superior European surface combatants submarines maritime patrol Taiwan Strait coalition failed rehearsal Hormuz lesson]
+
+## 핵심 주장
+
+- **호르무즈 봉쇄는 아시아 위기지만 아시아는 해결 논의에서 부재하다**: 호르무즈 통과 원유·LNG의 80% 이상이 아시아行이다. 일본 95%, 한국 70%, 필리핀 98%가 페르시아만 경유다. 경제적 피해가 가장 극심한 아시아가 해결 주체로는 등장하지 않는다.
+- **아시아 해군은 호르무즈 임무에 더 적합하나 참여하지 않는다**: 냉전 이후 유럽 해군은 주요 수상 전투함을 3분의 1 줄였다. 아시아 해군은 잠수함·주요 수상함·해상초계기 기준으로 유럽을 능가한다. 일본은 1950년대부터 쌓은 미 동맹국 중 최대 기뢰전 함대를 보유한다.
+- **아시아의 부재는 능력 부족이 아닌 전략 문화의 산물이다**: 홍해 후티 사태(2023~2025)에서도 의미 있게 기여한 아시아 국가는 싱가포르·스리랑카 2개국뿐이었다. 인도는 Operation Urja Suraksha를 독자 수행하며 비동맹 원칙을 고수했다.
+- **호르무즈는 미국 인도-태평양 연합 구축 능력의 실패한 예행연습이다**: 직접적 에너지 안보 이해관계가 걸려 있을 때도 참여하지 않는 파트너들이 대만해협·남중국해 위기에서 연합에 합류할 것이라는 기대는 근거가 없다.
+- **아시아 외교의 극단적 분절화가 구조적 장애물이다**: 남아시아·동남아시아·동아시아 정부들이 모여 임무를 개시할 다자 포맷이 없다. NATO·EU 수준의 수십 년 제도화 경험이 아시아에는 존재하지 않는다.
+
+## 주요 수치·데이터
+
+| 항목 | 수치 |
+|------|------|
+| 호르무즈 통과 원유·LNG 중 아시아行 비중 | **80% 이상** (2024 기준) |
+| 일본 원유 수입 중 페르시아만 의존도 | **95%** |
+| 한국 원유 수입 중 페르시아만 의존도 | **70%** |
+| 필리핀 원유 수입 중 중동 의존도 | **98%** |
+| 한국의 호르무즈 위기 대응 추경 예산 | **$170억** |
+| 필리핀 국가 에너지 비상사태 선포일 | **2026년 3월 24일** |
+| 2026년 상반기 글로벌 비료 가격 상승 전망 | **15~20%** |
+| 중국의 에너지 자급률 추정 | **85%** |
+| 유럽 해군 주요 수상 전투함 감소 (냉전 이후) | **3분의 1** |
+| 한국 선박 호르무즈 피격일 | **2026년 5월 4일** |
+| Operation Prosperity Guardian 의미 있는 아시아 참여국 | **싱가포르·스리랑카 2개국** |
+
+## 주요 행위자
+
+| 행위자 | 역할 |
+|--------|------|
+| **미국** | 연합 구축 시도 주체 — 한국에 참여 촉구 |
+| **한국** | 선박 피격 피해국, 참여 '검토' 응답 |
+| **일본** | 3월 19일 성명 서명, 세계 최대급 기뢰전 능력 보유 |
+| **인도** | 독자적 Operation Urja Suraksha 수행, 비동맹 원칙 고수 |
+| **중국** | 이란과 양자 통과 협상 — 다자 연합 불참 |
+| **프랑스** | 유럽 주도 독자 임무 추진 |
+| **싱가포르** | 아시아 내 예외적 다자 참여국 |
+| **이란** | 아시아 국가 선박 통과 허용 — 아시아의 중립성 활용 |
+| **인도네시아** | 말라카 해협 통행료 아이디어 제기 → 역내 외교 마찰 |
+
+## 위협의 성격
+
+| 위협 유형 | 강도 | 설명 |
+|-----------|------|------|
+| 외교·동맹 | ██████████░░░░ 주(主) | 아시아 연합 구축 실패, 전략 문화 분절, 다자 행동 기피 |
+| 경제·에너지 | ████████░░░░░░ 부(副) | 아시아의 호르무즈 의존, 식량·비료 가격 연쇄 충격 |
+| 군사·해양 | ██████░░░░░░░░ 부(副) | 소해 역량 미활용, 연합 작전 경험 부재 |
+
+**핵심 위협 성격**: 중국·이란의 직접 위협보다 **미국의 인도-태평양 연합 구축 역량의 구조적 한계** — 아시아 파트너들은 능력은 있지만 의지가 없다.
+
+## 지정학적 함의
+
+**글렌 스나이더 동맹 딜레마의 아시아 버전**:
+아시아 파트너들의 연합 거부는 방기(abandonment) 공포보다 연루(entrapment) 공포가 더 강하게 작동한다는 증거다. 미국 주도 연합에 참여하는 순간 이란·중국과의 양자 관계가 훼손되고 에너지 공급이 위협받는다는 계산이 능력보다 강력한 억제 요인이 된다. 이것이 스나이더 동맹 딜레마(`alliance_theory`)의 아시아적 현실화다.
+
+**`briefing_20260518_wotr_missiles_not_strategy_pacific_air`와의 연결**:
+이전 브리핑이 태평양 항공전에서 연합 전술 
+...(이하 생략)
+
+## 추가 관련 브리핑 (요약)
+- [Foreign Affairs] [Foreign Affairs] 중국의 AI 절도: 유통 패권 경쟁에서 지고 있는 미국
+  AI 경쟁의 전선이 개발에서 유통으로 이동했다. 중국은 DeepSeek 등 2만 4,000개 가짜 계정으로 Anthropic Claude에서 1,600만 건 이상의 기능을 탈취했다. 증류는 핵심 기능은 이전하지만 안전 장치는 이전하지 않아 사이버 위험을 내포한다. 로컬
+- [War on the Rocks] [War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다
+  트럼프 관세 정책이 선제적으로 소진시킨 기업 버퍼 위에 이란전 유가 충격이 덮치며 복합 위기가 형성됐다. 경제적 취약성이 군사력 투사의 상한선(ceiling)으로 기능하기 시작했고, 베이징은 이를 미국 강압 능력 한계에 대한 실시간 케이스 스터디로 활용하고 있다. 복합
+- [CSIS] [CSIS] 아랍 걸프 국가들이 바라보는 미-이란 합의 — 안도와 우려의 혼합
+  미-이란 전쟁(2026.2.28 개전) 이후 GCC 전체 에너지 인프라가 이란 공격을 받고, 카타르 LNG 생산량 20%가 파괴됐다. 60일 휴전 MOU로 재앙은 일단 막혔으나 강경 이란 정권은 온존. 걸프 국가들은 방위 파트너 다변화(UAE-프랑스, 카타르-캐나다)와
+- [CSIS] [CSIS] 미국-태평양 안보 협력: 태평양의 시각 높이기
+  태평양 도서 지역은 지정학·심해광물·기후변화가 교차하는 핵심 전략 무대로 부상. 그러나 미국의 관여는 대중국 견제 중심으로 설계되어 태평양 도서국들의 실제 안보 필요(사이버·보건·경제·해양)와 미스매치. 진정한 파트너십을 위해 태평양의 목소리를 수용하는 방향으로 재설계
+- [CSIS] [CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창
+  이란전(Operation Epic Fury) 39일간 소진된 정밀유도무기 재고가 회복되기까지 수년간 서태평양(대만해협) 억지력에 취약 창이 형성된다는 CSIS 분석. 현 문제는 예산이 아니라 복잡한 무기체계 생산에 필요한 물리적 시간이며, 토마호크·THAAD·패트리어트
+
+## 행위자 국가 프로파일
+- **USA**: 역외균형자(Offshore Balancer). 동맹 허브로 인도-태평양·유럽·중동 3개 전선 동시 관리.
+  포지션=status_quo | 주요수단=military
+  주요위험: 동맹 확산(Entrapment) — 대만·이스라엘 분쟁 직접 개입 압력, 재정 부담 — 2개 전선 동시 억제의 군사비 지속 가능성, 기술 패권 경쟁 — 반도체·AI 수출통제 효과 한계
+
+
+## 문헌 공백 원장 (결정론적 추출 — [문헌공백] 작성 근거)
+  ⚠️ 아래는 라이브러리가 실제로 담은 주장·반례 지도다. [문헌공백]은 반드시 이 원장의 구체적 항목을 인용해 작성하라. 원장에 없는 막연한 '추가 연구 필요'는 금지.
+
+### ① 반례 클러스터 (이론이 깨지는 경계 — 논쟁 지점)
+- 〈구성주의 (Constructivism)〉 예측 임계: UN 총회 투표 동조율 80%+ 국가쌍 간 군사 충돌 확률이 60~79% 국가쌍 대비 통계적 유의 수준으로 낮음 (통제: 지리적 거리·경제 상호의존, COW MID 데이터) | 반례: 미중 관계(1970년대~2010년대): 경제 상호의존 심화에도 정체성 적대화 가속 — 상호의존이 정체성 수렴을 자동 보장하지 않음; 유럽 안보 공동체(OSCE 신뢰 체계): 2022년 러시아 침공으로 규범 붕괴 —…
+- 〈Granger 인과분석 (Granger Causality)〉 예측 임계: 지정학 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화 (p<0.05) | 반례: 한반도 긴장 → KRW 환율 인과는 VERIFIED(p=0.048)이지만 대만해협 → TSMC는 PARTIAL(p=0.067) — 지정학 충격이 항상 즉각 시장 전이되지 않음
+- 〈전망 이론 (Prospect Theory in IR)〉 예측 임계: 손실 도메인에 있는 지도자(기준점 이하 영토·동맹·경제 상태)가 이익 도메인 지도자 대비 군사 위기 고조(escalation) 선택 확률 1.5배 이상 (통제: 힘의 균형·국내 … | 반례: 미국의 쿠바 미사일 위기(1962): 케네디가 손실 도메인에서도 해상 봉쇄(중간 옵션) 선택 → 최대 위험 감수 아닌 중간 위험 — 손실 도메인 → 자동 극단 위험 감수 예측의 반례; 이라크 쿠웨이트 침공(1990…
+- 〈SLOC 통제 이론 (Chokepoint & Sea Lines of Communicati…〉 예측 임계: 초크포인트 위협 강도 증가 시 운임·유가 단기 급등 (통제: 비축유 방출·대체 운송로·완충 재고) | 반례: 후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025 — 미국 전략비축유 방출·OPEC+ 여유 생산능력·우회 항로 흡수로 전이 차단. 초크포인트 위협이 자동으로 가격 충격이 되지 않음 (위협 인식 ≠ 실…
+- 〈공유지 지배권 (Command of the Commons)〉 예측 임계: 중국 A2/AD 투자 증가(SIPRI) 시 미국 공유지 지배력 지수 약화 → 타국의 공유지 이용 제한 효과 감소 (통제: 미국 국방비) | 반례: 중국 ASBM(대함 탄도미사일) DF-21D·DF-26 개발 (2009~): 미 항모의 남중국해 접근 비용 급증 → 공유지 지배권의 지리적 후퇴 실증; 러시아 S-400·Iskander 시스템: 동유럽 상공 '공중…
+
+### ② 경쟁이론 미해결 (라이브러리가 충돌만 적고 판정 안 함)
+- 〈구성주의 (Constructivism)〉 ↔ Realism (Waltz·Mearsheimer) — 물질적 힘의 분포가 규범·정체성을 결정, 역 인과, Liberal Institutionalism (Keohane) — 제도·상호의존이 행동 변화의 주 동인, 규범은 부수적, Democratic Peace Theory (Doyle) — 정체성(민주 vs 비민주) 구분이 행동 변화의 핵심 — 구성주의와 부분 중첩
+- 〈Granger 인과분석 (Granger Causality)〉 ↔ Structural VAR (Sims), Cointegration Analysis (Engle-Granger), Counterfactual Causal Inference (Rubin)
+- 〈전망 이론 (Prospect Theory in IR)〉 ↔ Expected Utility Theory (Bueno de Mesquita) — 지도자는 기대 효용 극대화 합리 행위자, Poliheuristic Theory (Mintz) — 두 단계 결정: 국내 수용성 필터 → 합리 최적화 선택, Psychological Realism (Jervis) — 인지 편향·이미지·역사 오인이 위기 결정의 핵심 동인
+- 〈SLOC 통제 이론 (Chokepoint & Sea Lines of Communicati…〉 ↔ Resource Weaponization (초크포인트는 물리 통제가 아니라 자원 무기화 수단), Command of the Commons (미 해군의 압도적 제해권이 초크포인트 봉쇄를 무력화), Self-deterrence / Insurance Markets (실제 봉쇄보다 보험·자기억지 인식이 교란을 결정)
+  → 위 이론쌍 중 본 분석 쿼리에 해당하는 충돌을 실측으로 판정하면 그것이 기여.
+
+### ③ 교차도메인 밀도 (섹터별 주장 건수)
+- 분포: 기술패권 3건, 인도태평양 3건, 회색지대 2건, 해양 1건, 에너지 1건
+  → 기술패…
+## 국방비 추이 (SIPRI 2023, % of GDP / USD billion)
+- **United States** (USA): 2023년 GDP 3.4% $916.0bn
+  5년 추이: 2019:3.4% → 2020:3.7% → 2021:3.5% → 2022:3.5% → 2023:3.4%
+  출처: SIPRI Military Expenditure Database 2024
+
+## 공식 동맹 관계 (COW Formal Alliances v4.1)
+**방위조약 (Defense Pact)**
+- United States ↔ United Kingdom (1949~현재)
+- United States ↔ France (1949~현재)
+- United States ↔ Italy (1949~현재)
+- United States ↔ Canada (1949~현재)
+- United States ↔ Netherlands (1949~현재)
+- United States ↔ Belgium (1949~현재)
+- United States ↔ Norway (1949~현재)
+- United States ↔ Denmark (1949~현재)
+- United States ↔ Australia (1951~현재)
+- United States ↔ New Zealand (1951~현재)
+  출처: Correlates of War Formal Alliances v4.1
+
+## 에너지 생산·수출 현황 (EIA International Energy Statistics 2023)
+**주요 산유국 생산량 / 수출량 (Mbpd)**
+- **United States** (USA): 원유 13.3 / 수출 4.1 / 천연가스 103.5 Bcfd
+  출처: EIA International Energy Statistics 2024
+
+## 주요 사이버 사건 (CSIS Significant Cyber Incidents DB)
+- [2024-11] **Treasury Department Breach** | 행위자: Unknown → 피해: USA(government) | 유형: supply_chain
+  중국의 미국 재무부 BeyondTrust 공급망 공격. 재무장관 오피스 문서 접근
+- [2024-10] **Iran 2024 US Election Interference** | 행위자: Unknown → 피해: USA(election) | 유형: disinformation
+  이란의 미국 대선 개입. 트럼프 선거 캠프 해킹 시도 + 허위정보 캠페인. FBI·DNI 공동 발표
+- [2024-09] **Salt Typhoon Telecom Breach** | 행위자: Salt Typhoon → 피해: USA(telecom) | 유형: espionage
+  중국 Salt Typhoon의 미국 통신사 9곳 침투. FBI·NSA 고위 관리 감청
+- [2024-08] **Volt Typhoon 2 - Infrastructure Persistence** | 행위자: Volt Typhoon → 피해: USA(critical_infra) | 유형: espionage
+  볼트 타이푼의 미국 항구·수도·에너지 인프라 내 장기 잠복 확인 (CISA 경고)
+- [2024-04] **Volt Typhoon Guam Cyber Pre-positioning** | 행위자: Volt Typhoon → 피해: USA(military) | 유형: espionage
+  미국 괌 군사 기지 OT 네트워크 침투 확인. 대만 분쟁 시 조기 마비 포석
+- [2023-12] **Unitronics PLC Attack** | 행위자: Cyber Av3ngers → 피해: USA(energy) | 유형: sabotage
+  이란 연계 해커의 미국 수도 처리 시설 OT 시스템 공격
+- [2023-10] **Iran IRGC Water Utility Attacks** | 행위자: Cyber Av3ngers → 피해: USA(energy) | 유형: sabotage
+  이란 IRGC 연계 해커의 미국 10개 주 수도 시설 OT 공격 시리즈. Unitronics PLC 취약점 악용
+- [2023-06] **Microsoft Cloud Breach (Storm-0558)** | 행위자: Unknown → 피해: USA(telecom) | 유형: espionage
+  중국 Storm-0558의 MS 클라우드 이메일 시스템 침투. 국무장관·대사 이메일 접근
+  출처: CSIS Strategic Technologies Program 2024
+
+## 행위자 체제 유형 (V-Dem Democracy Index v14)
+- **United States of America** (USA, 2025): 선거민주주의 | 자유민주주의 지수: 0.57 | 부패지수: 0.06
+- **United States of America** (USA, 2024): 자유민주주의 | 자유민주주의 지수: 0.75 | 부패지수: 0.05
+- **United States of America** (USA, 2023): 자유민주주의 | 자유민주주의 지수: 0.79 | 부패지수: 0.06
+- **United States of America** (USA, 2022): 자유민주주의 | 자유민주주의 지수: 0.77 | 부패지수: 0.06
+- **United States of America** (USA, 2021): 자유민주주의 | 자유민주주의 지수: 0.76 | 부패지수: 0.07
+- **United States of America** (USA, 2020): 자유민주주의 | 자유민주주의 지수: 0.73 | 부패지수: 0.09
+- **United States of America** (USA, 2019): 자유민주주의 | 자유민주주의 지수: 0.74 | 부패지수: 0.09
+- **United States of America** (USA, 2018): 자유민주주의 | 자유민주주의 지수: 0.74 | 부패지수: 0.10
+- **United States of America** (USA, 2017): 자유민주주의 | 자유민주주의 지수: 0.75 | 부패지수: 0.10
+- **United States of America** (USA, 2016): 자유민주주의 | 자유민주주의 지수: 0.83 | 부패지수: 0.07
+- **United States of America** (USA, 2015): 자유민주주의 | 자유민주주의 지수: 0.85 | 부패지수: 0.05
+- **United States of America** (USA, 2014): 자유민주주의 | 자유민주주의 지수: 0.85 | 부패지수: 0.05
+- **United States of America** (USA, 2013): 자유민주주의 | 자유민주주의 지수: 0.85 | 부패지수: 0.05
+- **United States of America** (USA, 2012): 자유민주주의 | 자유민주주의 지수: 0.84 | 부패지수: 0.05
+- **United States of America** (USA, 2011): 자유민주주의 | 자유민주주의 지수: 0.84 | 부패지수: 0.05
+- **United States of America** (USA, 2010): 자유민주주의 | 자유민주주의 지수: 0.85 | 부패지수: 0.05
+- **United States of America** (USA, 2009): 자유민주주의 | 자유민주주의 지수: 0.85 | 부패지수: 0.05
+- **United States of America** (USA, 2008): 자유민주주의 | 자유민주주의 지수: 0.84 | 부패지수: 0.06
+- **United States of America** (USA, 2007): 자유민주주의 | 자유민주주의 지수: 0.84 | 부패지수: 0.06
+- **United States of America** (USA, 2006): 자유민주주의 | 자유민주주의 지수: 0.80 | 부패지수: 0.06
+- **United States of America** (USA, 2005): 자유민주주의 | 자유민주주의 지수: 0.79 | 부패지수: 0.06
+- **United States of America** (USA, 2004): 자유민주주의 | 자유민주주의 지수: 0.80 | 부패지수: 0.06
+- **United States of America** (USA, 2003): 자유민주주의 | 자유민주주의 지수: 0.80 | 부패지수: 0.06
+- **United States of America** (USA, 2002): 자유민주주의 | 자유민주주의 지수: 0.77 | 부패지수: 0.06
+- **United States of America** (USA, 2001): 자유민주주의 | 자유민주주의 지수: 0.77 | 부패지수: 0.06
+- **United States of America** (USA, 2000): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1999): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1998): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1997): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1996): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1995): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1994): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1993): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1992): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1991): 자유민주주의 | 자유민주주의 지수: 0.81 | 부패지수: 0.06
+- **United States of America** (USA, 1990): 자유민주주의 | 자유민주주의 지수: 0.80 | 부패지수: 0.06
+  출처: V-Dem Institute, University of Gothenburg 2024
+
+## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)
+- **Iraq War** (2003~2011) | IRQ vs USA|GBR | 사망: 200,000 | 결과: B측 승
+- **Afghanistan War** (2001~2021) | AFG|TLB vs USA|NATO | 사망: 176,000 | 결과: B측 승
+- **Kosovo War** (1999~1999) | YUG vs USA|NATO | 사망: 13,535 | 결과: A측 승
+- **Gulf War** (1991~1991) | IRQ vs USA|SAU|GBR | 사망: 35,000 | 결과: A측 승
+- **Vietnam War** (1965~1975) | USA|KOR vs VNM | 사망: 58,220 | 결과: B측 승
+  출처: Correlates of War Project v4.0
+
+## 국가 거버넌스 지수 (World Bank WGI 2022)
+점수 범위: -2.5(최하) ~ +2.5(최상)
+- **United States** (USA): 정치안정=-0.10 | 부패통제=1.09 | 법치=0.96
+  출처: World Bank Worldwide Governance Indicators 2023
+
+## 정치체제 지수 (Polity5 2022)
+점수: -10(완전권위) ~ +10(완전민주)
+- **United States** (USA): 10점 (democracy)
+  출처: Center for Systemic Peace, Polity5 Dataset
+
+## ICT 발전 지수 (ITU IDI 2023) ⚠️ 보급·접근성 지표 — 사이버 방어력과 직접 동치 금지
+IDI 점수: 0-100 (인터넷 보급·접근성·이용 종합). 사이버 역량 주장 시 반드시 '간접 proxy'임을 명시할 것. 방어력 직접 근거로는 GCI·NCSI가 더 타당함.
+- **United States** (USA): IDI 87.0 (전세계 15위, 1티어)
+  출처: ITU ICT Development Index 2023
+
+## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)
+**국방비 (% of GDP, 최신연도)**
+- United States (USA): 3.29% (2023)
+**핵탄두 보유량 (최신연도)**
+- United States (USA): 3748기 (2023)
+  출처: Our World in Data (ourworldindata.org)

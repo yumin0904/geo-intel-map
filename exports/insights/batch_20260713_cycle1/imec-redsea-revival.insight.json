@@ -1,0 +1,367 @@
+{
+  "schema_version": "0.1",
+  "id": "imec-redsea-revival",
+  "generated_at": "2026-07-11T16:36:47Z",
+  "engine_version": "9.46.1",
+  "query": "홍해 위기 장기화가 IMEC 회랑 논의 재점화에 미치는 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "bab_el_mandeb",
+    "middle_east"
+  ],
+  "sectors": [
+    "maritime",
+    "energy"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+    "[RAND Europe / UK AISI] 프런티어 AI의 공세 사이버 업리프트: 인간 업리프트 실험 연구",
+    "[War on the Rocks] 소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 4,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3215,
+    "fred": 12,
+    "wbk": 4,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 8,
+    "semi": 0,
+    "owid": 6,
+    "press": 4
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 bab_el_mandeb ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+    "speculative": false
+  },
+  "result_md": "[탐색적] 홍해 위기가 IMEC 재점화를 '유발'한다? — 에너지 안보 패러독스가 오히려 회랑 재설계를 지연시키는 상관관계\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 홍해 (바브엘만데브) 의 해상 교통로 (SLOC) 위협이 장기화되면, 기존 해양 의존도가 높은 국가들은 대체 공급망인 IMEC(인도-중동-유럽 경제 회랑) 논의가 급격히 재점화되어 속도가 붙을 것으로 예상한다. (해상 봉쇄 → 육상 회랑 대체)\n\n[비자명기여] 통념은 '위협 → 대체'의 단순 선형을 가정하나, 실제로는 **에너지 가격 충격에 대한 '자기억지 (Self-deterrence)' 메커니즘**이 작동하여 IMEC 재점화를 지연시킬 수 있다.\n↳ **범위조건 (문헌 공백 ① 반례 클러스터 활용):** 〈SLOC 통제 이론〉은 초크포인트 위협 증가 시 운임·유가 단기 급등을 예측하나, **2024~2025 후티 공격 사례**에서 보듯 전략비축유 방출·OPEC+ 여유 생산·우회 항로로 인해 유가 급등이 제한적이었다.\n→ **교차도메인 메커니즘:** 홍해 위기 (해양 도메인) 가 에너지 가격 (에너지 도메인) 을 급등시키지 못하면, 국가들은 '고비용의 육상 회랑 (IMEC)'으로 전환할 강력한 경제적 동기가 약화된다. 즉, **위협은 존재하지만 가격 신호 (Price Signal) 가 차단될 때, 대체 인프라 투자는 오히려 '유보'된다.** 이는 위협이 자동적으로 대안을 창출하지 않으며, '경제적 고통'이라는 전제 조건이 충족되어야 함을 보여준다.\n\n[관찰]\n1. **홍해/바브엘만데브 분쟁 건수 급증:** 2026.06 (2 건) → 2026.07 (1 건, ACLED 데이터) 로 단기 데이터는 낮으나, 2025.06 (372 건) → 2025.07 (226 건) 이후 2026 년 중반에 급증한 것으로 기록된 추세 (2026.04 1 건 → 2026.05 180 건 → 2026.06 3342 건) 가 존재함.\n2. **유가 반응:** Brent Crude Oil Price 는 2024 년 80.22 USD/barrel 수준 유지 (FRED). 2024~2025 후티 공격 기간에도 급등이 제한적であった (문헌 공백 원장 ①).\n3. **IMEC 논의:** 2026 년 2 월 28 일 미국-이란 전쟁 개전 (CSIS 데이터) 이후 GCC 국가들의 안보 우려가 증가했으나, IMEC 재점화 속도는 에너지 가격 안정성에 비례하여 둔화된 것으로 보임 (정성 관찰).\n\n[주장] (등급: 상관) 홍해 지역의 분쟁 빈도 증가와 IMEC 논의 재점화 속도는 **음(-)의 상관관계**를 보일 가능성이 있다. 즉, 분쟁이 심화되더라도 에너지 가격 충격이 통제될 경우, 육상 회랑 대체 수요는 오히려 감소하거나 유보된다.\n\n[가설] H1: 바브엘만데브 해협의 ACLED 분쟁 이벤트 건수가 증가할 때, IMEC 회랑 관련 주요 국가 (미국, UAE, 프랑스 등) 의 공식 발표 빈도 또는 투자 약속 건수는 통계적으로 유의하게 감소한다 (통제변수: WTI 유가 변동폭).\n*측정 가능성:* 분쟁 건수 (ACLED) 는 정량화 가능하나, 'IMEC 논의 재점화'를 '공식 발표 빈도'로 대치해야 정량 검정이 가능함. 현재 데이터로는 '투자 약속 건수'가 부재하여 '[UNVERIFIED] 정량값 부재' 상태.\n\n[근거] ACLED middle_east/bab_el_mandeb 분쟁 데이터, FRED Brent 유가 데이터, CSIS 글로벌 테러리즘 위협 평가 2026 (이란전 개전 시점), 문헌 공백 원장 ① (SLOC 통제 이론 반례).\n\n[한계]\n1. **선택편향 (Survivorship Bias):** '차단에 성공한' 공격 (예: 후티의 미사일 격추) 만 기록되고, 실제 선박이 피격되어 운항이 중단된 사건은 과소보고될 수 있어 분쟁 강도를 과소평가할 위험.\n2. **데이터 한계:** IMEC 논의의 '속도'나 '강도'를 정량화할 수 있는 공식 지표 (투자 금액, 협정 서명 건수) 가 <context>에 구체적으로 제시되지 않음.\n\n[경쟁설명]\n이론 A: 자원무기화 (Hirschman)\n  예측: 바브엘만데브 초크포인트 위협 증가 시, 에너지 공급 불확실성으로 인해 대체 인프라 (IMEC) 투자 및 논의가 급증 (방향 ▲)\n  실측: Brent 유가 2024 년 80.22 USD/barrel (2024~2025 후티 공격기에도 급등 제한적) — 가격 신호 미발생\n  판정: 열세 — 예측 '위협→대체 투자 증가' vs 실측 '가격 충격 부재' → 대체재 수요 동기 약화 (앵커: SLOC 통제 이론 반례, 예측 임계 '유가 급등' 미충족)\n\n이론 B: 회색지대 전략 (Gray Zone Strategy)\n  예측: 회색지대 행동 (후티 공격 등) 빈도 증가 시, 목표국 (서방) 의 정책 양보 (IMEC 등 대안 회피 또는 기존 SLOC 의존) 증가 (방향 ▼)\n  실측: ACLED 바브엘만데브 분쟁 2026.06→07 (2 건→1 건) — 단기 데이터 부족, 2025년 추세는 372건→226건 감소\n  판정: 전제충족(DV 미검증) — 회색지대 행동 빈도 데이터는 존재하나, '정책 양보 (IMEC 논의 중단/유보)'에 대한 정량 실측값 [UNVERIFIED] 부재\n\n▶ 편차 비교 (사실): 이론 A 예측편차 (가격 신호 부재로 인한 대체 수요 부재) vs 이론 B 예측편차 (정책 양보 데이터 부재) — 이론 A 의 가격 신호 부재가 더 명확하게 관측됨\n▶ 당신의 판단 (연구자 몫): 이론 A(자원무기화) 의 예측 실패가 '위협이 무력화됨'을 의미하는지, 아니면 '대체재가 필요하지 않음'을 의미하는지 연구자가 판단. (쟁점: 가격 신호가 없으면 IMEC 논의가 정말 중단되는가, 아니면 장기적 안보 논의로 전환되는가?)\n\n[검증포인트]\n1. **지표:** IMEC 관련 주요 국가 (미국, UAE, EU) 의 '공식 성명서 수' 및 '투자 MOU 체결 건수' (2025~2026).\n2. **소스:** 각국 재무부/통상부 보도자료, Bloomberg NEF 인프라 투자 DB.\n3. **검증:** '분쟁 건수'와 'IMEC 논의 지표'의 시계열 상관관계 분석 (Granger 검정).\n\n[문헌공백]\n기존 문헌은 **단일 도메인 (해양/에너지)**에 집중하여 '초크포인트 위협 → SLOC 통제 실패 → 대체 회랑 필요'라는 선형 인과를 가정한다.\n→ **③ 교차도메인 밀도 (희박 섹터):** 해양 도메인 (홍해 위기) 과 에너지 도메인 (유가) 을 연결하는 '가격 신호 차단 메커니즘'이 문헌의 사각지대다. 〈SLOC 통제 이론〉은 '유가 급등'을 전제로 하지만, 실제 2024~2025 년 사례 (문헌 공백 원장 ①) 에서 유가 급등이 차단된 경우의 '대체 인프라 투자 행동'을 설명하지 못한다.\n→ **기여:** 이 분석은 '위협' 자체가 아니라 '위협이 가격 신호로 전이되는 조건 (OPEC+ 여유능력, 비축유 등)'이 IMEC 논의의 선행 조건임을 지적하며, 해양안보와 에너지경제의 교차 지점에서의 비선형 관계를 규명한다.\n\n---\n\n[탐색적] 홍해 위기가 IMEC 재점화를 '촉진'한다? — 안보 비용 상승이 육상 회랑의 '전략적 가치'를 재평가시키는 상관관계\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 홍해 위기는 단기적으로 물류 비용을 높이지만, 장기적으로는 해양 경로에 대한 신뢰를 떨어뜨려 IMEC 와 같은 육상 회랑의 '전략적 필수성'을 부각시켜 재점화를 가속화한다. (위협 → 신뢰 하락 → 대안 모색)\n\n[비자명기여] 통념은 '신뢰 하락'이 자동으로 '대체 투자'로 이어진다고 보지만, 실제 메커니즘은 **해양 경로의 '위험 프리미엄'이 육상 경로의 '전략적 가치'를 재평가시키는 '비용-편익 재설계' 과정**을 거친다.\n↳ **반직관 (문헌 공백 ② 경쟁이론 미해결 활용):** 〈SLOC 통제 이론〉과 〈Command of the Commons〉의 충돌 지점. 기존 해군력 (미국) 이 초크포인트를 통제한다는 명제 (Mahan) 가 A2/AD 및 비국가 행위자 (후티) 에 의해 형해화될 때, 단순한 '대체'가 아니라 **'비용 구조의 근본적 재설계'**가 필요하다.\n→ **교차도메인 메커니즘:** 홍해 위기 (해양 도메인) 가 장기화되면, '해양 운송의 위험 프리미엄 (보험료, 우회 비용)'이 '육상 운송의 고정 투자 비용'을 상회하는 **임계점 (Tipping Point)**에 도달한다. 이때 IMEC 논의는 단순한 '대안'이 아닌 **'필수 생존 전략'으로 재정의**되며, 논의의 성격이 '경제 효율성'에서 '안보 비용 절감'으로 전환된다. 즉, 위기가 '경제적 손실'이 아닌 '안보 비용'으로 재계산될 때 재점화가 가속된다.\n\n[관찰]\n1. **분쟁 심각도:** middle_east ACLED 분쟁 심각도 평균 47.5/100 (2026.06 3342 건 급증 추세).\n2. **에너지/안보 비용:** 2026.02.28 미국-이란 전쟁 개전 (CSIS 데이터) 으로 중동 전반의 안보 리스크가 극대화됨.\n3. **IMEC 논의 재점화:** 2026 년 초 GCC 국가들의 방위 파트너 다변화 (UAE-프랑스, 카타르-캐나다) 와 함께 IMEC 논의가 '안보' 차원에서 재조명됨 (정성 관찰).\n4. **유가 변동:** Brent 유가 80.22 USD (2024) 로 안정적이지만, 전쟁 개전 시점 (2026.02) 이후 변동성 증가 예상.\n\n[주장] (등급: 상관) 홍해 지역의 분쟁 심각도 증가와 IMEC 논의의 '전략적 수위' (경제 논의 → 안보 논의 전환) 는 **양(+) 의 상관관계**를 보일 가능성이 있다. 즉, 분쟁이 심화될수록 IMEC 논의는 '경제적 효율성' 논리를 넘어 '안보 비용 절감' 논리로 재정의된다.\n\n[가설] H1: 중동 지역 (middle_east) 의 ACLED 분쟁 심각도 점수가 증가할 때, IMEC 관련 정책 문서에서 '안보 (Security)', '방어 (Defense)', '위험 감소 (Risk Reduction)' 키워드의 등장 빈도가 통계적으로 유의하게 증가한다 (통제변수: WTI 유가).\n*측정 가능성:* 분쟁 심각도 (ACLED) 와 정책 문서 키워드 빈도 (텍스트 마이닝) 는 정량화 가능하나, 현재 <context>에 IMEC 정책 문서 키워드 데이터가 부재함 → '[UNVERIFIED] 정량값 부재'.\n\n[근거] ACLED middle_east 분쟁 데이터 (심각도 47.5/100), CSIS 글로벌 테러리즘 위협 평가 2026 (이란전 개전), 문헌 공백 원장 ② (SLOC 통제 이론 vs Command of the Commons 충돌).\n\n[한계]\n1. **생존편향:** '안보 논의'로 전환된 사례만 기록되고, 여전히 '경제 논의'로 머무른 IMEC 논의는 과소보고될 수 있음.\n2. **인과 방향 불명확:** 분쟁이 심화되어 안보 논의를 촉발했는지, 아니면 안보 논의를 위해 분쟁을 부각시켰는지 (역인과) 구분 불가.\n\n[경쟁설명]\n이론 A: 마한의 해양력 이론 (Sea Power Theory)\n  예측: 해군력 투자 증가 시 SLOC 통제 범위 확대 → IMEC 와 같은 대안 회랑 필요성 감소 (방향 ▼)\n  실측: Saudi Arabia 군비 6.4% GDP (2023), US 3.3% GDP (2023) — 해군력 투자 존재\n  판정: 열세 — 해군력 투자에도 불구하고 홍해 위기 지속 (후티 공격) → SLOC 통제 실패 → 대안 필요성 증가 (앵커: 마한 이론 반례, 중국 A2/AD 전략으로 인한 통제력 약화)\n\n이론 B: 회색지대 전략 (Gray Zone Strategy)\n  예측: 회색지대 행동 빈도 증가 시 목표국 정책 양보 (대안 회피) 증가 (방향 ▼)\n  실측: ACLED bab_el_mandeb 분쟁 2026.06→07 (2 건→1 건) — 단기 데이터 부족, 2025년 추세는 372건→226건 감소\n  판정: 전제충족(DV 미검증) — 회색지대 행동 데이터는 있으나, '정책 양보 (IMEC 논의 중단)'에 대한 정량 실측값 [UNVERIFIED] 부재\n\n▶ 편차 비교 (사실): 이론 A 예측편차 (해군력 투자에도 통제 실패) vs 이론 B 예측편차 (정책 양보 데이터 부재) — 이론 A 의 '통제 실패'가 명확하게 관측됨\n▶ 당신의 판단 (연구자 몫): 이론 A(마한) 의 실패가 '대체 회랑 필요성'을 증명하는지, 아니면 '해군력 재투자'를 의미하는지 연구자가 판단. (쟁점: 해군력 투자가 SLOC 통제에 실패한 경우, 육상 회랑이 유일한 대안인가?)\n\n[검증포인트]\n1. **지표:** IMEC 관련 정책 문서 (백서, 성명서) 에서 '안보/방어' 키워드 빈도 (2024~2026).\n2. **소스:** 각국 국토안보부, 통상부, 국무부 공식 웹사이트.\n3. **검증:** '분쟁 심각도'와 '안보 키워드 빈도'의 시계열 상관관계 분석.\n\n[문헌공백]\n기존 문헌은 **해상 통제 (SLOC Control)**에 집중하여 '위협 → 통제 실패'의 이분법적 관점을 취한다.\n→ **② 경쟁이론 미해결:** 〈SLOC 통제 이론〉과 〈Command of the Commons〉의 충돌을 실제 데이터로 판정하지 못했다. 해군력이 존재함에도 초크포인트가 통제되지 않는 경우 (후티 공격), 이것이 '대체 회랑 (IMEC)'으로 이어지는지, 아니면 '해군력 재투자'로 이어지는지 문헌은 충돌만 기록하고 판정하지 않았다.\n→ **기여:** 이 분석은 '해상 통제 실패'가 '육상 회랑 재점화'로 이어지는 **임계점 (Tipping Point)**을 '안보 비용 재계산'이라는 메커니즘으로 규명하며, 해양안보와 육상 인프라의 교차 지점에서의 비선형 전환을 제시한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] IMEC 회랑 관련 주요 국가 (미국, UAE, 프랑스 등) 의 공식 발표 빈도 또는 투자 약속 건수는 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "바브엘만데브 해협의 ACLED 분쟁 이벤트 건수가 증가할 때, IMEC 회랑 관련 주요 국가 (미국, UAE, 프랑스 등) 의 공식 발표 빈도 또는 투자 약속 건수는 통계적으로 유의하게 감소한다.",
+        "h0": "바브엘만데브 해협의 ACLED 분쟁 이벤트 건수가 증가할 때, IMEC 회랑 관련 주요 국가 (미국, UAE, 프랑스 등) 의 공식 발표 빈도 또는 투자 약속 건수는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "바브엘만데브 해협의 ACLED 분쟁 이벤트 건수",
+        "dependent_var": "IMEC 회랑 관련 주요 국가 (미국, UAE, 프랑스 등) 의 공식 발표 빈도 또는 투자 약속 건수는",
+        "control_vars": [
+          "WTI 유가 변동폭"
+        ],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 bab_el_mandeb ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=bab_el_mandeb) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "바브엘만데브 해협의 ACLED 분쟁 이벤트 건수가 증가할 때, IMEC 회랑 관련 주요 국가 (미국, UAE, 프랑스 등) 의 공식 발표 빈도 또는 투자 약속 건수는 통계적으로 유의하게 감소한다.",
+                "region": "bab_el_mandeb",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Europe and the Gulf have untapped strengths to counter great-power chaos",
+                        "date": "Wed, 01 Jul 2026 19:17:52 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The two regions should work together to increase their strategic autonomy through infrastructure projects, free trade"
+                      },
+                      {
+                        "title": "“Shoot everybody”: US contractors in San Diego court",
+                        "date": "Thu, 18 Jun 2026 19:56:44 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>In Season 2, Episode 16 of the Guns for Hire podcast, host Alia Brahimi is joined by Daniel McLaughlin, an internatio"
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "2026 Global Energy Agenda full survey results",
+                        "date": "Mon, 08 Jun 2026 19:07:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Global Energy Agenda takes the pulse of the energy community, revealing expert views on global energy security, a"
+                      },
+                      {
+                        "title": "Countering terrorist propaganda in the age of AI",
+                        "date": "Fri, 05 Jun 2026 16:35:13 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>More people are being exposed to violent propaganda online, and the time between seeing such content, recruitment by "
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 중동 지역 (middle_east) 의 ACLED 분쟁 심각도 점수 → IMEC 관련 정책 문서에서 '안보 (Security)', '방어 (Defense)', '위험 — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "중동 지역 (middle_east) 의 ACLED 분쟁 심각도 점수가 증가할 때, IMEC 관련 정책 문서에서 '안보 (Security)', '방어 (Defense)', '위험 감소 (Risk Reduction)' 키워드의 등장 빈도가 통계적으로 유의하게 증가한다.",
+        "h0": "중동 지역 (middle_east) 의 ACLED 분쟁 심각도 점수가 증가할 때, IMEC 관련 정책 문서에서 '안보 (Security)', '방어 (Defense)', '위험 감소 (Risk Reduction)' 키워드의 등장 빈도가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "중동 지역 (middle_east) 의 ACLED 분쟁 심각도 점수",
+        "dependent_var": "IMEC 관련 정책 문서에서 '안보 (Security)', '방어 (Defense)', '위험",
+        "control_vars": [
+          "WTI 유가"
+        ],
+        "region_code": "middle_east",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": true,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.7841) · 극단P90(p=0.4744) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.7841,
+        "granger_q": null,
+        "f_statistic": 0.357,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.357,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.7841,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 25,
+              "robustness": {
+                "extreme_p": 0.4744,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.7841,
+                "granger_q": null,
+                "f_statistic": 0.357,
+                "best_lag": 3,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

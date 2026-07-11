@@ -1,0 +1,430 @@
+{
+  "schema_version": "0.1",
+  "id": "scs-grayzone-philippines",
+  "generated_at": "2026-07-11T16:53:21Z",
+  "engine_version": "9.46.2",
+  "query": "남중국해 회색지대 활동과 필리핀-중국 마찰 빈도의 추이",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "south_china_sea"
+  ],
+  "sectors": [
+    "gray_zone",
+    "maritime"
+  ],
+  "briefing_refs": [
+    "[Brookings] 중국, 회색지대, 그리고 국방부의 비상계획: 비대칭 방어 독트린",
+    "자유항행작전 FONOP (Freedom of Navigation Operations)",
+    "[War on the Rocks] 북극의 또 다른 국경 문제: 러시아·중국 법전쟁이 북극을 위협하는 방법",
+    "[War on the Rocks] 기계 압도: 솔트 타이푼이 드러낸 중국의 데이터 중심 정보전 전략",
+    "[War on the Rocks] 소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 2,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 7,
+    "vdem_entries": 36,
+    "cow_wars": 1,
+    "ifans_pubs": 3,
+    "theory_cmp_chars": 3014,
+    "fred": 6,
+    "wbk": 1,
+    "polity5": 1,
+    "itu": 1,
+    "hiik": 0,
+    "semi": 0,
+    "owid": 6,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 남중국해 회색지대 활동의 급증과 필리핀-중국 마찰 빈도는 고강도 충돌로 직결되지 않고, '손실-보상' 메커니즘에 따라 비선형적으로 동반된다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n회색지대 활동 (회색지대 행동 빈도) 이 증가하면 필리핀의 정책 양보 빈도가 증가하거나, 필리핀의 군사적 대응이 격화되어 충돌 건수가 선형적으로 증가한다.\n\n[비자명기여]\n**범위조건 (Threshold Effect)**: 통념은 회색지대 활동이 '무한정' 증가할수록 마찰이 심화된다고 보지만, [문헌 공백 원장] 의 '자유항행작전 FONOP' 반례가 지적하듯, 특정 임계점 (FONOP 정례화) 이후에는 중국의 회색지대 기정사실화가 오히려 필리핀의 '법적·외교적' 대응 (Lawfare) 으로 전환되어 물리적 충돌 건수는 둔화될 수 있다. 즉, 회색지대 활동은 '물리적 충돌'이 아닌 '법적/외교적 마찰'로 도메인이 전이되는 **비선형적 범위조건**이 존재하며, 이는 기존 문헌이 '회색지대=충돌'로 단순화하는 오류를 드러낸다.\n\n[관찰]\n- 남중국해 (south_china_sea) 지역 ACLED 분쟁 이벤트는 2026 년 5 월 6 건에서 6 월 118 건으로 급증 (약 19.7 배 증가, 사전계산) 했으나, 7 월에는 21 건으로 다시 감소했다.\n- 평균 심각도 (severity) 는 37.6/100 으로, 이는 군사적 충돌 (sev≥60) 임계치보다 낮아 대부분 회색지대 수준 (수상 충돌, 조사 방해 등) 으로 분류된다.\n- 2025 년 4 월 (120 건) → 5 월 (112 건) → 6 월 (6 건) 로 급감했다가, 2026 년 5 월 재급증하는 '스파이크 (Spike)' 패턴이 관찰된다.\n\n[주장]\n(등급: 상관) 남중국해 회색지대 활동 건수의 급증과 필리핀-중국 마찰 빈도의 변동은 고강도 군사 충돌로 직결되지 않고, 특정 기간 (한 달 이내) 에만 강한 정적 상관 (동조) 을 보이다가 급격히 수렴하는 **비선형적 공변** 관계를 동반한다.\n\n[가설]\nH1: 남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 증가할 때, 필리핀의 외교적 항의 건수 (또는 법적 소송 건수) 는 통계적으로 유의하게 증가하나, 물리적 충돌 건수 (sev≥60) 는 통제변수 (미국 FONOP 빈도) 에 따라 불확실하게 반응한다.\n*현 데이터로 검증 가능한 정량 가설 없음* (필리핀의 외교적 항의 건수나 법적 소송 건수에 대한 ACLED 또는 구체적 수치가 <context>에 제공되지 않음).\n\n[근거]\n- ACLED 남중국해 이벤트 통계: 2026-05 (6 건) → 2026-06 (118 건) → 2026-07 (21 건).\n- 평균 심각도 37.6/100 (군사적 충돌 임계치 60 미만).\n- [UNVERIFIED] 필리핀 외교부 공식 항의 건수 및 중국 해경의 물리적 충돌 건수 (수치 미제공).\n\n[한계]\n- **선택편향/생존편향**: ACLED 데이터는 '보고된' 사건에 의존하므로, 은폐된 회색지대 활동이나 비공식적 협상으로 해결된 마찰은 과소평가될 수 있음.\n- **데이터 부재**: 필리핀의 '마찰 빈도'를 측정할 구체적인 정량 지표 (항의 건수, 법적 소송 수) 가 <context>에 없어 인과 검증 불가.\n- **소수 사례 의존**: 2026 년 6 월의 118 건이라는 단일 스파이크 사례에 기반하여 일반화하기엔 기간이 너무 짧음.\n\n[경쟁설명]\n이론 A: 회색지대 전략 (Gray Zone Strategy)\n예측: 중국 회색지대 활동 (IV) 증가 시 필리핀의 정책 양보 또는 물리적 충돌 (DV) 증가 (압박에 의한 수동적 대응 또는 격화).\n실측: 2026 년 6 월 118 건 (회색지대 활동 급증) → 하지만 7 월 21 건으로 급감 (DV 방향 불명확, 물리적 충돌 건수 부재).\n판정: 전제충족 (DV 미검증) — 회색지대 활동 증가는 확인되었으나, 필리핀의 양보 또는 충돌 증가를 보여주는 정량적 DV 데이터가 [UNVERIFIED] 부재.\n\n이론 B: 자유항행작전 FONOP (Freedom of Navigation Operations)\n예측: 중국의 영유권 주장 활동 (IV) 증가 시, 미국의 FONOP 빈도 증가가 이를 억제하여 충돌 건수 (DV) 를 감소시키거나 안정화함.\n실측: 2026 년 6 월 118 건 (활동 급증) → 7 월 21 건 (감소). (단, FONOP 빈도 데이터는 [UNVERIFIED] 부재).\n판정: 전제충족 (DV 미검증) — 활동 증가 후 감소 추세는 FONOP 억제 효과를 시사할 수 있으나, FONOP 빈도 (IV) 데이터가 없어 인과 경로 검증 불가.\n\n▶ 편차 비교 (사실): 이론 A (활동↑→양보/충돌↑) vs 이론 B (활동↑→억제/감소) — 2026 년 6 월~7 월 데이터는 활동 급증 후 감소 (118→21) 를 보임. 이론 B 의 '감소' 방향과 일치하나, FONOP 빈도 데이터 부재로 이론 B 의 예측 편차를 정량 계산할 수 없음 (산술 미제공).\n▶ 당신의 판단 (연구자 몫): 6 월 급증 후 7 월 감소가 'FONOP 억제' 때문인지, 아니면 '중국 측의 전략적 휴지'인지 판단 불가. 쟁점: 두 이론 모두 DV(필리핀 반응) 의 정량 데이터가 없어, 관측된 '감소'가 외부 변수 (미국 개입) 에 의한 것인지 내부 변수 (중국 의도) 에 의한 것인지 구분 불가.\n\n[검증포인트]\n1. 필리핀 외교부 발표 자료에서 2026 년 5~7 월 기간의 '중국에 대한 공식 항의 건수' 및 '법적 소송/중재 신청 건수' 데이터 수집.\n2. 미국 해군 (USNI) 보고서를 통해 2026 년 5~7 월 남중국해 FONOP 실행 횟수 및 시점 확인 (이론 B 검증용).\n3. ACLED 데이터의 'conflict' 유형을 'protest', 'violence against civilians' 등으로 세분화하여 회색지대 활동의 구체적 성격을 재분류.\n\n[문헌공백]\n기존 문헌은 '회색지대 활동'을 '군사적 충돌의 전조'로만 간주하여 선형적 인과 (활동↑=충돌↑) 를 가정했으나, [문헌 공백 원장] 의 '① 반례 클러스터'에서 지적된 **'자유항행작전 FONOP'의 한계**가 이를 반증한다. 즉, 2015 년 이후 FONOP 정례화에도 불구하고 중국의 인공섬 군사화가 지속된 사례는, 회색지대 활동이 반드시 물리적 충돌로 이어지지 않음을 보여준다. 본 분석은 회색지대 활동이 '충돌'이 아닌 '법적/외교적 마찰'로 도메인이 전이되는 **비선형적 범위조건**을 제시함으로써, 기존 단일 도메인 (군사) 문헌이 놓친 '회색지대-법전 (Lawfare) 전이 경로'의 공백을 메꾸는 기여를 한다.\n\n---\n\n[헤드라인] [탐색적] 남중국해 회색지대 활동의 스파이크 현상은 에너지 시장 (천연가스) 에 즉각적인 가격 충격을 유발하지 않고, 보험료 상승 등 간접적 비용으로 전이된다\n데이터기반: 중 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념]\n남중국해에서의 회색지대 활동 (마찰) 이 증가하면 해상 운송로 (SLOC) 차단 공포로 인해 유가 및 천연가스 가격이 즉각적으로 급등한다.\n\n[비자명기여]\n**반직관 (Counter-intuitive Mechanism)**: 통념은 '위협 인식=가격 급등'이라 보지만, [문헌 공백 원장] 의 'SLOC 통제 이론' 반례 (후티의 홍해 공격에도 유가 급등 제한) 가 보여주듯, **대체 운송로 확보 및 전략비축유 (SPR) 방출** 같은 완충 메커니즘이 작동할 경우, 회색지대 활동은 물리적 공급 차단이 아닌 '보험료 상승'이나 '선박 우회 비용'이라는 **간접적 비용**으로만 전이된다. 즉, 회색지대 활동은 직접적인 가격 충격 (Direct Shock) 이 아니라, **간접 비용 (Indirect Cost)**으로 변환되는 범위를 갖는다.\n\n[관찰]\n- 남중국해 ACLED 이벤트는 2026 년 6 월 118 건으로 급증했으나, 이는 평균 심각도 37.6/100 으로 물리적 봉쇄 (sev≥80) 임계치 미달.\n- 남중국해 전략 초크포인트 (말라카 해협) 통과량: 16.0 Mbpd (EIA 2023).\n- [UNVERIFIED] 2026 년 6 월 남중국해 관련 천연가스 (Henry Hub) 가격 변동률 및 해상 보험료 상승률 (수치 미제공).\n\n[주장]\n(등급: 상관) 남중국해 회색지대 활동 건수의 급증과 천연가스 가격 변동은 즉각적인 가격 급등으로 직결되지 않고, 보험료 상승 등 간접 비용 증가와 **공변**하는 경향이 동반된다.\n\n[가설]\nH1: 남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 10% 증가할 때, 천연가스 (Henry Hub) 가격은 통계적으로 유의미하게 상승하지 않으나, 해상 보험료 (Lloyd's) 는 유의하게 상승한다.\n*현 데이터로 검증 가능한 정량 가설 없음* (천연가스 가격 및 해상 보험료 데이터가 <context>에 제공되지 않음).\n\n[근거]\n- ACLED 남중국해 이벤트: 2026-06 (118 건), 평균 심각도 37.6.\n- 말라카 해협 통과량: 16.0 Mbpd (EIA 2023).\n- [UNVERIFIED] 2026 년 6 월 남중국해 관련 천연가스 가격 및 보험료 데이터 부재.\n\n[한계]\n- **데이터 부재**: 천연가스 가격 (NG=F) 의 2026 년 6 월 구체적 변동률과 해상 보험료 데이터가 [UNVERIFIED] 부재.\n- **교란 변수 통제 불가**: 오PEC+ 의 생산량 조절, 미국의 전략비축유 방출 등 외부 변수가 가격 형성에 개입했는지 통제할 수 없음.\n- **선택편향**: '회색지대'로 분류된 사건 중 실제로 운송에 영향을 준 사건만 ACLED 에 기록되었을 가능성이 있어 과소평가 위험.\n\n[경쟁설명]\n이론 A: SLOC 통제 이론 (Chokepoint & Sea Lines of Communication)\n예측: 초크포인트 위협 강도 (IV) 증가 시 운임·유가 (DV) 단기 급등 (위협 인식 = 가격 충격).\n실측: 2026 년 6 월 118 건 (위협 강도↑) → [UNVERIFIED] 천연가스 가격 데이터 부재 (변화율 미제공).\n판정: 전제충족 (DV 미검증) — 위협 강도 증가는 확인되었으나, 가격 급등을 보여주는 정량적 DV 데이터가 부재.\n\n이론 B: 자원 무기화 (Resource Weaponization) / Command of the Commons\n예측: 초크포인트 위협이 물리적 통제가 아닌 자원 무기화 수단으로 사용되거나, 미 해군의 제해권이 이를 무력화하여 가격 충격이 제한됨 (위협 ≠ 가격 충격).\n실측: 2026 년 6 월 118 건 (위협 강도↑) → [UNVERIFIED] 천연가스 가격 데이터 부재.\n판정: 전제충족 (DV 미검증) — 가격 충격의 부재 (또는 제한) 를 증명할 수 있는 정량 데이터가 부재.\n\n▶ 편차 비교 (사실): 이론 A (가격 급등 예측) vs 이론 B (가격 충격 제한 예측) — 두 이론 모두 2026 년 6 월 가격 변동에 대한 실측 데이터가 [UNVERIFIED] 부재로 편차 계산 불가 (산술 미제공).\n▶ 당신의 판단 (연구자 몫): 2026 년 6 월의 회색지대 활동 급증이 실제 가격에 영향을 미쳤는지, 아니면 보험료 등 간접 비용으로 흡수되었는지를 판단할 수 없음. 쟁점: '가격'이라는 DV 지표가 부재할 때, '보험료'나 '선박 우회 거리' 같은 대리지표 (Proxy) 를 사용할 수 있는지 여부.\n\n[검증포인트]\n1. 로이즈 (Lloyd's of London) 또는 브로커 데이터에서 2026 년 5~7 월 남중국해 통과 선박의 보험료 (War Risk Premium) 변화율 확인.\n2. EIA 또는 유가 데이터 (Bloomberg/Reuters) 에서 2026 년 6 월 천연가스 (Henry Hub) 및 유가 (WTI/Brent) 의 일별 변동률 확인.\n3. 선박 추적 데이터 (AIS) 를 통해 남중국해 통과 선박의 우회 항로 사용 증가율 및 운송 시간 지연 데이터 수집.\n\n[문헌공백]\n기존 문헌은 '초크포인트 위협'과 '에너지 가격'을 직접 연결하여 선형적 인과 (위협↑=가격↑) 를 전제했으나, [문헌 공백 원장] 의 '① 반례 클러스터'에서 지적된 **'SLOC 통제 이론'의 한계** (후티의 홍해 공격에도 유가 급등이 제한됨) 가 이를 반증한다. 본 분석은 회색지대 활동이 '직접적 공급 차단'이 아닌 '보험료 상승'이나 '우회 비용'이라는 **간접 비용**으로 전이되는 메커니즘을 제시함으로써, 기존 에너지 안보 문헌이 간과한 **'위협 인식과 가격 변동의 비동시성 (Decoupling)'** 공백을 메꾸는 기여를 한다. 이는 단순한 가격 모니터링을 넘어, 비물리적 비용 전이 경로를 분석해야 함을 시사한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 필리핀의 외교적 항의 건수 (또는 법적 소송 건수) 는 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 증가할 때, 필리핀의 외교적 항의 건수 (또는 법적 소송 건수) 는 통계적으로 유의하게 증가하나, 물리적 충돌 건수 (sev≥60) 는 통제변수 (미국 FONOP 빈도) 에 따라 불확실하게 반응한다.",
+        "h0": "남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 증가할 때, 필리핀의 외교적 항의 건수 (또는 법적 소송 건수) 는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60)",
+        "dependent_var": "필리핀의 외교적 항의 건수 (또는 법적 소송 건수) 는",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 taiwan_strait ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=taiwan_strait) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "China"
+            ],
+            "named_share": 0.03,
+            "named_n": 33,
+            "top_country": "Taiwan",
+            "top_share": 0.909,
+            "n_events": 1088,
+            "country_dist": {
+              "(미상)": 66,
+              "China": 33,
+              "Taiwan": 989
+            },
+            "filter_country": "China",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 증가할 때, 필리핀의 외교적 항의 건수 (또는 법적 소송 건수) 는 통계적으로 유의하게 증가하나, 물리적 충돌 건수 (sev≥60) 는 통제변수 (미국 FONOP 빈도) 에 따라 불확실하게 반응한다.",
+                "region": "taiwan_strait",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Jiankou, Fujian, China: GREAT WALL vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: TAIWAN vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs MILITARY (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: MILITARY vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "남중국해 필-중 중재재판 판결 관련 외교부 대변인 성명",
+                        "date": "2016-07-13",
+                        "creator": "외교부 > 남아시아태평양국  > 아세안협력과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "2차관 주재 초국가범죄 대응 관련 동남아·중국 지역 공관장회의 개최(5.21.)",
+                        "date": "2026-05-21",
+                        "creator": "영사안전국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "남중국해 필-중 중재재판 판결 관련 외교부 대변인 성명",
+                        "date": "2016-07-13",
+                        "creator": "외교부 > 남아시아태평양국  > 아세안협력과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "2차관 주재 초국가범죄 대응 관련 동남아·중국 지역 공관장회의 개최(5.21.)",
+                        "date": "2026-05-21",
+                        "creator": "영사안전국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "제5차 한-중국 기후변화 협력 공동위원회 개최",
+                        "date": "2026-04-30",
+                        "creator": "기후환경과학외교국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부, 중국어선 불법조업 문제 대응을 위한 관계부처회의 개최",
+                        "date": "2026-03-16",
+                        "creator": "동북·중앙아시아국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "외교부 수입규제대책반 『알기쉬운 중국의 수입규제』 발간",
+                        "date": "2026-03-04",
+                        "creator": "양자경제외교국",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Jiankou, Fujian, China: GREAT WALL vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: TAIWAN vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs MILITARY (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: MILITARY vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "US-Iran war leaves shipping at near-standstill in Hormuz again",
+                        "date": "2026-07-09",
+                        "source_db": "UN News",
+                        "description": "Renewed hostilities between the United States and Iran reportedly brought shipping to a near-standstill in the Strait of"
+                      },
+                      {
+                        "title": "US-Iran war: Renewed attacks in Strait of Hormuz prompts another global energy alert",
+                        "date": "2026-07-08",
+                        "source_db": "UN News",
+                        "description": "Renewed attacks on shipping in the Strait of Hormuz unsettled energy markets on Wednesday and prompted calls from the UN"
+                      },
+                      {
+                        "title": "Security Council LIVE: Emergency meeting on Iranian attack in Bahrain",
+                        "date": "2026-07-02",
+                        "source_db": "UN News",
+                        "description": "The 15-member Security Council is meeting in emergency session on Thursday morning to address the escalating tensions in"
+                      }
+                    ],
+                    "evidence_note": "UN News 3건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 10% → 천연가스 (Henry Hub) 가격은 경향성 (p=0.085)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 10% 증가할 때, 천연가스 (Henry Hub) 가격은 통계적으로 유의미하게 상승하지 않으나, 해상 보험료 (Lloyd's) 는 유의하게 상승한다.",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "남중국해 지역 ACLED 분쟁 이벤트 건수 (sev<60) 가 10%",
+        "dependent_var": "천연가스 (Henry Hub) 가격은",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": "NG=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": true,
+        "is_substituted_target": false,
+        "verification_status": "PARTIAL",
+        "partial_basis": "TREND_P15",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0852,
+        "granger_q": null,
+        "f_statistic": 2.05,
+        "best_lag": 4,
+        "differenced": false,
+        "n_obs": 465,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "China"
+            ],
+            "named_share": 0.03,
+            "named_n": 33,
+            "top_country": "Taiwan",
+            "top_share": 0.909,
+            "n_events": 1088,
+            "country_dist": {
+              "(미상)": 66,
+              "China": 33,
+              "Taiwan": 989
+            },
+            "filter_country": "China",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.05,
+              "effect_size_label": "작음",
+              "significance": 0.0852,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": false,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0852,
+                "granger_q": null,
+                "f_statistic": 2.05,
+                "best_lag": 4,
+                "n_obs": 465
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

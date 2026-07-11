@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-07-11T16:36:47Z",
+  "results": [
+    {
+      "id": "nk-russia-arms-ukraine",
+      "provider": "nim",
+      "purpose": "packet",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 73.4
+    },
+    {
+      "id": "imec-redsea-revival",
+      "provider": "nim",
+      "purpose": "inventory",
+      "status": "PASS",
+      "completeness_ok": true,
+      "duration_s": 77.0
+    }
+  ],
+  "summary": "2/2 PASS",
+  "rerun_compare": []
+}

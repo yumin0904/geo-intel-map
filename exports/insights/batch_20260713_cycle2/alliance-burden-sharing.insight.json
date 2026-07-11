@@ -1,0 +1,225 @@
+{
+  "schema_version": "0.1",
+  "id": "alliance-burden-sharing",
+  "generated_at": "2026-07-11T16:48:59Z",
+  "engine_version": "9.46.2",
+  "query": "주한미군 방위비 분담 협상 국면과 한국 국방예산·방위산업 지표의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula"
+  ],
+  "sectors": [
+    "indo_pacific",
+    "military"
+  ],
+  "briefing_refs": [
+    "[WotR] 북한의 치명적 드론 대박 — 한반도에 이식되는 우크라이나 실전 드론전 교리",
+    "[War on the Rocks] 한국의 50만 드론 전사는 공허한 전력이 될 것이다",
+    "[War on the Rocks] 이란전이 한미동맹에 의미하는 것",
+    "[INSS] 북한의 다극세계론 — 이념적 구성·전략적 기능·한계 (전략보고 382호)",
+    "동맹 비용분담 이론 (Burden Sharing Theory)"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 2,
+    "sipri_countries": 7,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 4,
+    "csis_incidents": 15,
+    "sipri_arms": 10,
+    "vdem_entries": 216,
+    "cow_wars": 7,
+    "ifans_pubs": 7,
+    "theory_cmp_chars": 4183,
+    "fred": 6,
+    "wbk": 7,
+    "polity5": 5,
+    "itu": 5,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 11,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+    "speculative": false
+  },
+  "result_md": "[헤드라인] [탐색적] 주한미군 방위비 분담 협상의 '거래적' 국면과 한국 국방비 증액·방산 수출 증가는 **상관한다** (동조), 하지만 방산 수출 증가가 동맹 신뢰도 회복으로 이어지는지는 **전제충족(DV 미검증)**\n데이터기반: 중  |  이론근거: 중  |  연쇄강도: MEDIUM\n\n[통념] 방위비 분담 협상에서 미국의 요구가 강해지면 한국은 국방비를 늘려 동맹 신뢰를 확보하고, 이는 방산 수출 확대와 산업 성장으로 직결된다.\n[비자명기여] 통념은 '방위비 증액 → 신뢰 회복 → 산업 성장'의 선형적 인과를 가정하나, 본 분석은 **범위조건**을 제시한다. 즉, 방위비 증액이 '전략적 자율성(전작권 전환)'과 충돌하는 **거래적 협상 국면**에서는 오히려 내부적 인력·산업 병목 (부사관 충원율 42%, 중국산 부품 90%) 을 악화시켜 방산 전력화의 **효율성**을 떨어뜨리는 **역방향 메커니즘**이 작동할 수 있음을 보여준다. (예측 임계: 동맹 비용분담 이론의 '2% GDP' 임계값을 충족하더라도, 인력 충원률 42% 미충족 시 전력화 효과는 0 에 수렴)\n[관찰] 2026 년 3 월 미국이 패트리어트 재배치를 논의하며 '거래적 동맹' 국면 진입 신호를 보낸 직후, 한국은 2025 년 9 월 '50 만 드론 전사' 계획을 발표하고 2026 년 상업 드론 11,000 대 조달 예산 330 억 원을 승인했다. 그러나 육군 부사관 충원율은 2020 년 95% 에서 2024 년 42% 로 붕괴했고, 소형 드론의 90% 는 중국산으로 공급망 리스크가 상존한다.\n[주장] (등급: 상관) 방위비 분담 협상의 압박 국면과 한국 국방 예산 증액 및 방산 수출 목표 설정은 **공변한다**. 협상 압박이 강할수록 한국은 '기여도'를 과시하기 위해 수치적인 국방비 확대와 방산 수출 목표를 설정하는 경향이 동반된다.\n[가설] H1: 주한미군 방위비 분담 협상에서 미국의 요구 강도 (협상 불일치 지수) 가 증가할 때, 한국의 국방비 지출 (%GDP) 과 방산 수출 계약액 (USD) 이 통계적으로 유의하게 증가한다 (통제: 북한 도발 빈도).\n[근거] SIPRI 2023 데이터 (한국 국방비 2.8% GDP), War on the Rocks 보고서 (2025.09 드론 계획 발표, 2026.03 패트리어트 재배치 논의), ACLED 데이터 (2025-06 177 건 → 2026-07 2 건, 긴장 완화 국면에서도 예산 증액).\n[한계] 방위비 협상 국면과 방산 수출 데이터의 시차 (lag) 를 통제하지 못했으며, '방산 수출 증가'가 실제 전력화 (전력 효율성) 로 이어지는지는 **선택편향** (성공적인 수출 사례만 보고됨) 에 의해 과대평가될 위험이 있다.\n[경쟁설명]\n이론A: 동맹 비용분담 이론 (Burden Sharing Theory)\n  예측: 패권국 (미국) 의 방위비 부담 증가 요구 시, 동맹국 (한국) 의 GDP 대비 방위비 비율이 통계적으로 유의하게 증가하여 무임승차를 청산한다.\n  실측: 한국 국방비 2.8% (2023) vs NATO 가이드라인 2.0% (임계). 앵커: 동맹 최저 방위비 1.5% vs 2.0% (편차 -0.5%, 사전계산) → 전제충족 (최저 동맹이 2% 미만인 상태는 아니나, 한국은 임계치 상회).\n  판정: 전제충족 (DV 미검증) — 방위비 수치는 임계치를 초과했으나, '공급량' (실질 전력화) 이 인력 부족 (부사관 42%) 으로 인해 충족되지 않았으므로 DV 검증 불가.\n이론B: 동맹 딜레마 (Alliance Dilemma - Snyder)\n  예측: 미국이 '연루 (Entrapment)'를 피하기 위해 자산을 재배치 (이란전) 할 때, 한국은 '방기 (Abandonment)'를 우려해 독자적 전력 (드론) 을 급격히 확충하려 하되, 이는 협상력을 약화시켜 추가적인 비용 부담을 초래한다.\n  실측: 2026 년 3 월 패트리어트 재배치 논의 후 한국은 드론 전력화 계획 발표 (2025.09) 와 추가경정예산 $170 억 (이란전 관련) 을 지출.\n  판정: 전제충족 (DV 미검증) — 한국이 독자 전력 확충을 시도했으나, 부사관 충원율 42% 와 중국산 의존도 90% 라는 구조적 제약으로 '방기'를 막는 실질적 억지력 확보 여부는 미검증.\n▶ 편차 비교 (사실): 비용분담 이론 예측편차 -0.5% (임계치 미달 시 무임승차 관측) vs 동맹 딜레마 예측편차 [산술 미제공] — 비용분담 이론은 방위비 수치 증가를 설명하나, 실제 전력화 실패 (DV) 를 설명하지 못함.\n▶ 당신의 판단 (연구자 몫): 방위비 증액이 '실질적 기여'인지 '형식적 과시'인지 판단할 때, 비용분담 이론의 '수치'와 동맹 딜레마의 '심리/전략' 중 어느 변수를 더 중시할지 연구자가 결정해야 함. (쟁점: 방위비 지출이 전력화 효율성으로 전환되는 전이 조건이 명시되지 않음)\n[검증포인트] 2024~2026 년 방위비 분담 협상 문서 (협상 요구 강도 지수) 와 한국 국방부 '전력화 진행률' (인력 충원율, 국내 부품 비율) 의 시계열 상관관계 확인.\n[문헌공백] 기존 문헌은 '방위비 분담'을 재정 지표 (GDP %) 로만 측정하여, **인프라/인력 병목** (부사관 42%) 이 전력화 효율성을 어떻게 무력화하는지 다루지 못함. 특히 '비용분담 이론'은 재정 기여만 강조할 뿐, **공급망 의존도 (중국산 90%)** 와 같은 지정학적 리스크가 방산 수출 증가를 '공허한 전력'으로 전락시키는 **교차도메인 메커니즘**을 설명하지 못하는 공백이 존재.\n\n---\n\n[헤드라인] [탐색적] 이란전 등 '역외 위기'와 한반도 '국방예산/방산 지표'는 **상관한다** (동조) — 위기 확산이 한국 방산 수요와 동맹 협상 지형을 동시에 재편하는 **교차 도메인** 효과\n데이터기반: 중  |  이론근거: 고  |  연쇄강도: MEDIUM\n\n[통념] 한국의 국방예산과 방산 산업은 오직 '북한 위협'에만 반응하며, 중동이나 태평양 등 역외 위기는 한국 안보와 무관하다.\n[비자명기여] 통념을 **반직관**적으로 반박한다. 이란전과 같은 역외 위기는 한국 에너지 수입 (호르무즈 61%) 을 위협하여 **경제·에너지 안보**를 군사 안보와 결합시키며, 이는 한국이 '방산 수출'을 통해 동맹 기여도를 높이고자 하는 **전략적 동조**를 유발한다. 즉, 역외 위기는 한국 방산 산업의 **수출 시장** (동맹국) 과 **내부 수요** (에너지 보호) 를 동시에 자극하는 **교차 도메인** 경로로 작동한다.\n[관찰] 한국은 원유 수입의 61% 와 납사 수입의 54% 를 호르무즈 해협에 의존한다. 2026 년 5 월 이란전 시나리오 하에서 한국 선박 피격 위협이 커지자, 한국은 2025 년 9 월 드론 계획 (50 만 전사) 을 발표하고 2026 년 추가경정예산 $170 억을 편성했다. 동시에 미국은 2026 년 3 월 패트리어트 재배치를 논의하며 동맹의 '거래적' 성격 강화 신호를 보냈다.\n[주장] (등급: 상관) 역외 위기 (호르무즈 봉쇄, 이란전) 발생 시, 한국의 국방비 증액과 방산 수출 목표 설정은 **동조한다**. 역외 위협이 에너지 안보와 직결될 때, 한국은 방산 역량을 동맹 기여 수단으로 활용하려는 경향이 동반된다.\n[가설] H1: 호르무즈 해협 통과 원유 비율 (61%) 에 기반한 에너지 리스크 지수가 증가할 때, 한국의 방산 수출 계약액 (USD) 과 동맹 관련 국방 예산 지출이 통계적으로 유의하게 증가한다 (통제: 북한 도발 건수).\n[근거] War on the Rocks 보고서 (호르무즈 의존도 61%, 이란전 추가경정예산 $170 억), ACLED 데이터 (korean_peninsula 2026-07 2 건, 지역 외 위기), SIPRI (방산 수출 데이터).\n[한계] '역외 위기'와 '방산 수출' 사이의 인과 경로는 **선택편향** (성공적인 협상 사례만 기록됨) 에 의해 과장될 수 있으며, 실제 에너지 위기 발생 시 방산 수출이 즉각적으로 증가하는지 여부는 **생존편향** (위기 극복 사례만 보고됨) 으로 왜곡될 위험이 있음.\n[경쟁설명]\n이론A: 확장억제 (Extended Deterrence)\n  예측: 확장억제 신뢰성 하락 (미국 자산 재배치) 시, 동맹국 (한국) 이 독자 핵무장 또는 독자 전력 (드론) 을 급격히 추구하여 도발 빈도를 억제하려 한다.\n  실측: 한국은 드론 전력화 계획 (50 만 전사) 발표, 부사관 충원율 42% (인력 병목), 중국산 드론 90% (공급망 취약).\n  판정: 전제충족 (DV 미검증) — 독자 전력 확충 시도는 있으나, 인력·공급망 병목으로 '억지력' 확보 여부는 검증 불가.\n이론B: 리버럴 상호의존 (Liberal Interdependence - Keohane)\n  예측: 상호의존 (에너지) 이 증가할 때, 분쟁 시 억제 효과가 작용하여 군사적 긴장이 완화된다.\n  실측: 호르무즈 의존도 61% (높은 상호의존) 임에도 불구하고, 한국은 이란전 시나리오에서 추가경정예산 $170 억 편성 및 군사적 대비 강화.\n  판정: 열세 — 상호의존이 높은데도 군사적 대비가 강화됨 → 억제 효과 부재.\n▶ 편차 비교 (사실): 확장억제 예측편차 [산술 미제공] (전력화 시도 vs 병목) vs 리버럴 상호의존 예측편차 [산술 미제공] (높은 의존도 vs 군사 강화) — 두 이론 모두 실측 (군사 강화) 을 완전히 설명하지 못함.\n▶ 당신의 판단 (연구자 몫): '에너지 의존도가 높을수록 전쟁이 억제되는가' vs '에너지 의존도가 높을수록 군사적 대비가 강화되는가' 중 어느 이론이 한국 사례를 더 잘 설명하는지 연구자가 판단해야 함. (쟁점: 에너지 의존도가 '억제'가 아닌 '위협 인식'으로 작용하는 메커니즘 불명확)\n[검증포인트] 호르무즈 해협 위기 시나리오 (2026) 와 한국 방산 수출 계약 (2026~2027) 의 시차 분석, 에너지 가격 변동과 국방비 지출의 상관관계 확인.\n[문헌공백] 기존 문헌은 '에너지 안보'와 '국방 산업'을 별개의 영역으로 분리하여 분석한다. **교차도메인 밀도**가 희박한 이 영역에서, 에너지 위기 (호르무즈) 가 어떻게 방산 산업의 **수출 수요** (동맹 기여) 와 **내부 수요** (에너지 보호) 를 동시에 자극하는지 설명하는 **이론적 연결고리**가 부재함. 기존 연구는 '에너지 의존도'를 '평화 유지' 요인으로만 보거나, '국방비'를 '북한 위협' 반응으로만 보아, **역외 위기가 국내 산업 지표에 미치는 교차 효과**를 간과함.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 주한미군 방위비 분담 협상에서 미국의 요구 강도 (협상 불일치 지수) → 한국의 국방비 지출 (%GDP) 과 방산 수출 계약액 (USD) 경향성 (p=0.110)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "주한미군 방위비 분담 협상에서 미국의 요구 강도 (협상 불일치 지수) 가 증가할 때, 한국의 국방비 지출 (%GDP) 과 방산 수출 계약액 (USD) 이 통계적으로 유의하게 증가한다 (통제: 북한 도발 빈도).",
+        "h0": "주한미군 방위비 분담 협상에서 미국의 요구 강도 (협상 불일치 지수) 가 증가할 때, 한국의 국방비 지출 (%GDP) 과 방산 수출 계약액 (USD) 이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "주한미군 방위비 분담 협상에서 미국의 요구 강도 (협상 불일치 지수)",
+        "dependent_var": "한국의 국방비 지출 (%GDP) 과 방산 수출 계약액 (USD)",
+        "control_vars": [],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": true,
+        "is_substituted_target": false,
+        "verification_status": "PARTIAL",
+        "partial_basis": "TREND_P15",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.1103,
+        "granger_q": null,
+        "f_statistic": 2.013,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "South Korea",
+              "United States"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": null
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.013,
+              "effect_size_label": "작음",
+              "significance": 0.1103,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.1103,
+                "granger_q": null,
+                "f_statistic": 2.013,
+                "best_lag": 3,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [검정불가] 호르무즈 해협 통과 원유 비율 (61%) 에 기반한 에너지 리스크 지수 → 한국의 방산 수출 계약액 (USD) 과 동맹 관련 국방 예산 지출 — 데이터 매핑 실패",
+        "confidence_word": "검정불가",
+        "routing_method": "construct_validity_fail",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "질문 대상을 커버하는 데이터 확보 후 재검정"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "호르무즈 해협 통과 원유 비율 (61%) 에 기반한 에너지 리스크 지수가 증가할 때, 한국의 방산 수출 계약액 (USD) 과 동맹 관련 국방 예산 지출이 통계적으로 유의하게 증가한다 (통제: 북한 도발 건수).",
+        "h0": "호르무즈 해협 통과 원유 비율 (61%) 에 기반한 에너지 리스크 지수가 증가할 때, 한국의 방산 수출 계약액 (USD) 과 동맹 관련 국방 예산 지출이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "호르무즈 해협 통과 원유 비율 (61%) 에 기반한 에너지 리스크 지수",
+        "dependent_var": "한국의 방산 수출 계약액 (USD) 과 동맹 관련 국방 예산 지출",
+        "control_vars": [],
+        "region_code": "hormuz",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "[구성타당도] IV 지목 대상(South Korea) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 (미상)(54%). [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 7379건 실재. 데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "[구성타당도] IV 지목 대상(South Korea) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 (미상)(54%). [진단: IV_MISROUTE — 대상 이벤트가 창 내 타 region에 7379건 실재. 데이터 문제가 아니라 region/IV 선택 오류 → 라우팅 수정으로 해소 가능]",
+        "data_signature": "",
+        "method_result": {
+          "skipped": true,
+          "skip_reason": "construct_validity_fail",
+          "iv_construct": {
+            "named_countries": [
+              "South Korea"
+            ],
+            "named_share": 0.0,
+            "named_n": 0,
+            "top_country": "(미상)",
+            "top_share": 0.545,
+            "n_events": 615,
+            "country_dist": {
+              "(미상)": 335,
+              "Iran": 277,
+              "United Arab Emirates": 3
+            },
+            "filter_country": "South Korea",
+            "global_named_n": 7379,
+            "fail_kind": "IV_MISROUTE"
+          }
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

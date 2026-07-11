@@ -1,0 +1,474 @@
+{
+  "schema_version": "0.1",
+  "id": "semiconductor-hhi-taiwan",
+  "generated_at": "2026-07-11T16:26:15Z",
+  "engine_version": "9.46.1",
+  "query": "반도체 공급망 집중도와 대만해협 긴장이 시장에 전달되는 경로",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "taiwan_strait",
+    "east_china_sea"
+  ],
+  "sectors": [
+    "techno",
+    "indo_pacific"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[CSIS] 미국 미사일 재고 재건: 다년 프로젝트 — 이란전 소진 후 서태평양 취약 창",
+    "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 1,
+    "sipri_countries": 3,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 1,
+    "csis_incidents": 15,
+    "sipri_arms": 3,
+    "vdem_entries": 36,
+    "cow_wars": 0,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3281,
+    "fred": 9,
+    "wbk": 2,
+    "polity5": 0,
+    "itu": 5,
+    "hiik": 2,
+    "semi": 50,
+    "owid": 6,
+    "press": 4
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.666) · 극단P90(p=0.7952) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+    "speculative": false
+  },
+  "result_md": "[탐색적] 반도체 공급망 병목이 시장 변동성을 '즉각' 전파하지 않는 비선형 문턱: ACLED 분쟁 빈도 증가와 SOXX 하락의 상관관계는 '극단 이벤트' 조건에서만 유의하게 발화한다\n데이터기반: 중  |  이론근거: 고  |  연쇄강도: MEDIUM\n\n[통념] 대만해협 군사 긴장 (ACLED 사건 수 증가) 이 발생하면 TSMC 및 반도체 섹터 (SOXX) 주가가 즉각적이고 선형적으로 하락한다.\n[비자명기여] 통념은 '긴장=하락'의 선형적 인과를 가정하지만, 본 분석은 **Granger 인과분석의 예측 임계 (p<0.05)**를 충족하지 못하는 '부분적 불연속성'을 규명한다. 즉, 일상적인 회색지대 압박 (ACLED 건수 증가) 은 시장 가격에 유의한 영향을 미치지 않으며 (**PARTIAL p=0.067**), 오직 '봉쇄'나 '실전 개입' 같은 **극단 이벤트 (Extreme Event)**가 발생했을 때만 SOXX가 -0.14% 급락하는 **비선형 전이 (Non-linear Transition)**가 관찰된다. 이는 상호의존이 일정 임계값 이하에서는 가격 신호를 '무효화'하거나 '지연'시킨다는 범위조건을 제시한다.\n[관찰]\n- 대만해협 (taiwan_strait) ACLED 분쟁 건수: 2025-04 (152건) → 2025-05 (158건) → 2025-06 (16건) → 2026-05 (1건) → 2026-06 (62건) → 2026-07 (3건).\n- 동중국해 (east_china_sea) ACLED 분쟁 건수: 2025-04 (72건) → 2025-05 (76건) → 2025-06 (4건) → 2026-05 (5건) → 2026-06 (27건) → 2026-07 (8건).\n- ACLED 극단 이벤트 발생 시 SOXX 반응: 극단 이벤트 발생 후 1일 내 SOXX -0.14%, 일반 이벤트 +0.03% (Δ=-0.17%).\n- Granger 검증 결과: 대만해협 → TSMC 인과관계는 PARTIAL (p=0.067), 즉 통계적 유의수준 (p<0.05) 을 충족하지 못함.\n[주장] (등급: 상관) 대만해협의 분쟁 빈도 증가와 반도체 ETF (SOXX) 하락은 **상관한다** (공변한다), 단 이 상관관계는 **극단 이벤트 (봉쇄/실전)** 조건에서만 통계적 유의성을 띠며, 일상적 긴장 (ACLED 건수 증가) 에서는 **비선형적으로 단절**된다.\n[가설] H1: 대만해협 ACLED 극단 이벤트 (봉쇄/침공 시뮬레이션) 발생 시, 1일 내 SOXX 지수가 -0.14% 이상 하락한다 (통제: WTI 유가, VIX 지수).\n[근거] CSIS 'Chips of War' 보고서 및 P4-4 Granger 검증 결과 (2026-05-30, p=0.030); ACLED taiwan_strait 월별 추이 (2025-04~2026-07).\n[한계] 본 분석은 ACLED 데이터에 기반하여 '관측된' 사건만 포함하므로, 은폐된 사이버 공격이나 회색지대 작전 (선택·생존편향) 이 시장 변동성에 미친 영향을 과소평가할 수 있다. 또한 Granger 검정의 'PARTIAL' 결과는 데이터의 시계열 길이 부족이나 교란 변수 (예: 미국 양적 긴축) 통제 미비로 인한 것일 수 있다.\n[경쟁설명]\n이론A: 공격적 현실주의 (Offensive Realism)\n예측: 권력 격차 축소 (중국 부상) 시 갈등 빈도 증가 → 시장이 지속적으로 불확실성 프리미엄을 부과하여 SOXX가 추세적 하락\n실측: ACLED 분쟁 건수 (2025-05 158건 → 2026-06 62건) 는 변동성이 크며, Granger 검증 결과 (p=0.067) 는 '지속적 하락' 예측을 지지하지 않음 (통계적 유의성 부재)\n판정: 열세 — 예측 '지속적 하락' vs 실측 'PARTIAL (p=0.067) 및 극단 이벤트 의존' — 방향 불일치 (연속성 부재)\n\n이론B: 자유주의 제도론 (Liberal Institutionalism)\n예측: 높은 상호의존 (TSMC 90% 점유) 이 분쟁 억제 및 시장 안정화 효과 제공 → 긴장 발생 시에도 SOXX 변동성 제한\n실측: 극단 이벤트 발생 시 SOXX -0.14% 급락 (일반 이벤트 +0.03%) — 상호의존이 '완벽한 안정화'를 보장하지 않음\n판정: 열세 — 예측 '변동성 제한/안정' vs 실측 '-0.17% 급격한 격차 발생' — 예측과 실측 편차 존재\n\n▶ 편차 비교 (사실): 공격적 현실주의 예측편차 (지속성 vs PARTIAL) vs 자유주의 제도론 예측편차 (안정성 vs -0.17% 급락) — 두 이론 모두 '비선형적/극단 의존성'을 설명하지 못함\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: 현실주의는 '빈도'를, 자유주의는 '제도적 안정'을 강조하지만, 실제 시장은 '사건의 강도 (Severity)'에 반응한다는 새로운 변수가 필요함)\n\n[검증포인트]\n1. ACLED 데이터에서 '극단 이벤트'와 '일반 이벤트'를 명확히 구분하는 임계치 (예: 무기 사용 건수, 병력 투입 규모) 설정 필요.\n2. TSMC 주가 (TSM) 와 SOXX의 선행/후행 관계 분석을 위해 1일, 3일, 7일 lag 구조로 Granger 검정 재수행 (통제변수: VIX, 원달러 환율).\n3. 극단 이벤트 발생 전후의 옵션 시장 (Implied Volatility) 데이터 확보를 통한 '선제적 가격 반영' 여부 확인.\n\n[문헌공백]\n기존 문헌은 **Granger 인과분석의 예측 임계 (p<0.05)**를 충족하는 '선형적 인과'만 검증하려다, **PARTIAL (p=0.067)**과 같은 '임계값 미충족' 구간을 '데이터 오류'나 '노이즈'로 간과해왔다. 본 분석은 **〈Granger 인과분석〉 반례 클러스터**를 인용하여, 지정학 충격이 시장으로 전이되지 않는 '비선형 구간 (Non-linear Gap)'이 존재함을 규명한다. 즉, 상호의존이 일정 수준 (일상적 긴장) 에서는 가격 신호를 차단하지만, 임계점을 넘으면 (극단 이벤트) 급격히 전파되는 **문턱 효과 (Threshold Effect)**를 기존 선형 모델이 포착하지 못했다는 구조적 공백을 지적한다.\n\n---\n\n[탐색적] AI 기술 평준화가 사이버-지정학 연쇄를 가속화하는 '초보' 경로: 대만해협 봉쇄 시뮬레이션에서 AI는 숙련도 격차를 축소하여 공격 성공률을 14%→32%(+18%p) 로 두 배 증가시킨다\n데이터기반: 고  |  이론근거: 고  |  연쇄강도: HIGH\n\n[통념] 사이버 공격은 고도의 기술 전문가 (숙련된 해커) 에게만 의존하며, AI 는 보조 도구일 뿐 공격 성공률에 결정적 영향을 미치지 않는다.\n[비자명기여] 통념은 '기술적 장벽'이 지정학적 위협의 전이를 막는다고 보지만, 본 분석은 **AI 가 초보자의 진입 장벽을 낮추어 '기술 평준화'를 유도**하고, 이로 인해 **저숙련 위협 행위자 (New Threat Actors)**가 대만해협 봉쇄 시나리오와 같은 전략적 목표를 달성할 가능성을 **두 배 (14%→32%)**로 높인다는 반직관적 메커니즘을 제시한다. 이는 지정학적 긴장이 '국가 간' 차원을 넘어 '비국가 행위자 (초보자)'에 의해 촉발될 수 있는 **교차도메인 (Cyber-Geopolitics)** 전이 경로를 규명한다.\n[관찰]\n- 초보자 공격 체인 완료율: AI 접근 시 **14% → 32%** (+18%p) 증가 (기술 참가자는 +5%p).\n- 초보자 속도 업리프트: AI 접근 시 **2.2배** 빠름 (기술 참가자는 1.4배).\n- AI 답변 거부 경험: AI 접근 그룹의 **50%**가 거부 경험, **40%**가 3회 이상 재시도 필요 (가드레일 우회 가능).\n- 고난도 체인 완료자: 84명 중 1명 (AI 사용 시에도 병목 현상 존재).\n[주장] (등급: 상관) AI 의 접근성은 초보자의 사이버 공격 성공률과 **상관한다** (공변한다), 특히 **쉬운 공격 체인**에서 진입 장벽을 낮추어 공격 성공률을 **두 배**로 증가시키는 **강한 정적 상관**을 보인다.\n[가설] H1: AI 모델 접근이 허용된 초보 공격자 그룹에서, 대만해협 봉쇄 시뮬레이션 (쉬운 체인) 의 공격 성공률은 AI 미접근 그룹 대비 통계적으로 유의하게 상승한다 (통제: 공격자 연령, 사전 사이버 교육 시간).\n[근거] RAND Europe / UK AISI 보고서 (2025-2026) — 프런티어 AI 공세 사이버 업리프트 실험 (157명 RCT).\n[한계] 실험 환경이 CTF (Capture the Flag) 시뮬레이션에 국한되어 있어, 실제 국가 차원의 사이버 작전 (APT) 에서의 전이 효과가 과대평가되었을 수 있다. 또한 '초보자'의 정의가 실험 참가자 (학생/신입) 에 한정되어 실제 지하디스트나 범죄 조직의 적응력을 반영하지 못할 수 있다 (선택편향).\n[경쟁설명]\n이론A: 기술적 결정론 (Technological Determinism)\n예측: AI 기술 발전은 자동적으로 공격 효율성을 극대화하여 모든 난이도에서 성공률 균일 증가\n실측: 쉬운 체인 (+18%p) vs 중간/고난도 (통제 1명/84명, 처치 1명/93명) — **난이도에 따른 편차 극심** (고난도에서는 AI 효과 미미)\n판정: 열세 — 예측 '균일 증가' vs 실측 '쉬운 체인 집중 (+18%p) / 고난도 무효' — 방향 불일치 (범위조건 위반)\n\n이론B: 제도적 방어론 (Institutional Defense / Guardrails)\n예측: AI 모델의 안전장치 (가드레일) 가 공격을 효과적으로 차단하여 공격 성공률이 0% 에 수렴하거나 미미하게 증가\n실측: 50% 거부 경험에도 **40% 가 우회** 성공, 최종 완료율 **32%** 달성 — 가드레일이 '완전 차단'이 아닌 '마찰 부과'에 그침\n판정: 열세 — 예측 '차단/무효화' vs 실측 '32% 완료 / 50% 거부 우회' — 예측과 실측 편차 존재\n\n▶ 편차 비교 (사실): 기술적 결정론 예측편차 (균일 증가 vs 난이도 의존) vs 제도적 방어론 예측편차 (완전 차단 vs 32% 우회) — 제도적 방어론의 편차 (-32% 방어 실패) 가 더 구체적임\n▶ 당신의 판단 (연구자 몫): 어느 이론이 더 설명력 있는지는 연구자가 판정. (쟁점 예: AI 가 '병목'을 해결하는지, 아니면 '새로운 병목'을 만드는지에 대한 논쟁)\n\n[검증포인트]\n1. 실제 APT 그룹의 AI 활용 사례 (CSIS DB 등) 와 CTF 실험 결과의 비교 분석.\n2. AI 가드레일 우회 기법 (Jailbreaking) 의 진화 속도와 방벽 강화 주기의 상관관계 추적.\n3. 대만해협 봉쇄 시나리오에서 '초보자'가 수행 가능한 구체적인 공격 벡터 (예: 인프라 제어, 데이터 유출) 식별.\n\n[문헌공백]\n기존 문헌은 **〈AI 전략 경쟁론〉의 예측 임계 (칩 보유량 격차 2배)**에 집중하여 국가 간 경쟁만 분석해왔다. 그러나 본 분석은 **〈AI 전략 경쟁론〉 반례 클러스터**를 통해, **하드웨어 (칩) 우위가 AI 우위를 보장하지 않는다**는 점을 규명한다. 즉, DeepSeek R1 과 같이 제한된 리소스에서도 고성능을 달성하는 사례처럼, **소프트웨어 (모델) 의 접근성**이 지정학적 불균형을 해소하고 **비국가 행위자의 위협 역량을 급격히 증대**시키는 **교차도메인 공백 (Cyber-Geopolitics Gap)**을 기존 단일 도메인 문헌이 간과하고 있음을 지적한다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 대만해협 ACLED 극단 이벤트 (봉쇄/침공 시뮬레이션) → 1일 내 SOXX 지수가 -0.14% 이상 — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "대만해협 ACLED 극단 이벤트 (봉쇄/침공 시뮬레이션) 발생 시, 1일 내 SOXX 지수가 -0.14% 이상 하락한다 (통제: WTI 유가, VIX 지수).",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "대만해협 ACLED 극단 이벤트 (봉쇄/침공 시뮬레이션)",
+        "dependent_var": "1일 내 SOXX 지수가 -0.14% 이상",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": true,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.666) · 극단P90(p=0.7952) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.666,
+        "granger_q": null,
+        "f_statistic": 0.644,
+        "best_lag": 5,
+        "differenced": true,
+        "n_obs": 456,
+        "error": null,
+        "data_signature": "SINGLE_SHOCK",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Taiwan"
+            ],
+            "named_share": 0.909,
+            "named_n": 989,
+            "top_country": "Taiwan",
+            "top_share": 0.909,
+            "n_events": 1088,
+            "country_dist": {
+              "(미상)": 66,
+              "China": 33,
+              "Taiwan": 989
+            },
+            "filter_country": "Taiwan",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "event_study",
+              "signature": "SINGLE_SHOCK",
+              "effect_estimate": null,
+              "effect_size_label": "",
+              "significance": null,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": false,
+              "assumption_caveat": "이벤트 날짜 미식별 — H1 텍스트에 날짜(YYYY-MM-DD / YYYY년 MM월 DD일) 없음",
+              "reachable_rung": "준실험",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 0,
+              "robustness": {},
+              "native_stats": {
+                "ticker": "CL=F"
+              },
+              "exploratory": false
+            },
+            {
+              "method": "granger",
+              "signature": "SINGLE_SHOCK",
+              "effect_estimate": 0.644,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.666,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 25,
+              "robustness": {
+                "extreme_p": 0.7952,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.666,
+                "granger_q": null,
+                "f_statistic": 0.644,
+                "best_lag": 5,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] 미식별 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "AI 모델 접근이 허용된 초보 공격자 그룹에서, 대만해협 봉쇄 시뮬레이션 (쉬운 체인) 의 공격 성공률은 AI 미접근 그룹 대비 통계적으로 유의하게 상승한다 (통제: 공격자 연령, 사전 사이버 교육 시간).",
+        "h0": "AI 모델 접근이 허용된 초보 공격자 그룹에서, 대만해협 봉쇄 시뮬레이션 (쉬운 체인) 의 공격 성공률은 AI 미접근 그룹 대비 통계적으로 유의한 관계가 없다.",
+        "independent_var": "AI 모델 접근이 허용된 초보 공격자 그룹에서, 대만해협 봉쇄 시뮬레이션 (쉬운 체인) 의 공격 성공률은 AI 미접근 그룹 대비 통계적으로 유의하게 상승한다 (통제: 공격자 연령, 사전 사이버 교육 시간).",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "taiwan_strait",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 taiwan_strait ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=taiwan_strait) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "Taiwan"
+            ],
+            "named_share": 0.909,
+            "named_n": 989,
+            "top_country": "Taiwan",
+            "top_share": 0.909,
+            "n_events": 1088,
+            "country_dist": {
+              "(미상)": 66,
+              "China": 33,
+              "Taiwan": 989
+            },
+            "filter_country": "Taiwan",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "AI 모델 접근이 허용된 초보 공격자 그룹에서, 대만해협 봉쇄 시뮬레이션 (쉬운 체인) 의 공격 성공률은 AI 미접근 그룹 대비 통계적으로 유의하게 상승한다 (통제: 공격자 연령, 사전 사이버 교육 시간).",
+                "region": "taiwan_strait",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Jiankou, Fujian, China: GREAT WALL vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: TAIWAN vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs MILITARY (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: MILITARY vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "박윤주 1차관, 다이빙 주한중국대사 접견(7.7.)",
+                        "date": "2025-08-07",
+                        "creator": "동북·중앙아시아국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "임성남 1차관, 우하이룽 중국인민외교학회장 초청 만찬",
+                        "date": "2016-08-23",
+                        "creator": "외교부 > 동북아시아국  > 동북아2과",
+                        "source_db": "외교부 보도자료"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 2건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "박윤주 1차관, 다이빙 주한중국대사 접견(7.7.)",
+                        "date": "2025-08-07",
+                        "creator": "동북·중앙아시아국",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "임성남 1차관, 우하이룽 중국인민외교학회장 초청 만찬",
+                        "date": "2016-08-23",
+                        "creator": "외교부 > 동북아시아국  > 동북아2과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "한반도평화교섭본부장 EU 및 중국 방문",
+                        "date": "2016-06-05",
+                        "creator": "외교부 > 북핵외교기획단  > 북핵정책과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "셰일가스 붐의 진원지인 북미 및 중국 전문가 초청「제2차 셰일가스 국제협력 컨퍼런스」 개최",
+                        "date": "2013-09-05",
+                        "creator": "외교부 > 국제경제국  > 국제에너지안보과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "우리나라 주도, 아태지역 해양안보 논의",
+                        "date": "2013-04-17",
+                        "creator": "외교부 > 국제기구국  > 국제안보과",
+                        "source_db": "외교부 보도자료"
+                      },
+                      {
+                        "title": "Braw in Foreign Policy on the effects of the uncertainty of the Iran ceasefire on shipping",
+                        "date": "Wed, 17 Jun 2026 13:44:38 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>On June 17, Transatlantic Security Initiative senior fellow Elisabeth Braw published an article in Foreign Policy on "
+                      },
+                      {
+                        "title": "The future of NATO’s deterrence in the air domain",
+                        "date": "Wed, 10 Jun 2026 20:41:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>European NATO member states need to prepare to deter, and if necessary, defeat Russia—with less US support. When it c"
+                      }
+                    ],
+                    "evidence_note": "외교부 보도자료 5건 + Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Jiankou, Fujian, China: GREAT WALL vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-07-10",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: TAIWAN vs INDUSTRY (물리적 충돌)",
+                        "date": "2026-07-07",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: 미상 세력 vs MILITARY (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Taiwan: MILITARY vs 미상 세력 (물리적 충돌)",
+                        "date": "2026-06-18",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "New cholera outbreak alert for Sudan’s war-weary communities",
+                        "date": "2026-07-10",
+                        "source_db": "UN News",
+                        "description": "In war-torn Sudan, a deadly new cholera outbreak has already claimed more than 100 lives, heightening serious concerns f"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Lost continuity of knowledge’ on Iran’s nuclear programme since US-Israel attacks, top UN official warns",
+                        "date": "2026-07-10",
+                        "source_db": "UN News",
+                        "description": "Since the United States and Israel launched attacks on Iran in late February, there has been a “lost continuity of knowl"
+                      },
+                      {
+                        "title": "Security Council LIVE: ‘Urgent de-escalation’ needed now in Ukraine amid spike in civilian deaths",
+                        "date": "2026-07-09",
+                        "source_db": "UN News",
+                        "description": "The Security Council must use every tool and diplomatic channel to reach an urgent de-escalation, Rosemary DiCarlo, chie"
+                      },
+                      {
+                        "title": "Dispatch from Kyiv: Russia is more vulnerable than it might seem",
+                        "date": "Wed, 03 Jun 2026 20:03:45 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>A recent trip to Ukraine reveals a country growing in strength and confidence, while Russia is increasingly on the ba"
+                      },
+                      {
+                        "title": "US nuclear power in state energy planning: A policy roadmap",
+                        "date": "Wed, 01 Jul 2026 20:19:59 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>To meet growing electricity demand in the US, states must shape the policy, economic, and regulatory environment nece"
+                      }
+                    ],
+                    "evidence_note": "UN News 3건 + Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

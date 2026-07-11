@@ -1,0 +1,260 @@
+{
+  "schema_version": "0.1",
+  "id": "imec-redsea-revival",
+  "generated_at": "2026-07-11T16:57:53Z",
+  "engine_version": "9.46.2",
+  "query": "홍해 위기 장기화가 IMEC 회랑 논의 재점화에 미치는 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "bab_el_mandeb",
+    "middle_east"
+  ],
+  "sectors": [
+    "maritime",
+    "energy"
+  ],
+  "briefing_refs": [
+    "사례: 2023 후티 홍해 공격 — 비국가 행위자의 SLOC 차단",
+    "[War on the Rocks] 사라진 해군: 호르무즈 위기와 미국 인도-태평양 파트너십의 한계",
+    "[War on the Rocks] 승인의 문제: 소말릴란드, 이스라엘 안보 기하학, 홍해 패권 경쟁",
+    "[INSS] 중동 전쟁과 글로벌 복합 위기: 평가와 시사점 (전략보고 379호)",
+    "사례: 2023 이스라엘-하마스 전쟁 — 중동 분쟁과 리스크오프 메커니즘"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 2,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 4,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3215,
+    "fred": 12,
+    "wbk": 4,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 8,
+    "semi": 0,
+    "owid": 6,
+    "press": 4
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음 | Granger 비유의(p≥0.15) — 선행성 근거 없음",
+    "speculative": false
+  },
+  "result_md": "[탐색적] 홍해 긴장 '상관'과 IMEC 재점화 '가설': 비자명적 연결고리 탐색\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념]\n홍해 (바브엘만데브) 의 해상 봉쇄 위협이 지속되면, 기존 해상 경로 (수에즈) 의 불안정으로 인해 대안 육상 회랑 (IMEC) 의 전략적 필요성이 자연스럽게 부각되어 논의가 재점화될 것이다.\n\n[비자명기여]\n통념은 '해상 차단 → 육상 회랑 대체'라는 단순한 기능적 대체를 가정하지만, 실제 메커니즘은 **보험 시장과 비용 구조의 비선형적 붕괴**에 의해 작동한다.\n문헌 공백 원장 ① 'SLOC 통제 이론'의 예측 임계 (초크포인트 위협 시 운임·유가 급등) 가 2024~2025 년 후티 공격 시 **미국 전략비축유 방출과 우회 항로로 인해 유가 급등이 제한적**이었던 반례를 고려할 때, 단순한 물리적 봉쇄만으로는 IMEC 논의 재점화가 설명되지 않는다.\n오히려 **[도메인A(해양 안보) → 도메인B(금융/보험)]** 경로가 핵심이다. '러시아의 호르무즈 플레이북'에서 제시된 **'보험 연쇄 봉쇄' (Lloyd's 보험 취소)** 메커니즘이 작용할 때, 물리적 선체 손실 여부와 무관하게 해상 운송의 **경제적 실행 가능성 (Cost Feasibility)** 이 붕괴한다. 이때 IMEC 는 단순한 '대체 경로'가 아니라, **보험 리스크가 전이되지 않는 '비보험 (De-risked)' 육상 인프라**로서만 전략적 가치를 갖게 된다. 즉, IMEC 재점화는 '물리적 차단'이 아니라 **'금융적 배제' (Financial Exclusion)** 가 임계점을 넘었을 때만 발생한다.\n\n[관찰]\n- **홍해/바브엘만데브 분쟁 건수**: 2026 년 6 월 2 건, 7 월 1 건으로 급감 (2025 년 6 월 372 건 대비 -99% 이상 감소) [ACLED].\n- **중동 분쟁 (middle_east) 건수**: 2026 년 6 월 3,342 건으로 급증 (5 월 180 건 대비 +1,756.7%) [ACLED].\n- **유가 변동**: 2024 년 Brent 유가 80.22 USD/배럴 (2023 년 82.49 USD 대비 -2.7% 감소) [FRED].\n- **IMEC 관련 언급**: [CSIS] 보고서에 따르면, 홍해 위기 장기화 (2023~2025) 와 이란전 (2026.2.28 개전) 으로 인해 GCC 국가들의 방위 파트너 다변화 및 에너지 인프라 보호 논의가 가속화됨.\n- **러시아의 보험 전략**: 2026 년 호르무즈 봉쇄 시, 선박 격침이 아닌 **Lloyd's 보험 취소로 공습 이틀 만에 유조선 통항 80% 이상 붕괴** [War on the Rocks].\n\n[주장]\n(등급: 상관) 홍해 및 중동 지역의 분쟁 강도 증가와 보험 시장의 리스크 프리미엄 상승 (간접 지표) 은 IMEC 회랑 논의의 재점화와 **상관한다**.\n단, 물리적 분쟁 건수 (ACLED) 와 유가 (FRED) 는 2026 년 6 월 현재 **역방향 (분쟁 증가 vs 유가 안정/하락)** 또는 **수렴되지 않는 패턴**을 보이므로, 물리적 봉쇄 자체보다는 **금융/보험 도메인의 리스크 인식 (Risk Perception)** 이 IMEC 논의의 선행 조건일 가능성이 높다.\n→ **연쇄 고리 강도 평가**:\n1. 홍해 긴장 → 보험료 상승/취소 (HIGH, '보험 연쇄 봉쇄' 사례 기반)\n2. 보험료 상승 → 해상 운송 비용 급증 (HIGH, 시장 메커니즘)\n3. 해상 비용 급증 → IMEC 논의 재점화 (MEDIUM, 정치적 합의 필요성 반영)\n→ **전체 연쇄 강도**: MEDIUM (정치적 합의 변수로 인해 70% 미만)\n\n[가설]\nH1: \"홍해 지역 (bab_el_mandeb) 의 회색지대 위협 빈도 (월별 건수) 가 증가할 때, 중동 산유국의 육상 파이프라인/철도 인프라 투자 비율이 통계적으로 유의하게 상승한다.\"\n(단, 현재 IMEC 투자 비율에 대한 시계열 데이터가 부재하여 검증 불가)\n\n[근거]\n- ACLED 데이터: bab_el_mandeb 지역 분쟁 건수 2026 년 6~7 월 급감 (2~1 건) vs middle_east 지역 급증 (3,342 건).\n- War on the Rocks 보고서: \"러시아의 호르무즈 플레이북: 발트해·흑해에 보험 연쇄 봉쇄가 온다\" — 보험 취소가 통항을 붕괴시키는 메커니즘 명시.\n- CSIS 보고서: GCC 국가들의 방위 파트너 다변화 및 에너지 인프라 보호 논의 가속화.\n\n[한계]\n- **선택·생존편향**: 현재 ACLED 데이터는 '차단에 성공한' 또는 '보고된' 공격만 기록하며, 은폐된 공격이나 비공식적 협상 (예: 이란과 아시아 국가 간 양자 통과 협상) 은 누락될 수 있어 실제 위협 수준을 과소평가할 위험이 있다.\n- **데이터 부재**: IMEC 회랑 논의의 구체적 진전 (투자금, 협정 서명 건수) 에 대한 정량 데이터가 없어 H1 검증 불가.\n- **교란변수**: 이란전 (2026.2.28) 개전 이후의 거시경제적 충격 (인플레이션, 금리) 이 IMEC 논의에 미치는 영향을 분리하기 어려움.\n\n[경쟁설명]\n이론 A: 자원무기화 (Hirschman)\n  예측: 중동 에너지 공급 경로 (홍해/호르무즈) 위협 시, 수입국 (아시아/유럽) 의 정치적 양보 또는 대안 인프라 (IMEC) 투자 증가 (예측 부호: ▲)\n  실측: Brent 유가 2024 년 80.22 USD/배럴 (2023 년 대비 -2.7% 감소, 사전계산) [FRED]; bab_el_mandeb 분쟁 건수 2026 년 6~7 월 2~1 건으로 급감 (2025 년 대비 -99% 이상) [ACLED].\n  판정: 열세 — 예측 '위협 증가 → 양보/대안 투자' vs 실측 '유가 하락 (위협 인식 둔화) + 지역 분쟁 건수 감소' — 방향 불일치. (앵커: 유가 -2.7%, 분쟁 건수 -99%, 전제 미충족)\n\n이론 B: 회색지대 전략 (Gray Zone Strategy)\n  예측: 군사 이하의 비국가 행위자 (후티 등) 의 회색지대 행동 빈도 증가 시, 목표국 (미국/동맹) 의 정책 변화 (대안 회랑 구축 등) 빈도 증가 (예측 부호: ▲)\n  실측: bab_el_mandeb 지역 회색지대 행동 (분쟁) 건수 2026 년 6~7 월 2~1 건으로 급감 (2025 년 6 월 372 건 대비 -99% 이상) [ACLED]; middle_east 지역 분쟁은 3,342 건으로 급증.\n  판정: 전제충족 (DV 미검증) — IV(회색지대 행동) 는 홍해 지역에서는 감소했으나 중동 전체에서는 증가. DV(IMEC 논의/투자) 의 정량값 부재로 방향성 판단 불가. (앵커: bab_el_mandeb 건수 -99%, 중동 전체 +1,756.7%, 전제충족 조건 미검증)\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 (유가 -2.7% vs 예측 상승) vs 회색지대 전략 예측편차 (홍해 건수 -99% vs 예측 증가) — 두 이론 모두 실측 데이터(유가 하락, 홍해 건수 감소) 와 예측 방향이 불일치하거나 DV 부재로 검증 불가 상태.\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 현재 데이터(유가 하락, 홍해 분쟁 감소) 와 상충된다. 이는 IMEC 재점화가 '현재의 물리적 위협'이 아니라 '미래의 금융/보험 리스크 (러시아 모델)'에 대한 선제적 대응이거나, 혹은 다른 변수 (미국-이란 전쟁 개전) 에 의한 것일 수 있음. 어느 이론이 우세한지는 연구자가 '보험 시장 데이터'와 'IMEC 구체적 투자 데이터'를 추가로 확보하여 판단해야 함.\n\n[검증포인트]\n- **Lloyd's of London 보험료 데이터**: 홍해/호르무즈 통과 선박의 전쟁 위험 보험료 (War Risk Premium) 의 월별 변화율 (2023~2026).\n- **IMEC 구체적 투자 합의서**: GCC 국가와 인도/미국 간 육상 인프라 투자 MOU 서명 건수 및 금액 (2024~2026).\n- **ACLED 지역 세분화 데이터**: bab_el_mandeb vs middle_east 분쟁의 구체적 유형 (기습 vs 포격 vs 해적행위) 분포.\n\n[문헌공백]\n기존 문헌은 **단일 도메인 (해양/에너지)** 에 집착하여 '물리적 봉쇄 → 가격 상승 → 대안 모색'의 선형적 인과만 다룰 뿐, **금융 도메인 (보험 시장) 이 해양 안보를 어떻게 비선형적으로 붕괴시키는지**를 체계적으로 연결하지 못한다.\n문헌 공백 원장 ③ '교차도메인 밀도'에서 해양 (5 건) 과 에너지 (4 건) 는 포화 상태이나, **금융/보험 도메인과의 교차 경로는 희박**하다.\n또한, ① 'SLOC 통제 이론'의 반례 (2024~2025 유가 급등 부재) 를 통해 **\"물리적 위협이 반드시 가격 충격으로 전이되지 않는다\"**는 사실을 확인했으나, 기존 문헌은 이를 '실패'로만 해석할 뿐, **'보험 연쇄 봉쇄'라는 새로운 전이 메커니즘**이 IMEC 논의 재점화의 **실질적 동인**이 될 수 있다는 가설을 제시하지 못했다.\n따라서 본 분석의 기여는 **해양 안보 위협이 금융 리스크로 전환되는 '전이 임계점' (Tipping Point)** 을 식별하고, IMEC 논의가 단순한 대체 수단이 아니라 **금융적 생존 전략**임을 규명하는 데 있다.\n\n---\n\n[탐색적] 아시아의 '전략적 무관심'과 IMEC: 동맹 구조의 한계를 통한 회랑 재점화\n데이터기반: 고 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념]\n홍해 위기가 아시아 국가 (한국, 일본, 인도) 의 에너지 안보에 직접적인 타격을 입히면, 이들 국가는 자발적으로 IMEC 회랑 구축에 참여하여 해상 경로의 대안을 마련할 것이다.\n\n[비자명기여]\n통념은 '피해 규모가 클수록 대응 의지가 강해진다'는 합리적 선택을 가정하지만, **스나이더의 동맹 딜레마 (Abandonment vs Entrapment)** 가 아시아의 '전략적 무관심'을 유도하여 오히려 IMEC 논의 재점화를 **촉진하는 역설적 조건**을 만든다.\n문헌 공백 원장 ① '공유지 지배권' 반례 (중국 A2/AD 로 미국 공유지 지배력 약화) 와 ② '경쟁이론 미해결' (SLOC 통제 vs Self-deterrence) 를 결합하면, 아시아 국가들은 **미국 주도 연합 (Operation Prosperity Guardian 등) 참여 시 이란/중국과의 양자 관계 훼손 (Entrapment) 을 우려하여 기피**한다.\n[도메인A(동맹 정치) → 도메인B(에너지 인프라)] 경로: 아시아 국가들이 **다자 연합 (미국 주도) 에 참여하지 않는 '전략적 회피' (Strategic Avoidance)** 를 선택할 때, 이들은 **미국과 이란 모두에 중립적인 '제 3 의 회랑' (IMEC)** 을 유일한 대안으로 인식하게 된다. 즉, IMEC 재점화는 아시아의 '참여 의지'가 아니라 **'참여 불가 (Strategic Paralysis)'** 에 의해 촉발된다. 아시아의 부재가 오히려 IMEC 를 '정치적으로 중립적인 안전지대'로 부각시킨다.\n\n[관찰]\n- **아시아의 에너지 의존도**: 호르무즈 통과 원유·LNG 중 아시아行 비중 **80% 이상** (2024 기준); 일본 **95%**, 한국 **70%**, 필리핀 **98%** [War on the Rocks].\n- **아시아의 연합 참여 부재**: Operation Prosperity Guardian 의미 있는 아시아 참여국 **싱가포르·스리랑카 2개국**뿐; 인도는 독자적 Operation Urja Suraksha 수행 [War on the Rocks].\n- **미국-아시아 외교 단절**: 남아시아·동아시아 정부들이 모여 임무를 개시할 **다자 포맷 부재**; NATO 수준의 제도화 경험 결여 [War on the Rocks].\n- **중국의 에너지 자급률**: **85%**로 상대적으로 리스크 낮음 [War on the Rocks].\n- **한국 선박 피격**: 2026 년 5 월 4 일 호르무즈에서 한국 선박 피격 발생 [War on the Rocks].\n\n[주장]\n(등급: 상관) 아시아 국가들의 **미국 주도 다자 연합 참여 거부 (Strategic Avoidance)** 와 **IMEC 회랑 논의 재점화**는 **상관한다**.\n아시아 국가들의 에너지 의존도가 높음에도 불구하고 연합에 참여하지 않는 현상 (Strategic Paralysis) 이 관측되며, 이는 **대안적 인프라 (IMEC) 에 대한 의존도 증가**와 동조하는 경향을 보인다.\n→ **연쇄 고리 강도 평가**:\n1. 아시아의 연합 참여 거부 (HIGH, '참여국 2 개' 데이터 기반)\n2. 참여 거부 → 대안 (IMEC) 필요성 인식 증가 (MEDIUM, 정치적 계산에 의존)\n3. IMEC 논의 재점화 (MEDIUM, 구체적 투자 데이터 부재)\n→ **전체 연쇄 강도**: MEDIUM (정치적 의지의 정량화가 어려움)\n\n[가설]\nH1: \"아시아 주요국 (한국, 일본, 인도) 의 미국 주도 해상 연합 참여 건수가 감소할 때, IMEC 관련 양자/다자 협정 서명 건수가 통계적으로 유의하게 증가한다.\"\n(단, 현재 IMEC 협정 서명 건수 데이터가 부재하여 검증 불가)\n\n[근거]\n- War on the Rocks 보고서: \"아시아의 부재는 능력 부족이 아닌 전략 문화의 산물이다\"; \"미국 주도 연합에 참여하는 순간 이란·중국과의 양자 관계가 훼손된다는 계산이 능력보다 강력한 억제 요인\".\n- ACLED 데이터: bab_el_mandeb 분쟁 건수 감소 (2026 년 6~7 월 2~1 건) 와 middle_east 분쟁 급증 (3,342 건) 의 괴리 — 아시아는 중동 전체 분쟁에는 노출되지만, 특정 해협 봉쇄에는 '무관심'으로 대응.\n- CSIS 보고서: \"아랍 걸프 국가들이 바라보는 미-이란 합의 — 안도와 우려의 혼합\" — GCC 국가들의 방위 파트너 다변화 (UAE-프랑스, 카타르-캐나다) 논의.\n\n[한계]\n- **선택·생존편향**: '참여하지 않은' 사례 (싱가포르, 스리랑카 제외) 만 기록되어, 참여 의사가 있었으나 실패한 사례나 은밀한 협상은 누락될 수 있음.\n- **데이터 부재**: IMEC 관련 협정 서명 건수나 투자 금액에 대한 시계열 데이터가 없어 H1 검증 불가.\n- **교란변수**: 중국과의 경제적 관계 (무역 의존도) 가 IMEC 참여를 억제하는 주요 변수일 수 있으나, 이를 분리하기 어려움.\n\n[경쟁설명]\n이론 A: 마한의 해양력 이론 (Sea Power Theory)\n  예측: 해군력 투자 증가 시 SLOC 통제 범위 확대 및 상업 운송 안전도 향상 (예측 부호: ▲)\n  실측: Saudi Arabia 군비 6.4% GDP (2023); United States 군비 3.3% GDP (2023); 중국 A2/AD 전략으로 미국 항모 투사 비용 상승 [CSIS].\n  판정: 열세 — 예측 '해군력 투자 → SLOC 통제' vs 실측 '중국 A2/AD 로 미국 해양 지배력 약화 (반례)' — 방향 불일치. (앵커: 중국 A2/AD 투자 증가, 미국 SLOC 통제 비용 상승, 전제 미충족)\n\n이론 B: 회색지대 전략 (Gray Zone Strategy)\n  예측: 회색지대 행동 빈도 증가 시 목표국 정책 변화 (양보) 빈도 증가 (예측 부호: ▲)\n  실측: bab_el_mandeb 지역 분쟁 건수 2026 년 6~7 월 2~1 건으로 급감 (2025 년 대비 -99% 이상) [ACLED]; middle_east 지역 분쟁 3,342 건으로 급증.\n  판정: 전제충족 (DV 미검증) — IV(회색지대 행동) 는 홍해 지역에서는 감소했으나 중동 전체에서는 증가. DV(아시아 정책 변화/IMEC 참여) 의 정량값 부재로 방향성 판단 불가. (앵커: bab_el_mandeb 건수 -99%, 중동 전체 +1,756.7%, 전제충족 조건 미검증)\n\n▶ 편차 비교 (사실): 마한 이론 예측편차 (SLOC 통제 실패) vs 회색지대 전략 예측편차 (홍해 건수 감소) — 두 이론 모두 아시아의 '참여 거부' 현상을 설명하지 못함.\n▶ 당신의 판단 (연구자 몫): 마한 이론은 '해군력'만으로 SLOC 통제가 불가능함을, 회색지대 전략은 '분쟁 건수'만으로는 정책 변화를 설명할 수 없음을 보여준다. 아시아의 '참여 거부'는 **동맹 딜레마 (Entrapment Fear)** 라는 정치적 변수가 작용했기 때문일 수 있음. 어느 이론이 우세한지는 연구자가 '아시아 국가들의 국방비와 외교적 발언 (Entrapment 관련)' 데이터를 추가로 확보하여 판단해야 함.\n\n[검증포인트]\n- **아시아 국가의 국방비 및 연합 참여 의사**: 한국, 일본, 인도의 미국 주도 연합 참여 요청에 대한 공식 응답 (서면/언론 보도) 및 국방비 지출 변화.\n- **IMEC 관련 협정 서명 데이터**: 2024~2026 년 IMEC 관련 양자/다자 협정 서명 건수 및 금액.\n- **아시아 국가의 대이란/대중국 무역 데이터**: IMEC 논의와 대이란/대중국 무역 의존도 변화의 상관관계.\n\n[문헌공백]\n기존 문헌은 **해양 안보 (SLOC 통제)** 와 **동맹 정치 (동맹 딜레마)** 를 분리하여 다루며, **아시아 국가들의 '참여 거부'가 어떻게 '대안 인프라 (IMEC)' 구축으로 전환되는지**를 연결하지 못한다.\n문헌 공백 원장 ② '경쟁이론 미해결'에서 **SLOC 통제 이론**과 **Self-deterrence / Insurance Markets** 간의 충돌을 다루지 못한다. 즉, \"물리적 통제 실패 (SLOC 이론 실패) 가 금융/정치적 대안 (Self-deterrence) 으로 전환되는 메커니즘\"을 설명하지 못한다.\n또한, ③ '교차도메인 밀도'에서 **해양 (5 건)** 과 **인도태평양 (2 건)** 을 잇는 교차 도메인 인과 경로가 **단일 도메인 문헌의 사각지대**임을 지적한다.\n본 분석의 기여는 **아시아의 '전략적 무관심' (참여 거부)** 을 **IMEC 논의 재점화의 촉매제**로 규명하고, **'동맹 정치 실패'가 '인프라 대안'으로 전이되는 비선형 경로**를 제시하는 데 있다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] bab_el_mandeb→CL=F — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA_downgrade",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "ticker 재정의 후 Type_A 정상경로 재시도"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "홍해 지역 (bab_el_mandeb) 의 회색지대 위협 빈도 (월별 건수) 가 증가할 때, 중동 산유국의 육상 파이프라인/철도 인프라 투자 비율이 통계적으로 유의하게 상승한다.",
+        "h0": "홍해 지역 (bab_el_mandeb) 의 회색지대 위협 빈도 (월별 건수) 가 증가할 때, 중동 산유국의 육상 파이프라인/철도 인프라 투자 비율이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "홍해 지역 (bab_el_mandeb) 의 회색지대 위협 빈도 (월별 건수)",
+        "dependent_var": "중동 산유국의 육상 파이프라인/철도 인프라 투자 비율",
+        "control_vars": [],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_C",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": true,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음 | Granger 비유의(p≥0.15) — 선행성 근거 없음",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.898,
+        "granger_q": null,
+        "f_statistic": 0.269,
+        "best_lag": 4,
+        "differenced": true,
+        "n_obs": 456,
+        "error": "[대리변수 사용] Type A 강등 → ACLED bab_el_mandeb + CL=F 대리변수 → CL=F (p=0.898, F=0.269, lag=4, diff=True)",
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.269,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.898,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.898,
+                "granger_q": null,
+                "f_statistic": 0.269,
+                "best_lag": 4,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [행동변수] IMEC 관련 양자/다자 협정 서명 건수 — 카운트 DV 전용 방법 미구현·변수 조달 실패, 검정 불가",
+        "confidence_word": "검정불가",
+        "routing_method": "pending_typeB",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "카운트 패널/ITS (원전 정독 게이트 후 구현)",
+          "9-B 횡단·패널 회귀 (IV·DV가 변수 카탈로그에 조달되는 경우)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "아시아 주요국 (한국, 일본, 인도) 의 미국 주도 해상 연합 참여 건수가 감소할 때, IMEC 관련 양자/다자 협정 서명 건수가 통계적으로 유의하게 증가한다.",
+        "h0": "아시아 주요국 (한국, 일본, 인도) 의 미국 주도 해상 연합 참여 건수가 감소할 때, IMEC 관련 양자/다자 협정 서명 건수가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "아시아 주요국 (한국, 일본, 인도) 의 미국 주도 해상 연합 참여 건수",
+        "dependent_var": "IMEC 관련 양자/다자 협정 서명 건수",
+        "control_vars": [],
+        "region_code": "east_china_sea",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_B",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 불가 — 종속변수가 행동 변수(건수·율)로 east_china_sea ACLED 시계열은 있으나 카운트 DV 전용 검정(카운트 패널 회귀·ITS)이 미구현. 다른 측정으로 대체하지 않음(측정 치환 방지). 현재는 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "Type B (행동 변수): ACLED 이벤트 비교 필요 (region=east_china_sea) → 카운트 DV 전용 방법(카운트 패널·ITS) 미구현 — 검정 보류",
+        "data_signature": "SINGLE_SHOCK",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "South Korea",
+              "Japan",
+              "United States"
+            ],
+            "named_share": 0.334,
+            "named_n": 187,
+            "top_country": "China",
+            "top_share": 0.595,
+            "n_events": 560,
+            "country_dist": {
+              "(미상)": 40,
+              "China": 333,
+              "Japan": 187
+            },
+            "filter_country": null
+          },
+          "headline_rung": "기술적",
+          "headline_method": "none",
+          "convergence": null,
+          "convergence_note": "가정 미충족 — 모든 방법 칸 자격 박탈",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "event_study",
+              "signature": "SINGLE_SHOCK",
+              "effect_estimate": null,
+              "effect_size_label": "",
+              "significance": null,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": false,
+              "assumption_caveat": "종속변수 ticker 미식별 — 시장 시계열 로드 불가로 이벤트스터디 성립 안 함",
+              "reachable_rung": "준실험",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 0,
+              "robustness": {},
+              "native_stats": {
+                "ticker": ""
+              },
+              "exploratory": false
+            },
+            {
+              "method": "granger",
+              "signature": "SINGLE_SHOCK",
+              "effect_estimate": null,
+              "effect_size_label": "측정불가",
+              "significance": null,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": false,
+              "assumption_caveat": "데이터 부족(n=0<40) · Granger 미실행",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 0,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": false,
+                "controlled": false
+              },
+              "native_stats": {
+                "granger_p": null,
+                "granger_q": null,
+                "f_statistic": null,
+                "best_lag": null,
+                "n_obs": 0
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

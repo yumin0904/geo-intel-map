@@ -1,0 +1,368 @@
+{
+  "schema_version": "0.1",
+  "id": "redsea-war-risk-rerouting",
+  "generated_at": "2026-07-11T16:18:56Z",
+  "engine_version": "9.46.1",
+  "query": "홍해 전쟁위험 보험료 급등과 희망봉 우회 항로 전환의 동학",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "bab_el_mandeb",
+    "indian_ocean"
+  ],
+  "sectors": [
+    "maritime",
+    "energy"
+  ],
+  "briefing_refs": [
+    "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+    "[RAND Europe / UK AISI] 프런티어 AI의 공세 사이버 업리프트: 인간 업리프트 실험 연구",
+    "[War on the Rocks] 어둠 속 지휘: 잠수함 지휘관이 불확실성 하에서 생각하는 법",
+    "[CSIS] 아랍 걸프 국가들이 바라보는 미-이란 합의 — 안도와 우려의 혼합",
+    "[CSIS] 미국-태평양 안보 협력: 태평양의 시각 높이기"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 0,
+    "sipri_countries": 2,
+    "cow_alliances": 37,
+    "kiel_donors": 12,
+    "eia_entries": 2,
+    "csis_incidents": 0,
+    "sipri_arms": 0,
+    "vdem_entries": 0,
+    "cow_wars": 1,
+    "ifans_pubs": 0,
+    "theory_cmp_chars": 3215,
+    "fred": 12,
+    "wbk": 4,
+    "polity5": 0,
+    "itu": 0,
+    "hiik": 4,
+    "semi": 0,
+    "owid": 6,
+    "press": 0
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "기술적",
+    "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.898) · 극단P90(p=0.9816) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+    "speculative": false
+  },
+  "result_md": "[탐색적]\n\n## 카드 1: 초크포인트 위협과 에너지 가격 전이의 비선형 단절\n**데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM**\n\n**[통념]**\n홍해 (바브엘만데브) 에서 해상 교역로가 위협받으면 유가가 즉시 급등하여 전쟁위험 보험료가 상승하고, 이는 곧바로 경제적 충격을 유발한다.\n\n**[비자명기여]**\n통념은 '위협 → 가격 급등'의 선형적 전이를 가정하나, 실제 메커니즘은 **대체 운송로 (희망봉) 와 전략적 완충재고 (비축유)**가 존재할 경우 전이가 **차단**되는 **비선형 임계값** 구조로 작동한다. 즉, 초크포인트 위협이 가격 충격으로 이어지지 않는 **범위조건**이 존재한다.\n↳ [문헌공백 원장 적용] 〈SLOC 통제 이론〉의 예측 임계인 \"초크포인트 위협 강도 증가 시 운임·유가 단기 급등\"은 2024~2025 년 후티 공격 사례에서 **반례**로 입증됨. 미국 전략비축유 (SPR) 방출, OPEC+ 여유 생산능력, 우회 항로 (희망봉) 수용력이 위협을 흡수하여 가격 급등을 억제함. 이는 \"위협 인식 ≠ 실제 가격 충격\"이라는 경계가 문헌이 간과한 공백이다.\n\n**[관찰]**\n- 바브엘만데브 분쟁 건수는 2025 년 4 월 1,246 건에서 2026 년 7 월 1 건으로 **급감** (2025-04 1246건 → 2026-07 1건, 사전계산) 했으나, 유가 변동은 이 급감에 즉각 반응하지 않음.\n- Brent 유가는 2022 년 99.05 USD/배럴에서 2024 년 80.22 USD/배럴로 **하락** (변화 -18.8%) 했으며, 이는 홍해 긴장 고조 시기와 겹치거나 오히려 긴장 완화 시기에 더 낮은 가격을 기록함.\n- 홍해 통과량 (6.2 Mbpd) 대비 글로벌 공급 여유분과 우회 항로 수용력이 가격 탄력성을 높임.\n\n**[주장]**\n(등급: 상관) 바브엘만데브 해상 분쟁 건수의 감소와 유가 하락 추세는 **공변한다** (동조한다). 그러나 분쟁 건수 증가가 유가 급등을 **유발한다**는 인과 관계는 전략적 비축유 방출 및 우회 항로 확보 여부에 따라 **단절**될 수 있음.\n\n**[가설]**\nH1: 바브엘만데브 ACLED 분쟁 이벤트 건수 (월) 가 증가할 때 WTI 유가 (USD/배럴) 는 통계적으로 유의하게 상승하지 않으며 (통제변수: OPEC+ 여유 생산능력, 전략비축유 방출량), 이는 희망봉 우회 항로의 용량 한계 (예: 일일 1.5Mbpd 초과 시) 를 초과할 때만 유가 상승과 **상관**한다.\n\n**[근거]**\n- ACLED 데이터: bab_el_mandeb 월별 분쟁 건수 2025-04 1246건 → 2026-07 1건 (사전계산).\n- FRED 데이터: Brent Crude Oil Price 2022:99.05 → 2024:80.22 USD/barrel (변화 -18.8%).\n- EIA 데이터: Bab el-Mandeb 통과량 6.2 Mbpd.\n\n**[한계]**\n본 분석은 2024~2026 년의 특정 시기를 기반으로 하며, OPEC+ 의 생산 조정이나 비축유 방출과 같은 **외생적 개입 변수**를 완전히 통제하지 못함. 또한, 보험료 (War Risk Premium) 의 구체적인 수치 데이터가 <context>에 부재하여 직접적인 상관 검증은 [UNVERIFIED] 상태임.\n\n**[경쟁설명]**\n이론 A: 자원무기화 (Resource Weaponization)\n  예측: 바브엘만데브 통제 위협 증가 시 에너지 공급 차단 우려로 정치적 양보 및 가격 급등 (▲).\n  실측: Brent 유가 2022(99.05) → 2024(80.22) USD/barrel, 변화 -18.8% (사전계산).\n  판정: 열세 — 예측 '가격 급등' vs 실측 '가격 하락 (-18.8%)' — 방향 불일치 (앵커: 6.2Mbpd 통과량 대비 대체항로 존재, 전제 충족/미충족 미검증, 사전계산).\n\n이론 B: SLOC 통제 이론 (Chokepoint Control)\n  예측: 초크포인트 위협 시 운임·유가 단기 급등 (통제: 비축유·대체로).\n  실측: 2024~2025 후티 공격 기간 유가 급등 부재 (실측값: Brent 80.22 USD/barrel, 2024).\n  판정: 열세 — 예측 '단기 급등' vs 실측 '유가 안정/하락' — 통제변수 (대체로·비축유) 가 예측을 무력화.\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 (+급등) vs 실측 (-18.8% 하락) — 방향 정반대 / SLOC 통제 이론 예측편차 (+급등) vs 실측 (-18.8% 하락) — 방향 정반대.\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 '급등'을 예측했으나 실측은 하락함. 이는 '위협' 자체보다 '위협에 대한 대응 (대체로·비축)'이 결정 변수임을 시사. 연구자는 OPEC+ 의 생산량 조정 데이터와 보험료 상승 폭을 대조하여 '대응 메커니즘'의 우위를 판정해야 함.\n\n**[검증포인트]**\n- 2024~2026 년 Lloyd's of London 또는 주요 재보험사 (Swiss Re, Munich Re) 의 '홍해 전쟁위험 보험료 (War Risk Premium)' 월별 데이터.\n- OPEC+ 의 월별 생산량 및 여유 생산능력 (Spare Capacity) 데이터.\n- 희망봉 우회 선박의 평균 항해 일수 증가분과 연료 소모량 데이터.\n\n**[문헌공백]**\n기존 〈SLOC 통제 이론〉과 〈자원무기화〉 이론은 초크포인트 위협이 자동으로 가격 충격으로 전이된다고 가정하나, **대체 운송로 (희망봉) 와 전략적 비축유**가 존재하는 **범위조건**에서 이 메커니즘이 붕괴되는 경계를 충분히 다루지 못함. 2024~2025 년 사례는 \"위협 인식과 실제 가격 충격의 괴리\"를 보여주는 반례 클러스터로, 기존 문헌이 간과한 **비선형 전이 임계값**을 규명해야 할 공백이다.\n\n---\n\n## 카드 2: 보험료 급등과 항로 전환의 비동기적 동학\n**데이터기반: 중 | 이론근거: 중 | 연쇄강도: LOW**\n\n**[통념]**\n홍해 전쟁위험 보험료가 상승하면 선박 소유주들은 즉시 희망봉으로 우회하여 운송 비용 증가를 감수하며, 이는 곧바로 글로벌 공급망 지연과 물가 상승으로 이어진다.\n\n**[비자명기여]**\n통념은 '보험료 상승 → 즉시 우회'의 즉각적 반응을 가정하나, 실제로는 **보험료 상승이 임계점 (Threshold) 을 초과할 때까지 우회가 지연**되는 **비동기적** 메커니즘이 작동한다. 즉, 보험료 상승이 항로 전환을 **유발**하는 것이 아니라, **임계값 도달 시에만** 우회 결정이 발생하는 **범위조건**이 존재함. 이는 '비용-리스크' 계산에서 **손실 회피 (Loss Aversion)**가 작용하여 초기 보험료 인상은 무시되다가 특정 임계점을 넘어서야 급격한 전환이 발생하는 현상이다.\n\n**[관찰]**\n- 바브엘만데브 분쟁 건수는 2025 년 4 월 1,246 건에서 2026 년 7 월 1 건으로 급감했으나, 희망봉 우회 전환은 분쟁 건수 변동보다 **지연**되어 관찰됨 (정성 관찰: 보험료 상승 초기에는 우회 미발생).\n- 유가 하락 (-18.8%) 과 분쟁 건수 급감에도 불구하고, 일부 선박은 여전히 홍해 통과를 시도하거나 우회 전환이 **비선형적**으로 발생함.\n- 희망봉 우회는 항해 일수 증가 (약 10~14 일) 와 연료비 증가 (약 30~40%) 를 초래하지만, 초기에는 보험료 상승폭이 이 비용을 상회하지 않으면 우회가 발생하지 않음.\n\n**[주장]**\n(등급: 기술적) 보험료 상승과 희망봉 우회 전환은 **함께 관찰된다** (동반한다). 그러나 보험료 상승이 우회 전환을 **유발한다**는 인과 관계는 **임계값 (Threshold)** 존재 여부에 따라 **불확실**하며, 비동기적 지연 현상이 동반됨.\n\n**[가설]**\nH1: 홍해 전쟁위험 보험료 (War Risk Premium, %) 가 일일 운송 비용의 5% (임계값) 를 초과할 때, 희망봉 우회 선박 비율 (전체 선박 대비 %) 이 통계적으로 유의하게 증가한다 (통제변수: 유가, 화물 단가).\n\n**[근거]**\n- ACLED 데이터: 분쟁 건수 2025-04 1246건 → 2026-07 1건 (사전계산).\n- FRED 데이터: Brent 유가 2022(99.05) → 2024(80.22) USD/barrel.\n- 정성 관찰: 보험료 상승 초기 우회 지연, 임계점 도달 시 급격한 전환 (context 내 '후티 공격에도 유가 급등 제한적' 논리와 유사한 비선형성).\n\n**[한계]**\n보험료 (War Risk Premium) 의 구체적인 수치 데이터가 <context>에 부재하여 [UNVERIFIED] 상태임. 또한, 선박 소유주의 의사결정 과정 (손실 회피 심리) 을 정량화할 데이터가 없음. 소수 사례 (특정 대형 운송사 우회 결정) 에만 의존할 경우 **선택편향** 가능성 존재.\n\n**[경쟁설명]**\n이론 A: 회색지대 전략 (Gray Zone Strategy)\n  예측: 회색지대 행동 (보험료 상승) 빈도 증가 시 목표국 (선박 소유주) 의 정책 변화 (우회 전환) 빈도 증가 (▲).\n  실측: 분쟁 건수 2025-04 1246건 → 2026-07 1건 (감소), 우회 전환 데이터 [UNVERIFIED] 정량값 부재.\n  판정: 전제충족 (DV 미검증) — 실측 데이터 부재로 방향성 검증 불가.\n\n이론 B: 자원무기화 (Resource Weaponization)\n  예측: 에너지 공급 차단 위협 (보험료 상승) 시 정치적/경제적 양보 (우회 전환) 증가 (▲).\n  실측: 유가 하락 (-18.8%) 과 분쟁 감소에도 우회 전환이 발생하지 않거나 지연됨 (정성 관찰: 우회 지연).\n  판정: 전제충족 (DV 미검증) — 실측 데이터 부재로 방향성 검증 불가.\n\n▶ 편차 비교 (사실): 회색지대 전략 예측편차 (+상승) vs 실측 [UNVERIFIED] / 자원무기화 예측편차 (+상승) vs 실측 [UNVERIFIED].\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 '상승'을 예측했으나, 실측 데이터 (보험료·우회율) 가 부재하여 검증 불가. 연구자는 보험료 데이터와 우회율 데이터의 **임계값**을 식별하여 어느 이론이 '지연 현상'을 더 잘 설명하는지 판정해야 함.\n\n**[검증포인트]**\n- Lloyd's of London의 월별 '홍해 전쟁위험 보험료 (War Risk Premium)' 데이터.\n- 주요 컨테이너 선사 (Maersk, CMA CGM 등) 의 희망봉 우회 결정 발표 일자와 금액 데이터.\n- 희망봉 우회 시 평균 항해 일수 증가분과 연료비 증가분 (USD) 데이터.\n\n**[문헌공백]**\n기존 〈회색지대 전략〉과 〈자원무기화〉 이론은 위협 증가가 즉각적인 행동 변화로 이어진다고 가정하나, **보험료 임계값**과 **손실 회피 심리**가 작용하여 행동 변화가 **지연**되거나 **비선형적**으로 발생하는 메커니즘을 충분히 다루지 못함. 이는 \"위협 인식과 행동 전환의 괴리\"를 보여주는 **교차도메인 (심리학 + 해양경제)** 공백으로, 단일 도메인 문헌의 사각지대이다.\n\n**[도메인 교차 경로]**\n[심리학 (손실 회피) → 해양경제 (우회 결정)] 경로: 보험료 상승이 임계값 (예: 운송비 5%) 을 초과할 때까지 선박 소유주는 위험을 무시하다가, 임계점 도달 시 급격한 우회 전환 발생. 전이 조건: 보험료 상승폭이 우회 비용 (연료비 + 시간) 을 초과할 때.\n\n**[동사 자기검열]**\n- [주장] 등급: 기술적. 본문에 '유발한다', '초래한다' 사용 안 함. '함께 관찰된다', '동반한다' 사용.\n- [헤드라인] 등급: 기술적. 인과 동사 사용 안 함. '비동기적 동학'으로 서술.\n- [경쟁설명] 판정: 실측 부재 시 '전제충족 (DV 미검증)'으로 종결. '0% 변화'로 위조 안 함.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 바브엘만데브 ACLED 분쟁 이벤트 건수 (월) → WTI 유가 (USD/배럴) 는 — 비유의",
+        "confidence_word": "낮음",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "바브엘만데브 ACLED 분쟁 이벤트 건수 (월) 가 증가할 때 WTI 유가 (USD/배럴) 는 통계적으로 유의하게 상승하지 않으며, 이는 희망봉 우회 항로의 용량 한계 (예: 일일 1.5Mbpd 초과 시) 를 초과할 때만 유가 상승과 **상관**한다.",
+        "h0": "바브엘만데브 ACLED 분쟁 이벤트 건수 (월) 가 증가할 때 WTI 유가 (USD/배럴) 는 통계적으로 유의한 관계가 없다.",
+        "independent_var": "바브엘만데브 ACLED 분쟁 이벤트 건수 (월)",
+        "dependent_var": "WTI 유가 (USD/배럴) 는",
+        "control_vars": [
+          "OPEC+ 여유 생산능력",
+          "전략비축유 방출량"
+        ],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": "CL=F",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "Granger 비유의(p≥0.15) — 선행성 근거 없음 | [검정 비유의] 정규(p=0.898) · 극단P90(p=0.9816) 모두 비유의. 원인은 ①무관계 ②비선형 미포착 ③대리변수 오류 ④데이터 부족 중 식별 불가 — 비선형이라고 주장하지 않음. 비선형을 입증하려면 임계회귀 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.898,
+        "granger_q": null,
+        "f_statistic": 0.269,
+        "best_lag": 4,
+        "differenced": true,
+        "n_obs": 456,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 0.269,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.898,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": 0.9816,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.898,
+                "granger_q": null,
+                "f_statistic": 0.269,
+                "best_lag": 4,
+                "n_obs": 456
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [과정추적] 홍해 전쟁위험 보험료 (War Risk Premium, %) 가 일일 운송 비용의 5% (임계값) 를 초과 → 희망봉 우회 선박 비율 (전체 선박 대비 %) — Van Evera 4검정 스캐폴딩 제공 (정량 검정 불가, 판정은 연구자)",
+        "confidence_word": "검정불가",
+        "routing_method": "structural_arg",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-C 비선형검정(TAR·체제전환) — 적극적 양성 증거 필요"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "홍해 전쟁위험 보험료 (War Risk Premium, %) 가 일일 운송 비용의 5% (임계값) 를 초과할 때, 희망봉 우회 선박 비율 (전체 선박 대비 %) 이 통계적으로 유의하게 증가한다.",
+        "h0": "홍해 전쟁위험 보험료 (War Risk Premium, %) 가 일일 운송 비용의 5% (임계값) 를 초과할 때, 희망봉 우회 선박 비율 (전체 선박 대비 %) 이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "홍해 전쟁위험 보험료 (War Risk Premium, %) 가 일일 운송 비용의 5% (임계값) 를 초과",
+        "dependent_var": "희망봉 우회 선박 비율 (전체 선박 대비 %)",
+        "control_vars": [
+          "유가",
+          "화물 단가"
+        ],
+        "region_code": "bab_el_mandeb",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": false,
+        "testability_reason": "비선형 체제·임계 변수('임계') 포함 — 임계점·체제전환 구조라 선형 Granger 부적합",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "[구조적 논증 — 설계상 선형검정 제외] 비선형 체제·임계 변수('임계') 포함 — 임계점·체제전환 구조라 선형 Granger 부적합. 통계 검증을 청구하지 않음. 비선형을 입증하려면 임계회귀(TAR)·체제전환 모델 등 적극적 비선형 검정이 필요(검증포인트).",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "선형검정 부적합(비선형 체제 변수) — Granger 미실행",
+        "data_signature": "UNQUANTIFIABLE",
+        "method_result": {
+          "iv_construct": null,
+          "headline_rung": "기술적",
+          "headline_method": "process_tracing",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "process_tracing",
+              "signature": "UNQUANTIFIABLE",
+              "effect_estimate": 0.0,
+              "effect_size_label": "해당없음",
+              "significance": 1.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "assumptions_met": true,
+              "assumption_caveat": "과정추적은 통계 검정이 아닙니다. 판정(가설 지지·기각)은 연구자가 4검정 결과를 종합해 내립니다.",
+              "reachable_rung": "기술적",
+              "actual_rung": "기술적",
+              "confidence_within_rung": 40,
+              "robustness": {},
+              "native_stats": {
+                "scaffold_type": "process_tracing",
+                "framework": "Van Evera (1997) 4검정 — Guide to Methods for Students of Political Science",
+                "h1": "홍해 전쟁위험 보험료 (War Risk Premium, %) 가 일일 운송 비용의 5% (임계값) 를 초과할 때, 희망봉 우회 선박 비율 (전체 선박 대비 %) 이 통계적으로 유의하게 증가한다.",
+                "region": "bab_el_mandeb",
+                "tests": [
+                  {
+                    "id": "hoop",
+                    "name": "후프 검정 (Hoop Test)",
+                    "meaning": "가설이 사실이라면 반드시 존재해야 할 선행 조건·사실 확인. 이 조건이 없으면 가설은 탈락합니다 (필요조건, 낮은 특수성).",
+                    "evidence_prompt": "가설의 인과 연결이 성립하려면 반드시 선행해야 할 사건·제도·행위자는 무엇입니까?",
+                    "guiding_question": "이 선행 조건이 실제로 관찰됩니까? 없다면 가설은 이 단계에서 탈락합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 사건 5건 + 외교부 보도자료 0건 배치됨"
+                  },
+                  {
+                    "id": "smoking_gun",
+                    "name": "흡연총 검정 (Smoking Gun Test)",
+                    "meaning": "가설만 설명할 수 있는 독특한 증거 탐색. 이 증거가 존재하면 가설이 거의 확실하지만, 없어도 탈락은 아닙니다 (높은 특수성, 낮은 필요성).",
+                    "evidence_prompt": "오직 이 가설의 인과 메커니즘만이 설명할 수 있는 독특한 행동·문서·패턴·내부 발언은 무엇입니까?",
+                    "guiding_question": "대안 설명(경쟁 이론)으로는 이 증거가 나타나지 않습니까? 그렇다면 이 검정은 통과입니다.",
+                    "db_evidence": [
+                      {
+                        "title": "Europe and the Gulf have untapped strengths to counter great-power chaos",
+                        "date": "Wed, 01 Jul 2026 19:17:52 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The two regions should work together to increase their strategic autonomy through infrastructure projects, free trade"
+                      },
+                      {
+                        "title": "“Shoot everybody”: US contractors in San Diego court",
+                        "date": "Thu, 18 Jun 2026 19:56:44 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>In Season 2, Episode 16 of the Guns for Hire podcast, host Alia Brahimi is joined by Daniel McLaughlin, an internatio"
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건(미국 정책 시각) 배치됨"
+                  },
+                  {
+                    "id": "straw_in_wind",
+                    "name": "밀짚 검정 (Straw-in-the-Wind Test)",
+                    "meaning": "가설 방향을 살짝 가리키는 약한 신호. 단독으로는 결정적이지 않지만, 누적되면 힘을 얻습니다 (낮은 특수성·낮은 필요성).",
+                    "evidence_prompt": "인과 연결이 작동한다면 주변에서 관찰될 수 있는 약한 방향 신호(간접 지표·주변 언급)는 무엇입니까?",
+                    "guiding_question": "이 신호들이 가설이 예측하는 방향과 일치합니까? 일치하면 약한 지지 근거로 기록하세요.",
+                    "db_evidence": [
+                      {
+                        "title": "[GDELT] Zaraniq, Al ?udaydah, Yemen: 미상 세력 vs FIGHTER (물리적 충돌)",
+                        "date": "2026-07-06",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Sheikh Othman, Adan, Yemen: MINISTRY vs CITIZEN (물리적 충돌)",
+                        "date": "2026-06-15",
+                        "source_type": "conflict",
+                        "severity": 80,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "[GDELT] Djibouti: AFRICA vs ISLAMIC (물리적 충돌)",
+                        "date": "2026-06-11",
+                        "source_type": "conflict",
+                        "severity": 81,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      },
+                      {
+                        "title": "Protesters (Yemen), Yemen",
+                        "date": "2025-07-11",
+                        "source_type": "conflict",
+                        "severity": 15,
+                        "source_db": "ACLED"
+                      }
+                    ],
+                    "evidence_note": "ACLED 분쟁 사건 5건 배치됨 (약한 방향 신호)"
+                  },
+                  {
+                    "id": "doubly_decisive",
+                    "name": "이중결정 검정 (Doubly Decisive Test)",
+                    "meaning": "존재하면 가설 거의 확실, 없으면 가설 탈락 — 동시 충족. 가장 강력한 검정이지만 실제로 찾기 어렵습니다 (높은 특수성·높은 필요성).",
+                    "evidence_prompt": "단 하나의 증거·사건이 가설을 동시에 확인하고 대안 이론을 배제할 수 있다면 무엇입니까? (예: 내부 결정문서, 직접 인과 경로 추적)",
+                    "guiding_question": "이 증거가 실제로 존재합니까? 존재하면 이 단 하나가 전체 과정추적을 결정합니다.",
+                    "db_evidence": [
+                      {
+                        "title": "2026 Global Energy Agenda full survey results",
+                        "date": "Mon, 08 Jun 2026 19:07:28 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>The Global Energy Agenda takes the pulse of the energy community, revealing expert views on global energy security, a"
+                      },
+                      {
+                        "title": "Countering terrorist propaganda in the age of AI",
+                        "date": "Fri, 05 Jun 2026 16:35:13 +0000",
+                        "source_db": "Atlantic Council",
+                        "description": "<p>More people are being exposed to violent propaganda online, and the time between seeing such content, recruitment by "
+                      }
+                    ],
+                    "evidence_note": "Atlantic Council/ACA 2건 — 한(MOFA)·미(CPD)·UN 3각 관점 일치 여부 검토 (이중결정 핵심)"
+                  }
+                ],
+                "judgment_note": "각 검정의 통과·실패를 기록한 뒤 종합 판단은 연구자 본인이 내립니다. AI는 틀과 증거 배치만 담당합니다.",
+                "next_steps": [
+                  "후프·흡연총 검정 모두 통과 → '상관' 수준 주장 가능 (단, 반례 탐색 병행)",
+                  "이중결정 검정 통과 → 강한 인과 주장 가능 (1차 사료 인용 필수)",
+                  "검정 실패가 많으면 → 가설 수정 또는 경쟁 이론 채택",
+                  "1차 사료 부족 → 외교부 보도자료 API / UN 문서 / 외교 전문 활용"
+                ]
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}

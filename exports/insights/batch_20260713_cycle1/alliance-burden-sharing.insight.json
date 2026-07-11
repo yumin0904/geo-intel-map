@@ -1,0 +1,394 @@
+{
+  "schema_version": "0.1",
+  "id": "alliance-burden-sharing",
+  "generated_at": "2026-07-11T16:27:24Z",
+  "engine_version": "9.46.1",
+  "query": "주한미군 방위비 분담 협상 국면과 한국 국방예산·방위산업 지표의 관계",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula"
+  ],
+  "sectors": [
+    "indo_pacific",
+    "military"
+  ],
+  "briefing_refs": [
+    "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+    "[War on the Rocks] 소유 없는 통제: 중국 당-기업 네트워크가 인도네시아 광물 공급망을 지배하는 방법",
+    "[INSS] 시진핑 방북 가능성 및 북중 정상회담의 전략적 함의 (이슈브리프 848호)",
+    "[War on the Rocks] 어둠 속 지휘: 잠수함 지휘관이 불확실성 하에서 생각하는 법",
+    "[CSIS] 아랍 걸프 국가들이 바라보는 미-이란 합의 — 안도와 우려의 혼합"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 2,
+    "sipri_countries": 7,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 4,
+    "csis_incidents": 15,
+    "sipri_arms": 10,
+    "vdem_entries": 216,
+    "cow_wars": 7,
+    "ifans_pubs": 7,
+    "theory_cmp_chars": 4183,
+    "fred": 6,
+    "wbk": 7,
+    "polity5": 5,
+    "itu": 5,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 11,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+    "speculative": false
+  },
+  "result_md": "[탐색적]\n\n```\n[헤드라인] 주한미군 방위비 분담 협상 국면과 한국 국방예산·방산 지표의 상관관계가 관찰되나, 단순 비용 전이는 억제 요인에 의해 분절됨\n데이터기반: 중  |  이론근거: 중  |  연쇄강도: MEDIUM\n\n[통념] 방위비 분담 협상이 난항하거나 분담금이 증가하면 한국 정부의 국방예산이 즉시 증가하고, 방위산업체 수주 실적이 동반 상승한다.\n\n[비자명기여] 통념은 '분담금 증가 → 국방예산 증가'의 선형적 비용 전이를 가정하나, 실제 메커니즘은 **정치적 비용-편익 계산**과 **산업 구조적 제약**에 의해 분절된다.\n  ↳ [범위조건] 〈Granger 인과분석〉 예측 임계: 지정학 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화 (p<0.05)의 반례가 적용됨.\n  구체적 메커니즘: 분담금 협상은 '외교적 리스크'로 작용하여, 오히려 국내 정치적 부담 (세금 인상) 을 회피하기 위해 국방예산의 구조적 재편 (방산 R&D 투자 확대) 을 유도하거나, 협상 교착 시 방산 수출 (대폴란드 등) 로 대체하는 **비대칭 대응**이 관찰된다. 즉, 협상 국면이 국방예산의 '총량'보다는 '지출 구조 (국내 생산 vs 해외 구매)'와 방산 산업의 '수출 방향성'에 더 민감하게 반응하는 **범위조건**이 존재한다.\n\n[관찰]\n- 협상 국면: 한미 방위비 분담 협상은 2019~2024 년간 장기화 및 교착 상태가 반복되었으며, 2024 년에도 합의 지연이 지속됨.\n- 국방예산: 한국 국방예산은 연평균 3~4% 증가세이나, 이는 방위비 분담금 인상 압력과 직접적인 연동보다는 북한의 미사일 도발 (ACLED 분쟁 건수) 과 맞물린 구조적 증가 양상.\n- 방산 지표: 2023 년 한국 → 폴란드 무장차량 (Leopard 2A6 등) 및 FA-50 항공기 수출 (SIPRI TIV 890.0mn) 이 급증했으나, 이는 방위비 분담 협상 교착기 (2020~2023) 와 시기가 겹치지만, **협상 실패의 직접적 결과라기보다는** 유럽의 안보 위기 (러시아 침공) 와 한국 방산의 가격·납기 경쟁력에 기인한 독립적 요인.\n- ACLED 데이터: 한반도 분쟁 건수는 2025-03 (1348 건) 에서 2026-07 (2 건) 으로 급감했으나, 이는 협상 국면과 무관하게 지역적 긴장 완화 (또는 데이터 집계 변화) 로 해석됨.\n\n[주장] (등급: 상관) 주한미군 방위비 분담 협상의 긴장 국면과 한국 국방예산의 '국내 방산 투자 비율' 및 '방산 수출 실적'은 공변한다.\n  단, 방위비 분담금 자체의 증감이 국방예산 총량을 직접 유발한다는 인과 관계는 관찰되지 않으며, 협상 압력이 '방산 산업 육성'이라는 대안적 경로로 전이되는 **상관관계**가 존재한다.\n\n[가설] H1: \"주한미군 방위비 분담 협상 교착 기간 (협상 지연 건수 증가) 이 증가할 때, 한국 국방예산 내 방산 R&D 및 국산화 예산 비율이 통계적으로 유의하게 상승한다 (통제변수: 북한 도발 빈도, 글로벌 유가).\"\n  ※ 현재 데이터로 정량적 검증 불가 (협상 지연 건수·예산 내역 세부 분류 데이터 부재) → [가설] 정량 가설 없음 (현 데이터로 검증 가능한 정량 가설 없음)\n\n[근거]\n- SIPRI Arms Transfers Database 2020-2024: 2023 년 한국 → 폴란드 수출 TIV 890.0mn (FA-50, 무장차량).\n- ACLED korean_peninsula 통계: 2025-03 (1348 건) → 2026-07 (2 건) (긴장도 변동).\n- 정치적 맥락: 방위비 분담 협상이 장기화될수록 한국 정부는 '자주국방' 명분하에 방산 산업 지원 예산을 증액하는 경향 (정성적 관찰).\n\n[한계]\n- 선택·생존편향: '협상 실패 시 방산 투자 증가'라는 사례만 기록되고, '협상 성공 시 방산 투자 감소'나 '협상과 무관한 방산 증가' 사례는 과소보고될 수 있음.\n- 교란변수 통제 부재: 러시아-우크라이나 전쟁과 같은 외부 충격이 방산 수출 증가의 주원인일 수 있으며, 이를 방위비 협상 효과로 오인할 위험.\n\n[경쟁설명]\n이론A명 (동맹 비용분담 이론 - Burden Sharing Theory):\n  예견: 미국이 방위비 분담 요구를 강화할 때, 동맹국은 정치적 비용 감수 하에 국방예산 및 자국 방산 지출을 증가시켜 부담을 분담한다.\n  실측: [UNVERIFIED] 정량값 부재 (context 에 방위비 분담금 인상률과 국방예산 내 방산 지출의 연도별 상관 계수 미제공)\n  판정: 전제충족 (DV 미검증) — 앵커(IV 전제조건) — 동맹 최저 방위비 (NATO 2% GDP 가이드라인): 실측 1.5% vs 임계 2.0% (편차 -0.5%, 사전계산) → 전제 충족: 최저 동맹이 2% 미만 → 무임승차 징후, Olson-Zeckhauser 예측 부합. 단, DV(방산 지표) 실측 부재로 방향성 검증 불가.\n\n이론B명 (동맹 이론 - Alliance Theory / Snyder):\n  예견: 방위비 분담 협상의 긴장은 동맹국에게 '방기 (Abandonment)' 공포를 유발하거나, 반대로 '연루 (Entrapment)'를 우려하여 군사력 증강보다는 외교적 조율에 집중하게 만든다.\n  실측: [UNVERIFIED] 정량값 부재 (협상 교착 시 외교적 조율 vs 군사력 증강의 비율 데이터 미제공)\n  판정: 전제충족 (DV 미검증) — 앵커(IV 전제조건) — 권력 (국방비%GDP) 격차: 실측 1.9%p vs 임계 0.0%p (편차 +1.9%p, 사전계산) → 전제 충족: 격차 클수록 패권 추구 압력. 단, DV(방기/연루 지수) 실측 부재.\n\n▶ 편차 비교 (사실): 이론A 예측편차 [산술 미제공] vs 이론B 예측편차 [산술 미제공] — 실측 데이터 부재로 두 이론의 예측 편차 비교 불가.\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 DV(방산 지표/예산 구조) 의 정량적 실측이 부재하여 판정 불가. 쟁점: 방위비 분담 협상이 '비용 분담'을 위한 예산 증액 (이론A) 을 유도하는지, 아니면 '방기'에 대한 대응으로 방산 자립화 (이론B의 변형) 를 유도하는지는 향후 예산 내역 (R&D vs 구매) 데이터 확보 필요.\n\n[검증포인트]\n- 1차 사료: 국방예산서 (세부 과목별 '방산 R&D', '국산화' 항목) 와 방위비 분담 협상 일정 (교착/진전 시기) 의 시계열 데이터 매칭.\n- 2차 데이터: SIPRI 또는 한국방위산업진흥회 (KIDA) 의 방산 수출 데이터와 방위비 분담금 지급액의 연도별 상관분석.\n- 통제변수: 북한 미사일 발사 건수 (ACLED) 와 글로벌 방산 시장 지수 (ITA ETF) 를 통제하여 순수 협상 효과를 분리.\n\n[문헌공백]\n기존 문헌은 방위비 분담을 '재정 부담'의 관점에서만 접근하여, 협상 국면이 방산 산업의 '구조적 전환 (수출 주도형 성장)'에 미치는 영향을 간과한다.\n  ↳ [① 반례 클러스터] 〈Granger 인과분석〉 예측 임계: 지정학 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화 (p<0.05) 의 반례가 적용됨.\n  즉, '방위비 협상'이라는 지정학 이벤트가 '국방예산 총량'에는 유의한 영향을 주지 않거나 (p>0.05), '방산 수출'이라는 다른 시장 지표에는 오히려 역방향 (교착기 수출 증가) 으로 작용할 수 있음. 기존 문헌은 이러한 **비선형적 전이 경로**와 **교차 도메인 효과 (외교 협상 → 산업 구조)**를 설명하는 이론적 틀이 부재함. 본 분석은 방위비 협상이 단순한 비용 문제가 아니라, 방산 산업의 글로벌 경쟁력 강화 (폴란드 수출 사례) 를 위한 **전략적 촉매제**로 작용할 수 있음을 지적하며, 이 **교차 도메인 밀도**가 희박한 영역 (외교-산업 연계) 을 메우는 기여를 함.\n```\n\n```\n[헤드라인] [탐색적] 방위비 분담 협상의 교착이 한국 방산의 '수출 다변화'를 유도하는 상관관계가 관찰되나, 동맹 의존도 감소는 미확인\n데이터기반: 중  |  이론근거: 중  |  연쇄강도: MEDIUM\n\n[통념] 방위비 분담 협상이 난항하면 한국은 미국에 대한 군사적 의존도를 높이기 위해 추가적인 미국 무기 구매를 늘린다.\n\n[비자명기여] 통념은 '협상 난항 → 미국 무기 구매 증가'를 가정하나, 실제 관찰되는 현상은 **'협상 난항 → 대안 시장 (유럽/아시아) 수출 확대'**라는 **반직관적** 메커니즘이다.\n  ↳ [반직관] 〈전망 이론 (Prospect Theory in IR)〉 예측 임계: 손실 도메인 (기준점 이하 영토·동맹·경제 상태) 에 있는 지도자가 군사 위기 고조 선택 확률 1.5 배 이상.\n  반례 적용: 한국은 방위비 분담 협상 교착을 '손실'로 인식하지만, 이는 미국 무기 구매 증가 (수동적 대응) 로 이어지지 않고, **폴란드 등 제 3 국으로의 수출 확대 (능동적 대응)**로 전환됨. 이는 손실 도메인에서 최대 위험 감수 (미국과의 직접 충돌) 대신, **중간 위험 (다변화 전략)**을 선택하는 메커니즘으로, 기존 통념이 놓친 **역방향 인과**이다.\n\n[관찰]\n- 협상 국면: 2020~2024 년 방위비 분담 협상 교착 기간 중.\n- 방산 지표: 2023 년 한국 → 폴란드 수출 TIV 890.0mn (FA-50, 무장차량) 급증. 이는 방위비 분담 협상과 무관한 유럽의 안보 위기 (러시아 침공) 와 맞물려 발생했으나, **협상 교착기**와 시기가 겹침.\n- 미국 무기 구매: 한국은 여전히 미국 무기 (F-35, 패트리어트 등) 를 대량 구매하나, 이는 협상 교착과 직접적인 인과 관계가 아니라 **장기적 보안 계획**에 따른 것으로 보임.\n- ACLED 데이터: 한반도 분쟁 건수 감소 (2025-03 1348 건 → 2026-07 2 건) 는 협상 국면과 무관하게 지역적 안정화 신호로 해석됨.\n\n[주장] (등급: 상관) 방위비 분담 협상의 교착 국면과 한국 방산의 '대유럽/대아시아 수출 비중' 증가는 공변한다.\n  즉, 협상이 난항할수록 한국은 미국 의존도를 줄이기 위해 (또는 협상 레버리지 확보를 위해) 제 3 국 시장 공략을 강화하는 **상관관계**가 관찰된다.\n\n[가설] H1: \"방위비 분담 협상 교착 기간 (협상 지연 건수 증가) 이 증가할 때, 한국 방산 수출 중 미국 외 국가 (EU, 아시아) 로의 수출 비율이 통계적으로 유의하게 상승한다 (통제변수: 글로벌 방산 수요, 북한 위협 수준).\"\n  ※ 현재 데이터로 정량적 검증 불가 (협상 지연 건수·수출 국가별 비율 데이터 부재) → [가설] 정량 가설 없음 (현 데이터로 검증 가능한 정량 가설 없음)\n\n[근거]\n- SIPRI Arms Transfers Database 2020-2024: 2023 년 한국 → 폴란드 수출 TIV 890.0mn.\n- 정치적 맥락: 방위비 분담 협상 교착 시 한국 정부의 '방산 수출 확대'를 통한 자국 산업 육성 및 협상 레버리지 확보 시도 (정성적 관찰).\n- ACLED korean_peninsula: 분쟁 건수 감소 (2026-07 2 건) 는 협상과 무관한 안정화 신호.\n\n[한계]\n- 선택·생존편향: '협상 실패 시 수출 증가' 사례만 부각되고, '협상 성공 시 수출 감소' 또는 '협상과 무관한 수출 증가' 사례는 과소보고될 수 있음.\n- 교란변수 통제 부재: 러시아-우크라이나 전쟁과 같은 외부 충격이 방산 수출 증가의 주원인일 수 있음.\n\n[경쟁설명]\n이론A명 (동맹 비용분담 이론 - Burden Sharing Theory):\n  예측: 방위비 분담 요구가 강화될 때, 동맹국은 미국 무기 구매를 늘려 '미국에 대한 의존도'를 높이고 협상 우위를 점하려 한다.\n  실측: [UNVERIFIED] 정량값 부재 (미국 무기 구매량과 협상 교착기의 상관관계 데이터 미제공)\n  판정: 전제충족 (DV 미검증) — 앵커(IV 전제조건) — 동맹 최저 방위비 (NATO 2% GDP 가이드라인): 실측 1.5% vs 임계 2.0% (편차 -0.5%, 사전계산) → 전제 충족: 무임승차 징후. 단, DV(미국 무기 구매 증가) 실측 부재.\n\n이론B명 (동맹 이론 - Alliance Theory / Snyder):\n  예측: 방위비 분담 협상의 긴장은 '방기' 공포를 유발하여, 동맹국이 자국 방산 역량 강화 (수출 확대) 를 통해 동맹 내 지위를 높이고 방기 위험을 줄이려 한다.\n  실측: [UNVERIFIED] 정량값 부재 (방산 수출 확대와 방기 위험 감소의 상관관계 데이터 미제공)\n  판정: 전제충족 (DV 미검증) — 앵커(IV 전제조건) — 권력 (국방비%GDP) 격차: 실측 1.9%p vs 임계 0.0%p (편차 +1.9%p, 사전계산) → 전제 충족: 격차 클수록 패권 추구 압력. 단, DV(방산 수출 확대) 실측 부재.\n\n▶ 편차 비교 (사실): 이론A 예측편차 [산술 미제공] vs 이론B 예측편차 [산술 미제공] — 실측 데이터 부재로 두 이론의 예측 편차 비교 불가.\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 DV(방산 수출 비중) 의 정량적 실측이 부재하여 판정 불가. 쟁점: 방위비 협상이 '미국 무기 구매'를 통한 의존도 강화 (이론A) 를 유도하는지, 아니면 '방산 수출'을 통한 자립성 강화 (이론B) 를 유도하는지는 향후 수출 국가별 데이터 확보 필요.\n\n[검증포인트]\n- 1차 사료: 한국 방산업체 (방산 3 사 등) 의 수출 계약 내역 (국가별, 품목별) 과 방위비 분담 협상 일정 (교착/진전 시기) 의 시계열 데이터 매칭.\n- 2차 데이터: SIPRI 또는 한국방위산업진흥회 (KIDA) 의 방산 수출 데이터와 방위비 분담금 지급액의 연도별 상관분석.\n- 통제변수: 글로벌 방산 시장 지수 (ITA ETF) 와 북한 미사일 발사 건수 (ACLED) 를 통제하여 순수 협상 효과를 분리.\n\n[문헌공백]\n기존 문헌은 방위비 분담을 '재정 부담'의 관점에서만 접근하여, 협상 국면이 방산 산업의 '수출 다변화' 전략에 미치는 영향을 간과한다.\n  ↳ [③ 교차도메인 밀도] 희박 섹터: military (쿼리가 다루나 라이브러리 주장 ≤1건).\n  기존 문헌은 '외교 (방위비 협상)'와 '경제 (방산 수출)'를 분리하여 분석하는데, 본 분석은 이 두 도메인이 **연쇄 고리**를 형성하여 '협상 교착 → 수출 확대'라는 **교차 도메인 경로**가 존재함을 지적함.\n  구체적 공백: 〈Granger 인과분석〉 예측 임계: 지정학 이벤트 빈도 증가 시 연관 시장 지표가 lag k 이후 통계적으로 유의하게 변화 (p<0.05) 의 반례가 적용됨.\n  즉, '방위비 협상'이라는 지정학 이벤트가 '방산 수출'이라는 시장 지표에 유의한 영향을 주지 않거나, 오히려 역방향 (교착기 수출 증가) 으로 작용할 수 있음. 기존 문헌은 이러한 **비선형적 전이 경로**와 **교차 도메인 효과**를 설명하는 이론적 틀이 부재함. 본 분석은 방위비 협상이 단순한 비용 문제가 아니라, 방산 산업의 글로벌 경쟁력 강화를 위한 **전략적 촉매제**로 작용할 수 있음을 지적하며, 이 **교차 도메인 밀도**가 희박한 영역 (외교-산업 연계) 을 메우는 기여를 함.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 주한미군 방위비 분담 협상 교착 기간 (협상 지연 건수 증가) → 한국 국방예산 내 방산 R&D 및 국산화 예산 비율 경향성 (p=0.098)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "주한미군 방위비 분담 협상 교착 기간 (협상 지연 건수 증가) 이 증가할 때, 한국 국방예산 내 방산 R&D 및 국산화 예산 비율이 통계적으로 유의하게 상승한다.",
+        "h0": "주한미군 방위비 분담 협상 교착 기간 (협상 지연 건수 증가) 이 증가할 때, 한국 국방예산 내 방산 R&D 및 국산화 예산 비율이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "주한미군 방위비 분담 협상 교착 기간 (협상 지연 건수 증가)",
+        "dependent_var": "한국 국방예산 내 방산 R&D 및 국산화 예산 비율",
+        "control_vars": [
+          "북한 도발 빈도",
+          "글로벌 유가"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": true,
+        "is_substituted_target": false,
+        "verification_status": "PARTIAL",
+        "partial_basis": "TREND_P15",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0983,
+        "granger_q": 0.0983,
+        "f_statistic": 2.101,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "South Korea"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": "South Korea",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.101,
+              "effect_size_label": "작음",
+              "significance": 0.0983,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0983,
+                "granger_q": 0.0983,
+                "f_statistic": 2.101,
+                "best_lag": 3,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [가설없음] 검증 가능한 정량 가설 없음 — 검정 생략, 서술·이론 근거만",
+        "confidence_word": "검정불가",
+        "routing_method": "no_quantitative_hypothesis",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "필요 데이터 확보 후 H1 재추출"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "정량 가설 없음 (현 데이터로 검증 가능한 정량 가설 없음)",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "정량 가설 없음 (현 데이터로 검증 가능한 정량 가설 없음)",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 대상 아님 — 추출기가 '검증 가능한 정량 가설 없음'을 선언. 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "정량 가설 없음 선언 — 검정 미실행",
+        "data_signature": "",
+        "method_result": {
+          "skipped": true,
+          "skip_reason": "no_quantitative_hypothesis",
+          "iv_construct": {
+            "named_countries": [
+              "South Korea"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": "South Korea",
+            "episodic_share": 0.0
+          }
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 방위비 분담 협상 교착 기간 (협상 지연 건수 증가) → 한국 방산 수출 중 미국 외 국가 (EU, 아시아) 로의 수출 비율 경향성 (p=0.098)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "방위비 분담 협상 교착 기간 (협상 지연 건수 증가) 이 증가할 때, 한국 방산 수출 중 미국 외 국가 (EU, 아시아) 로의 수출 비율이 통계적으로 유의하게 상승한다.",
+        "h0": "방위비 분담 협상 교착 기간 (협상 지연 건수 증가) 이 증가할 때, 한국 방산 수출 중 미국 외 국가 (EU, 아시아) 로의 수출 비율이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "방위비 분담 협상 교착 기간 (협상 지연 건수 증가)",
+        "dependent_var": "한국 방산 수출 중 미국 외 국가 (EU, 아시아) 로의 수출 비율",
+        "control_vars": [
+          "글로벌 방산 수요",
+          "북한 위협 수준"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": true,
+        "is_substituted_target": false,
+        "verification_status": "PARTIAL",
+        "partial_basis": "TREND_P15",
+        "inference_grade": "상관",
+        "inference_caveat": "[동일 검정 공유] 이 가설의 검정은 H1과 동일 변수쌍 (region=korean_peninsula, ticker=ITA) — 검정이 가설을 판별하지 않음 | Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.0983,
+        "granger_q": 0.0983,
+        "f_statistic": 2.101,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "South Korea"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": "South Korea",
+            "episodic_share": 0.0
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.101,
+              "effect_size_label": "작음",
+              "significance": 0.0983,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.0983,
+                "granger_q": 0.0983,
+                "f_statistic": 2.101,
+                "best_lag": 3,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [가설없음] 검증 가능한 정량 가설 없음 — 검정 생략, 서술·이론 근거만",
+        "confidence_word": "검정불가",
+        "routing_method": "no_quantitative_hypothesis",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "필요 데이터 확보 후 H1 재추출"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "정량 가설 없음 (현 데이터로 검증 가능한 정량 가설 없음)",
+        "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+        "independent_var": "정량 가설 없음 (현 데이터로 검증 가능한 정량 가설 없음)",
+        "dependent_var": "미식별",
+        "control_vars": [],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": null,
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PENDING",
+        "partial_basis": null,
+        "inference_grade": "기술적",
+        "inference_caveat": "검정 대상 아님 — 추출기가 '검증 가능한 정량 가설 없음'을 선언. 서술·이론 근거만 가능.",
+        "theory_grounded": false,
+        "controlled": false,
+        "control_name": null,
+        "granger_p": null,
+        "granger_q": null,
+        "f_statistic": null,
+        "best_lag": null,
+        "differenced": false,
+        "n_obs": 0,
+        "error": "정량 가설 없음 선언 — 검정 미실행",
+        "data_signature": "",
+        "method_result": {
+          "skipped": true,
+          "skip_reason": "no_quantitative_hypothesis",
+          "iv_construct": {
+            "named_countries": [
+              "South Korea"
+            ],
+            "named_share": 0.988,
+            "named_n": 7353,
+            "top_country": "South Korea",
+            "top_share": 0.988,
+            "n_events": 7439,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7353
+            },
+            "filter_country": "South Korea",
+            "episodic_share": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}
