@@ -40,6 +40,12 @@
 
 - id: hormuz_tension_to_oil
   name: "호르무즈 긴장 → 유가 상승"
+  # 휴면 (원장·룰북 정비위 2026-07-12, 사용자 승인): 3보정 감사에서 유일하게 base rate
+  # 유의 하회(실현율 0.125 vs 무조건부 0.55, 이항 p<0.05) — 봉쇄 해제 국면의 구조 변화
+  # (위협→가격 전이가 흡수 장치를 거침)와 정합. 삭제 아님 — 감사는 계속 관측.
+  # 재활성 조건: 재감사 consistent 복귀 + 인간 승인 (자동 재활성 금지).
+  dormant: true
+  dormant_note: "정비위 07-12 — base rate 유의 하회 유일 룰. 재활성=재감사 consistent 복귀+인간 승인"
   trigger:
     source_type: conflict      # AISStream 무료 티어 걸프만 미커버 → ACLED 대용 유지
                                # AISStream 유료 업그레이드 시 → source_type: naval 으로 교체

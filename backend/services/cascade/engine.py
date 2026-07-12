@@ -171,6 +171,10 @@ async def build_cascade(rules: list[CascadeRule] | None = None) -> dict:
     links: list[CascadeLink] = []
     events_by_id: dict[str, Event] = {}
 
+    dormant_count = sum(1 for r in rules if r.dormant)
+    if dormant_count:
+        logger.info(f"[cascade] 휴면 룰 {dormant_count}개 제외 (감사는 계속 관측)")
+    rules = [r for r in rules if not r.dormant]
     conflict_rules  = [r for r in rules if r.trigger.source_type == "conflict"]
     military_rules  = [r for r in rules if r.trigger.source_type == "military_flight"]
     other_count     = len(rules) - len(conflict_rules) - len(military_rules)

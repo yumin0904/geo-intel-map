@@ -212,7 +212,8 @@ def audit(lookback_days: int = 180, db_path: Path | str = _DB) -> dict:
             else:
                 verdict = "insufficient_n"
             results.append({
-                "rule_id": rule["id"], "ticker": ticker, "expected": expected,
+                "rule_id": rule["id"], "dormant": bool(rule.get("dormant")),
+                "ticker": ticker, "expected": expected,
                 "triggers": len(days), "triggers_dedup": len(days_dedup),
                 "evaluable": n_eval, "noise_excluded": noise_excluded,
                 "direction_match": match, "realization_rate": rate,

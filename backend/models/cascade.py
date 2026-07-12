@@ -50,6 +50,10 @@ class CascadeRule(BaseModel):
     chain_output: Optional[str] = None    # 이 룰이 생성하는 시장 신호 타입 (룰 간 연결 키)
     next_rule_hint: Optional[str] = None  # 체인될 가능성이 높은 다음 룰 ID
     theory: RuleTheory
+    # 휴면: 룰 감사(rule_decay_audit)가 base rate 유의 하회를 확증하고 인간이 승인한
+    # 룰만 True — 엔진 링크 생성에서 제외되나 감사는 계속 관측한다(재활성 판정 재료).
+    dormant: bool = False
+    dormant_note: Optional[str] = None    # 휴면 사유·재활성 조건
 
 
 class CascadeLink(BaseModel):
