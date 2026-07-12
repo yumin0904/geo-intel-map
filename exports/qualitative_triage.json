@@ -1,12 +1,12 @@
 {
  "schema_version": "1.0",
- "generated_at": "2026-07-12T08:53:19Z",
- "total": 414,
+ "generated_at": "2026-07-12T14:26:27Z",
+ "total": 340,
  "counts": {
-  "event_countable": 194,
-  "human_judgment": 102,
-  "unidentified": 89,
-  "structural_panel": 15,
+  "event_countable": 166,
+  "human_judgment": 109,
+  "unidentified": 35,
+  "structural_panel": 16,
   "market_like": 14
  },
  "note": "report-only — 재분류·소급 채점은 인간 승인 후 별도 집행. event_countable은 event_series 기계 채점 재지정 후보(오분류 발견), human_judgment가 큐 7 인간 채점 큐의 실표본.",
@@ -134,37 +134,9 @@
     "resolve_by": "2026-12-27"
    },
    {
-    "prediction_id": "4e2c7935c2914a5a92e2b622bb846581",
-    "dv": "korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수",
-    "region": "korean_peninsula",
-    "status": "PENDING",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "8177ef9151524e77a0b53ebd21a4ae90",
-    "dv": "사헬 지역(sahel) 내 ACLED 분쟁 이벤트 월별 건수",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2026-12-30"
-   },
-   {
     "prediction_id": "79539513b735452382f0c2e343d0d32f",
     "dv": "특정 지역(예: ukraine)의 ACLED conflict 이벤트 건수",
     "region": "eastern_europe",
-    "status": "PENDING",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "790307740a5e4043b07aca42ced5a4e8",
-    "dv": "사헬 지역 ACLED 분쟁 이벤트 월별 건수",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "bc213ac7e3284530993c618f4c0476f4",
-    "dv": "사헬 지역 ACLED 분쟁 이벤트 월별 건수",
-    "region": "sahel",
     "status": "PENDING",
     "resolve_by": "2026-12-30"
    },
@@ -295,13 +267,6 @@
     "resolve_by": "2027-01-02"
    },
    {
-    "prediction_id": "4a884d2b971f44a9a3ab98e186556f3c",
-    "dv": "hormuz 지역의 ACLED 분쟁 이벤트 건수",
-    "region": "hormuz",
-    "status": "PENDING",
-    "resolve_by": "2027-01-02"
-   },
-   {
     "prediction_id": "5513efb4cf4843938193da8243de0a2a",
     "dv": "bab_el_mandeb 지역 ACLED 분쟁 이벤트 건수",
     "region": "hormuz",
@@ -358,13 +323,6 @@
     "resolve_by": "2027-01-04"
    },
    {
-    "prediction_id": "7823240cae9545d68f8bd859662c88da",
-    "dv": "대만해협 ACLED 분쟁 이벤트 빈도",
-    "region": "taiwan_strait",
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
     "prediction_id": "c2c78be2eed14c1aa8b22757dfc85243",
     "dv": "해당 국가의 후속 사이버 공격 빈도",
     "region": null,
@@ -393,6 +351,20 @@
     "resolve_by": "2027-01-04"
    },
    {
+    "prediction_id": "9b402c71586849ccb2be9705e5553b8b",
+    "dv": "해당 공격 행위자의 재공격 빈도는 유의하게 감소한다.",
+    "region": null,
+    "status": "PENDING",
+    "resolve_by": "2027-01-04"
+   },
+   {
+    "prediction_id": "7155b7a0383f4aa69358242c81d4ce6c",
+    "dv": "재공격 빈도는 유의하게 감소한다” → Salt Typhoon 사례에서 귀속 명확성 높음 → 재공격 0건 → **H1 지지**",
+    "region": null,
+    "status": "PENDING",
+    "resolve_by": "2027-01-04"
+   },
+   {
     "prediction_id": "84277a4e9f2a40968979b9af71191a68",
     "dv": "미국·캐나다의 북극항로 통과 정책 양보 건수(허가 연장, 협력 프로젝트 수용)",
     "region": null,
@@ -403,13 +375,6 @@
     "prediction_id": "155338076fd84318bf21762f8ae961af",
     "dv": "AI 기반 해상 감시 시스템 배치 건수",
     "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "7551658e4a074610a6b96c613f47b0a6",
-    "dv": "taiwan_strait ACLED 분쟁 이벤트 빈도",
-    "region": "taiwan_strait",
     "status": "PENDING",
     "resolve_by": "2027-01-04"
    },
@@ -438,13 +403,6 @@
     "prediction_id": "0e1a956bf9b04789a36ebdc9500523d0",
     "dv": "사헬 지역의 분쟁 강도(HIIK)",
     "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "44a476cc77324cb187aefec941f434a9",
-    "dv": "대만해협 분쟁(ACLED) 빈도는",
-    "region": "taiwan_strait",
     "status": "PENDING",
     "resolve_by": "2027-01-04"
    },
@@ -596,13 +554,6 @@
     "resolve_by": "2027-01-04"
    },
    {
-    "prediction_id": "9f942d9d3e3745eb9c40dfc08e54c02d",
-    "dv": "미국 내 테러 공격 건수(ACLED 기준 미국 내 사건)",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
     "prediction_id": "cc0b0c2017324ed685735f41330ab3f0",
     "dv": "미국 내 반정부 극단주의 사건 건수",
     "region": null,
@@ -631,30 +582,9 @@
     "resolve_by": "2027-01-04"
    },
    {
-    "prediction_id": "532c98b668594c569789ac12279e74c3",
-    "dv": "taiwan_strait ACLED 분쟁 빈도",
-    "region": "taiwan_strait",
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
     "prediction_id": "60be5fc9d9174c54b2611f6ac7876919",
     "dv": "bab_el_mandeb 지역 ACLED 분쟁 이벤트 건수",
     "region": "hormuz",
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "9ee5678e9e6e49b4a094a429cdd3c936",
-    "dv": "hormuz 지역의 ACLED 사건 건수",
-    "region": "hormuz",
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "59594b7280fd487885b65bc2bf320a9f",
-    "dv": "ACLED 분쟁 이벤트 건수",
-    "region": "sahel",
     "status": "PENDING",
     "resolve_by": "2027-01-04"
    },
@@ -722,30 +652,9 @@
     "resolve_by": "2027-01-06"
    },
    {
-    "prediction_id": "91e2ee17155f454880a6fd484f032d9d",
-    "dv": "중국의 대만해협 ACLED 분쟁 빈도",
-    "region": "taiwan_strait",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
     "prediction_id": "51a674899ef04b3c9baebe1509c04f27",
     "dv": "인도의 주요 사이버 공격 사건 건수 (Y)",
     "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "3d083f6bf0b84ff1a92a44e1040b1121",
-    "dv": "해당 지역 ACLED 분쟁 이벤트 건수",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "3e0a585b5b73424a953ec1ab99c990ab",
-    "dv": "사헬 지역 (말리, 부르키나파소, 니제르) 의 ACLED 분쟁 이벤트 건수",
-    "region": "sahel",
     "status": "PENDING",
     "resolve_by": "2027-01-06"
    },
@@ -806,23 +715,9 @@
     "resolve_by": "2027-01-06"
    },
    {
-    "prediction_id": "67de01a39d01481783164bc5d9ad45d0",
-    "dv": "사헬 지역 (말리·부르키나파소·니제르) 의 ACLED 분쟁 이벤트 건수 (특히 지하디스트/PMC 관련)",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
     "prediction_id": "422471e0e749478fae361bae0f1fa86d",
     "dv": "저숙련 위협 행위자 (초보자) 의 AI 기반 공격 시도 건수는",
     "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "e76fea8387444023bf77f9549c457ce9",
-    "dv": "taiwan_strait 지역의 ACLED 분쟁 심각도 (avg severity)",
-    "region": "taiwan_strait",
     "status": "PENDING",
     "resolve_by": "2027-01-06"
    },
@@ -848,13 +743,6 @@
     "resolve_by": "2027-01-06"
    },
    {
-    "prediction_id": "1dc08057ffbd493b9a40961f36c67b90",
-    "dv": "해당 지역의 ACLED 분쟁 이벤트 건수 (HIIK proxy)",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
     "prediction_id": "f4f4d3da97e148908c5a703b71e2520a",
     "dv": "미국 내 테러 공격 건수 (ACLED/CSIS) 는",
     "region": null,
@@ -869,9 +757,9 @@
     "resolve_by": "2027-01-06"
    },
    {
-    "prediction_id": "795aa176fdf74304b46441722517cfd6",
-    "dv": "ACLED 분쟁 이벤트 건수는",
-    "region": "taiwan_strait",
+    "prediction_id": "a78595cc5e3d4af2951b4c737ecf3b8e",
+    "dv": "GDELT 시위 이벤트 건수 (Y)",
+    "region": null,
     "status": "PENDING",
     "resolve_by": "2027-01-06"
    },
@@ -921,13 +809,6 @@
     "prediction_id": "c615d3e8b92d4c76bf48a2160f22cfbc",
     "dv": "AI 모델 접근성 지표 (또는 초보 공격자 관련 사건 비중)",
     "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "ed0f5fd003004dfaaa0ab601d75691e4",
-    "dv": "해당 지역의 ACLED 분쟁 이벤트 건수 (특히 '정치적 폭력' 및 '지역 무장세력 통제' 카테고리)",
-    "region": "sahel",
     "status": "PENDING",
     "resolve_by": "2027-01-06"
    },
@@ -1051,13 +932,6 @@
     "resolve_by": "2027-01-06"
    },
    {
-    "prediction_id": "76506a49bb704f009eaa37dc872374ee",
-    "dv": "무력 분쟁 발생 건수 (ACLED)",
-    "region": "taiwan_strait",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
     "prediction_id": "c30cb36aacd4412c884beffbdc3ae50e",
     "dv": "해당 국가의 해외 분쟁 개입 빈도 (ACLED 지역 분쟁 건수)",
     "region": null,
@@ -1156,20 +1030,6 @@
     "resolve_by": "2027-01-06"
    },
    {
-    "prediction_id": "409a82cee6e34a7bb1d00f267dd1bd59",
-    "dv": "ACLED 데이터상 해당 지역의 '회색지대 테러 이벤트 (UAS 공격, 지역 통제 선언, 정부군 탈영병 흡수)' 건수",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "858f2ade6f6d41b3b495164fd9260a51",
-    "dv": "사헬 지역 (말리, 부르키나파소, 니제르) 의 ACLED 분쟁 이벤트 건수 (특히 UAS 공격 및 영토 점령)",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
     "prediction_id": "78a586d12f2b407e82dfcc5694530309",
     "dv": "라자루스 그룹의 월별 암호화폐 탈취 건수 (건)",
     "region": "korean_peninsula",
@@ -1198,30 +1058,9 @@
     "resolve_by": "2027-01-06"
    },
    {
-    "prediction_id": "cd8fd0dbecf04fcaa24a97c754117016",
-    "dv": "중동 지역 (middle_east) 의 ACLED 분쟁 건수는",
-    "region": "middle_east",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
     "prediction_id": "ccdf6d67d8f3410f96c1caf544b7e49d",
     "dv": "수에즈 운하 내 사이버-물리 혼성 공격 건수",
     "region": "suez",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
-    "prediction_id": "b1f2816d4e5b420588a3b72103677e82",
-    "dv": "홍해 항로의 전쟁위험 보험료 (War Risk Premium %) 는 물리적 공격 건수 (ACLED) 를 통제변수로 할 때",
-    "region": "bab_el_mandeb",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
-    "prediction_id": "4c4483e71cc940e5b8d21a9aa83fd958",
-    "dv": "bab_el_mandeb 지역의 ACLED 분쟁 이벤트 건수 (건) 는",
-    "region": "bab_el_mandeb",
     "status": "PENDING",
     "resolve_by": "2027-01-07"
    },
@@ -1261,13 +1100,6 @@
     "resolve_by": "2027-01-07"
    },
    {
-    "prediction_id": "2d281062b12e4b92bc7a07377d17ef44",
-    "dv": "소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED)",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
     "prediction_id": "52bf0c6f4c2641b392c4d53d7ce32c0e",
     "dv": "해당 지역을 타겟으로 한 AI 기반 사이버 공격 시도 건수 (또는 성공률) 는",
     "region": "bab_el_mandeb",
@@ -1291,13 +1123,6 @@
    {
     "prediction_id": "222dee09e0f1463ea2e73f16c5003f33",
     "dv": "IMEC 회랑 관련 주요 국가 (미국, UAE, 프랑스 등) 의 공식 발표 빈도 또는 투자 약속 건수는",
-    "region": "bab_el_mandeb",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
-    "prediction_id": "addca7d62dd44e51a6226b0a4f4f5731",
-    "dv": "바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수",
     "region": "bab_el_mandeb",
     "status": "PENDING",
     "resolve_by": "2027-01-07"
@@ -1415,13 +1240,6 @@
     "resolve_by": "2027-01-07"
    },
    {
-    "prediction_id": "30f112c96dda4e0ba0caf010157dd6dc",
-    "dv": "미국 내 ACLED 기반 테러 공격 건수",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
     "prediction_id": "9f962e7e77b54f0ab0f3eca443d57dd8",
     "dv": "대만해협 분쟁 건수 (taiwan_strait)",
     "region": "taiwan_strait",
@@ -1429,23 +1247,9 @@
     "resolve_by": "2027-01-07"
    },
    {
-    "prediction_id": "e63e32f0e4ff4f96b52c731e5532a1a4",
-    "dv": "ACLED 데이터상 해당 국가 내 '정부 통제력 상실' 이벤트 건수는",
-    "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
     "prediction_id": "eb810feb5d05403e80ae563d0218e2e4",
     "dv": "북한이 확보한 암호화폐 지갑의 전이 빈도 (transaction frequency)",
     "region": "korean_peninsula",
-    "status": "PENDING",
-    "resolve_by": "2027-01-07"
-   },
-   {
-    "prediction_id": "143fac6510c54bf6a82b949263485d40",
-    "dv": "대만해협 ACLED 분쟁 이벤트 건수",
-    "region": "taiwan_strait",
     "status": "PENDING",
     "resolve_by": "2027-01-07"
    },
@@ -1480,27 +1284,6 @@
     "resolve_by": "2026-12-28"
    },
    {
-    "prediction_id": "e8e37b9daa824fb496bc97d6a355326b",
-    "dv": "미식별",
-    "region": "bab_el_mandeb",
-    "status": "PENDING",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "af754f8fee754e899cf69cf70aadbc37",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "08633e6d29d3471f8b0efb9bdf5cd55b",
-    "dv": "미식별",
-    "region": "south_china_sea",
-    "status": "PENDING",
-    "resolve_by": "2026-12-30"
-   },
-   {
     "prediction_id": "d68ba843042542f48929b2817764b181",
     "dv": "미식별",
     "region": null,
@@ -1515,37 +1298,9 @@
     "resolve_by": "2027-01-01"
    },
    {
-    "prediction_id": "3e90ed2fe2454893bc94eb557579bef1",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-02"
-   },
-   {
-    "prediction_id": "055cb6ae414e47279bd7ec098034a3b9",
-    "dv": "미식별",
-    "region": "ukraine",
-    "status": "PENDING",
-    "resolve_by": "2027-01-02"
-   },
-   {
-    "prediction_id": "0ce4d51862c44b458499902f01d31bf3",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-02"
-   },
-   {
     "prediction_id": "ec8e73072fae48efb7e4e5513ef488c0",
     "dv": "…",
     "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-02"
-   },
-   {
-    "prediction_id": "b0da1819ded74b81b46c8ddb11a74f5d",
-    "dv": "…",
-    "region": "taiwan_strait",
     "status": "PENDING",
     "resolve_by": "2027-01-02"
    },
@@ -1555,34 +1310,6 @@
     "region": null,
     "status": "PENDING",
     "resolve_by": "2027-01-02"
-   },
-   {
-    "prediction_id": "219d6aac4aa64152b344b2b774e481bc",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-02"
-   },
-   {
-    "prediction_id": "221e461a622842a4aa795dbd48bcddaf",
-    "dv": "미식별",
-    "region": "ukraine",
-    "status": "PENDING",
-    "resolve_by": "2027-01-02"
-   },
-   {
-    "prediction_id": "9b402c71586849ccb2be9705e5553b8b",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "7155b7a0383f4aa69358242c81d4ce6c",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
    },
    {
     "prediction_id": "29275fd4e1574a58adcc3bbf4ec5682f",
@@ -1620,32 +1347,11 @@
     "resolve_by": "2027-01-04"
    },
    {
-    "prediction_id": "901cdad99b9949e185b573a814e17461",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
     "prediction_id": "ff0b5ba1f66046599f45bb6555472eeb",
     "dv": "미식별",
     "region": null,
     "status": "PENDING",
     "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "3fabadac3188452f848cbecdf7a62722",
-    "dv": "미식별",
-    "region": "eastern_europe",
-    "status": "PENDING",
-    "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "4386268c808e4b3088d54e7740c8b65d",
-    "dv": "미식별",
-    "region": "taiwan_strait",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
    },
    {
     "prediction_id": "b61f3ac4095043eabe4c8d98786b399c",
@@ -1656,13 +1362,6 @@
    },
    {
     "prediction_id": "e6612fef920543ffbf4dc6c25845927c",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "cc22e06a29e94a9994005d297b50f5e2",
     "dv": "미식별",
     "region": null,
     "status": "PENDING",
@@ -1684,20 +1383,6 @@
    },
    {
     "prediction_id": "7e40d99ff5c34c2f9d74856702b70d63",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "a78595cc5e3d4af2951b4c737ecf3b8e",
-    "dv": "미식별",
-    "region": null,
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "bcfd08b4c6f14eeb9737c7dc37e43d76",
     "dv": "미식별",
     "region": null,
     "status": "PENDING",
@@ -1742,13 +1427,6 @@
     "prediction_id": "4390a81e0e104e90bc0e6fb6b29a7751",
     "dv": "미식별",
     "region": "sahel",
-    "status": "PENDING",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "e9e653edf6714c678731029baa2f2131",
-    "dv": "미식별",
-    "region": "middle_east",
     "status": "PENDING",
     "resolve_by": "2027-01-06"
    },
@@ -1842,258 +1520,6 @@
     "region": null,
     "status": "PENDING",
     "resolve_by": "2027-01-07"
-   },
-   {
-    "prediction_id": "15bbed8116304980ad47df8e7a801dbf",
-    "dv": "미식별",
-    "region": "ukraine",
-    "status": "UNRESOLVED",
-    "resolve_by": "2026-12-27"
-   },
-   {
-    "prediction_id": "4fc500e4acb143afa5266ce4f13ec3fa",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "49284eb4d7864fb58afb3295b85179df",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "3595cc4e4c4446ada73d2e15606611c6",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2026-12-30"
-   },
-   {
-    "prediction_id": "69c0a99ba7144c9cba334731c82a0f46",
-    "dv": "미식별",
-    "region": "taiwan_strait",
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-02"
-   },
-   {
-    "prediction_id": "a02c887161094e13a18b7db709790aeb",
-    "dv": "미식별",
-    "region": "ukraine",
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-04"
-   },
-   {
-    "prediction_id": "b921f691f48c4e1390ff578501fb82da",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "8de293be02f449c8be84baf9ca314ab5",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "d53c9a3c77804b33b990f4f8eef10e74",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "27b704f5803b4960af50aef2e3b78b48",
-    "dv": "미식별",
-    "region": "taiwan_strait",
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "d7d99ba5f0454bed89bf495437c24d12",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "09904b68a835458385825a60a1a6020c",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "4beed93c271e4374898281e02fc09a00",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "f4e846e733034a058dacc8b97341959e",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "bcd2dae4cbae4795981ecda738ff195b",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "fe5b759b58e24f38907a32baf7b89626",
-    "dv": "미식별",
-    "region": "korean_peninsula",
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "2fdf4621b93041fc8468f3dfead0a7d4",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "976b6b384bdf467195d56a249a98ce1b",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "c9af391117f04403ab53d5f33385124d",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "dbc1a2e442214f5cb27595c9125d5b25",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "c6614b763ea24fcfb8461ccbe10202c7",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "ede74846b7ba4620a4503d0539705fd7",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "6bea992996c5468bb9984ed717e840d3",
-    "dv": "미식별",
-    "region": "ukraine",
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "64921643fb24471b87331d28893a0f03",
-    "dv": "미식별",
-    "region": "ukraine",
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "d436697cad8741e2832ba8bd1ac9c54c",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "f5f8857292bb4fd0ae1b26cd6d029839",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "47423dfa27764a5cbe2ed5db5ad93777",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "d2659b4c8cb0449a814da611a412461c",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "1a1accc832d6439baa3b1ebf653d293f",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "5cf97c9f6e6d4c499358f71ffcfe15c7",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "7a5df9babc084f1e806f765d17d07a4c",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "aa68e24bf5da407885f066ad84e2b2c7",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "0ca1e63be1f5458b8ef89b732b129c6a",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "82177c741bfe4df2a7a56750e7a3957d",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "7dd01d5899e1472dbad2a27ed5b5d720",
-    "dv": "미식별",
-    "region": null,
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
-   },
-   {
-    "prediction_id": "9189b36c97834ce29efc337c59e2cdde",
-    "dv": "미식별",
-    "region": "eastern_europe",
-    "status": "UNRESOLVED",
-    "resolve_by": "2027-01-06"
    }
   ],
   "human_judgment": [
@@ -2108,6 +1534,20 @@
     "prediction_id": "36b3793c7b314ce1a0b534e68b82b998",
     "dv": "저숙련 위협 행위자(초보자)의 쉬운 사이버 공격 체인 완료율(%)",
     "region": "taiwan_strait",
+    "status": "PENDING",
+    "resolve_by": "2026-12-30"
+   },
+   {
+    "prediction_id": "e8e37b9daa824fb496bc97d6a355326b",
+    "dv": "미국의 대테러 예산 감소율(%) 및 CPI 상승률(%)",
+    "region": "bab_el_mandeb",
+    "status": "PENDING",
+    "resolve_by": "2026-12-30"
+   },
+   {
+    "prediction_id": "08633e6d29d3471f8b0efb9bdf5cd55b",
+    "dv": "중국 해군력 투자 비중(%GDP)",
+    "region": "south_china_sea",
     "status": "PENDING",
     "resolve_by": "2026-12-30"
    },
@@ -2164,6 +1604,13 @@
     "prediction_id": "65d6898913d1419494de324bccd923ae",
     "dv": "중국의 AI 인프라 수출액(아프리카·동남아·중동 지역)",
     "region": "sahel",
+    "status": "PENDING",
+    "resolve_by": "2027-01-02"
+   },
+   {
+    "prediction_id": "0ce4d51862c44b458499902f01d31bf3",
+    "dv": "북극항로 통제를 위한 AI 기반 해상 감시 시스템의 인력 감축률(%)",
+    "region": null,
     "status": "PENDING",
     "resolve_by": "2027-01-02"
    },
@@ -2378,6 +1825,13 @@
     "resolve_by": "2027-01-04"
    },
    {
+    "prediction_id": "901cdad99b9949e185b573a814e17461",
+    "dv": "의 에너지·광물 수입 의존도(단위: %)",
+    "region": null,
+    "status": "PENDING",
+    "resolve_by": "2027-01-04"
+   },
+   {
     "prediction_id": "8d8d0eb871a84e58b70b4c9cf02c2305",
     "dv": "북극 주변국의 항로 사용 제한 조치(검사 강화, 보험",
     "region": null,
@@ -2425,6 +1879,20 @@
     "region": "eastern_europe",
     "status": "PENDING",
     "resolve_by": "2027-01-04"
+   },
+   {
+    "prediction_id": "3fabadac3188452f848cbecdf7a62722",
+    "dv": "러시아 연간 GDP 성장률 감소",
+    "region": "eastern_europe",
+    "status": "PENDING",
+    "resolve_by": "2027-01-04"
+   },
+   {
+    "prediction_id": "4386268c808e4b3088d54e7740c8b65d",
+    "dv": "AI 기반 사이버 공격의 초보자 완료율 증가",
+    "region": "taiwan_strait",
+    "status": "PENDING",
+    "resolve_by": "2027-01-06"
    },
    {
     "prediction_id": "724ca6ff8e914db590d72394b665dacf",
@@ -2644,6 +2112,13 @@
     "resolve_by": "2027-01-06"
    },
    {
+    "prediction_id": "e9e653edf6714c678731029baa2f2131",
+    "dv": "미국 내 에너지 관련 CPI 상승률",
+    "region": "middle_east",
+    "status": "PENDING",
+    "resolve_by": "2027-01-06"
+   },
+   {
     "prediction_id": "370edfe07ff94b08bc4bd23df9928e1e",
     "dv": "중국 기업의 인도네시아 광물 구매가 할인율(%)",
     "region": "taiwan_strait",
@@ -2813,6 +2288,13 @@
    }
   ],
   "structural_panel": [
+   {
+    "prediction_id": "af754f8fee754e899cf69cf70aadbc37",
+    "dv": "동맹 내 다른 주요 강대국(예: 미국)과의 국방비 지출 비율 격차가 통계적으로 유의하게 커진다.",
+    "region": null,
+    "status": "PENDING",
+    "resolve_by": "2026-12-30"
+   },
    {
     "prediction_id": "9bf4b84fb80f47cfb98761b1adf6aac9",
     "dv": "GDP 대비 국방비 비율",

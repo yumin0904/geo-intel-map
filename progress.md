@@ -9,6 +9,13 @@
 > 폴백·`extraction_ok` boolean 신설·소급 dry-run 89건 중 13건 회수 확인). 상세: geo-os
 > `docs/QUALITATIVE_UPSTREAM_COMMITTEE_20260712.md`.
 
+> **v9.52.0 (2026-07-12)**: 미식별 89 dry-run 3처분 실집행(`scripts/apply_unidentified_reextract.py`) —
+> 회수 13(DV·IV 갱신 + `extraction_ok`/`extracted_at` 스탬프, created_at·confidence_at_creation
+> 불변) · 마킹 43(rejected_fragment 8 + declaration_no_hypothesis 35, DELETE 없이 신설
+> `voided_reason`으로 triage/채점 모수 제외) · 유지 33(무변경). 실측: triage 재실행 결과
+> unidentified 89→**35**(목표 33 대비 2건 초과 — recovered 13건 중 2건의 신DV가 실제로는
+> `"…"` 파편으로, triage 분류기가 이를 unidentified로 재판정, [판단필요] 회부).
+
 ---
 
 ## 📐 Phase 9-Q (가칭) — 질적 방법 갈래 + 인식론 모드 분리 (설계, 2026-06-18)

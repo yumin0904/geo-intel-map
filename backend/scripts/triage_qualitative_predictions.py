@@ -53,10 +53,15 @@ def triage(db_path: Path | str = _DB) -> dict:
     con = sqlite3.connect(str(db_path))
     con.row_factory = sqlite3.Row
     try:
+        # [위원회 20260712 실집행] voided_reason 마킹 행(캡처 기각·무가설 선언 43건,
+        # apply_unidentified_reextract.py --execute)은 DELETE 없이 보존하되 채점·triage
+        # 모수에서 제외한다 — 컬럼이 없는 구 DB에서도 동작하도록 존재 여부를 먼저 확인.
+        cols = {r[1] for r in con.execute("PRAGMA table_info(prediction_log)")}
+        void_filter = "AND voided_reason IS NULL " if "voided_reason" in cols else ""
         rows = con.execute(
             "SELECT prediction_id, dependent_var, region_code, resolve_by, status "
             "FROM prediction_log WHERE target_kind = 'qualitative' "
-            "AND status IN ('PENDING', 'UNRESOLVED')"
+            "AND status IN ('PENDING', 'UNRESOLVED') " + void_filter
         ).fetchall()
     finally:
         con.close()
