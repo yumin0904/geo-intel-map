@@ -1,17 +1,10 @@
 {
- "schema_version": "1.0",
- "generated_at": "2026-07-12T08:58:28Z",
+ "schema_version": "1.1",
+ "generated_at": "2026-07-12T09:19:06Z",
  "lookback_days": 180,
  "rules_audited": 14,
  "decay_flagged": [
-  "hormuz_tension_to_oil",
-  "south_china_sea_to_defense",
-  "south_china_sea_to_lng",
-  "ukraine_conflict_to_wheat",
-  "middle_east_conflict_to_gold",
-  "korean_tension_to_kospi",
-  "korean_peninsula_to_krw",
-  "malacca_to_lng"
+  "hormuz_tension_to_oil"
  ],
  "cascade_links_last_created": "2026-06-17T10:01:46Z",
  "note": "report-only — 룰 수정은 인간 결정. 방향 실현율은 인과 입증 아님(공통충격 미통제). decay_flag=반례 우세, 룰개정 리뷰 후보.",
@@ -21,9 +14,14 @@
    "ticker": "CL=F",
    "expected": "up",
    "triggers": 3,
+   "triggers_dedup": 3,
    "evaluable": 3,
+   "noise_excluded": 0,
    "direction_match": 1,
    "realization_rate": 0.333,
+   "base_rate": 0.489,
+   "base_n": 45,
+   "binom_p": null,
    "threshold_pass": 1,
    "n_counter_examples": 2,
    "counter_examples": [
@@ -43,31 +41,36 @@
    "ticker": "CL=F",
    "expected": "up",
    "triggers": 24,
-   "evaluable": 16,
-   "direction_match": 3,
-   "realization_rate": 0.188,
-   "threshold_pass": 2,
-   "n_counter_examples": 13,
+   "triggers_dedup": 13,
+   "evaluable": 8,
+   "noise_excluded": 1,
+   "direction_match": 1,
+   "realization_rate": 0.125,
+   "base_rate": 0.489,
+   "base_n": 45,
+   "binom_p": 0.0403,
+   "threshold_pass": 1,
+   "n_counter_examples": 7,
    "counter_examples": [
     {
-     "day": "2026-06-14",
-     "realized_pct": -5.8204
+     "day": "2026-06-04",
+     "realized_pct": -2.687
+    },
+    {
+     "day": "2026-06-09",
+     "realized_pct": -0.5556
+    },
+    {
+     "day": "2026-06-11",
+     "realized_pct": -3.2265
     },
     {
      "day": "2026-06-15",
      "realized_pct": -4.904
     },
     {
-     "day": "2026-06-17",
-     "realized_pct": -0.2474
-    },
-    {
      "day": "2026-07-08",
      "realized_pct": -2.87
-    },
-    {
-     "day": "2026-07-09",
-     "realized_pct": -0.9295
     }
    ],
    "verdict": "decay_flag"
@@ -77,12 +80,25 @@
    "ticker": "ITA",
    "expected": "up",
    "triggers": 24,
-   "evaluable": 16,
-   "direction_match": 7,
-   "realization_rate": 0.438,
-   "threshold_pass": 6,
-   "n_counter_examples": 9,
+   "triggers_dedup": 14,
+   "evaluable": 8,
+   "noise_excluded": 2,
+   "direction_match": 4,
+   "realization_rate": 0.5,
+   "base_rate": 0.512,
+   "base_n": 41,
+   "binom_p": 0.6097,
+   "threshold_pass": 4,
+   "n_counter_examples": 4,
    "counter_examples": [
+    {
+     "day": "2026-06-01",
+     "realized_pct": -2.1835
+    },
+    {
+     "day": "2026-06-11",
+     "realized_pct": -0.9532
+    },
     {
      "day": "2026-06-17",
      "realized_pct": -1.5651
@@ -90,142 +106,130 @@
     {
      "day": "2026-07-05",
      "realized_pct": -2.2609
-    },
-    {
-     "day": "2026-07-06",
-     "realized_pct": -4.4461
-    },
-    {
-     "day": "2026-07-08",
-     "realized_pct": -0.2379
-    },
-    {
-     "day": "2026-07-09",
-     "realized_pct": -0.2337
     }
    ],
-   "verdict": "decay_flag"
+   "verdict": "watch"
   },
   {
    "rule_id": "south_china_sea_to_lng",
    "ticker": "NG=F",
    "expected": "up",
    "triggers": 24,
-   "evaluable": 16,
-   "direction_match": 6,
-   "realization_rate": 0.375,
-   "threshold_pass": 2,
-   "n_counter_examples": 10,
+   "triggers_dedup": 14,
+   "evaluable": 8,
+   "noise_excluded": 2,
+   "direction_match": 4,
+   "realization_rate": 0.5,
+   "base_rate": 0.435,
+   "base_n": 46,
+   "binom_p": 0.7679,
+   "threshold_pass": 1,
+   "n_counter_examples": 4,
    "counter_examples": [
     {
-     "day": "2026-06-16",
-     "realized_pct": -0.1852
+     "day": "2026-05-04",
+     "realized_pct": -4.7785
+    },
+    {
+     "day": "2026-06-09",
+     "realized_pct": -1.6879
     },
     {
      "day": "2026-06-21",
      "realized_pct": -3.2585
     },
     {
-     "day": "2026-07-06",
-     "realized_pct": -1.0169
-    },
-    {
      "day": "2026-07-08",
      "realized_pct": -8.4682
-    },
-    {
-     "day": "2026-07-09",
-     "realized_pct": -2.3904
     }
    ],
-   "verdict": "decay_flag"
+   "verdict": "consistent"
   },
   {
    "rule_id": "north_korea_missile_to_krw",
    "ticker": "KRW=X",
    "expected": "up",
    "triggers": 15,
-   "evaluable": 10,
-   "direction_match": 5,
+   "triggers_dedup": 15,
+   "evaluable": 2,
+   "noise_excluded": 8,
+   "direction_match": 1,
    "realization_rate": 0.5,
+   "base_rate": 0.479,
+   "base_n": 48,
+   "binom_p": null,
    "threshold_pass": 1,
-   "n_counter_examples": 5,
+   "n_counter_examples": 1,
    "counter_examples": [
-    {
-     "day": "2026-06-09",
-     "realized_pct": -0.2008
-    },
-    {
-     "day": "2026-06-10",
-     "realized_pct": -0.0498
-    },
     {
      "day": "2026-06-11",
      "realized_pct": -0.5029
-    },
-    {
-     "day": "2026-06-16",
-     "realized_pct": -0.1553
-    },
-    {
-     "day": "2026-07-06",
-     "realized_pct": -0.1463
     }
    ],
-   "verdict": "consistent"
+   "verdict": "insufficient_n"
   },
   {
    "rule_id": "suez_tension_to_shipping",
    "ticker": "ZIM",
    "expected": "up",
    "triggers": 30,
-   "evaluable": 26,
-   "direction_match": 13,
-   "realization_rate": 0.5,
-   "threshold_pass": 6,
-   "n_counter_examples": 13,
+   "triggers_dedup": 13,
+   "evaluable": 9,
+   "noise_excluded": 2,
+   "direction_match": 4,
+   "realization_rate": 0.444,
+   "base_rate": 0.516,
+   "base_n": 31,
+   "binom_p": 0.4604,
+   "threshold_pass": 3,
+   "n_counter_examples": 5,
    "counter_examples": [
     {
-     "day": "2026-06-14",
-     "realized_pct": -3.7721
+     "day": "2026-05-28",
+     "realized_pct": -2.8938
+    },
+    {
+     "day": "2026-05-31",
+     "realized_pct": -0.89
+    },
+    {
+     "day": "2026-06-12",
+     "realized_pct": -4.9943
     },
     {
      "day": "2026-06-15",
      "realized_pct": -2.3274
     },
     {
-     "day": "2026-06-16",
-     "realized_pct": -0.4906
-    },
-    {
      "day": "2026-07-08",
      "realized_pct": -2.561
-    },
-    {
-     "day": "2026-07-09",
-     "realized_pct": -0.7042
     }
    ],
-   "verdict": "consistent"
+   "verdict": "watch"
   },
   {
    "rule_id": "ukraine_conflict_to_wheat",
    "ticker": "ZW=F",
    "expected": "up",
    "triggers": 32,
-   "evaluable": 20,
-   "direction_match": 8,
-   "realization_rate": 0.4,
-   "threshold_pass": 4,
-   "n_counter_examples": 12,
+   "triggers_dedup": 19,
+   "evaluable": 9,
+   "noise_excluded": 3,
+   "direction_match": 2,
+   "realization_rate": 0.222,
+   "base_rate": 0.548,
+   "base_n": 42,
+   "binom_p": 0.0513,
+   "threshold_pass": 2,
+   "n_counter_examples": 7,
    "counter_examples": [
     {
-     "day": "2026-06-10",
-     "realized_pct": -0.5106
+     "day": "2026-05-31",
+     "realized_pct": -0.9446
     },
     {
-     "day": "2026-06-11",
-     "realized_pct": -0.3835
+     "day": "2026-06-02",
+     "realized_pct": -3.524
     },
     {
      "day": "2026-06-17",
@@ -240,26 +244,35 @@
      "realized_pct": -1.0726
     }
    ],
-   "verdict": "decay_flag"
+   "verdict": "watch"
   },
   {
    "rule_id": "middle_east_conflict_to_gold",
    "ticker": "GLD",
    "expected": "up",
    "triggers": 36,
-   "evaluable": 19,
-   "direction_match": 8,
-   "realization_rate": 0.421,
+   "triggers_dedup": 36,
+   "evaluable": 13,
+   "noise_excluded": 6,
+   "direction_match": 5,
+   "realization_rate": 0.385,
+   "base_rate": 0.544,
+   "base_n": 79,
+   "binom_p": 0.19,
    "threshold_pass": 5,
-   "n_counter_examples": 11,
+   "n_counter_examples": 8,
    "counter_examples": [
+    {
+     "day": "2026-06-08",
+     "realized_pct": -1.6336
+    },
+    {
+     "day": "2026-06-09",
+     "realized_pct": -4.1456
+    },
     {
      "day": "2026-06-16",
      "realized_pct": -2.271
-    },
-    {
-     "day": "2026-06-17",
-     "realized_pct": -0.3809
     },
     {
      "day": "2026-07-06",
@@ -268,24 +281,25 @@
     {
      "day": "2026-07-07",
      "realized_pct": -0.8053
-    },
-    {
-     "day": "2026-07-09",
-     "realized_pct": -0.3094
     }
    ],
-   "verdict": "decay_flag"
+   "verdict": "watch"
   },
   {
    "rule_id": "korean_tension_to_kospi",
    "ticker": "^KS11",
    "expected": "down",
    "triggers": 14,
-   "evaluable": 10,
-   "direction_match": 2,
-   "realization_rate": 0.2,
+   "triggers_dedup": 14,
+   "evaluable": 7,
+   "noise_excluded": 3,
+   "direction_match": 1,
+   "realization_rate": 0.143,
+   "base_rate": 0.316,
+   "base_n": 79,
+   "binom_p": 0.2957,
    "threshold_pass": 1,
-   "n_counter_examples": 8,
+   "n_counter_examples": 6,
    "counter_examples": [
     {
      "day": "2026-06-15",
@@ -308,16 +322,21 @@
      "realized_pct": 2.5238
     }
    ],
-   "verdict": "decay_flag"
+   "verdict": "watch"
   },
   {
    "rule_id": "bab_el_mandeb_to_oil_spike",
    "ticker": "CL=F",
    "expected": "up",
    "triggers": 3,
+   "triggers_dedup": 3,
    "evaluable": 3,
+   "noise_excluded": 0,
    "direction_match": 1,
    "realization_rate": 0.333,
+   "base_rate": 0.489,
+   "base_n": 45,
+   "binom_p": null,
    "threshold_pass": 1,
    "n_counter_examples": 2,
    "counter_examples": [
@@ -337,65 +356,51 @@
    "ticker": "KRW=X",
    "expected": "up",
    "triggers": 14,
-   "evaluable": 11,
-   "direction_match": 5,
-   "realization_rate": 0.455,
+   "triggers_dedup": 14,
+   "evaluable": 5,
+   "noise_excluded": 6,
+   "direction_match": 3,
+   "realization_rate": 0.6,
+   "base_rate": 0.479,
+   "base_n": 48,
+   "binom_p": 0.8375,
    "threshold_pass": 3,
-   "n_counter_examples": 6,
+   "n_counter_examples": 2,
    "counter_examples": [
-    {
-     "day": "2026-06-10",
-     "realized_pct": -0.0498
-    },
     {
      "day": "2026-06-11",
      "realized_pct": -0.5029
     },
     {
-     "day": "2026-06-16",
-     "realized_pct": -0.1553
-    },
-    {
      "day": "2026-07-08",
      "realized_pct": -1.0863
-    },
-    {
-     "day": "2026-07-09",
-     "realized_pct": -0.298
     }
    ],
-   "verdict": "decay_flag"
+   "verdict": "consistent"
   },
   {
    "rule_id": "east_china_sea_to_defense",
    "ticker": "ITA",
    "expected": "up",
    "triggers": 16,
-   "evaluable": 15,
-   "direction_match": 9,
-   "realization_rate": 0.6,
-   "threshold_pass": 6,
-   "n_counter_examples": 6,
+   "triggers_dedup": 9,
+   "evaluable": 7,
+   "noise_excluded": 1,
+   "direction_match": 5,
+   "realization_rate": 0.714,
+   "base_rate": 0.515,
+   "base_n": 33,
+   "binom_p": 0.9269,
+   "threshold_pass": 3,
+   "n_counter_examples": 2,
    "counter_examples": [
+    {
+     "day": "2026-05-29",
+     "realized_pct": -2.3488
+    },
     {
      "day": "2026-06-05",
      "realized_pct": -0.9545
-    },
-    {
-     "day": "2026-06-07",
-     "realized_pct": -1.0517
-    },
-    {
-     "day": "2026-06-11",
-     "realized_pct": -0.9532
-    },
-    {
-     "day": "2026-07-08",
-     "realized_pct": -0.2379
-    },
-    {
-     "day": "2026-07-09",
-     "realized_pct": -0.2337
     }
    ],
    "verdict": "consistent"
@@ -405,19 +410,20 @@
    "ticker": "NG=F",
    "expected": "up",
    "triggers": 12,
-   "evaluable": 7,
-   "direction_match": 3,
-   "realization_rate": 0.429,
-   "threshold_pass": 2,
-   "n_counter_examples": 4,
+   "triggers_dedup": 8,
+   "evaluable": 4,
+   "noise_excluded": 0,
+   "direction_match": 1,
+   "realization_rate": 0.25,
+   "base_rate": 0.435,
+   "base_n": 46,
+   "binom_p": null,
+   "threshold_pass": 1,
+   "n_counter_examples": 3,
    "counter_examples": [
     {
      "day": "2026-05-04",
      "realized_pct": -4.7785
-    },
-    {
-     "day": "2026-05-05",
-     "realized_pct": -0.6815
     },
     {
      "day": "2026-06-04",
@@ -428,16 +434,21 @@
      "realized_pct": -2.0408
     }
    ],
-   "verdict": "decay_flag"
+   "verdict": "insufficient_n"
   },
   {
    "rule_id": "taiwan_strait_conflict_to_soxx",
    "ticker": "SOXX",
    "expected": "down",
    "triggers": 15,
+   "triggers_dedup": 15,
    "evaluable": 10,
+   "noise_excluded": 0,
    "direction_match": 5,
    "realization_rate": 0.5,
+   "base_rate": 0.375,
+   "base_n": 88,
+   "binom_p": 0.8725,
    "threshold_pass": 5,
    "n_counter_examples": 5,
    "counter_examples": [

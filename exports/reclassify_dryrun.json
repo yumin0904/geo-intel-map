@@ -1,0 +1,542 @@
+{
+ "generated_at": "2026-07-12T09:20:05Z",
+ "mode": "DRY-RUN",
+ "picked": 31,
+ "rejected": {
+  "region_not_in_archive": 10,
+  "region_mismatch": 3,
+  "no_direction": 0,
+  "no_horizon": 0,
+  "resolve_by_past": 0
+ },
+ "note": "화이트리스트: DV에 ACLED 명시 AND region archive 실존 AND DV-region 일치 AND direction/horizon 존재 AND 만기 미래. 실집행은 사용자 승인 게이트(정비위 07-12).",
+ "rows": [
+  {
+   "prediction_id": "4e2c7935c2914a5a92e2b622bb846581",
+   "dv": "korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2026-12-30",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "korean_peninsula 지역 ACLED 분쟁 이벤트 월별 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "korean_peninsula"
+   }
+  },
+  {
+   "prediction_id": "8177ef9151524e77a0b53ebd21a4ae90",
+   "dv": "사헬 지역(sahel) 내 ACLED 분쟁 이벤트 월별 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2026-12-30",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "사헬 지역(sahel) 내 ACLED 분쟁 이벤트 월별 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "790307740a5e4043b07aca42ced5a4e8",
+   "dv": "사헬 지역 ACLED 분쟁 이벤트 월별 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2026-12-30",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "사헬 지역 ACLED 분쟁 이벤트 월별 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "bc213ac7e3284530993c618f4c0476f4",
+   "dv": "사헬 지역 ACLED 분쟁 이벤트 월별 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2026-12-30",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "사헬 지역 ACLED 분쟁 이벤트 월별 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "4a884d2b971f44a9a3ab98e186556f3c",
+   "dv": "hormuz 지역의 ACLED 분쟁 이벤트 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-02",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "hormuz 지역의 ACLED 분쟁 이벤트 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "hormuz"
+   }
+  },
+  {
+   "prediction_id": "7823240cae9545d68f8bd859662c88da",
+   "dv": "대만해협 ACLED 분쟁 이벤트 빈도",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-04",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "대만해협 ACLED 분쟁 이벤트 빈도"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "7551658e4a074610a6b96c613f47b0a6",
+   "dv": "taiwan_strait ACLED 분쟁 이벤트 빈도",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-04",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "taiwan_strait ACLED 분쟁 이벤트 빈도"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "44a476cc77324cb187aefec941f434a9",
+   "dv": "대만해협 분쟁(ACLED) 빈도는",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-04",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "대만해협 분쟁(ACLED) 빈도는"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "9f942d9d3e3745eb9c40dfc08e54c02d",
+   "dv": "미국 내 테러 공격 건수(ACLED 기준 미국 내 사건)",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-04",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "미국 내 테러 공격 건수(ACLED 기준 미국 내 사건)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "532c98b668594c569789ac12279e74c3",
+   "dv": "taiwan_strait ACLED 분쟁 빈도",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-04",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "taiwan_strait ACLED 분쟁 빈도"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "9ee5678e9e6e49b4a094a429cdd3c936",
+   "dv": "hormuz 지역의 ACLED 사건 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-04",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "hormuz 지역의 ACLED 사건 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "hormuz"
+   }
+  },
+  {
+   "prediction_id": "59594b7280fd487885b65bc2bf320a9f",
+   "dv": "ACLED 분쟁 이벤트 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-04",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "ACLED 분쟁 이벤트 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "91e2ee17155f454880a6fd484f032d9d",
+   "dv": "중국의 대만해협 ACLED 분쟁 빈도",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "중국의 대만해협 ACLED 분쟁 빈도"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "3d083f6bf0b84ff1a92a44e1040b1121",
+   "dv": "해당 지역 ACLED 분쟁 이벤트 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "해당 지역 ACLED 분쟁 이벤트 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "3e0a585b5b73424a953ec1ab99c990ab",
+   "dv": "사헬 지역 (말리, 부르키나파소, 니제르) 의 ACLED 분쟁 이벤트 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "사헬 지역 (말리, 부르키나파소, 니제르) 의 ACLED 분쟁 이벤트 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "67de01a39d01481783164bc5d9ad45d0",
+   "dv": "사헬 지역 (말리·부르키나파소·니제르) 의 ACLED 분쟁 이벤트 건수 (특히 지하디스트/PMC 관련)",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "사헬 지역 (말리·부르키나파소·니제르) 의 ACLED 분쟁 이벤트 건수 (특히 지하디스트/PMC 관련)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "e76fea8387444023bf77f9549c457ce9",
+   "dv": "taiwan_strait 지역의 ACLED 분쟁 심각도 (avg severity)",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "taiwan_strait 지역의 ACLED 분쟁 심각도 (avg severity)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "1dc08057ffbd493b9a40961f36c67b90",
+   "dv": "해당 지역의 ACLED 분쟁 이벤트 건수 (HIIK proxy)",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "해당 지역의 ACLED 분쟁 이벤트 건수 (HIIK proxy)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "795aa176fdf74304b46441722517cfd6",
+   "dv": "ACLED 분쟁 이벤트 건수는",
+   "direction": "down",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "ACLED 분쟁 이벤트 건수는"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "ed0f5fd003004dfaaa0ab601d75691e4",
+   "dv": "해당 지역의 ACLED 분쟁 이벤트 건수 (특히 '정치적 폭력' 및 '지역 무장세력 통제' 카테고리)",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "해당 지역의 ACLED 분쟁 이벤트 건수 (특히 '정치적 폭력' 및 '지역 무장세력 통제' 카테고리)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "76506a49bb704f009eaa37dc872374ee",
+   "dv": "무력 분쟁 발생 건수 (ACLED)",
+   "direction": "down",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "무력 분쟁 발생 건수 (ACLED)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  },
+  {
+   "prediction_id": "409a82cee6e34a7bb1d00f267dd1bd59",
+   "dv": "ACLED 데이터상 해당 지역의 '회색지대 테러 이벤트 (UAS 공격, 지역 통제 선언, 정부군 탈영병 흡수)' 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "ACLED 데이터상 해당 지역의 '회색지대 테러 이벤트 (UAS 공격, 지역 통제 선언, 정부군 탈영병 흡수)' 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "858f2ade6f6d41b3b495164fd9260a51",
+   "dv": "사헬 지역 (말리, 부르키나파소, 니제르) 의 ACLED 분쟁 이벤트 건수 (특히 UAS 공격 및 영토 점령)",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-06",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "사헬 지역 (말리, 부르키나파소, 니제르) 의 ACLED 분쟁 이벤트 건수 (특히 UAS 공격 및 영토 점령)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "cd8fd0dbecf04fcaa24a97c754117016",
+   "dv": "중동 지역 (middle_east) 의 ACLED 분쟁 건수는",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "중동 지역 (middle_east) 의 ACLED 분쟁 건수는"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "middle_east"
+   }
+  },
+  {
+   "prediction_id": "b1f2816d4e5b420588a3b72103677e82",
+   "dv": "홍해 항로의 전쟁위험 보험료 (War Risk Premium %) 는 물리적 공격 건수 (ACLED) 를 통제변수로 할 때",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "홍해 항로의 전쟁위험 보험료 (War Risk Premium %) 는 물리적 공격 건수 (ACLED) 를 통제변수로 할 때"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "bab_el_mandeb"
+   }
+  },
+  {
+   "prediction_id": "4c4483e71cc940e5b8d21a9aa83fd958",
+   "dv": "bab_el_mandeb 지역의 ACLED 분쟁 이벤트 건수 (건) 는",
+   "direction": "down",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "bab_el_mandeb 지역의 ACLED 분쟁 이벤트 건수 (건) 는"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "bab_el_mandeb"
+   }
+  },
+  {
+   "prediction_id": "2d281062b12e4b92bc7a07377d17ef44",
+   "dv": "소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED)",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "소말리아 연안 (아덴만) 에서 발생하는 드론 기반 해상 공격 건수 (ACLED)"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "addca7d62dd44e51a6226b0a4f4f5731",
+   "dv": "바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수",
+   "direction": "down",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "바브엘만데브 해협 (bab_el_mandeb) 의 ACLED 해상 인시던트 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "bab_el_mandeb"
+   }
+  },
+  {
+   "prediction_id": "30f112c96dda4e0ba0caf010157dd6dc",
+   "dv": "미국 내 ACLED 기반 테러 공격 건수",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "미국 내 ACLED 기반 테러 공격 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "e63e32f0e4ff4f96b52c731e5532a1a4",
+   "dv": "ACLED 데이터상 해당 국가 내 '정부 통제력 상실' 이벤트 건수는",
+   "direction": "up",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "ACLED 데이터상 해당 국가 내 '정부 통제력 상실' 이벤트 건수는"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "sahel"
+   }
+  },
+  {
+   "prediction_id": "143fac6510c54bf6a82b949263485d40",
+   "dv": "대만해협 ACLED 분쟁 이벤트 건수",
+   "direction": "down",
+   "horizon_days": 180,
+   "resolve_by": "2027-01-07",
+   "before": {
+    "target_kind": "qualitative",
+    "scorable": 0,
+    "target": "대만해협 ACLED 분쟁 이벤트 건수"
+   },
+   "after": {
+    "target_kind": "event_series",
+    "scorable": 1,
+    "target": "taiwan_strait"
+   }
+  }
+ ]
+}
