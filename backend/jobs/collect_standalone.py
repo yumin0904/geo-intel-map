@@ -192,6 +192,7 @@ def main() -> int:
     )
     from jobs.prediction_scoring_job import run_prediction_scoring_batch
     from jobs.observation_job import run_observation_batch
+    from jobs.rule_decay_job import run_rule_decay_batch
 
     archive = ArchiveManager()
     archive.init_schema()
@@ -211,6 +212,7 @@ def main() -> int:
         ("archive_cycle", archive.run_full_cycle),       # TTL 이관·삭제
         ("prediction_scoring", run_prediction_scoring_batch),  # Phase 10-2 만기 예측 채점
         ("observation_ledger", run_observation_batch),   # P1 report-only 관찰 원장 (데이터효용위 07-12, 일 1회 자체 스로틀)
+        ("rule_decay_audit", run_rule_decay_batch),      # P5 룰 부패 감시 (주 1회 자체 스로틀, report-only)
     ]
 
     ok, failed = [], []
