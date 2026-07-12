@@ -191,6 +191,7 @@ def main() -> int:
         run_bp_provocations_batch,
     )
     from jobs.prediction_scoring_job import run_prediction_scoring_batch
+    from jobs.observation_job import run_observation_batch
 
     archive = ArchiveManager()
     archive.init_schema()
@@ -209,6 +210,7 @@ def main() -> int:
         ("bp_provocations", run_bp_provocations_batch),   # CSIS BP 북한 도발 (CNS 병렬 후속, fail-loud)
         ("archive_cycle", archive.run_full_cycle),       # TTL 이관·삭제
         ("prediction_scoring", run_prediction_scoring_batch),  # Phase 10-2 만기 예측 채점
+        ("observation_ledger", run_observation_batch),   # P1 report-only 관찰 원장 (데이터효용위 07-12, 일 1회 자체 스로틀)
     ]
 
     ok, failed = [], []
