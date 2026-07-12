@@ -1,0 +1,727 @@
+{
+  "schema_version": 1,
+  "note": "dry-run 전용 — DB 무변경. recovered=DV 회수 성공, rejected_fragment=캡처 필터가 비가설로 기각(정직한 미회수), declaration_no_hypothesis='정량 가설 없음' 류 정직한 무가설 선언(build_prediction._DECLARATION_H1이 이미 신규 생성분은 등재 차단 — 이 89건은 해당 필터 도입 이전 소급분), unresolved_qualitative=파싱됐으나 DV 여전히 미식별(정직한 잔여 질적/과정추적).",
+  "total_unidentified": 89,
+  "found_in_db": 89,
+  "missing_in_db": 0,
+  "counts": {
+    "recovered": 13,
+    "rejected_fragment": 8,
+    "declaration_no_hypothesis": 35,
+    "unresolved_qualitative": 33
+  },
+  "records": [
+    {
+      "prediction_id": "e224e89175654852841d557e00f54e2a",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "中國大艦隊在太渡海峽部署的A2/AD系統數量增加時，美國對中國軍事行動的預期發生統計學上顯著變化",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "e8e37b9daa824fb496bc97d6a355326b",
+      "구DV": "미식별",
+      "신DV": "미국의 대테러 예산 감소율(%) 및 CPI 상승률(%)",
+      "신IV": "bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수 증가",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "af754f8fee754e899cf69cf70aadbc37",
+      "구DV": "미식별",
+      "신DV": "동맹 내 다른 주요 강대국(예: 미국)과의 국방비 지출 비율 격차가 통계적으로 유의하게 커진다.",
+      "신IV": "(등급: 상관) NATO 회원국 중 일부 국가의 국방비 지출 비율(%GDP)",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "08633e6d29d3471f8b0efb9bdf5cd55b",
+      "구DV": "미식별",
+      "신DV": "중국 해군력 투자 비중(%GDP)",
+      "신IV": "중국의 인도네시아 니켈 광산 지분 인수율 증가",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "d68ba843042542f48929b2817764b181",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "(등급: 상관) V-Dem 자유민주주의 지수가 높은 국가일수록 GDP 대비 방위비 비율이 통계적으로 유의미하게 낮은 경향을 함께 관찰된다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "35b474867fc344e8ab8a39b21a034c07",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "이스라엘의 소말릴란드 승인 발표 시점(2025년 12월) 이후 bab_el_mandeb 지역의 ACLED 분쟁 이벤트 월별 건수(conflict type)가 통계적으로 유의미하게 변화한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "3e90ed2fe2454893bc94eb557579bef1",
+      "구DV": "미식별",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "055cb6ae414e47279bd7ec098034a3b9",
+      "구DV": "미식별",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "0ce4d51862c44b458499902f01d31bf3",
+      "구DV": "미식별",
+      "신DV": "북극항로 통제를 위한 AI 기반 해상 감시 시스템의 인력 감축률(%)",
+      "신IV": "국가 거버넌스 지수(정치안정 WGI)",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "ec8e73072fae48efb7e4e5513ef488c0",
+      "구DV": "…",
+      "신DV": "…",
+      "신IV": "“",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "b0da1819ded74b81b46c8ddb11a74f5d",
+      "구DV": "…",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "ea6aca592c24424392d84c6954d69e73",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 회원국 간 국방비 GDP 비율 격차가 클수록, 저소득 국가의 국방비 목표 미달성률이 유의하게 증가한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "219d6aac4aa64152b344b2b774e481bc",
+      "구DV": "미식별",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "221e461a622842a4aa795dbd48bcddaf",
+      "구DV": "미식별",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "9b402c71586849ccb2be9705e5553b8b",
+      "구DV": "미식별",
+      "신DV": "해당 공격 행위자의 재공격 빈도는 유의하게 감소한다.",
+      "신IV": "사이버 공격의 귀속 명확성",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "7155b7a0383f4aa69358242c81d4ce6c",
+      "구DV": "미식별",
+      "신DV": "재공격 빈도는 유의하게 감소한다” → Salt Typhoon 사례에서 귀속 명확성 높음 → 재공격 0건 → **H1 지지**",
+      "신IV": "“사이버 공격의 귀속 명확성",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "29275fd4e1574a58adcc3bbf4ec5682f",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 회원국 간 국방비 GDP 비율 격차가 클수록, 미국의 국방비 GDP 비율은 타 회원국 대비 유의하게 높게 유지된다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "714b1fa9f2ea4b05a06eec0e2a83b1b8",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "미국의 대쿠바 제재 항목 수 증가가 쿠바 내 반정부 시위 건수(ACLED)를 통계적으로 유의하게 증가시킨다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "b2e7e92a27d54f59b59aa5eab1653861",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "중국의 희토류 수출 허가 건수 감소가 세계 희토류 가격(USD/kg)을 통계적으로 유의하게 상승시킨다",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "48541f3aaba5481a811d48dde982015d",
+      "구DV": "…",
+      "신DV": "…",
+      "신IV": "“",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "b5fc11553c7b46b4b3d4cad12810cb63",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "다자 제재 참여국 수가 3개국 이상일 때 러시아 연간 GDP 성장률이 통계적으로 유의하게 감소한다",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "901cdad99b9949e185b573a814e17461",
+      "구DV": "미식별",
+      "신DV": "의 에너지·광물 수입 의존도(단위: %)",
+      "신IV": "북극항로 관련 국가의 법적 주장 강도(UNCLOS 제234조 활용 빈도, 내수화 선언 횟수)가 해당 국",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "ff0b5ba1f66046599f45bb6555472eeb",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "미국과 독일 간 국방비 GDP 대비 비율 격차가 클수록, 독일의 국방비 비율은 미국에 비해 유의하게 낮게 유지된다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "3fabadac3188452f848cbecdf7a62722",
+      "구DV": "미식별",
+      "신DV": "러시아 연간 GDP 성장률 감소",
+      "신IV": "서방 대러 제재의 다자 제재 참여국 수 증가(3개국 이상)",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "4386268c808e4b3088d54e7740c8b65d",
+      "구DV": "미식별",
+      "신DV": "AI 기반 사이버 공격의 초보자 완료율 증가",
+      "신IV": "대만해협 분쟁 이벤트 빈도 증가",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "b61f3ac4095043eabe4c8d98786b399c",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "분쟁 빈도와 시장 충격의 상관관계는 확인됨)",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "e6612fef920543ffbf4dc6c25845927c",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 내 미국과 회원국 간 국방비 %GDP 격차 (X) 가 클 때, 유럽 회원국들의 국방비 수준이 상대적으로 낮게 유지되는 (Y) 현상이 관찰된다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "cc22e06a29e94a9994005d297b50f5e2",
+      "구DV": "미식별",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "2eb93cb386a3443ea624b19d8c2d2a7f",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "AI 칩(A100급) 보유량 격차가 2배 미만인 경우, 열세국(중국)의 AI 모델 성능 점수(GPT-4 기준)는 선두국(미국) 대비 80% 이상을 유지하며, 규제 강도 증가는 오히려 자국 내 대체 기술 표준(예: DeepSeek 아키텍처)의 채택률을 높인다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "c45587d1190b465784c7211eec7396c6",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "중국의 특정 광물 수출통제 시작 (X) 후 6 개월 이내 피의존국 해당 광물 의존 제조업 생산량 감소율 (Y) 은 전략 비축량과 대체 공급선 확보 여부 (Z) 에 따라 통계적으로 유의하게 상이할 것이다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "7e40d99ff5c34c2f9d74856702b70d63",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 내 미국 (패권국) 과 유럽 동맹국 간 국방비 %GDP 격차가 클수록, 이는 동맹 내 자유편승 (free-riding) 이론의 예측과 일치한다. (즉, 격차 = 자유편승 지표)",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "a78595cc5e3d4af2951b4c737ecf3b8e",
+      "구DV": "미식별",
+      "신DV": "GDELT 시위 이벤트 건수 (Y)",
+      "신IV": "V-Dem 언론자유 지수 (X)",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "bcfd08b4c6f14eeb9737c7dc37e43d76",
+      "구DV": "미식별",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "82cb1b5b1cbc41baae48f93eb07ce924",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "미국 대테러 예산 (USD) 감소율이 30% 이상일 때, 미국 본토 테러 공격 건수는 증가하나, 사헬 지역 (JNIM/알샤바브) 의 공격 건수 증가율과 미국 본토 공격 건수 증가율 간의 Granger 인과성은 통계적으로 유의하지 않다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "3c15a630a00e4744a245038cdd49a78f",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "솔트 타이푼 사건에서 Libicki 의 '귀속 명확성 (Attribution Clarity)' 가설이 작동했다면, 공격자의 신원이 명확해짐에 따라 즉각적인 보복/제재가 가해져 공격이 중단되었을 것이다. 그러나 공격이 성공했으므로 **귀속 명확성만으로는 억지에 실패했다**.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "106bad73594a43d482b99efe19193ef2",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "사헬 지역 지하디스트 조직이 AI 기반 도구 (오픈소스 LLM 등) 를 도입한 시점 이후, 해당 조직의 '정보전/선전' 및 '간단한 사이버 공격' 이벤트 건수 (ACLED) 가 통계적으로 유의하게 증가한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "1abd6d980032451294adda9c9db9e8a5",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 내 패권국 (미국) 과 비패권국 간 국방비 %GDP 격차 (X) 가 클수록, 비패권국 (독일 등) 의 국방비 지출 (%GDP) 이 낮아지는 (자유편승) 경향이 있다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "8b2f11af7b3645869dc75ba078da153a",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 내 패권국 (미국) 과 주요 동맹국 (독일 등) 간의 국방비 (%GDP) 격차가 클수록, 패권국의 지출이 동맹국에 비해 불균형하게 높게 유지된다 (자유편승 현상 지지).",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "4390a81e0e104e90bc0e6fb6b29a7751",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "사헬 지역 JNIM/알샤바브의 ACLED 분쟁 이벤트 건수 증가는, 미국 대테러 예산 삭감률(%) 과 상호작용하여 미국 내 테러 공격 건수 증가율에 통계적으로 유의한 양의 상관관계를 보인다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "e9e653edf6714c678731029baa2f2131",
+      "구DV": "미식별",
+      "신DV": "미국 내 에너지 관련 CPI 상승률",
+      "신IV": "2026년 2월 이후 middle_east 지역의 ACLED 분쟁 건수 증가율",
+      "회수여부": true,
+      "버킷": "recovered"
+    },
+    {
+      "prediction_id": "a8fcaf60a75244f3ae72b582e272f2a0",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "솔트 타이푼 사건에서 Libicki 의 '귀속 명확성' 가설이 작동했다면, 명확한 귀속 발표 전후로 공격 빈도가 감소하거나 공격이 중단되었어야 한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "96ee2de9af32424f8b68780682689cd9",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "우크라이나 분쟁 기간 중 드론/AI 기술 활용도 증가 (X)는 기존 하이브리드 전쟁 이론이 예측한 '저강도 교란'을 넘어, 분쟁 심각도 (Y, 평균 65.3/100) 와 분쟁 건수 (107,940 건) 를 동시에 상승시키는 방향으로 작용한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "e37ef7fa464641d886ef2507d901cc89",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 내 미국과 동맹국 간 **국방비 %GDP 격차가 클수록** (격차 증가), 동맹국들의 **자유편승 (방위비 부지불) 현상이 강화된다**.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "3ad75cbf342947638cf7fd4024047ca6",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "AI 모델 접근성 증가 (초보자 대비) 가 ACLED '무력 공격' 이벤트 건수 증가와 상관한다\" — *단, 고난도 공격 (공급망 붕괴) 에서는 이 상관관계가 약화될 것으로 예상.*",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "0b6109b9079f4fbeb83ae01af349a4e2",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "솔트 타이푼 사건에서 공격자가 Libicki 의 '귀속 명확성' 가설을 우회하기 위해, 공격 실행 시점에 '귀속 불명확성'을 확보할 수 있었다거나, 귀속이 명확해지더라도 부과될 제재 비용이 공격 이득을 하회한다고 계산했다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "929b698bd8e14d7ca566f53871d3c94e",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 회원국 간 국방비 %GDP 격차 (X) 가 클수록, 상대적 비중이 낮은 국가들의 자유편승 (Y, 국방비 지출 감축 또는 미국 의존도) 이 통계적으로 유의하게 관찰된다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "bdd07c4a35f941be874feeecfa4fd834",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "국가 간 민주주의 지수 (Polity5) 의 증가가 GDP 대비 국방비 비율의 유의한 감소를 초래한다\" (부호: 음의 상관, $\\beta < 0$).",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "afe2fbb4f2c344ef837da7d96bb6de99",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "쿠바의 내부 시위 건수 (ACLED 기준) 가 월 20 건을 초과하는 '손실 도메인' 구간에서, 미국이 제시하는 외교적 제안 (예: 식량 원조 대 인권 개선) 에 대한 쿠바의 수용율 (명목상 수용 건수) 이 오히려 증가한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "0b2c295acb004075afad60030a7384e3",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "강대국의 CPI 상승률이 **3%** 이상이고 에너지 비중이 **35%** 이상일 때, 경쟁국의 군사적 긴장 고조 (분쟁 건수) 가 **20%** 이상 증가한다 (통제: 국내 정치적 상황).",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "7c424546eb3d416d910dfbccbbba9e67",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "V-Dem 언론자유 지수가 높은 국가일수록 GDELT에 기록되는 시위 이벤트 건수가 통계적으로 유의하게 증가한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "eabd4ccdf6c54244946c985f6fac213d",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "우크라이나 분쟁 이벤트 건수 (ACLED) 의 월간 변동률 (변동계수) 이 50% 이상일 때, 북러 간 군사 협력 관련 보도 건수 (또는 사이버 공격 시도 건수) 가 통계적으로 유의하게 증가한다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "10d833cddc874db182be98a402c72271",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "이란전 개전 (2026.02.28) 이후 미국 내 ACLED 테러 이벤트 건수가 전년 동기 대비 60% 이상 증가하며, 대테러 예산 삭감률 (-40%) 과 통계적으로 유의한 양의 상관관계를 가진다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "cfcf345dc0e046d7b759849776639180",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "NATO 회원국 간 국방비 %GDP 격차 (미국 3.29% vs 독일 1.50%) 가 클수록, 저지출국 (독일 등) 의 자유편승 (free-riding) 현상이 통계적으로 유의하게 관측된다.",
+      "회수여부": false,
+      "버킷": "unresolved_qualitative"
+    },
+    {
+      "prediction_id": "15bbed8116304980ad47df8e7a801dbf",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "4fc500e4acb143afa5266ce4f13ec3fa",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음. (지하디스트 조직의 UAS/AI 채택률을 정량화할 데이터가 현재 context에 없음.)",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "49284eb4d7864fb58afb3295b85179df",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "3595cc4e4c4446ada73d2e15606611c6",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음 (갈륨 수출통제는 정책 이벤트이며, HHI는 시계열 데이터가 아닌 단일 관측값으로 제공되어 직접적인 통계적 인과 검정 불가능)",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "69c0a99ba7144c9cba334731c82a0f46",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음 — 중국의 광물 할인율과 대만해협 긴장 사이의 시계열 데이터는 context에 제공되지 않음.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "a02c887161094e13a18b7db709790aeb",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음**",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "b921f691f48c4e1390ff578501fb82da",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (현재 데이터는 알고리즘 최적화 효과의 정량적 인과관계를 입증하기에는 변수가 부족함)",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "8de293be02f449c8be84baf9ca314ab5",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (글로벌 남반구 시장 점유율에 대한 시계열 정량 데이터가 Context 내 미제공됨)",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "d53c9a3c77804b33b990f4f8eef10e74",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (현재 데이터는 반사실적 시나리오를 직접 측정하지 못하며, 거버넌스 지표와 성장률의 인과 검증은 탐구 단계에서 불가).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "27b704f5803b4960af50aef2e3b78b48",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음'으로 대체.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "d7d99ba5f0454bed89bf495437c24d12",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "[가설] 현 데이터로 검증 가능한 정량 가설 없음",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "09904b68a835458385825a60a1a6020c",
+      "구DV": "미식별",
+      "신DV": "",
+      "신IV": "",
+      "회수여부": false,
+      "버킷": "rejected_fragment"
+    },
+    {
+      "prediction_id": "4beed93c271e4374898281e02fc09a00",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "** [가설] 정량 가설 없음 (시간적 중첩과 전략적 의도는 정량 검증 불가, 과정추적 필요)",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "f4e846e733034a058dacc8b97341959e",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음'으로 전환됨. 대신 **정성적 과정추적** 필요.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "bcd2dae4cbae4795981ecda738ff195b",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음**.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "fe5b759b58e24f38907a32baf7b89626",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "[가설] 현 데이터로 검증 가능한 정량 가설 없음 (동맹 신뢰도 지수의 즉각적 정량 데이터 부재).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "2fdf4621b93041fc8468f3dfead0a7d4",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (반사실적 시나리오 '제재 부재 시 성장률'은 <context> 내 측정 가능한 종속변수 Y 가 부재하여 검증 불가).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "976b6b384bdf467195d56a249a98ce1b",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (반사실적 '제재 부재 시 민간 소비 회복률'은 <context> 내 측정 가능한 Y 가 부재).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "c9af391117f04403ab53d5f33385124d",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "[정량 가설 없음] — context 내 쿠바 관련 정량 지표(불안정 지수, 긴장도 지수)가 부재하여 Granger 인과검정이나 상관분석 수행 불가.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "dbc1a2e442214f5cb27595c9125d5b25",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "[정량 가설 없음] — context 내 쿠바 관련 정량 지표(불안정 지수, 긴장도 지수) 부재로 통계적 검정 불가.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "c6614b763ea24fcfb8461ccbe10202c7",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (현재 데이터는 '비용 절감률'과 '지분 변동'의 상관관계는 보여주나, 중견국 외교의 '본질'을 설명하는 독립변수 X 를 정량화하기에 충분하지 않음. '네트워크 통제 강도'와 '외교 자율성 지수'의 정량 지표 부재).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "ede74846b7ba4620a4503d0539705fd7",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (현재 데이터는 '미국 관세 비용'과 '인도네시아 비용 절감'의 상관관계는 보여주나, 중견국의 '전략적 공간 확보'를 측정할 정량 지표 (예: 외교적 자율성 지수, 다자간 협상 성공률) 가 부재함).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "6bea992996c5468bb9984ed717e840d3",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (현재 데이터는 비축량 방출 건수 시계열을 제공하지 않아 정량 검정 불가).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "64921643fb24471b87331d28893a0f03",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (현재 데이터는 AI 접근성과 실제 에너지 인프라 공격 건수의 시계열 상관관계를 제공하지 않음).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "d436697cad8741e2832ba8bd1ac9c54c",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "[가설] 정량 가설 없음 (광물 비용 절감률과 사이버 공격 빈도 간의 직접적인 정량적 회귀 분석을 위한 데이터 시계열이 context 에 부재).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "f5f8857292bb4fd0ae1b26cd6d029839",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음'으로 대체하고, 과정추적 모드로 전환.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "47423dfa27764a5cbe2ed5db5ad93777",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (ACLED 데이터 내 '수도권 접근 거리' 또는 '수도 위협 건수'의 정량적 시계열이 <context>에 미제공됨). 대신 [검증포인트]에서 질적 증거 확인 필요.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "d2659b4c8cb0449a814da611a412461c",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음 (드론 도입과 수도 공격 건수의 인과관계를 검증할 시계열 데이터 부재).",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "1a1accc832d6439baa3b1ebf653d293f",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음**으로 전환. 대신 질적 과정추적 (Process Tracing) 모드로 진행.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "5cf97c9f6e6d4c499358f71ffcfe15c7",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음'으로 전환 필요. 아래는 대안적 서술)",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "7a5df9babc084f1e806f765d17d07a4c",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음: '정치적 양보'는 정성적 사료 (외교문서, 의회 표결) 로만 측정 가능하므로, 현 FRED/EIA 수치만으로는 H1 검증 불가.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "aa68e24bf5da407885f066ad84e2b2c7",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음: '정치적 양보'는 정성적 사료로만 측정 가능하므로, 현 FRED/EIA/Comtrade 수치만으로는 H1 검증 불가.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "0ca1e63be1f5458b8ef89b732b129c6a",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "현 데이터로 검증 가능한 정량 가설 없음 (쿠바 도발 데이터 부재). 대신 과정추적 가설: \"미국 대테러 예산이 40% 이상 삭감된 시기에, 쿠바는 '치명성'을 낮춘 '상징적 도발' (예: 사이버 공격, 선전전) 을 다수 시도할 것이다.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "82177c741bfe4df2a7a56750e7a3957d",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음으로 표기할 수 있으나, 연구 설계를 위해 위와 같이 변수를 명시함)*",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "7dd01d5899e1472dbad2a27ed5b5d720",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "정량 가설 없음으로 대체 가능)*",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    },
+    {
+      "prediction_id": "9189b36c97834ce29efc337c59e2cdde",
+      "구DV": "미식별",
+      "신DV": "미식별",
+      "신IV": "(정량 가설 없음) — 유엔총회 표결 데이터가 <context>에 부재하여 정량적 검증 불가. 대신 정성적 가설: \"제재 강도가 〈경제 제재 이론〉의 예측 임계 (다자 참여 3 개국+) 를 초과하더라도, 러시아의 선거권위주의 체제 (V-Dem 0.06) 로 인해 정책 변화율 (동조율 하락) 은 1.8 배 증가하지 않고 오히려 0% 에 수렴하거나 역방향으로 이동한다.",
+      "회수여부": false,
+      "버킷": "declaration_no_hypothesis"
+    }
+  ]
+}

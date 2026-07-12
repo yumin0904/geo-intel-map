@@ -368,20 +368,26 @@ def _normalize_h1_surface(text: str) -> str:
 
 # 경계 마커 기반 폴백 — 정규식 실패 시 조건절 경계로 IV·DV 분리
 # 질/을 때: 높아질 때, 작아질 때 (ㄹ 받침 복합 동사)
+# [위원회 20260712 집행①] "을수록" 형태소 커버리지 공백 수리 — 실측석 원인 특정:
+# 기존엔 "질/할/될+수록"만 등록돼, 받침 있는 형용사 어간(낮-, 많-, 적-)에 직접
+# 붙는 "을수록"(낮을수록·많을수록·적을수록)이 NO MATCH였다("낮아질수록"만 우회 매치).
+# 수록형 미식별 17건의 실원인 — 재현: "낮을수록"→매치, "낮아질수록"→기존에도 매치.
 _RE_CONDITION_BOUNDARY = re.compile(
     r'(?:할\s*때|될\s*때|질\s*때|을\s*때'
-    r'|할\s*수록|될\s*수록|질\s*수록'
+    r'|할\s*수록|될\s*수록|질\s*수록|을\s*수록'
     r'|하면|되면|함에\s*따라|됨에\s*따라)'
     r'\s*[,，]?\s*',
     re.IGNORECASE,
 )
 # IV 끝에 붙는 조사+동사 어간 제거용 (경계 마커 폴백 전용)
 # 경계 분리 후 before에 잔여 어간(높아, 강해 등)이 남을 수 있어 추가
+# [집행①] "을수록" 분리 후 남는 받침형 형용사 어간(낮·많·적·높)도 제거 대상에 추가
 _RE_IV_VERB_TAIL = re.compile(
     r'\s*(?:이|가)?\s*'
     r'(?:증가|상승|강화|확대|악화|발생|감소|하락|심화|격화|확산|축소|개선|증대|약화'
     r'|높아지|낮아지|강해지|약해지|커지|작아지|늘어나|줄어들'
-    r'|높아|낮아|강해|약해|커|작아|늘어|줄어)'  # 질\s*때 분리 후 잔여 어간
+    r'|높아|낮아|강해|약해|커|작아|늘어|줄어'
+    r'|낮|많|적|높)'  # "을수록" 분리 후 잔여 받침형 형용사 어간 (낮을수록 등)
     r'(?:[하되][^,，때시면수록]*)?$',
     re.IGNORECASE,
 )
@@ -391,6 +397,47 @@ _RE_DV_PRED = re.compile(
     r'(?:통계적으로\s*유의하게\s*|통계적\s*)?'
     r'(?:증가|감소|상승|하락|변화|높아|낮아|커지|작아|늘어|줄어|나타|확대|악화|강화|심화|상실|발생)',
     re.IGNORECASE,
+)
+
+# [위원회 20260712 집행②] 상관형 대칭 정규식 — "A가 B와 (통계적으로) 유의(미)하게
+# 상관한다/상관관계" 형태. _RE_WHEN_THEN(인과 서술)·_RE_CONDITION_BOUNDARY(조건절
+# 경계) 둘 다 실패한 뒤의 3차 폴백으로만 배선한다. 상관은 방향 없는 대칭 관계이므로
+# 여기서 direction을 추정하지 않는다 — '상관/공변' 동사는 prediction_instrument의
+# _UP_TOKENS/_DOWN_TOKENS에 미등록이라 기존 로직이 자연히 unclear로 남긴다.
+# IV 그룹을 탐욕적(greedy)으로 둔 이유: "이벤트"처럼 어휘 내부에 조사와 동형인 음절
+# ("이")이 섞여 있을 때 비탐욕(.+?)이 그 앞에서 조기 절단되는 오분리를 피하기 위함 —
+# 탐욕 매칭은 역추적으로 "와/과" 직전의 *마지막* 조사를 찾아 실제 주어 경계에 수렴한다.
+_RE_CORRELATION = re.compile(
+    r'(.+)(?:가|이|는|은)\s*(.+?)\s*(?:와|과)\s*'
+    r'통계적으로\s*(?:유의(?:하게|미하게|한|미한)?\s*)?'
+    r'(?:상관|공변)(?:한다|관계(?:를\s*(?:가진다|보인다|나타낸다))?)',
+    re.IGNORECASE,
+)
+# 어순 반대형 — "A와 B는 (통계적으로) 유의하게 상관한다" (A·B 순서만 뒤바뀐 동형 표현,
+# 실측 89건 표본에 실존: "…증가와 …증가는 통계적으로 상관한다"). 대칭 관계라 어느 쪽을
+# IV·DV로 잡아도 무방하므로 등장 순서(먼저 나온 쪽=IV)를 그대로 따른다.
+# "유의(미)하게"는 실측 표본에 생략형("통계적으로 상관한다")도 존재해 선택으로 두되,
+# "통계적으로"는 이 코퍼스 전역 프롬프트 규약(§19-B)상 상관 서술에 항상 동반되는
+# 고정 어휘라 필수로 남겨 오탐(순수 서술문의 '상관' 단어 오포착)을 억제한다.
+_RE_CORRELATION_REV = re.compile(
+    r'(.+?)\s*(?:와|과)\s*(.+)(?:는|은|가|이)\s*'
+    r'통계적으로\s*(?:유의(?:하게|미하게|한|미한)?\s*)?'
+    r'(?:상관|공변)(?:한다|관계(?:를\s*(?:가진다|보인다|나타낸다))?)',
+    re.IGNORECASE,
+)
+
+# [위원회 20260712 집행③] _RE_H1 캡처 후 기각 필터 — 3종 비가설 패턴.
+# 전건 logger.info 로깅 의무(기존 494행 "[extract] 논평 폐기" 관행과 동일 — 실 H1을
+# 포식하지 않는지 감사 가능해야 한다).
+# ① 변수정의 불릿: "- X = 드론 공격 건수 (...)" — 가설 문장이 아니라 변수 나열
+_RE_VAR_DEF_BULLET = re.compile(r'^-\s*\S{1,20}\s*=\s*')
+# ② 트렁케이션 조각: 여는 괄호(반각/전각)로 끝나고 짝이 맞는 닫는 괄호가 없음 — 캡처가
+# 문장 중간에서 잘렸다는 신호("…이벤트 건수 ("류, 실측 캡처 오염 사례)
+_RE_TRUNCATED_TAIL = re.compile(r'[\(（][^\)）]*$')
+# ③ 메타논평(표준형): 화살표 없이도 명백한 파서/생성 과정 자기서술 — "H1을 이렇게
+# 처리했다"는 진술이지 가설 자체가 아니다 (": H1 작성 시도했으나…" 류)
+_RE_META_STANDALONE = re.compile(
+    r'재진술합니다|반증됨|전환됨\.?$|작성\s*시도했으나|H1\s*작성\s*시도'
 )
 
 
@@ -495,6 +542,21 @@ def extract_hypotheses(
             logger.info("[extract] 논평 폐기(비가설): %s", h1_raw[:60])
             continue
 
+        # [집행③-①] 변수정의 불릿 기각 — "- X = ..." 는 가설이 아니라 변수 나열
+        if _RE_VAR_DEF_BULLET.match(h1_raw):
+            logger.info("[extract] 변수정의 불릿 폐기(비가설): %s", h1_raw[:60])
+            continue
+
+        # [집행③-②] 트렁케이션 조각 기각 — 여는 괄호로 끝나 문장이 끊긴 캡처
+        if _RE_TRUNCATED_TAIL.search(h1_raw):
+            logger.info("[extract] 트렁케이션 조각 폐기(비가설): %s", h1_raw[:60])
+            continue
+
+        # [집행③-③] 메타논평(표준형) 기각 — 화살표 없이도 명백한 자기서술 패턴
+        if _RE_META_STANDALONE.search(h1_raw):
+            logger.info("[extract] 메타논평 폐기(비가설, 표준형): %s", h1_raw[:60])
+            continue
+
         # 통제변수 추출 (H1 텍스트 내 또는 인근 줄)
         control_vars: list[str] = []
         ctrl_m = _RE_CONTROL.search(h1_raw)
@@ -508,13 +570,13 @@ def extract_hypotheses(
         # 무동작했고, 빈 괄호가 h1 필드에 그대로 남았다 (베이스라인 20/30가설)
         h1_clean = _normalize_h1_surface(h1_clean)
 
-        # 독립/종속변수 추출 — 정규식 → 경계 마커 폴백 2단계 파싱 [9-P-1]
+        # 독립/종속변수 추출 — 정규식 → 경계 마커 → 상관형 대칭 3단계 폴백 [9-P-1][집행②]
         wt_m = _RE_WHEN_THEN.search(h1_clean)
         if wt_m:
             independent_var = wt_m.group(1).strip()
             dependent_var = wt_m.group(2).strip()
         else:
-            # 폴백: 조건절 경계 마커(때/하면/되면/수록)로 IV·DV 분리
+            # 폴백①: 조건절 경계 마커(때/하면/되면/수록)로 IV·DV 분리
             boundary_m = _RE_CONDITION_BOUNDARY.search(h1_clean)
             if boundary_m:
                 before = h1_clean[:boundary_m.start()].strip()
@@ -524,11 +586,35 @@ def extract_hypotheses(
                 independent_var = before[:iv_tail.start()].strip() if iv_tail else before
                 # DV: after에서 서술어 이전 명사구
                 dv_pred = _RE_DV_PRED.search(after)
-                dependent_var = after[:dv_pred.start()].strip() if dv_pred else after[:100].strip()
+                # [집행④] DV 추출 방어 폴백 — dv_pred가 after의 맨 앞(위치 0)에서
+                # 매치하면 after[:0]="" 로 DV가 빈 문자열로 붕괴한다(after 전체가
+                # 명사구 없이 서술어로 시작하는 문형에서 실측). after 전체(100자 컷)로
+                # 대체하고 로깅 — DV 공백 유입 경로를 감사 가능하게 남긴다.
+                if dv_pred and dv_pred.start() > 0:
+                    dependent_var = after[:dv_pred.start()].strip()
+                else:
+                    dependent_var = after[:100].strip()
+                    if dv_pred:
+                        logger.info(
+                            "[extract] DV 빈문자 방어 폴백(dv_pred pos=0): after=%r → dv=%r",
+                            after[:60], dependent_var[:60],
+                        )
             else:
-                # 완전 파싱 실패 시 전체 H1을 독립변수로 유지
-                independent_var = h1_clean
-                dependent_var = ""
+                # 폴백②[집행②]: "A가 B와 (통계적으로) 유의하게 상관한다" 대칭형 —
+                # 방향 없는 대칭 관계이므로 direction을 추정하지 않는다(기존 로직이
+                # '상관' 계열 미등록 동사로 자연히 unclear 처리하도록 둔다).
+                corr_m = _RE_CORRELATION.search(h1_clean)
+                corr_rev_m = None if corr_m else _RE_CORRELATION_REV.search(h1_clean)
+                if corr_m:
+                    independent_var = corr_m.group(1).strip()
+                    dependent_var = corr_m.group(2).strip()
+                elif corr_rev_m:
+                    independent_var = corr_rev_m.group(1).strip()
+                    dependent_var = corr_rev_m.group(2).strip()
+                else:
+                    # 완전 파싱 실패 시 전체 H1을 독립변수로 유지
+                    independent_var = h1_clean
+                    dependent_var = ""
 
         # region/ticker 매핑 — 독립 지역은 독립변수 우선, 종속은 종속변수에서
         combined_text = f"{h1_clean} {independent_var} {dependent_var}"

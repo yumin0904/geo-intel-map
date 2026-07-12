@@ -95,6 +95,11 @@ class PredictionRecord:
     # 보고층은 원전 정독 게이트(Ward·Hegre 본문+LLM-확률 타당성 문헌) 뒤 — 이 필드는 유량 보존만
     # 한다(생성 ~434건/일, 지연 1일 = 수백 건 원값 유실 — 반박석 실측).
     confidence_at_creation: int | None = None
+    # [위원회 20260712 집행⑤] 상류 추출 성공 여부의 명시 boolean 신호. dependent_var가
+    # "미식별"/빈 값이면 0(추출 실패), 아니면 1(정상 추출). status enum과 별개 축 —
+    # status는 결과(outcome)를, 이 필드는 추출(extraction) 단계를 말한다. 축 분리
+    # 유지가 목적이므로 이 필드로 status 파생 로직을 짜지 않는다.
+    extraction_ok: int | None = None
 
 
 def _detect_direction(spec: "HypothesisSpec") -> str:
@@ -194,6 +199,11 @@ def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord | N
         method=mr.get("headline_method", "") or "",
         exploratory=bool(getattr(spec, "exploratory", False)),
         scorable=scorable,
+        # [집행⑤] dependent_var가 "미식별"/빈 값이면 상류 추출 실패(0), 아니면 성공(1).
+        # 이 시점까지 살아남은 레코드(위 unclear+미식별 조기 return 통과분)는 이미 DV가
+        # 채워졌거나 정직한 무방향 질적 가설이므로 대부분 1이 되지만, dependent_var가
+        # 다른 경로로 빈 채 남는 잔여 케이스를 위해 실값 재확인한다.
+        extraction_ok=0 if (spec.dependent_var or "").strip() in ("", "미식별") else 1,
     )
 
 
@@ -231,6 +241,12 @@ def _ensure_table(con: sqlite3.Connection) -> None:
     cols = {r[1] for r in con.execute("PRAGMA table_info(prediction_log)")}
     if "confidence_at_creation" not in cols:
         con.execute("ALTER TABLE prediction_log ADD COLUMN confidence_at_creation INTEGER")
+    # [위원회 20260712 집행⑤] extraction_ok 소급 추가 (idempotent, 동일 패턴) — 파싱
+    # 실패의 명시 boolean 신호. status enum은 불가침(반박석 축 오염 반론 수용,
+    # PARSE_FAILED 상태 신설 기각 — 추출 성공 축과 결과(outcome) 축을 분리해 오염을
+    # 막는다). 구 행은 NULL 유지(생성 시점 원값 없음, retrodiction 격리 동일 원칙).
+    if "extraction_ok" not in cols:
+        con.execute("ALTER TABLE prediction_log ADD COLUMN extraction_ok INTEGER")
     # 채점 배치(10-2)가 만기 예측을 빠르게 찾도록 인덱스
     con.execute(
         "CREATE INDEX IF NOT EXISTS idx_prediction_resolve "
@@ -288,12 +304,14 @@ def log_predictions(specs: list["HypothesisSpec"], query: str,
                     prediction_id, created_at, query, h1, independent_var, dependent_var,
                     target, target_kind, direction, threshold_pct, horizon_days, resolve_by,
                     region_code, data_signature, inference_grade, method, exploratory,
-                    scorable, status, outcome_value, scored_at, confidence_at_creation
+                    scorable, status, outcome_value, scored_at, confidence_at_creation,
+                    extraction_ok
                 ) VALUES (
                     :prediction_id, :created_at, :query, :h1, :independent_var, :dependent_var,
                     :target, :target_kind, :direction, :threshold_pct, :horizon_days, :resolve_by,
                     :region_code, :data_signature, :inference_grade, :method, :exploratory,
-                    :scorable, :status, :outcome_value, :scored_at, :confidence_at_creation
+                    :scorable, :status, :outcome_value, :scored_at, :confidence_at_creation,
+                    :extraction_ok
                 )
                 """,
                 {**asdict(rec), "exploratory": int(rec.exploratory), "scorable": int(rec.scorable)},
