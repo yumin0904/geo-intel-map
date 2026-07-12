@@ -1,0 +1,259 @@
+{
+  "schema_version": "0.1",
+  "id": "nk-provocation-v2-b",
+  "generated_at": "2026-07-12T11:01:38Z",
+  "engine_version": "9.50.0",
+  "query": "북한의 군사 도발 빈도가 한국 금융시장(원달러 환율·방산주)에 미치는 시차 영향",
+  "mode": "insight",
+  "exploratory": true,
+  "regions": [
+    "korean_peninsula"
+  ],
+  "sectors": [
+    "indo_pacific"
+  ],
+  "briefing_refs": [
+    "[WotR] 북한의 치명적 드론 대박 — 한반도에 이식되는 우크라이나 실전 드론전 교리",
+    "[INSS] 북한의 다극세계론 — 이념적 구성·전략적 기능·한계 (전략보고 382호)",
+    "[War on the Rocks] 한국의 50만 드론 전사는 공허한 전력이 될 것이다",
+    "[War on the Rocks] 이란전이 한미동맹에 의미하는 것",
+    "코리아 디스카운트 (Korea Discount)"
+  ],
+  "source_counts": {
+    "fts_items": 10,
+    "sector_items": 6,
+    "event_stats_regions": 1,
+    "cascade_links": 8,
+    "country_profiles": 2,
+    "sipri_countries": 3,
+    "cow_alliances": 33,
+    "kiel_donors": 0,
+    "eia_entries": 2,
+    "csis_incidents": 15,
+    "sipri_arms": 4,
+    "vdem_entries": 72,
+    "cow_wars": 2,
+    "ifans_pubs": 5,
+    "theory_cmp_chars": 3494,
+    "fred": 6,
+    "wbk": 2,
+    "polity5": 2,
+    "itu": 2,
+    "hiik": 1,
+    "semi": 0,
+    "owid": 6,
+    "press": 8
+  },
+  "completeness": {
+    "ok": true
+  },
+  "confidence": {
+    "score": 100,
+    "provisional": false,
+    "inference_grade": "상관",
+    "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+    "speculative": false
+  },
+  "result_md": "## [탐색적] 한반도 ACLED 분쟁 이벤트 감소와 원/달러 환율 하락이 동반되는 경향이 관찰된다.\n데이터기반: 고 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 북한의 군사 도발 빈도 증가는 한국 금융시장의 불확실성을 높여 원/달러 환율을 상승시킨다.\n[비자명기여] 기존 문헌은 지정학적 긴장이 시장에 미치는 영향을 주로 다루지만, 'Granger 인과분석'의 반례가 보여주듯 모든 지정학적 충격이 항상 즉각 시장으로 전이되지 않는다(한반도 긴장→KRW 환율은 VERIFIED(p=0.048)이나 대만해협→TSMC는 PARTIAL(p=0.067)). 이는 특정 임계점 이하의 긴장 완화는 시장의 즉각적인 안도감으로 이어지지 않을 수 있음을 시사하며, 시장의 반응이 긴장 강도에 따라 비선형적으로 나타날 수 있는 범위 조건을 탐색할 필요가 있다는 점에서 기존 통념을 정교화한다.\n[관찰] <context>의 ACLED 이벤트 통계에 따르면 korean_peninsula 지역의 월별 분쟁 이벤트는 2025년 3월 1348건에서 2026년 7월 2건으로 급격히 감소했다. 이 기간 동안 원/달러 환율의 구체적인 실측값은 <context>에 제시되어 있지 않다.\n[주장] (등급: 상관) [군사·작전적 → 경제·금융] 한반도 ACLED 분쟁 이벤트 빈도 감소는 한국 금융시장(경제·금융 도메인)의 원/달러 환율 하락(원화 강세)과 상관할 가능성이 있다. (단, 환율 실측 데이터 부재로 직접적인 상관관계는 미확인)\n[가설] H1: \"korean_peninsula 지역의 ACLED 분쟁 이벤트 월별 건수가 감소할 때 원/달러 환율(KRW/USD)이 통계적으로 유의하게 하락한다.\"\n[근거] ACLED 이벤트 통계(korean_peninsula): 2025년 3월 1348건 → 2026년 7월 2건 (변화 -1346건, 사전계산). 원/달러 환율 실측값은 [UNVERIFIED] 정량값 부재.\n[한계] 원/달러 환율의 실제 시계열 데이터가 <context>에 없어 직접적인 상관관계를 확인할 수 없으며, 이는 선택편향으로 이어질 수 있다. ACLED 데이터는 충돌 빈도만을 나타내므로, 도발의 심각성이나 성격 변화가 환율에 미치는 영향은 포착하기 어렵다. 또한, 한국 금융시장에 영향을 미치는 다른 거시경제 변수(글로벌 금리, 무역수지 등)가 통제되지 않았다.\n[경쟁설명]\n대안 이론 A (코리아 디스카운트 (Korea Discount)):\n  예측: 지정학 리스크 강도 증가 시 KRW 약세. 따라서 리스크 강도 감소 시 KRW 강세 (환율 하락).\n  실측: [UNVERIFIED] 정량값 부재 (KRW 환율).\n  판정: 전제충족(DV 미검증) — (앵커: [앵커 미제공])\n대안 이론 B (동맹 이론 (Alliance Theory)):\n  예측: 동맹 약속 강도 증가 시 방기 위험 감소·연루 위험 증가. 이는 지정학적 불확실성을 줄여 금융시장에 긍정적 영향을 미칠 수 있다.\n  실측: [UNVERIFIED] 정량값 부재 (COW Alliance DB 및 alliance_graph.yaml의 pact_intensity 값 참조).\n  판정: 전제충족(DV 미검증) — (앵커: [앵커 미제공])\n▶ 편차 비교 (사실): 두 이론 모두 KRW 환율 실측값 부재로 편차 정량 확인 불가.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 우세한지는 연구자가 판정한다. (쟁점 예: 동맹 약속 강도와 지정학적 리스크 강도 간의 관계가 항상 일치하지 않을 수 있으며, 금융시장 반응에 미치는 영향의 메커니즘이 다를 수 있다.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 2025년 3월부터 2026년 7월까지의 한국 원/달러 환율 시계열 데이터를 확보하여 ACLED 분쟁 이벤트 건수와의 시차 상관관계 분석. 글로벌 경제 지표(VIX, 미국 금리 등)를 통제변수로 포함한 다변량 회귀 분석 수행.\n[문헌공백] 기존 문헌에서는 'Granger 인과분석'의 반례(한반도 긴장 → KRW 환율은 VERIFIED(p=0.048)이지만 대만해협 → TSMC는 PARTIAL(p=0.067))가 보여주듯 지정학적 충격이 항상 즉각 시장 전이되지 않는다는 점이 간과된다. 이 연구는 북한 도발 빈도 감소라는 '긴장 완화' 국면에서 시장의 반응이 '긴장 고조' 국면과 동일한 선형성을 보이는지, 아니면 특정 임계값 이하에서는 시장의 반응이 둔화되거나 지연되는 비선형적 범위 조건을 탐색함으로써 기존 문헌의 공백을 메울 수 있다.\n\n---\n\n## [탐색적] 북한의 드론전 역량 강화와 한국의 내부 전력화 병목은 방산주 시장에 복합적인 시차 영향을 동반할 가능성이 있다.\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n[통념] 북한의 군사 위협 증가는 한국 방산 기업의 매출 및 방산주 주가 상승으로 이어진다.\n[비자명기여] 통념은 위협 증가가 방산 수요 증가로 직결된다고 보지만, '반접근/지역거부 전략 (A2/AD Strategy)'의 반례가 보여주듯 저비용 비대칭 수단(예: 드론)이 정규 방어체계의 비용 구조를 역전시킬 수 있다. 이는 한국의 50만 드론 전사 계획이 부사관 인력 붕괴와 중국산 드론 부품 90% 의존이라는 내부적 병목 때문에 실질적인 전력 증강으로 이어지지 못할 경우, 방산주 시장이 단순한 위협 증가에 반응하기보다는 실제 방어 역량 강화 여부를 더 중요하게 평가할 수 있음을 시사하여 통념을 정교화한다.\n[관찰] 북한은 2024년 말부터 수천 명을 우크라이나 전선에 파견해 드론전을 실전 학습했으며, Harop급 드론 배치에 약 14개월이 소요될 것으로 예상된다(2024.08→2025.10). 반면, 한국 육군 부사관 충원율은 2020년 95%에서 2024년 42%로 붕괴했으며, 소형 드론의 약 90%가 중국산이다. <context>에는 방산주(ITA)의 구체적인 실측 데이터가 없다.\n[주장] (등급: 상관) [군사·작전적 + 인구·인력 + 산업·공급망 → 경제·금융] 북한의 드론전 역량 강화(군사·작전적 도메인)와 한국의 내부 전력화 병목(인구·인력, 산업·공급망 도메인)은 한국 방산주 시장(경제·금융 도메인)에 상반된 신호를 보내며 복합적인 시차 영향을 동반할 가능성이 있다. (단, 방산주 실측 데이터 부재로 직접적인 상관관계는 미확인)\n[가설] H1: \"북한의 Harop급 드론 배치 시점으로부터 k개월 후 방산 ETF (ITA) 주가(USD)가 통계적으로 유의하게 변화한다 (통제변수: 한국 육군 부사관 충원율).\"\n[근거] 북한 Harop급 드론 배치 소요 기간: 약 14개월 (2024.08→2025.10). 한국 육군 부사관 충원율: 2020년 95% → 2024년 42% (변화 -53%p, 사전계산). 한국 소형 드론 중 중국산 비율: 약 90%. 방산 ETF (ITA) 주가 실측값은 [UNVERIFIED] 정량값 부재.\n[한계] 방산 ETF(ITA)는 글로벌 지표이므로 한국 방산 기업의 주가와 직접적인 연관성이 낮을 수 있다. 북한의 드론 역량 강화나 한국의 인력/공급망 문제는 정량화하기 어려운 질적 위협이므로, 이를 시장 반응과 연결하는 데 한계가 있다. 또한, 방산주 시장에는 정부 정책, 수출 계약 등 다양한 요인이 복합적으로 작용하며, 성공적인 방산 계약이나 위협 증대 위주로 뉴스가 보도될 경우 선택편향이 발생할 수 있다.\n[경쟁설명]\n대안 이론 A (공격적 현실주의 (Offensive Realism)):\n  예측: 권력 격차 감소 시 강대국 간 갈등 빈도 증가. 북한의 군사력(드론 역량) 강화는 한국과의 권력 격차를 줄여 군비 경쟁을 유발할 수 있으며, 이는 방산 수요 증가로 이어질 수 있다.\n  실측: PRK: Polity -10 (autocracy, 2022) | KOR: Polity 8 (democracy, 2022). OWID 군사력 격차: North Korea 핵30기 | South Korea 2.6%GDP. [UNVERIFIED] 방산주 실측값 부재.\n  판정: 전제충족(DV 미검증) — (앵커: PRK Polity -10, 전제 충족, 사전계산)\n대안 이론 B (동맹 비용분담 이론 (Burden Sharing Theory)):\n  예측: 위협 인식 급등 시 동맹 소국의 무임승차 자발 청산(방위비 증가). 북한 드론 위협 증가는 한국의 위협 인식을 높여 국방비 지출 확대 및 방산 투자 증가로 이어질 수 있다.\n  실측: KOR: 2023년 GDP 2.8% $47.9bn. 동맹 최저 방위비(NATO 2% GDP 가이드라인): 실측 2.8% vs 임계 2.0% (편차 +0.8%, 사전계산).\n  판정: 전제충족(DV 미검증) — (앵커: 동맹 최저 방위비 2.8% vs 2.0%, 편차 +0.8%, 전제 미충족(2% 초과)), 정성 증거(위협 인식 급등 시 무임승차 자발 청산 실증)는 예측(무임승차)과 상반.\n▶ 편차 비교 (사실): 공격적 현실주의는 DV 실측값 부재로 편차 정량 확인 불가. 동맹 비용분담 이론은 DV 실측값 부재로 편차 정량 확인 불가하나, 앵커 조건(GDP 대비 방위비 2% 초과)을 충족하며 예측(무임승차)과는 상반되는 정성 증거(자발 청산)가 관찰됨.\n▶ 당신의 판단 (연구자 몫): 어느 이론이 우세한지는 연구자가 판정한다. (쟁점 예: 공격적 현실주의는 군비 경쟁 자체에 초점을 맞추는 반면, 동맹 비용분담 이론은 위협 인식 변화에 따른 국방비 지출 의지를 강조하므로, 두 이론이 방산주 시장에 미치는 영향의 메커니즘이 다름.)\n[검증포인트] 확증하려면 데이터를 보기 전 H1·통제변수를 선언하고(검증 모드) 독립 표본·기간으로 재검정해야 한다. 한국 주요 방산 기업의 주가 데이터(KOSPI)를 확보하여 북한의 드론전 역량 강화 관련 뉴스 이벤트(Harop급 배치 등) 발생 시점과의 시차 영향 분석. 한국 국방 예산 증감 추이 및 부사관 충원율 변화가 방산주에 미치는 영향을 다변량 회귀 분석으로 검증.\n[문헌공백] 기존 문헌에서는 '반접근/지역거부 전략 (A2/AD Strategy)'의 반례가 보여주듯 저비용 비대칭 수단(드론)이 기존의 고비용 정규 방어선을 우회하여 비용 구조를 역전시키는 상황을 충분히 다루지 못한다. 이 분석은 북한의 드론 위협이 단순히 방산 수요를 증가시키는 것을 넘어, 한국의 내부적 인력 및 공급망 병목과 결합하여 방산 산업의 구조적 취약성을 드러내고, 이것이 방산주 시장에 복합적인 영향을 미치는 교차도메인(군사-인구-산업) 인과 경로를 탐색함으로써 문헌 공백을 메울 수 있다.",
+  "hypotheses": [
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] korean_peninsula 지역의 ACLED 분쟁 이벤트 월별 건수 → 원/달러 환율(KRW/USD) 경향성 (p=0.103)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "HIGH",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "korean_peninsula 지역의 ACLED 분쟁 이벤트 월별 건수가 감소할 때 원/달러 환율(KRW/USD)이 통계적으로 유의하게 하락한다.",
+        "h0": "korean_peninsula 지역의 ACLED 분쟁 이벤트 월별 건수가 감소할 때 원/달러 환율(KRW/USD)이 통계적으로 유의한 관계가 없다.",
+        "independent_var": "korean_peninsula 지역의 ACLED 분쟁 이벤트 월별 건수",
+        "dependent_var": "원/달러 환율(KRW/USD)",
+        "control_vars": [],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "KRW=X",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": false,
+        "is_substituted_target": false,
+        "verification_status": "PARTIAL",
+        "partial_basis": "TREND_P15",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": true,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.1031,
+        "granger_q": 0.1173,
+        "f_statistic": 2.065,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 460,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "North Korea",
+              "South Korea"
+            ],
+            "named_share": 0.989,
+            "named_n": 7404,
+            "top_country": "South Korea",
+            "top_share": 0.989,
+            "n_events": 7490,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7404
+            },
+            "filter_country": null
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 2.065,
+              "effect_size_label": "작음",
+              "significance": 0.1031,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 75,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.1031,
+                "granger_q": 0.1173,
+                "f_statistic": 2.065,
+                "best_lag": 3,
+                "n_obs": 460
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "surface": {
+        "summary": "[탐색적] [Granger] 북한의 Harop급 드론 배치 시점으로부터 k개월 후 방산 ETF (ITA) 주가(USD)가 통계적으로 유의하게 변화한다. → 미식별 경향성 (p=0.117)",
+        "confidence_word": "보통",
+        "routing_method": "granger_typeA",
+        "routing_confidence": "MEDIUM",
+        "routing_alternatives": [
+          "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+          "9-A 이벤트스터디 (단일 충격)"
+        ],
+        "exploratory": true
+      },
+      "detail": {
+        "h1": "북한의 Harop급 드론 배치 시점으로부터 k개월 후 방산 ETF (ITA) 주가(USD)가 통계적으로 유의하게 변화한다.",
+        "h0": "북한의 Harop급 드론 배치 시점으로부터 k개월 후 방산 ETF (ITA) 주가(USD)가 통계적으로 유의한 관계가 없다.",
+        "independent_var": "북한의 Harop급 드론 배치 시점으로부터 k개월 후 방산 ETF (ITA) 주가(USD)가 통계적으로 유의하게 변화한다.",
+        "dependent_var": "미식별",
+        "control_vars": [
+          "한국 육군 부사관 충원율"
+        ],
+        "region_code": "korean_peninsula",
+        "dependent_region": null,
+        "ticker": "ITA",
+        "var_type": "Type_A",
+        "proxy_suggestions": [],
+        "linear_testable": true,
+        "testability_reason": "",
+        "is_proxy_pair": true,
+        "is_substituted_target": false,
+        "verification_status": "PARTIAL",
+        "partial_basis": "TREND_P15",
+        "inference_grade": "상관",
+        "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+        "theory_grounded": false,
+        "controlled": true,
+        "control_name": "VIX",
+        "granger_p": 0.1173,
+        "granger_q": 0.1173,
+        "f_statistic": 1.966,
+        "best_lag": 3,
+        "differenced": true,
+        "n_obs": 464,
+        "error": null,
+        "data_signature": "PAIRED_TIMESERIES",
+        "method_result": {
+          "iv_construct": {
+            "named_countries": [
+              "North Korea",
+              "South Korea"
+            ],
+            "named_share": 0.989,
+            "named_n": 7404,
+            "top_country": "South Korea",
+            "top_share": 0.989,
+            "n_events": 7490,
+            "country_dist": {
+              "(미상)": 58,
+              "China": 2,
+              "Japan": 26,
+              "South Korea": 7404
+            },
+            "filter_country": null
+          },
+          "headline_rung": "상관",
+          "headline_method": "granger",
+          "convergence": null,
+          "convergence_note": "",
+          "stub_methods": [],
+          "all_results": [
+            {
+              "method": "granger",
+              "signature": "PAIRED_TIMESERIES",
+              "effect_estimate": 1.966,
+              "effect_size_label": "무시할 수준",
+              "significance": 0.1173,
+              "ci_low": null,
+              "ci_high": null,
+              "assumptions_met": true,
+              "assumption_caveat": "",
+              "reachable_rung": "선행성",
+              "actual_rung": "상관",
+              "confidence_within_rung": 50,
+              "robustness": {
+                "extreme_p": null,
+                "differenced": true,
+                "controlled": true
+              },
+              "native_stats": {
+                "granger_p": 0.1173,
+                "granger_q": 0.1173,
+                "f_statistic": 1.966,
+                "best_lag": 3,
+                "n_obs": 464
+              },
+              "exploratory": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "intel_analysis_id": null
+}
