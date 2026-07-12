@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
- "generated_at": "2026-07-12T08:54:02Z",
- "engine_version": "9.47.0",
+ "generated_at": "2026-07-12T12:06:33Z",
+ "engine_version": "9.50.0",
  "skill": {
   "n": 36,
   "n_targets": 6,
@@ -23,17 +23,17 @@
   {
    "target_kind": "market",
    "status": "PENDING",
-   "n": 450
+   "n": 451
   },
   {
    "target_kind": "qualitative",
    "status": "PENDING",
-   "n": 377
+   "n": 346
   },
   {
    "target_kind": "event_series",
    "status": "PENDING",
-   "n": 50
+   "n": 81
   },
   {
    "target_kind": "qualitative",
@@ -63,8 +63,8 @@
  ],
  "ledger_span": {
   "first": "2026-06-30T07:10:36.378667+00:00",
-  "last": "2026-07-11T19:27:40.090599+00:00",
-  "total": 973
+  "last": "2026-07-12T11:00:53.210687+00:00",
+  "total": 974
  },
  "recent_scored": [
   {

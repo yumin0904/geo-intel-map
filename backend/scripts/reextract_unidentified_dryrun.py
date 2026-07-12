@@ -59,7 +59,10 @@ def _reextract_one(h1: str) -> tuple[str, str, bool]:
     spec = specs[0]
     new_dv = (spec.dependent_var or "").strip()
     new_iv = (spec.independent_var or "").strip()
-    recovered = new_dv not in ("", "미식별")
+    # 실질 판정: 파편 토큰("…", "-" 등)은 DV가 아니다 — v9.52.0 실집행에서 "…" 2건이
+    # 회수로 오계산돼 triage 기준과 어긋난 사고의 정정. 한글/영문/숫자가 2자 이상 있어야 실질 DV.
+    _substantive = len(re.findall(r"[가-힣A-Za-z0-9]", new_dv)) >= 2
+    recovered = new_dv not in ("", "미식별") and _substantive
     return new_dv, new_iv, recovered
 
 
