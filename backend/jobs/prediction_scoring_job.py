@@ -22,3 +22,12 @@ def run_prediction_scoring_batch() -> None:
         )
     except Exception as exc:  # noqa: BLE001
         logger.warning("[10-2 채점배치] 실패: %s", exc)
+        return
+
+    # [P3] skill 전광판 갱신 — 채점 직후 편승(데이터효용위 07-12, read-only 산출물).
+    # 전광판 실패가 채점 배치를 죽이지 않도록 분리 흡수.
+    try:
+        from scripts.export_skill_dashboard import export
+        logger.info("[P3 전광판] 갱신 → %s", export())
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[P3 전광판] 갱신 실패: %s", exc)

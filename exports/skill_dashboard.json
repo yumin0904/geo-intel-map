@@ -1,0 +1,167 @@
+{
+ "schema_version": "1.0",
+ "generated_at": "2026-07-12T08:54:02Z",
+ "engine_version": "9.47.0",
+ "skill": {
+  "n": 36,
+  "n_targets": 6,
+  "hit_rate": 0.472,
+  "wilson95": [
+   0.32,
+   0.63
+  ],
+  "baseline_coin": 0.5,
+  "baseline_const_majority": 0.639,
+  "baseline_const_direction": "down",
+  "baseline_persistence": [
+   0.933,
+   30
+  ],
+  "verdict": "skill 검출 불가 — CI가 기준선 이하 포함"
+ },
+ "ledger_distribution": [
+  {
+   "target_kind": "market",
+   "status": "PENDING",
+   "n": 450
+  },
+  {
+   "target_kind": "qualitative",
+   "status": "PENDING",
+   "n": 377
+  },
+  {
+   "target_kind": "event_series",
+   "status": "PENDING",
+   "n": 50
+  },
+  {
+   "target_kind": "qualitative",
+   "status": "UNRESOLVED",
+   "n": 37
+  },
+  {
+   "target_kind": "market",
+   "status": "UNRESOLVED",
+   "n": 22
+  },
+  {
+   "target_kind": "market",
+   "status": "MISS",
+   "n": 19
+  },
+  {
+   "target_kind": "market",
+   "status": "HIT",
+   "n": 17
+  },
+  {
+   "target_kind": "event_series",
+   "status": "UNRESOLVED",
+   "n": 1
+  }
+ ],
+ "ledger_span": {
+  "first": "2026-06-30T07:10:36.378667+00:00",
+  "last": "2026-07-11T19:27:40.090599+00:00",
+  "total": 973
+ },
+ "recent_scored": [
+  {
+   "prediction_id": "0eabb7d0b2164953aa513d38a5e32b40",
+   "target": "TSM",
+   "direction": "down",
+   "realized_direction": "down",
+   "realized_pct": -3.2825,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "1f0931f5bb9141eab79a99591291d36c",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 4.8286,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "4efd17bc8a0f45dbab7db182e5f94102",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 4.8432,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "d41b4534d20045408e839ce5e51f6c95",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 4.8432,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "9245dc80c9e14a2296ebbac5845df2db",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 4.8432,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "b5b39b11c47e484a8e6c5d3884554d73",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 4.8432,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "ba505926176049e7abfc5cc728ea12d1",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 4.8432,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "8c8f5eef3eb0465f825e919c8c910c76",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 4.8286,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "a19939b8622f4d8094309fba7bdb9049",
+   "target": "TSM",
+   "direction": "down",
+   "realized_direction": "down",
+   "realized_pct": -3.2825,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  },
+  {
+   "prediction_id": "4437100e0556404b92c28ae7a98cba21",
+   "target": "NG=F",
+   "direction": "down",
+   "realized_direction": "down",
+   "realized_pct": -7.1186,
+   "status": "HIT",
+   "scored_at": "2026-07-10"
+  }
+ ],
+ "caveats": [
+  "이 수치는 최적화 표적이 아니다(런 단위값 누적 승격 금지 — T3 판례 0.526 오승격 사고 선반영).",
+  "적중률은 '방향 실현' 빈도일 뿐 메커니즘·인과 입증이 아니다.",
+  "표본이 소수 타깃에 클러스터링돼 유의성 해석은 클러스터 보정 전 잠정(n_targets 병기).",
+  "UNRESOLVED는 실패가 아니라 '잴 데이터 없음' — 해결률 집계에 섞지 않는다."
+ ]
+}
