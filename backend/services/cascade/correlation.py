@@ -34,11 +34,13 @@ import time
 import warnings
 from dataclasses import dataclass, asdict
 from datetime import date, timedelta
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +71,11 @@ def _cache_set(store: dict, key: tuple, value: Any, ttl: float) -> None:
     store[key] = (value, time.monotonic() + ttl)
 
 _DB_PATH = Path(__file__).resolve().parents[2] / "db" / "intel.db"
+
+# 임계값은 config가 단일 진실원 (매직넘버 금지 — 헌법 §7)
+_THR_PATH = Path(__file__).resolve().parents[2] / "config" / "granger_thresholds.yaml"
+_THR: dict = yaml.safe_load(_THR_PATH.read_text(encoding="utf-8"))
+_MAX_MISSING_SHARE: float = float(_THR.get("max_missing_share", 0.30))
 
 # historical_macro_indices DB에서 직접 조회 가능한 티커 → indicator 매핑
 # FRED 원본 + yfinance 로컬 캐시 (baseline_bulk_ingest.py --yfinance 로 적재)
@@ -213,6 +220,97 @@ class GrangerResult:
     error:     str | None = None  # 오류 발생 시 메시지
 
 
+# ── 수집 커버리지 게이트 (B01 수리, 2026-07-14) ───────────────────────────────
+#
+#  무엇이 문제였나
+#  ─────────────
+#  reindex(fill_value=0.0)가 **"수집이 없던 날"과 "사건이 0건인 날"을 같은 0으로**
+#  만들었다. 실측(2026-07-14, 24개월 창 731일):
+#
+#      전역 이벤트가 1건이라도 있는 날   399일 (54.6%)
+#      전역 이벤트가 0건인 날            332일 (45.4%)  ← 전부 "전쟁 없음"으로 투입됐다
+#      그중 2025-08 ~ 2026-03            8개월 통짜 구멍 (한 건도 없음)
+#
+#  그래서 Granger에 들어간 IV의 절반이 실제 관측이 아니라 우리가 써넣은 0이었다.
+#  현존 VERIFIED 3건 전부가 이 위에 서 있다.
+#
+#  진짜 0과 결측을 어떻게 가르나
+#  ────────────────────────────
+#  **전역 이벤트 수가 신호다.** 수집이 돌던 구간에는 매일 수백~수천 건이 들어온다.
+#  어느 날 전 세계 이벤트가 0건이라면 그날 세계가 평화로웠던 게 아니라 **그날 수집이
+#  없었던 것**이다. 따라서:
+#
+#      전역 이벤트 ≥1건인 날 + 이 지역엔 없음  →  0.0   (진짜 0. 사건이 안 일어났다)
+#      전역 이벤트 0건인 날                    →  NaN   (결측. 재지 못했다)
+#
+#  NaN은 하류에서 저절로 정직해진다 — Granger 직전 pd.concat(...).dropna()가 그 날을
+#  검정에서 빼기 때문이다. 0은 빠지지 않는다. 그게 위조와 결측의 차이다.
+#
+#  그리고 결측이 임계를 넘으면 0건을 반환하지 않고 **던진다**(InsufficientCoverageError).
+#  "관계 없다"와 "못 쟀다"는 다른 사실이고, 조용히 0을 돌려주면 둘이 같아진다.
+#  (FIRMS 사고와 정확히 같은 병 — 07-13 journal 참조.)
+#
+class InsufficientCoverageError(RuntimeError):
+    """검정 창의 수집 공백이 임계를 넘었다 — 검정을 성립시키지 않는다.
+
+    상위 러너들은 이 예외를 잡아 결과의 `error` 필드에 기록한다. 그 결과는
+    p_value=None·supported=False로 남아 **"검정했으나 관계 없음"과 구별된다.**
+    """
+
+
+@lru_cache(maxsize=16)
+def _coverage_days(start_iso: str, end_iso: str) -> frozenset[str]:
+    """이 창에서 **수집이 실재한 날** 집합 = 전역으로 이벤트가 1건이라도 있는 날.
+
+    region을 가리지 않는다 — 어느 지역의 이벤트든 1건이라도 있으면 그날 파이프라인이
+    돌았다는 뜻이고, 그러면 다른 지역의 0건은 진짜 0이다.
+    """
+    con = sqlite3.connect(_DB_PATH)
+    try:
+        rows = con.execute(
+            "SELECT DISTINCT DATE(timestamp) FROM event_archive "
+            "WHERE DATE(timestamp) BETWEEN ? AND ?",
+            (start_iso, end_iso),
+        ).fetchall()
+    finally:
+        con.close()
+    return frozenset(r[0] for r in rows if r[0])
+
+
+def apply_coverage(raw: pd.Series, idx: pd.DatetimeIndex,
+                   covered: frozenset[str], label: str,
+                   max_missing_share: float = _MAX_MISSING_SHARE) -> pd.Series:
+    """일별 원계열을 커버리지 인식 계열로 만든다 (수집 공백 = NaN, 진짜 0 = 0.0).
+
+    순수 함수(DB 없음) — 회귀 테스트가 이 판정을 직접 검증한다.
+    결측 비율이 max_missing_share를 넘으면 InsufficientCoverageError.
+    """
+    series = raw.reindex(idx).astype(float)  # 원계열에 없는 날은 일단 전부 NaN
+    covered_mask = pd.Series(
+        [d.strftime("%Y-%m-%d") in covered for d in idx], index=idx
+    )
+
+    # 수집된 날인데 이 계열엔 이벤트가 없다 → 진짜 0 (사건이 안 일어난 것)
+    series = series.mask(covered_mask & series.isna(), 0.0)
+    # 수집이 없던 날은 NaN 그대로 — 여기에 0을 쓰는 것이 위조였다
+
+    n = len(series)
+    n_missing = int(series.isna().sum())
+    share = (n_missing / n) if n else 1.0
+
+    if share > max_missing_share:
+        raise InsufficientCoverageError(
+            f"[커버리지] {label}: 검정 창 {n}일 중 **수집 공백 {n_missing}일"
+            f"({share:.1%})** — 임계 {max_missing_share:.0%} 초과. 검정 미수행. "
+            f"구 동작은 이 공백을 0(=사건 없음)으로 채워 넣었다. "
+            f"이것은 '관계 없음'이 아니라 '측정 불가'다 — 소스 최신화(data_gap)가 유일한 해소."
+        )
+
+    logger.info("[커버리지] %s: %d일 중 관측 %d · 결측 %d(%.1f%%)",
+                label, n, n - n_missing, n_missing, share * 100)
+    return series
+
+
 # ── 이벤트 시계열 구축 ────────────────────────────────────────────────────────
 
 # event_archive region_code 별칭 매핑 — hypothesis_extractor와 DB 코드 불일치 보정
@@ -257,7 +355,11 @@ def _load_event_series(region: str, start: date, end: date,
         return pd.Series(dtype=float, name="event_severity")
 
     idx = pd.date_range(start, end, freq="D")
-    series = df.set_index("day")["sev_sum"].reindex(idx, fill_value=0.0)
+    # [B01 수리] 수집 공백은 NaN, 수집된 날의 무사건은 0.0 — 아래 apply_coverage 참조.
+    # 구 코드: reindex(idx, fill_value=0.0) ← 8개월 데이터 공백을 "전쟁 없음"으로 위조
+    covered = _coverage_days(start.isoformat(), end.isoformat())
+    label = f"event_severity[{region}{'/' + country if country else ''}]"
+    series = apply_coverage(df.set_index("day")["sev_sum"], idx, covered, label)
     series.name = "event_severity"
 
     nonzero = int((series > 0).sum())
@@ -282,7 +384,10 @@ def _load_event_series(region: str, start: date, end: date,
     #    꺼지고, 대부분이 0인 일별 계열에 Granger가 돌아 식별이 오히려 약해진다. lookback
     #    확대 논의 시 이 결합을 반드시 함께 검토할 것(위원회 2026-07-06, granger_thresholds.yaml).
     if nonzero < 10:
-        series = series.resample("W").sum()
+        # [B01 수리] min_count=1 — pandas의 sum()은 기본적으로 NaN을 0으로 세므로,
+        # 통째로 결측인 주가 "그 주엔 사건 0건"으로 되살아난다. 위조를 여기서 다시
+        # 만들지 않으려면 관측이 하나도 없는 주는 NaN으로 남겨야 한다.
+        series = series.resample("W").sum(min_count=1)
         series.name = "event_severity_weekly"
 
     return series
@@ -364,7 +469,10 @@ def _load_global_conflict_series(
     if df.empty:
         return pd.Series(dtype=float, name="global_conflict")
     idx = pd.date_range(start, end, freq="D")
-    series = df.set_index("day")["sev_sum"].reindex(idx, fill_value=0.0)
+    # [B01 수리] 통제변수 Z도 같은 위조를 겪었다. 통제변수가 가짜 0이면 통제 자체가
+    # 가짜다 — 오히려 교란을 "통제했다"고 주장하며 편의를 주입한다.
+    covered = _coverage_days(start.isoformat(), end.isoformat())
+    series = apply_coverage(df.set_index("day")["sev_sum"], idx, covered, "global_conflict")
     series.name = "global_conflict"
     return series
 
@@ -392,7 +500,15 @@ def _load_fred_series(indicator: str, start: date, end: date) -> pd.Series | Non
         logger.warning("[correlation] FRED %s: 데이터 부족 (%d행)", indicator, len(df))
         return None
 
-    series = df.set_index("date")["value"].asfreq("D").ffill()
+    # [B01 수리] 구 코드: .asfreq("D").ffill()
+    #   거래일 계열을 일별로 늘리고 주말·휴일을 직전 종가로 채웠다. 그 다음 pct_change를
+    #   하면 주말마다 **수익률 0%가 창조된다** — 시장이 "움직이지 않았다"는 관측이 아니라
+    #   애초에 열리지 않은 날이다. DV의 31~33%가 이 가짜 0%였다(STATUS 실측).
+    #   거짓 0은 분산을 죽이고 자기상관을 만들어 Granger를 양쪽으로 오염시킨다.
+    #
+    #   처방: 늘리지 않는다. 실제 거래일 관측에서만 수익률을 계산한다. 이벤트 계열과의
+    #   결합은 pd.concat(...).dropna()가 알아서 거래일에 맞춘다(비거래일은 검정에서 빠진다).
+    series = df.set_index("date")["value"].sort_index()
     pct = series.pct_change().replace([np.inf, -np.inf], np.nan).dropna()
     pct.name = "market_return"
     return pct
@@ -889,9 +1005,16 @@ async def run_candidate_scan(
 
     for region in regions:
         # 이벤트 시계열은 region당 한 번만 로드
-        event_series = await asyncio.get_event_loop().run_in_executor(
-            None, _load_event_series, region, start, end
-        )
+        try:
+            event_series = await asyncio.get_event_loop().run_in_executor(
+                None, _load_event_series, region, start, end
+            )
+        except InsufficientCoverageError as exc:
+            # [B01] 수집 공백이 임계 초과 — 이 region은 후보 스캔에서 제외한다.
+            # 조용히 넘기지 않고 남긴다: 스캔에 안 나온 이유가 "신호 없음"이 아니라
+            # "못 쟀음"임을 구별할 수 있어야 한다.
+            logger.warning("[scan] %s 제외 — %s", region, exc)
+            continue
         if len(event_series) == 0 or event_series.sum() == 0:
             continue
 

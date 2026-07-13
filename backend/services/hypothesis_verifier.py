@@ -670,8 +670,22 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
     )
 
     async def _run_event_to_event(spec: HypothesisSpec) -> HypothesisSpec:
-        x = _load_event_series(spec.region_code, start, end)       # 독립 지역 A
-        y = _load_event_series(spec.dependent_region, start, end)  # 종속 지역 B
+        # [B01] 수집 커버리지 게이트 — 검정 창의 공백이 임계를 넘으면 로더가 던진다.
+        # 여기서만 무방비였다(다른 경로는 _run_granger_for_spec의 try가 흡수한다).
+        # "관계 없음"이 아니라 "측정 불가"로 기록하고 사다리는 기술적에 묶는다.
+        from services.cascade.correlation import InsufficientCoverageError
+        try:
+            x = _load_event_series(spec.region_code, start, end)       # 독립 지역 A
+            y = _load_event_series(spec.dependent_region, start, end)  # 종속 지역 B
+            z = _load_global_conflict_series(
+                start, end, exclude=[spec.region_code, spec.dependent_region])
+        except InsufficientCoverageError as exc:
+            spec.error = str(exc)
+            spec.inference_grade = _LADDER_DESCRIPTIVE
+            spec.verification_status = "PENDING"
+            logger.warning("[hypothesis] 사건→사건 검정 미수행 — %s", exc)
+            return spec
+
         if x is None or y is None or len(x) < _MIN_EVENT_EVENT_OBS or len(y) < _MIN_EVENT_EVENT_OBS:
             spec.error = (
                 f"사건→사건 데이터 부족 (A={spec.region_code}:{len(x) if x is not None else 0} "
@@ -679,8 +693,7 @@ async def verify_hypotheses(specs: list[HypothesisSpec]) -> list[HypothesisSpec]
             )
             spec.inference_grade = _LADDER_DESCRIPTIVE
             return spec
-        z = _load_global_conflict_series(start, end, exclude=[spec.region_code, spec.dependent_region])
-        p, lag, n, f, meta = _cond_g(x, y, z)
+        p, lag, n, f, meta = _cond_g(x, y, z)   # z는 위 커버리지 게이트에서 이미 로드됨
         spec.n_obs = n
         spec.differenced = bool(meta.get("differenced"))
         spec.controlled = bool(meta.get("controlled"))
