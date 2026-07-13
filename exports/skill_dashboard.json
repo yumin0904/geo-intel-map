@@ -1,21 +1,21 @@
 {
  "schema_version": "1.0",
- "generated_at": "2026-07-12T12:06:33Z",
- "engine_version": "9.50.0",
+ "generated_at": "2026-07-13T01:40:18Z",
+ "engine_version": "9.52.1",
  "skill": {
-  "n": 36,
-  "n_targets": 6,
-  "hit_rate": 0.472,
+  "n": 82,
+  "n_targets": 7,
+  "hit_rate": 0.598,
   "wilson95": [
-   0.32,
-   0.63
+   0.489,
+   0.697
   ],
   "baseline_coin": 0.5,
-  "baseline_const_majority": 0.639,
+  "baseline_const_majority": 0.537,
   "baseline_const_direction": "down",
   "baseline_persistence": [
-   0.933,
-   30
+   0.96,
+   75
   ],
   "verdict": "skill 검출 불가 — CI가 기준선 이하 포함"
  },
@@ -23,7 +23,7 @@
   {
    "target_kind": "market",
    "status": "PENDING",
-   "n": 451
+   "n": 405
   },
   {
    "target_kind": "qualitative",
@@ -36,24 +36,24 @@
    "n": 81
   },
   {
+   "target_kind": "market",
+   "status": "HIT",
+   "n": 49
+  },
+  {
    "target_kind": "qualitative",
    "status": "UNRESOLVED",
    "n": 37
   },
   {
    "target_kind": "market",
+   "status": "MISS",
+   "n": 33
+  },
+  {
+   "target_kind": "market",
    "status": "UNRESOLVED",
    "n": 22
-  },
-  {
-   "target_kind": "market",
-   "status": "MISS",
-   "n": 19
-  },
-  {
-   "target_kind": "market",
-   "status": "HIT",
-   "n": 17
   },
   {
    "target_kind": "event_series",
@@ -68,94 +68,94 @@
  },
  "recent_scored": [
   {
-   "prediction_id": "0eabb7d0b2164953aa513d38a5e32b40",
+   "prediction_id": "502dd71703704eed83f6206a4c2579db",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "01c747e41e0a4f36a0ad44f0ad8c50b6",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "1e82b2e5105c45409c5bb89e59425193",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "f6f3541b2eb14e67b512427741432dd0",
+   "target": "BZ=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 9.7652,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "e5d61a92b3df4abf80d40be82d79f150",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "b130daa53da347f6b9f9bc0bdc9350eb",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "12522b0414ef4647b7d4fef02e4f2f4f",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "ce1a5e18a479447c86fd9274f967adf6",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "f779270ae64b45bf851abeca1d411e00",
+   "target": "CL=F",
+   "direction": "up",
+   "realized_direction": "up",
+   "realized_pct": 8.388,
+   "status": "HIT",
+   "scored_at": "2026-07-13"
+  },
+  {
+   "prediction_id": "60142fd4bc7143f38e4994cd0443aedc",
    "target": "TSM",
    "direction": "down",
    "realized_direction": "down",
-   "realized_pct": -3.2825,
+   "realized_pct": -3.9133,
    "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "1f0931f5bb9141eab79a99591291d36c",
-   "target": "CL=F",
-   "direction": "up",
-   "realized_direction": "up",
-   "realized_pct": 4.8286,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "4efd17bc8a0f45dbab7db182e5f94102",
-   "target": "CL=F",
-   "direction": "up",
-   "realized_direction": "up",
-   "realized_pct": 4.8432,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "d41b4534d20045408e839ce5e51f6c95",
-   "target": "CL=F",
-   "direction": "up",
-   "realized_direction": "up",
-   "realized_pct": 4.8432,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "9245dc80c9e14a2296ebbac5845df2db",
-   "target": "CL=F",
-   "direction": "up",
-   "realized_direction": "up",
-   "realized_pct": 4.8432,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "b5b39b11c47e484a8e6c5d3884554d73",
-   "target": "CL=F",
-   "direction": "up",
-   "realized_direction": "up",
-   "realized_pct": 4.8432,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "ba505926176049e7abfc5cc728ea12d1",
-   "target": "CL=F",
-   "direction": "up",
-   "realized_direction": "up",
-   "realized_pct": 4.8432,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "8c8f5eef3eb0465f825e919c8c910c76",
-   "target": "CL=F",
-   "direction": "up",
-   "realized_direction": "up",
-   "realized_pct": 4.8286,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "a19939b8622f4d8094309fba7bdb9049",
-   "target": "TSM",
-   "direction": "down",
-   "realized_direction": "down",
-   "realized_pct": -3.2825,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
-  },
-  {
-   "prediction_id": "4437100e0556404b92c28ae7a98cba21",
-   "target": "NG=F",
-   "direction": "down",
-   "realized_direction": "down",
-   "realized_pct": -7.1186,
-   "status": "HIT",
-   "scored_at": "2026-07-10"
+   "scored_at": "2026-07-13"
   }
  ],
  "caveats": [
