@@ -54,6 +54,14 @@ _DB_PATH = Path(__file__).parent.parent.parent / "db" / "intel.db"
 _MIN_UNITS = 5   # 최소 국가(단위) 수 — 횡단·패널 공통
 _MIN_PERIODS = 2 # 패널 FE 최소 연도 수
 
+# 카운트 DV 캐비엇에 붙는 소스 공개 — 소비자(LLM 포함)가 DV의 정체를 오해하지 않도록.
+_GDELT_DV_NOTE = (
+    "DV 출처: GDELT **발생지**(ActionGeo) 국가급 집계. 물리충돌 DV는 행위자 유형 필터"
+    "(국가기구·무장조직 쌍) 적용분 — CAMEO 코더의 스포츠 오탐(F1 그랑프리를 '물리적 충돌'로"
+    " 코딩) 소거용. 시위 DV는 원본(민간 행위자가 주체라 필터 시 신호 소실). "
+    "보도 편향(Hammond & Weidmann 2014) 잔존 — 폐쇄국가는 구조적 하향 편향."
+)
+
 
 # ── 변수 카탈로그 ──────────────────────────────────────────────────────────────
 # (정규식 패턴, SQL 쿼리 템플릿, 컬럼명, 조인키, 데이터 유형)
@@ -177,18 +185,36 @@ _VAR_CATALOG: list[_VarEntry] = [
     # ── 카운트 DV (GDELT 국가-연 집계 — §18-A: 국가급 이상 집계만) ──────────
     # 당해년 제외: 부분 연도 집계가 "급감" 아티팩트를 만든다 (큐 10② 당월제외와 동형).
     # exposure=n_total: 미통제 시 시위 성향이 아니라 GDELT 보도량을 추정하게 됨.
+    #
+    # [엔진수리위 2026-07-13 — 구성 타당도 수리] 소스 테이블 교체:
+    #   gdelt_country_daily(Actor1CountryCode = **행위자 국적**)
+    #   → gdelt_geo_country_daily(ActionGeo_CountryCode = **사건 발생지** → ISO3)
+    #   구 키는 "모나코 국적 행위자가 등장한 세계 어디의 사건"을 모나코의 사건으로
+    #   셌다. 국가급 패널의 DV로서 치명적 오측정 — 회귀의 y 자체가 다른 구성개념이었다.
+    #   country_iso3 IS NOT NULL: 해양·분쟁도서 지오코딩(0.07%)은 국가 패널에 조인 불가.
+    #   fips는 다대일(RI·RB→SRB, GZ·WE→PSE)이라 iso3로 GROUP BY·SUM이 **의무**.
     _VarEntry(
         r"시위.*건수|시위.*빈도|시위.*발생|protest.*count|protest.*event|n_protest",
-        "SELECT country AS iso3, CAST(substr(day,1,4) AS INTEGER) AS year, "
-        "SUM(n_protest) AS val, SUM(n_total) AS exposure FROM gdelt_country_daily "
-        "WHERE substr(day,1,4) < strftime('%Y','now') GROUP BY 1, 2",
+        # 시위는 **원본 카운트**. 행위자 유형 필터(GOV·MIL…)를 걸면 시위 신호가 죽는다
+        # — 시위 행위자는 통상 민간(CVL)이다 (실측 2026-06 IDN: 648 → 필터 후 22).
+        "SELECT country_iso3 AS iso3, CAST(substr(day,1,4) AS INTEGER) AS year, "
+        "SUM(n_protest) AS val, SUM(n_total) AS exposure FROM gdelt_geo_country_daily "
+        "WHERE country_iso3 IS NOT NULL AND substr(day,1,4) < strftime('%Y','now') "
+        "GROUP BY 1, 2",
         "val", "panel", True, "exposure",
     ),
     _VarEntry(
         r"물리.*충돌.*건수|무력.*충돌.*건수|material.*conflict.*count|물리적.*분쟁.*빈도",
-        "SELECT country AS iso3, CAST(substr(day,1,4) AS INTEGER) AS year, "
-        "SUM(n_material_conflict) AS val, SUM(n_total) AS exposure FROM gdelt_country_daily "
-        "WHERE substr(day,1,4) < strftime('%Y','now') GROUP BY 1, 2",
+        # 물리충돌은 **행위자 유형 필터 카운트**(n_material_conflict_pol). 발생지 키만으로는
+        # CAMEO 스포츠 오탐이 남는다 — 모나코 2026-06 물리충돌 279건 전부가 F1 그랑프리
+        # 기사였다(발생지 기준으로도). 필터 후 2건. 원본(n_material_conflict)은 테이블에
+        # 그대로 있으니 필터 과잉 여부는 언제든 재검증 가능.
+        # exposure는 원본 n_total 유지 — 노출(보도 커버리지 총량)의 뜻이 그대로다.
+        "SELECT country_iso3 AS iso3, CAST(substr(day,1,4) AS INTEGER) AS year, "
+        "SUM(n_material_conflict_pol) AS val, SUM(n_total) AS exposure "
+        "FROM gdelt_geo_country_daily "
+        "WHERE country_iso3 IS NOT NULL AND substr(day,1,4) < strftime('%Y','now') "
+        "GROUP BY 1, 2",
         "val", "panel", True, "exposure",
     ),
 ]
@@ -283,14 +309,15 @@ def from_spec(spec) -> MethodResult:
             caveat = (
                 "포아송 FE(국가 더미): 시불변 교란·보도량(log exposure) 통제. "
                 "과분산은 HC1 강건 SE로 보정(진단치 robustness.dispersion). "
-                "시변 교란·역인과 잔존. GDELT 국가급 집계층(§18-A)."
+                "시변 교란·역인과 잔존. GDELT 국가급 집계층(§18-A). "
+                + _GDELT_DV_NOTE
             )
         elif is_count:
             stats = _run_poisson(df, iv_col, dv_col, fixed_effects=False)
             rung  = RUNG_CORRELATIONAL
             caveat = (
                 "횡단 포아송: 카운트 DV의 국가간 비교(OLS 부적합 — King 1989). "
-                "보도량 통제에도 OVB 잔존, 상관 칸."
+                "보도량 통제에도 OVB 잔존, 상관 칸. " + _GDELT_DV_NOTE
             )
         elif is_panel:
             stats = _run_panel_fe(df, iv_col, dv_col)

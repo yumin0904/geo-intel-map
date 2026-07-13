@@ -66,8 +66,21 @@ sources:
     backfillable: true
     notes: "서버 스케줄 15분이나 실제 실행은 launchd 1일2회(collect_standalone) — 그 갭을 흡수하도록 48h. server 15분 병행(main.py gdelt_pipeline)"
 
+  - source_id: gdelt_bq_geo_country_daily
+    name: "GDELT 국가급 일간 카운트 — 발생지 키 (BigQuery 백필, 정본)"
+    kind: manual
+    connector: scripts/load_gdelt_bq.py
+    job: null
+    db_table: gdelt_geo_country_daily
+    timestamp_col: null
+    filter: null
+    max_staleness_hours: null
+    trigger: manual
+    backfillable: true
+    notes: "BigQuery gdelt-bq.gdeltv2.events → **ActionGeo_CountryCode(사건 발생지)** × 일 집계, 2015~. 행 키=(day, fips), country_iso3는 config/fips_iso3.yaml 매핑(다대일: RI·RB→SRB, GZ·WE→PSE → 소비자는 iso3로 GROUP BY·SUM 의무). 원본 카운트(n_*)와 행위자 유형 필터 카운트(n_*_pol, config/gdelt_actor_types.yaml) 병기 — 물리충돌 소비는 _pol, 시위 소비는 원본(민간이 주체라 필터 시 신호 소실). 스캔 39.5GB/회(무료 1TB의 4%), ADC=사용자 계정·프로젝트 geo-intel-gdelt-2026. 미매핑 0.07%(공해·분쟁도서)는 iso3 NULL로 보존. §18-A 국가급 이상 전용, Hammond-Weidmann 보도편향 [한계] 의무. ⚠️ goldstein_avg는 전쟁 미탐지(UKR 2022-02=+0.41 > 평시) — 소비 금지, 회귀 가드 tests/test_gdelt_construct_validity.py. 엔진수리위 2026-07-13"
+
   - source_id: gdelt_bq_country_daily
-    name: "GDELT 국가급 일간 카운트 (BigQuery 백필)"
+    name: "GDELT 국가급 일간 카운트 — 행위자 국적 키 (레거시·비발생지)"
     kind: manual
     connector: scripts/load_gdelt_bq.py
     job: null
@@ -77,7 +90,7 @@ sources:
     max_staleness_hours: null
     trigger: manual
     backfillable: true
-    notes: "BigQuery gdelt-bq.gdeltv2.events → 국가×일 와이드 집계(총계·시위14·물리분쟁q4·언어분쟁q3·mentions·Goldstein), 2015~. 스캔 ~28GB/회(무료 1TB의 3%), ADC=사용자 계정·프로젝트 geo-intel-gdelt-2026. §18-A: 국가급 이상 전용, Hammond-Weidmann 보도편향 [한계] 의무. 판례 20260709-data-audit-committee 웨이브2"
+    notes: "⚠️ 이 테이블의 country는 Actor1CountryCode = **행위자 국적**이지 사건 발생지가 아니다. '모나코의 물리적 충돌'이 세계 어디서든 모나코 행위자가 등장하면 세어진다(엔진수리위 2026-07-13 실측 — 실체는 F1 그랑프리 기사). **발생지 해석에 쓰지 마라** — 그 용도의 정본은 gdelt_bq_geo_country_daily. 폐기하지 않은 이유: '누가 등장했나'는 '어디서 일어났나'와 별개 구성개념이라 나름의 용도가 있다. 갱신: load_gdelt_bq.py --target actor. 소비자 없음(2026-07-13 실측)."
 
   - source_id: gdelt_gkg
     name: "GDELT GKG (테마 보강)"

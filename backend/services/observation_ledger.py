@@ -32,9 +32,11 @@ hormuz·taiwan '+6100%' 위조 억제 실측 계보):
 포아송 꼬리 중 **보수적인 쪽(max p)** 을 취한다 — 허위 신호 양산(반박석 판정 2a)
 방어. 남는 것은 FDR이 가족 단위로 통제.
 
-v1 스캔 가족: event_archive 지역별 월간 카운트 · gdelt_country_daily 국가별
-월간 시위/물리충돌 카운트. 확장(연속지표 z·빈티지 도착 관찰)은 가족 상수에
-등록하는 방식으로만 — 등록 = 검정 가족 사전 선언의 갱신이므로 커밋 메시지에 명시.
+v2 스캔 가족(2026-07-13 GDELT 구성 타당도 수리): event_archive 지역별 월간 카운트 ·
+gdelt_geo_country_daily **발생지** 기준 국가별 월간 시위/물리충돌 카운트.
+  구 가족(gdelt_country_* = 행위자 국적 키)은 은퇴 — 상세 근거는 _FAMILIES 주석.
+확장(연속지표 z·빈티지 도착 관찰)은 가족 상수에 등록하는 방식으로만 —
+등록 = 검정 가족 사전 선언의 갱신이므로 커밋 메시지에 명시.
 
 실행: cd backend && .venv/bin/python services/observation_ledger.py [--dry-run]
 """
@@ -68,6 +70,28 @@ class _Family(NamedTuple):
 
 
 # 스캔 가족 — 사전 선언(게이트 ③). 여기 없는 계열은 스캔하지 않는다.
+#
+# ── GDELT 가족 교체 (엔진수리위 2026-07-13, 구성 타당도 수리) ──────────────────
+# 구 가족(gdelt_country_*)은 `gdelt_country_daily`(= Actor1CountryCode, **행위자 국적**)를
+# 셌다. 그건 "어디서 일어났나"가 아니라 "누가 등장했나"다. 그 결과 원장에
+# "모나코의 물리적 충돌 +76%(p=1e-10)"가 관찰로 등재됐다 — 실체는 **포뮬러 1
+# 모나코 그랑프리 기사**였다(CAMEO 코더가 "MONACO vs POLE"을 물리적 충돌로 코딩).
+#
+# 신 가족은 두 자물쇠를 모두 건다:
+#   ① 발생지 키 — gdelt_geo_country_daily(ActionGeo_CountryCode → ISO3).
+#   ② 행위자 유형 필터 — 물리충돌은 n_material_conflict_pol(국가기구·무장조직 쌍만).
+#      실측 2026-06: 모나코 279→2, 룩셈부르크 208→0, 바티칸 76→1,
+#      우크라이나 30,999→1,065, 이스라엘 45,002→1,553 (소국 잡음 소거·전쟁국 신호 유지).
+#
+# ⚠️ 시위는 **원본(n_protest)** 을 쓴다. 필터를 시위에 걸면 신호가 죽는다 —
+#    시위 행위자는 통상 민간(CVL)이라 actor1 국가기구 요구에 걸린다
+#    (실측: 인도네시아 2026-06 시위 648 → 필터 후 22). 시위의 위치 오염은
+#    발생지 키 전환만으로 이미 해소된다. 구성개념별로 다른 자물쇠가 필요하다.
+#
+# 가족명을 바꾼 이유: 가족명은 identity_key의 일부이자 **계측기의 이름**이다.
+# 계측기가 바뀌었는데 이름을 물려주면 옛 관측(모나코)이 새 관측인 척 살아남는다.
+# 폐기된 가족의 기존 행은 --retire-family로 observation_ledger_retired에 이관한다
+# (삭제 아님 — 결함의 감사 흔적은 보존).
 _FAMILIES: list[_Family] = [
     _Family(
         "event_archive_region", "monthly_event_count",
@@ -80,24 +104,29 @@ _FAMILIES: list[_Family] = [
         """,
     ),
     _Family(
-        "gdelt_country_protest", "monthly_protest_count",
+        "gdelt_geo_protest", "monthly_protest_count",
         """
-        SELECT country AS series_key, substr(day,1,7) AS ym,
+        SELECT country_iso3 AS series_key, substr(day,1,7) AS ym,
                SUM(n_protest) AS cnt
-        FROM gdelt_country_daily
-        GROUP BY country, ym
+        FROM gdelt_geo_country_daily
+        WHERE country_iso3 IS NOT NULL
+        GROUP BY country_iso3, ym
         """,
     ),
     _Family(
-        "gdelt_country_material_conflict", "monthly_material_conflict_count",
+        "gdelt_geo_material_conflict_pol", "monthly_material_conflict_count",
         """
-        SELECT country AS series_key, substr(day,1,7) AS ym,
-               SUM(n_material_conflict) AS cnt
-        FROM gdelt_country_daily
-        GROUP BY country, ym
+        SELECT country_iso3 AS series_key, substr(day,1,7) AS ym,
+               SUM(n_material_conflict_pol) AS cnt
+        FROM gdelt_geo_country_daily
+        WHERE country_iso3 IS NOT NULL
+        GROUP BY country_iso3, ym
         """,
     ),
 ]
+
+# 폐기된 가족 — 계측기 결함으로 은퇴. 재스캔 대상이 아니며, 기존 행은 은퇴 테이블로.
+_RETIRED_FAMILIES = ("gdelt_country_protest", "gdelt_country_material_conflict")
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS observation_ledger (
@@ -308,13 +337,64 @@ def run_scan(db_path: Path | str = _DB, *, now_ym: str | None = None,
         con.close()
 
 
+def retire_family(family: str, reason: str, db_path: Path | str = _DB) -> dict:
+    """폐기된 계측기의 관측 행을 observation_ledger_retired로 이관한다 (삭제 아님).
+
+    왜 이관인가: 원장의 한 행은 "세계에 대한 주장"이고, 그 주장은 특정 계측기가
+    만들었다. 계측기가 무효로 판명되면 그 주장은 **살아 있는 관찰로 남아 있으면
+    안 된다**(모나코 F1 기사를 '물리적 충돌 +76%'로 계속 주장하게 된다).
+    그렇다고 지우면 결함의 감사 흔적이 사라진다 — 그래서 은퇴 테이블로 옮긴다.
+
+    run_scan은 이 테이블을 만들지도 읽지도 않는다 (게이트 ⑥ report-only 불변).
+    """
+    con = sqlite3.connect(str(db_path))
+    try:
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS observation_ledger_retired (
+                identity_key TEXT, family TEXT, series_key TEXT, bucket TEXT,
+                metric TEXT, value REAL, baseline_mean REAL, delta_pct REAL,
+                p_value REAL, retired_at TEXT NOT NULL, retired_reason TEXT NOT NULL
+            )
+        """)
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        rows = con.execute(
+            "SELECT identity_key, family, series_key, bucket, metric, value, "
+            "baseline_mean, delta_pct, p_value FROM observation_ledger WHERE family = ?",
+            (family,),
+        ).fetchall()
+        con.executemany(
+            "INSERT INTO observation_ledger_retired VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            [(*r, ts, reason) for r in rows],
+        )
+        con.execute("DELETE FROM observation_ledger WHERE family = ?", (family,))
+        con.commit()
+        return {"family": family, "retired": len(rows),
+                "series": [f"{r[2]} {r[3]} ({r[7]:+.1f}%)" for r in rows]}
+    finally:
+        con.close()
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser(description="P1 report-only 변화 관찰 원장")
     ap.add_argument("--db", default=str(_DB))
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--force", action="store_true", help="일 1회 스로틀 무시")
+    ap.add_argument("--retire-legacy-gdelt", action="store_true",
+                    help="행위자 국적 키 GDELT 가족(_RETIRED_FAMILIES)의 행을 은퇴 테이블로 이관")
     args = ap.parse_args()
+
+    if args.retire_legacy_gdelt:
+        for fam in _RETIRED_FAMILIES:
+            r = retire_family(
+                fam,
+                "계측기 결함: Actor1CountryCode(행위자 국적)를 발생지로 오독 + CAMEO "
+                "스포츠 오탐 미필터. 엔진수리위 2026-07-13. 후속 가족: gdelt_geo_*",
+                args.db,
+            )
+            print(json.dumps(r, ensure_ascii=False))
+        raise SystemExit(0)
+
     s = run_scan(args.db, dry_run=args.dry_run, force=args.force)
     print(json.dumps({k: v for k, v in s.items() if k != "observations"},
                      ensure_ascii=False, indent=1))

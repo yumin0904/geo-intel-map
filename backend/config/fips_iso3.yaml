@@ -1,0 +1,306 @@
+# backend/config/fips_iso3.yaml
+#
+# FIPS 10-4 2자리 국가코드 → ISO 3166-1 alpha-3 크로스워크.
+#
+# 왜 필요한가:
+#   GDELT `ActionGeo_CountryCode`(사건 발생지)는 **FIPS 10-4** 2자리를 쓰고,
+#   하류 소비자(observation_ledger.series_key · panel_regression의 World Bank·V-Dem·
+#   SIPRI 조인)는 **ISO3**를 쓴다. 이 파일이 그 사이의 유일한 번역표다.
+#   (CAMEO `Actor1CountryCode`는 3자리로 대체로 ISO3와 일치 — 그쪽은 매핑 불필요.)
+#
+# 헌법 §7 "매직 넘버 금지 → config/로 추출": 로더(scripts/load_gdelt_bq.py)는
+#   이 파일을 읽을 뿐 코드에 매핑을 하드코딩하지 않는다.
+#
+# 출처(provenance):
+#   GeoNames countryInfo.txt (public domain, CC BY 4.0)
+#   https://download.geonames.org/export/dump/countryInfo.txt — 열 1=ISO2, 2=ISO3, 4=FIPS
+#   내려받은 날: 2026-07-13. 자동 추출 249행 + 수기 보충 1행(아래 supplement).
+#
+# 미매핑 처리 규약:
+#   여기에 없는 FIPS 코드(해양·무국적 지오코딩 등)는 **버리지 않는다** —
+#   gdelt_geo_country_daily에 원본 fips를 그대로 두고 country_iso3만 NULL로 적재한다.
+#   (삼킴 금지: 미매핑량은 로더가 로그로 보고한다.)
+#
+# YAML 1.1 불리언 함정: FIPS "NO"(노르웨이)·"ON"류는 따옴표 없으면 False로 파싱된다
+#   → 모든 키를 따옴표로 감싼다.
+#
+# 검증: 재적재 후 `SELECT SUM(n_total) FROM gdelt_geo_country_daily WHERE country_iso3 IS NULL`
+#   이 전체 대비 몇 %인지 확인 — 급증하면 GDELT가 새 코드를 쓰기 시작했다는 뜻.
+
+fips_to_iso3:
+  "AA": ABW    # Aruba
+  "AC": ATG    # Antigua and Barbuda
+  "AE": ARE    # United Arab Emirates
+  "AF": AFG    # Afghanistan
+  "AG": DZA    # Algeria
+  "AJ": AZE    # Azerbaijan
+  "AL": ALB    # Albania
+  "AM": ARM    # Armenia
+  "AN": AND    # Andorra
+  "AO": AGO    # Angola
+  "AQ": ASM    # American Samoa
+  "AR": ARG    # Argentina
+  "AS": AUS    # Australia
+  "AU": AUT    # Austria
+  "AV": AIA    # Anguilla
+  "AY": ATA    # Antarctica
+  "BA": BHR    # Bahrain
+  "BB": BRB    # Barbados
+  "BC": BWA    # Botswana
+  "BD": BMU    # Bermuda
+  "BE": BEL    # Belgium
+  "BF": BHS    # Bahamas
+  "BG": BGD    # Bangladesh
+  "BH": BLZ    # Belize
+  "BK": BIH    # Bosnia and Herzegovina
+  "BL": BOL    # Bolivia
+  "BM": MMR    # Myanmar
+  "BN": BEN    # Benin
+  "BO": BLR    # Belarus
+  "BP": SLB    # Solomon Islands
+  "BR": BRA    # Brazil
+  "BT": BTN    # Bhutan
+  "BU": BGR    # Bulgaria
+  "BV": BVT    # Bouvet Island
+  "BX": BRN    # Brunei
+  "BY": BDI    # Burundi
+  "CA": CAN    # Canada
+  "CB": KHM    # Cambodia
+  "CD": TCD    # Chad
+  "CE": LKA    # Sri Lanka
+  "CF": COG    # Republic of the Congo
+  "CG": COD    # Democratic Republic of the Congo
+  "CH": CHN    # China
+  "CI": CHL    # Chile
+  "CJ": CYM    # Cayman Islands
+  "CK": CCK    # Cocos Islands
+  "CM": CMR    # Cameroon
+  "CN": COM    # Comoros
+  "CO": COL    # Colombia
+  "CQ": MNP    # Northern Mariana Islands
+  "CS": CRI    # Costa Rica
+  "CT": CAF    # Central African Republic
+  "CU": CUB    # Cuba
+  "CV": CPV    # Cabo Verde
+  "CW": COK    # Cook Islands
+  "CY": CYP    # Cyprus
+  "DA": DNK    # Denmark
+  "DJ": DJI    # Djibouti
+  "DO": DMA    # Dominica
+  "DR": DOM    # Dominican Republic
+  "EC": ECU    # Ecuador
+  "EG": EGY    # Egypt
+  "EI": IRL    # Ireland
+  "EK": GNQ    # Equatorial Guinea
+  "EN": EST    # Estonia
+  "ER": ERI    # Eritrea
+  "ES": SLV    # El Salvador
+  "ET": ETH    # Ethiopia
+  "EZ": CZE    # Czechia
+  "FG": GUF    # French Guiana
+  "FI": FIN    # Finland
+  "FJ": FJI    # Fiji
+  "FK": FLK    # Falkland Islands
+  "FM": FSM    # Micronesia
+  "FO": FRO    # Faroe Islands
+  "FP": PYF    # French Polynesia
+  "FR": FRA    # France
+  "FS": ATF    # French Southern Territories
+  "GA": GMB    # Gambia
+  "GB": GAB    # Gabon
+  "GG": GEO    # Georgia
+  "GH": GHA    # Ghana
+  "GI": GIB    # Gibraltar
+  "GJ": GRD    # Grenada
+  "GK": GGY    # Guernsey
+  "GL": GRL    # Greenland
+  "GM": DEU    # Germany
+  "GP": GLP    # Guadeloupe
+  "GQ": GUM    # Guam
+  "GR": GRC    # Greece
+  "GT": GTM    # Guatemala
+  "GV": GIN    # Guinea
+  "GY": GUY    # Guyana
+  "HA": HTI    # Haiti
+  "HK": HKG    # Hong Kong
+  "HM": HMD    # Heard Island and McDonald Islands
+  "HO": HND    # Honduras
+  "HR": HRV    # Croatia
+  "HU": HUN    # Hungary
+  "IC": ISL    # Iceland
+  "ID": IDN    # Indonesia
+  "IM": IMN    # Isle of Man
+  "IN": IND    # India
+  "IO": IOT    # British Indian Ocean Territory
+  "IR": IRN    # Iran
+  "IS": ISR    # Israel
+  "IT": ITA    # Italy
+  "IV": CIV    # Ivory Coast
+  "IZ": IRQ    # Iraq
+  "JA": JPN    # Japan
+  "JE": JEY    # Jersey
+  "JM": JAM    # Jamaica
+  "JO": JOR    # Jordan
+  "KE": KEN    # Kenya
+  "KG": KGZ    # Kyrgyzstan
+  "KN": PRK    # North Korea
+  "KR": KIR    # Kiribati
+  "KS": KOR    # South Korea
+  "KT": CXR    # Christmas Island
+  "KU": KWT    # Kuwait
+  "KV": XKX    # Kosovo
+  "KZ": KAZ    # Kazakhstan
+  "LA": LAO    # Laos
+  "LE": LBN    # Lebanon
+  "LG": LVA    # Latvia
+  "LH": LTU    # Lithuania
+  "LI": LBR    # Liberia
+  "LO": SVK    # Slovakia
+  "LS": LIE    # Liechtenstein
+  "LT": LSO    # Lesotho
+  "LU": LUX    # Luxembourg
+  "LY": LBY    # Libya
+  "MA": MDG    # Madagascar
+  "MB": MTQ    # Martinique
+  "MC": MAC    # Macao
+  "MD": MDA    # Moldova
+  "MF": MYT    # Mayotte
+  "MG": MNG    # Mongolia
+  "MH": MSR    # Montserrat
+  "MI": MWI    # Malawi
+  "MJ": MNE    # Montenegro
+  "MK": MKD    # North Macedonia
+  "ML": MLI    # Mali
+  "MN": MCO    # Monaco
+  "MO": MAR    # Morocco
+  "MP": MUS    # Mauritius
+  "MR": MRT    # Mauritania
+  "MT": MLT    # Malta
+  "MU": OMN    # Oman
+  "MV": MDV    # Maldives
+  "MX": MEX    # Mexico
+  "MY": MYS    # Malaysia
+  "MZ": MOZ    # Mozambique
+  "NC": NCL    # New Caledonia
+  "NE": NIU    # Niue
+  "NF": NFK    # Norfolk Island
+  "NG": NER    # Niger
+  "NH": VUT    # Vanuatu
+  "NI": NGA    # Nigeria
+  "NL": NLD    # The Netherlands
+  "NN": SXM    # Sint Maarten
+  "NO": NOR    # Norway
+  "NP": NPL    # Nepal
+  "NR": NRU    # Nauru
+  "NS": SUR    # Suriname
+  "NT": ANT    # Netherlands Antilles
+  "NU": NIC    # Nicaragua
+  "NZ": NZL    # New Zealand
+  "OD": SSD    # South Sudan
+  "PA": PRY    # Paraguay
+  "PC": PCN    # Pitcairn
+  "PE": PER    # Peru
+  "PK": PAK    # Pakistan
+  "PL": POL    # Poland
+  "PM": PAN    # Panama
+  "PO": PRT    # Portugal
+  "PP": PNG    # Papua New Guinea
+  "PS": PLW    # Palau
+  "PU": GNB    # Guinea-Bissau
+  "QA": QAT    # Qatar
+  "RE": REU    # Reunion
+  "RI": SRB    # Serbia
+  "RM": MHL    # Marshall Islands
+  "RN": MAF    # Saint Martin
+  "RO": ROU    # Romania
+  "RP": PHL    # Philippines
+  "RQ": PRI    # Puerto Rico
+  "RS": RUS    # Russia
+  "RW": RWA    # Rwanda
+  "SA": SAU    # Saudi Arabia
+  "SB": SPM    # Saint Pierre and Miquelon
+  "SC": KNA    # Saint Kitts and Nevis
+  "SE": SYC    # Seychelles
+  "SF": ZAF    # South Africa
+  "SG": SEN    # Senegal
+  "SH": SHN    # Saint Helena
+  "SI": SVN    # Slovenia
+  "SL": SLE    # Sierra Leone
+  "SM": SMR    # San Marino
+  "SN": SGP    # Singapore
+  "SO": SOM    # Somalia
+  "SP": ESP    # Spain
+  "ST": LCA    # Saint Lucia
+  "SU": SDN    # Sudan
+  "SV": SJM    # Svalbard and Jan Mayen
+  "SW": SWE    # Sweden
+  "SX": SGS    # South Georgia and the South Sandwich Islands
+  "SY": SYR    # Syria
+  "SZ": CHE    # Switzerland
+  "TB": BLM    # Saint Barthelemy
+  "TD": TTO    # Trinidad and Tobago
+  "TH": THA    # Thailand
+  "TI": TJK    # Tajikistan
+  "TK": TCA    # Turks and Caicos Islands
+  "TL": TKL    # Tokelau
+  "TN": TON    # Tonga
+  "TO": TGO    # Togo
+  "TP": STP    # Sao Tome and Principe
+  "TS": TUN    # Tunisia
+  "TT": TLS    # Timor Leste
+  "TU": TUR    # Turkey
+  "TV": TUV    # Tuvalu
+  "TW": TWN    # Taiwan
+  "TX": TKM    # Turkmenistan
+  "TZ": TZA    # Tanzania
+  "UC": CUW    # Curacao
+  "UG": UGA    # Uganda
+  "UK": GBR    # United Kingdom
+  "UP": UKR    # Ukraine
+  "US": USA    # United States
+  "UV": BFA    # Burkina Faso
+  "UY": URY    # Uruguay
+  "UZ": UZB    # Uzbekistan
+  "VC": VCT    # Saint Vincent and the Grenadines
+  "VE": VEN    # Venezuela
+  "VI": VGB    # British Virgin Islands
+  "VM": VNM    # Vietnam
+  "VQ": VIR    # U.S. Virgin Islands
+  "VT": VAT    # Vatican
+  "WA": NAM    # Namibia
+  "WE": PSE    # Palestinian Territory
+  "WF": WLF    # Wallis and Futuna
+  "WI": ESH    # Western Sahara
+  "WS": WSM    # Samoa
+  "WZ": SWZ    # Eswatini
+  "YI": SCG    # Serbia and Montenegro
+  "YM": YEM    # Yemen
+  "ZA": ZMB    # Zambia
+  "ZI": ZWE    # Zimbabwe
+
+  # ── 수기 보충 (GeoNames 미수록 FIPS 10-4 코드) ─────────────────────────────
+  # GeoNames는 팔레스타인을 PS/WE 1행으로만 싣는다. FIPS 10-4는 가자지구(GZ)와
+  # 서안(WE)을 별도 코드로 나누고 GDELT는 둘 다 발화한다. ISO 3166은 둘을 PSE
+  # 하나로 접으므로 GZ→PSE를 보충한다 (다대일 매핑 — 그래서 이 테이블의 행 키는
+  # iso3가 아니라 fips다. 소비자는 iso3로 GROUP BY·SUM 해야 한다).
+  "GZ": PSE    # Gaza Strip (FIPS 10-4)
+
+  # 세르비아 이중코드 — 1차 적재 미매핑 실측(1,624,452건)에서 발견.
+  # GDELT는 세르비아를 두 코드로 발화한다: GeoNames 계열 "RI"(도시급 지오코딩)와
+  # CIA GEC 계열 "RB"(국가급 지오코딩). 좌표로 실증 — RB 전건이 정확히
+  # (44.82, 20.47) = 베오그라드 한 점에 고정(분산 0 = 국가 중심점), RI는 도시별 분산.
+  # 둘 다 SRB. 매핑을 빠뜨렸으면 세르비아 관측량의 절반(1.6M건)이 통째로 NULL이 됐다.
+  # → 이 역시 다대일(RI·RB → SRB). 소비자의 iso3 GROUP BY·SUM 의무가 여기서도 발생.
+  "RB": SRB    # Serbia (CIA GEC 국가급 코드 — 좌표 실측 2026-07-13)
+
+# ── 의도적 미매핑 (국가가 아니라 NULL이 정직한 코드들 — 원본 fips는 보존) ──────
+#   OS  Oceans        564k건 · bbox 전지구(lat −75~85, lon −175~175) — 공해
+#   OC  Oceans(인도양) 56k건 · bbox 전지구 — 공해
+#   PG  Spratly Is.     8k건 · centroid (10.3, 114.8) 남중국해 — 주권 분쟁, ISO3 없음
+#   PF  Paracel Is.     4k건 · 주권 분쟁, ISO3 없음
+#   WQ·HQ·JQ·LQ·JN     각 <1.3k건 · 미국 군소 도서·얀마옌 — ISO3 없음
+# 좌표 실측 2026-07-13. 국가 패널에 조인될 수 없는 지물이라 NULL이 정직하다.
+# ⚠️ PG(스프래틀리)는 남중국해 분석에 실질 의미가 있으나 국가 귀속이 분쟁 중이므로
+#    자의적 귀속을 거부한다 — 필요 시 fips='PG'로 직접 조회할 것(원본 보존됨).
+# ⚠️ YI(SCG, 세르비아-몬테네그로)는 폐지된 ISO3라 World Bank·V-Dem 패널 조인에서
+#    자연 탈락한다 — 삼킴이 아니라 소멸한 국가의 정직한 귀결. SRB로 접지 않는다.
