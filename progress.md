@@ -16,6 +16,15 @@
 > unidentified 89→**35**(목표 33 대비 2건 초과 — recovered 13건 중 2건의 신DV가 실제로는
 > `"…"` 파편으로, triage 분류기가 이를 unidentified로 재판정, [판단필요] 회부).
 
+> **v9.62.0 (2026-07-13)**: **FIRMS 물리 센서 수리** — `sensor_snapshots` 0행의 원인은 위성 소스
+> 고정(`VIIRS_SNPP_NRT`)이었고, 그 데이터셋이 2026-07-10 정체했다. NASA는 죽은 데이터셋에도
+> HTTP 200 + 헤더 줄만 돌려주므로 잡이 "화재 0건"으로 읽고 정상 종료 → 검증 퍼널 Stage 3
+> (물리 센서 결합, +0.1)가 빈 테이블을 대조 중이었다. **stale을 sparse로 오진**한 사고
+> (correlation.py `fill_value=0`과 같은 계열). 처방: 소스명 교체가 아니라 **NASA 가용성 표를
+> 매 런 읽어 살아 있는 소스를 선택**(NOAA21→NOAA20→SNPP→MODIS), 전 소스 정체 시 0 반환이
+> 아니라 **fail-loud**. 실측 0행 → **272행**(ukraine 155·middle_east 109). 회귀 그물
+> `tests/test_firms_source_selection.py` 7종, pytest 57/57. 계통도: geo-os `ARCHITECTURE.html` B05.
+
 ---
 
 ## 📐 Phase 9-Q (가칭) — 질적 방법 갈래 + 인식론 모드 분리 (설계, 2026-06-18)

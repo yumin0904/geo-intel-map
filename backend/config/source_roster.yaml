@@ -130,7 +130,7 @@ sources:
     max_staleness_hours: 48
     trigger: launchd
     backfillable: true
-    notes: "위성 관측시각 자체가 준실시간(TTL 24h) — timestamp(관측시각) 그대로 사용, 48h 여유. server 6h 병행(main.py firms_sensor)"
+    notes: "위성 관측시각 자체가 준실시간(TTL 24h) — timestamp(관측시각) 그대로 사용, 48h 여유. server 6h 병행(main.py firms_sensor). ⚠️ **위성 소스는 고정이 아니다**: 잡이 매 런마다 NASA 가용성 표(api/data_availability)를 읽어 아직 갱신되는 소스를 고른다(선호순 NOAA21→NOAA20→SNPP→MODIS). 배경 — 구판은 VIIRS_SNPP_NRT 고정이었는데 그 데이터셋이 2026-07-10 정체했고, NASA가 죽은 데이터셋에도 HTTP 200+헤더줄만 돌려주는 탓에 잡이 '화재 0건'으로 읽고 정상 종료 → sensor_snapshots 0행이 지속(검증 퍼널 Stage 3가 빈 테이블을 대조). stale을 sparse로 오진한 사고. 전 소스가 뒤처지면 이제 0 반환이 아니라 **던진다**(fail-loud). 회귀 그물 tests/test_firms_source_selection.py. 수리 2026-07-13"
 
   # ── 언론·정책 보도자료 (fetched_at = 수집 시각 기준, pub_date 아님) ──────
   - source_id: nk_press
