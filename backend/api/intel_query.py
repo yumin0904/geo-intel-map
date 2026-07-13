@@ -786,6 +786,20 @@ async def _stream_gemini(
                 logger.warning("[dv_gate] 판정 강등 %d건 %s", len(_dv_actions),
                                [(a["code"], a["detail"]) for a in _dv_actions])
 
+        # [변수 타당도 감사 2026-07-13] 경고 준수 게이트 — dv_gate와 같은 위상.
+        # 컨텍스트가 "이 건수는 군사 충돌 지표가 아니다"라고 경고했는데 출력이 그
+        # 숫자를 자격 표시 없이 군사·도발 프레임으로 인용하면 결정론 강등.
+        # **말했다와 지켜졌다는 다르다** — 그날 아침 회수한 1호와 같은 병이다
+        # (페이지엔 "예시 데이터" 배지가 있었는데 기계 표면엔 없었다).
+        if full_text:
+            from services.caveat_gate import apply_gate as _caveat_apply
+            _cx = _re.search(r"<context>(.*?)</context>", prompt, _re.S)
+            full_text, _cv_actions = _caveat_apply(
+                full_text, _cx.group(1) if _cx else None)
+            if _cv_actions:
+                logger.warning("[caveat_gate] 경고 무시 %d건 %s", len(_cv_actions),
+                               [(a["region"], a["number"]) for a in _cv_actions])
+
         # [접지 감사 2026-07-13 — 사용자 승인] 신뢰도 원천 교체: §19-D 산문
         # 형태 채점(score_output)을 접지·소스티어 결정론(score_confidence)으로.
         # 구 점수는 legacy_score로 병기(눈금 단절 관찰용 — 종단 비교 금지).

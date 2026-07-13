@@ -273,3 +273,46 @@ def test_retired_variables_stay_out_of_context():
     ctx = asyncio.run(build_intel_context(parse_query("북한 미사일 도발과 한국 방산주")))
     for key in retired:
         assert not ctx["source_counts"].get(key), f"퇴역 변수 {key}가 부활했다"
+
+
+# ── 8. 경고 준수 게이트 ──────────────────────────────────────────────────────
+
+def test_caveat_gate_catches_ignored_warning():
+    """컨텍스트가 경고했는데 출력이 무시하면 **강등**돼야 한다.
+
+    무너지면: "말했다"와 "지켜졌다"가 다르다는 것을 놓친다. 컨텍스트에
+    "이 건수는 군사 충돌 지표가 아니다"라고 심어놓고 LLM이 그대로 무시하면
+    아무것도 막지 못한다 — 그날 아침 회수한 1호와 같은 병(페이지엔 배지가
+    있었는데 기계 표면엔 없었다).
+
+    ⚠️ 초판 게이트가 **자기 표적을 놓쳤다**(검출 0건). 버그 2개:
+      ① 정규식이 "**구성 타당도 경고(강)**"의 (강)을 예상 못 함
+      ② \\b 단어경계 — 파이썬에서 한글은 단어 문자라 "8,265건"의 5와 건 사이에
+         경계가 없다. 숫자 경계로 교체.
+    음성 테스트가 둘 다 잡았다 (폐기 원장 패턴 E).
+    """
+    from services.caveat_gate import apply_gate
+    ctx = _ctx("북한 미사일 도발과 한국 방산주")
+    bad = "[관찰] 한반도의 긴장은 8,265건에 달한다. 북한의 도발이 증가한다."
+    out, acts = apply_gate(bad, ctx)
+    assert acts, "경고를 무시한 인용을 못 잡았다 — 가드가 자기 표적을 놓쳤다"
+    assert "경고게이트" in out, "강등 스탬프가 안 박혔다"
+
+
+def test_caveat_gate_allows_qualified_citation():
+    """자격 표시가 있으면 정상 인용이다 — 오탐하면 게이트가 무시된다."""
+    from services.caveat_gate import apply_gate
+    ctx = _ctx("북한 미사일 도발과 한국 방산주")
+    for ok in ("[관찰] 한반도 이벤트 8,265건 중 98.8%가 국내 시위다.",
+               "[관찰] 한반도 이벤트는 총 8,265건 수집됐다."):
+        _, acts = apply_gate(ok, ctx)
+        assert not acts, f"정상 인용을 오탐했다: {ok}"
+
+
+def test_caveat_gate_silent_when_no_warning():
+    """경고가 없던 권역(진짜 전쟁)에는 게이트가 발화하면 안 된다."""
+    from services.caveat_gate import apply_gate
+    ctx = _ctx("우크라이나 전황과 에너지 인프라")
+    txt = "[관찰] 우크라이나 분쟁 이벤트 108,417건이 전쟁 강도를 보여준다."
+    _, acts = apply_gate(txt, ctx)
+    assert not acts, "경고 없는 권역에 게이트가 오발화했다"
