@@ -202,6 +202,12 @@ class ArchiveManager:
             SELECT * FROM events
              WHERE source_type = 'conflict'
                AND json_extract(payload, '$.data_source') = 'GDELT'
+               -- ⚠️ [변수 타당도 감사 2026-07-13] importance_score는 events 296,885건
+               -- 전부 0.0이다 — importance_scorer가 쓰기 경로에 배선된 적이 없어
+               -- 이 OR 절의 뒷항은 **한 번도 참이 된 적이 없다**. 게이트는 실질적으로
+               -- confidence_score 단독으로 작동한다(ACLED=1.0, GDELT 펀넬=0.8).
+               -- 배선할지 폐기할지는 [판단필요] — 부활시키려면 importance_scorer의
+               -- recency 정규화 결함(배치 상대 min/max라 런 간 비교 불가)부터 고쳐야 한다.
                AND (confidence_score >= ? OR importance_score >= ?)
                AND created_at < ?
                AND id NOT IN (SELECT id FROM event_archive)

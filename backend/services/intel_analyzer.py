@@ -302,10 +302,13 @@ def _get_event_stats(regions: list[str]) -> dict:
                 """,
                 tuple(regions),
             ).fetchall()
+            # [변수 타당도 감사 2026-07-13] AVG/MAX(severity) 조달 중단.
+            # severity는 위해 척도가 아니라 event_type 조회표라(connectors/acled.py
+            # 정의부 참조) 권역 평균은 "사건 유형 구성비"를 숫자로 재진술한 것이다.
+            # total만 남긴다 — 구성과 사망자는 위 rows 쿼리가 조달한다.
             sev_rows = con.execute(
                 f"""
-                SELECT region_code, ROUND(AVG(severity), 1) as avg_sev,
-                       MAX(severity) as max_sev, COUNT(*) as total
+                SELECT region_code, COUNT(*) as total
                 FROM event_archive
                 WHERE region_code IN ({placeholders})
                 GROUP BY region_code
@@ -337,11 +340,7 @@ def _get_event_stats(regions: list[str]) -> dict:
             rc = r["region_code"]
             if rc not in stats:
                 stats[rc] = {"event_types": {}}
-            stats[rc].update({
-                "avg_severity": r["avg_sev"],
-                "max_severity": r["max_sev"],
-                "total_events":  r["total"],
-            })
+            stats[rc]["total_events"] = r["total"]
         # 월별 추이: 지역별 최근 6개 버킷(ym 내림차순 조회분을 오름차순 보관).
         # 변화율은 '완결월' 두 개 사이만 — 당월은 진행 중이라 비교 대상에서 제외.
         this_ym = datetime.now(timezone.utc).strftime("%Y-%m")
@@ -408,14 +407,28 @@ def _get_cascade_context(regions: list[str]) -> dict:
             params     = [f"%{kw}%" for kw in ko_keywords] + [8]
             rows = con.execute(
                 f"""
-                SELECT rule_name, correlation_score, depth
+                SELECT rule_name,
+                       ROUND(AVG(correlation_score), 2) AS correlation_score,
+                       MIN(depth) AS depth,
+                       COUNT(*)   AS fires
                 FROM cascade_links
                 WHERE {conditions}
-                ORDER BY correlation_score DESC LIMIT ?
+                GROUP BY rule_name
+                ORDER BY fires DESC LIMIT ?
                 """,
                 params,
             ).fetchall()
+            # [변수 타당도 감사 2026-07-13] 분모·신선도 자기 노출.
+            # cascade_links는 적중만 적재된다 — _evaluate_trigger가 시장이 예측대로
+            # 안 움직이면 None을 반환해 INSERT 자체가 없다. 그래서 전 건이 '적중'이고
+            # 79%가 정확히 1.0이다. 게다가 이 쿼리는 ORDER BY score DESC라 그중에서도
+            # 최상위만 보여준다(이중 생존편향). 또 링크는 요청 시점 pull로만 생성돼
+            # 오래 정체할 수 있다(실측 26일 유휴). 셋 다 컨텍스트가 자백하게 한다.
+            total, mx = con.execute(
+                "SELECT COUNT(*), MAX(created_at) FROM cascade_links").fetchone()
         result["links"] = [dict(r) for r in rows]
+        result["ledger_total"] = total or 0
+        result["ledger_latest"] = str(mx or "")[:10]
     except Exception as e:
         logger.warning("[intel] cascade_links 실패: %s", e)
 
@@ -1903,15 +1916,34 @@ def _build_context(
     cascade_links = cascade_ctx.get("links", [])
     if cascade_links:
         lines.append("## Cascade 발화 실적 (룰 기반 — 통계 상관계수 아님)")
+        # [변수 타당도 감사 2026-07-13] 룰명 기준 접기. 구 쿼리는 링크 행을 그대로
+        # 나열해 같은 룰이 5번 중복 출력됐다 — 한 룰의 5회 발화가 5개의 독립 증거처럼
+        # 보였다(증거 부풀리기). 발화 횟수로 정직하게 표시한다.
         for lnk in cascade_links[:5]:
+            fires = lnk.get("fires", 1)
             lines.append(
                 f"- [예측 규칙(실측 아님)] {lnk['rule_name']} "
-                f"(룰매칭강도 {lnk['correlation_score']}, {lnk.get('depth', 1)}단계)"
+                f"(룰매칭강도 평균 {lnk['correlation_score']}, {lnk.get('depth', 1)}단계, "
+                f"발화 {fires}회)"
             )
         lines.append(
             "  ⚠️ '룰 발화 점수'는 cascade_rules.yaml 규칙이 매칭된 강도(0~1)이며, "
             "교란 통제된 통계적 상관계수가 아니다. 이 값을 '상관계수'로 인용하지 말 것."
         )
+        _tot = cascade_ctx.get("ledger_total")
+        _lat = cascade_ctx.get("ledger_latest")
+        if _tot:
+            lines.append(
+                f"  ⚠️ **분모 없음(생존편향)**: 이 원장은 **적중만 적재한다** — 룰이 예측한 "
+                f"방향으로 시장이 움직이지 않으면 링크 자체가 생성되지 않는다. 그래서 "
+                f"{_tot:,}건 전부가 '적중'이고, 위 목록은 그중에서도 점수 상위만 보여준다. "
+                f"**적중률·예측력의 근거로 인용하지 마라 — 빗나간 횟수를 우리는 모른다.**"
+            )
+        if _lat:
+            lines.append(
+                f"  ⚠️ **신선도**: 최근 링크 생성 {_lat}. 링크는 요청 시점에만 생성되므로 "
+                f"이 목록은 재고일 수 있다 — 현재 상황의 증거로 쓰지 마라."
+            )
         lines.append("")
 
     # ── 이벤트 통계 ───────────────────────────────────────────────────────
@@ -1932,12 +1964,23 @@ def _build_context(
                 # 북한 도발 가설의 독립변수로 쓰이던 사고(8호)의 재발 봉쇄.
                 soft = sum(n for t, n in et.items()
                            if t in ("Protests", "Riots", "Strategic developments"))
-                if total and soft / total >= 0.5:
+                ratio = soft / total if total else 0.0
+                # 단계식 — 이진 문턱(50%)은 호르무즈(45.0%)를 놓쳤다. 그 45%가
+                # 이란 국내 시위인데, 하필 그 권역이 "월간 200건 초과 시 유가 상승"
+                # 가설의 무대다(전문가 패킷). 문턱 바로 아래가 가장 위험하다.
+                if ratio >= 0.5:
                     lines.append(
-                        f"  ⚠️ **구성 타당도 경고**: 이 권역 이벤트의 {soft / total * 100:.1f}%가 "
+                        f"  ⚠️ **구성 타당도 경고(강)**: 이 권역 이벤트의 {ratio * 100:.1f}%가 "
                         f"시위·소요·전략적 전개다(사망 {deaths:,}명). 이것은 **군사 충돌 지표가 아니다** "
                         f"— '분쟁 이벤트 건수'를 무력 충돌·도발의 대리변수로 인용하지 마라. "
                         f"국내 정치 시위를 지정학 긴장으로 오독하는 것이 이 경고의 표적이다."
+                    )
+                elif ratio >= 0.2:
+                    lines.append(
+                        f"  ⚠️ **구성 타당도 주의**: 이 권역 이벤트의 {ratio * 100:.1f}%가 "
+                        f"시위·소요·전략적 전개다(사망 {deaths:,}명) — 상당 부분이 국내 정치 사건이다. "
+                        f"'분쟁 이벤트 건수'를 **순수 군사 지표로 쓰지 마라**. 무력 충돌을 말하려면 "
+                        f"Battles·Explosions 하위 건수나 사망자 수를 인용하라."
                     )
             # [큐 10] 추이 사전계산 — 추세 서술은 이 배열·변화율만 인용 가능(창작 금지)
             monthly = stats.get("monthly")

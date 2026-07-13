@@ -60,8 +60,25 @@ SOUTH_CHINA_SEA_COUNTRIES = [
 # 운하 본체(이집트)와 인근 이스라엘이 ACLED 이벤트의 주 발원지.
 SUEZ_COUNTRIES = ["Egypt", "Israel"]
 
-# event_type별 severity 기본점수 (0-100 스케일)
-# 전투(Battles)가 가장 높고, 시위(Protests)가 가장 낮다
+# ⚠️ [변수 타당도 감사 2026-07-13] severity는 **위해 척도가 아니라 사건유형 코드**다.
+#
+#   severity = _SEVERITY_BASE[event_type] + min(30, fatalities)
+#
+# 실측: 사망 0명 전투 34,598건이 severity 70 · 사망 36명까지 난 폭동은 최대 65.
+# **피 한 방울 안 난 전투가 36명 죽은 폭동보다 "심각"하다.** 또 severity=100은
+# 사망 30명~520명을 한 점으로 뭉갠다(992건, 17배 범위).
+#
+# 그래서 AVG(severity)를 권역 요약으로 쓰면 그것은 "이 권역이 얼마나 위험한가"가
+# 아니라 **"이 권역의 사건 유형 구성비"**를 숫자로 바꿔 말한 것에 지나지 않는다.
+# 그 오독이 실제로 일어났다 — 컨텍스트가 LLM에게 "korean_peninsula 평균 심각도
+# 15.9/100"이라고 말했는데, 15는 정확히 Protests의 기본점수였다. 데이터는 "이건
+# 시위다"라고 속삭이고 있었고 라벨은 "분쟁"이라고 외치고 있었다.
+#
+# 처분(위원회 판정): **재정의하지 않고 용도를 제한한다.** cascade 룰 트리거
+# (severity_min: 50 = "전투급 이상")에는 사건유형 서열이 오히려 맞는 도구이므로
+# 그 용도는 유지한다. 대신 **추론 층(LLM 컨텍스트)에서 퇴출**했다 —
+# intel_analyzer가 이제 AVG(severity) 대신 event_type 구성비와 사망자 실수를
+# 조달한다(v9.54.0). 위해를 말해야 하는 자리에는 fatalities를 쓴다.
 _SEVERITY_BASE: dict[str, int] = {
     "Battles":                     70,
     "Explosions/Remote violence":  65,
@@ -132,6 +149,7 @@ def _build_theory_tags(
     inter2: int,
     region_code: str | None,
     country: str = "",
+    fatalities: int = 0,
 ) -> list[str]:
     """event_type·inter1/inter2·sub_event_type·지역 코드·국가를 종합해 이론 태그를 생성한다.
 
@@ -240,7 +258,21 @@ def _build_theory_tags(
             and any(k in sub for k in ("shelling", "artillery", "missile")):
         tags -= {"insurgency", "asymmetric_warfare"}
 
-    return sorted(tags) or ["gray_zone"]
+    # ── [변수 타당도 감사 2026-07-13] 회색지대 배타성 가드 ────────────────
+    # gray_zone은 **무력분쟁 문턱 아래**의 강압을 뜻하는 용어다(Hybrid Warfare
+    # 문헌의 정의). 그런데 위 event_type 분기가 Explosions/Remote violence 전건에
+    # 무조건 gray_zone을 붙여서, 우크라이나의 미사일·포격 69,800건이
+    # ["conventional_warfare", "gray_zone", "hybrid_warfare"]로 태깅됐다 —
+    # 같은 사건이 "재래식 정규전"이면서 "전쟁 문턱 아래"라는 정의상 모순.
+    # 무력분쟁 태그가 붙었거나 사망자가 있으면 문턱을 넘은 것이므로 gray_zone을 뺀다.
+    _ARMED_CONFLICT = {"conventional_warfare", "civil_war", "insurgency",
+                       "irregular_warfare"}
+    if (tags & _ARMED_CONFLICT) or fatalities > 0:
+        tags.discard("gray_zone")
+
+    # 폴백을 gray_zone → unclassified로. 분류에 실패한 것을 "회색지대"라 부르면
+    # 미분류가 이론 태그로 승격된다(146,909건 중 상당수가 이 경로였다).
+    return sorted(tags) or ["unclassified"]
 
 # 모듈 레벨 토큰 캐시 — 앱 재시작 전까지 유지 (DB 불필요)
 # access_token: 24시간, refresh_token: 14일
@@ -656,6 +688,6 @@ class AcledConnector(BaseConnector):
             confidence_score=1.0,  # ACLED는 사후 검증 완료 데이터 — 항상 1.0 (CLAUDE.md §16)
             theory_tags=_build_theory_tags(
                 event_type, sub_event_type, inter1, inter2, region_code,
-                country=country,
+                country=country, fatalities=fatalities,
             ),
         )

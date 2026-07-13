@@ -578,10 +578,20 @@ async def _evaluate_chain_step(
             source_id=parent_link.id,
             location=(0.0, 0.0),  # 체인 신호는 지리적 좌표 없음
             region_code=parent_link.region_code,
-            severity=int(parent_link.correlation_score * 100),
+            # [변수 타당도 감사 2026-07-13] 구: severity=int(correlation_score*100).
+            # correlation_score는 상관계수가 아니다 — 빗나간 예측은 INSERT 자체가
+            # 안 되므로(_evaluate_trigger가 None 반환) cascade_links 3,012건은
+            # 전부 '적중'이고 79%가 정확히 1.0인 **분모 없는 기록**이다. 그 생존편향
+            # 점수를 severity(사건유형 서열)에 주입하면 두 구성개념이 한 컬럼에서
+            # 뒤섞인다. chain_signal은 실측 0건이라 아직 발화한 적 없는 잠복 결함.
+            # 파생 신호에는 서열을 부여하지 않는다 — 0으로 두고 correlation_score는
+            # payload에 원래 이름으로 보존한다.
+            severity=0,
             title=f"Chain: {chain_output}",
             description=f"이전 단계 {parent_link.rule_id} 결과로부터 파생",
-            payload={"parent_link_id": parent_link.id},
+            payload={"parent_link_id": parent_link.id,
+                     "correlation_score": parent_link.correlation_score,
+                     "caveat": "correlation_score는 생존편향 기록 — miss 미적재"},
             theory_tags=[],
         )
 
