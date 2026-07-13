@@ -1,0 +1,335 @@
+# variable_catalog.yaml — LLM 컨텍스트에 들어가는 모든 숫자의 신원 (2026-07-13 신설)
+#
+# ══════════════════════════════════════════════════════════════════════════════
+#  왜 이 파일이 있는가
+# ══════════════════════════════════════════════════════════════════════════════
+#  2026-07-13 변수 타당도 감사에서 엔진의 숫자 대부분이 **이름과 다른 것을 재고
+#  있다**는 것이 드러났다:
+#
+#    "분쟁·충돌 이벤트 8,265건"  → 98.8%가 남한 국내 시위 (군사 0.2% = 14건)
+#    "물리적 충돌 369건"(모나코)  → 전부 포뮬러 1 그랑프리 보도
+#    "심각도 70"                → 사망 0명 전투. 사망 36명 폭동은 65점
+#    "회색지대"                  → 키이우 미사일 69,800건
+#    "상관 점수 1.0"             → 빗나간 예측은 INSERT조차 안 되는 분모 없는 기록
+#
+#  공통점: **아무도 "이 숫자가 실제로 무엇을 재는가"를 적어두지 않았다.**
+#  이름을 믿었고, 그 이름이 가설의 독립변수가 됐다(예측 원장 974건 중 293건).
+#
+#  이 파일은 그 재발을 막는 **등재 강제 장치**다:
+#
+#    ▸ LLM 컨텍스트에 주입되는 모든 소스는 여기 등재돼야 한다.
+#    ▸ 등재하려면 `measures`(실제로 무엇을 재는가)를 실측으로 적어야 한다.
+#    ▸ 미등재 소스가 source_counts에 나타나면 **테스트가 깨진다**
+#      (tests/test_construct_validity_guards.py::test_all_context_sources_cataloged)
+#
+#  즉 **새 숫자를 컨텍스트에 넣으려면 그 신원을 밝혀야 한다.**
+#  "이름이 그럴듯해서" 통과할 수 없다.
+#
+#  원문: geo-os/docs/ENGINE_VARIABLE_AUDIT_20260713.md
+#  판례: geo-os/wiki/decisions/20260713-variable-validity-committee.md
+#
+# ── 필드 계약 ────────────────────────────────────────────────────────────────
+#   name        사람이 읽는 이름 (컨텍스트에 이렇게 표시된다)
+#   measures    **실제로 무엇을 세는가** — 추측 금지, 실측으로 적어라
+#   unit        건수 / 비율 / 지수 / 통화 등
+#   validity    ok        이름 = 내용 (실측 확인)
+#               warned    오염돼 있으나 컨텍스트가 스스로 경고한다
+#               quarantined  신뢰도 크레딧 0 (수리 대기)
+#               retired   컨텍스트 주입 중단
+#   audited     실측 검증일 — 오래되면 재감사 대상
+#   caveat      LLM이 이 숫자를 인용할 때 반드시 알아야 할 것
+# ══════════════════════════════════════════════════════════════════════════════
+
+sources:
+
+  # ── 이벤트 계열 ────────────────────────────────────────────────────────────
+  - key: event_stats_regions
+    name: ACLED 이벤트 통계
+    measures: >
+      권역별 ACLED 이벤트 건수 + event_type 구성비 + 사망자 합.
+      ⚠️ **"분쟁 이벤트"라는 이름이 권역마다 다른 것을 뜻한다** —
+      한반도 98.8%·대만해협 94.6%·동중국해 84.0%가 국내 시위(사망 0명).
+      우크라이나는 폭발 64%·전투 30%·사망 113,730명으로 진짜 전쟁.
+      **같은 컬럼이 권역에 따라 시위 추적기이기도 하고 전쟁 기록이기도 하다.**
+    unit: 건수
+    validity: warned        # 컨텍스트가 구성비와 함께 자동 경고를 낸다
+    audited: 2026-07-13
+    caveat: >
+      건수를 무력 충돌·도발의 대리변수로 인용하지 마라. 무력 충돌을 말하려면
+      Battles·Explosions 하위 건수나 사망자 수를 인용하라. 수집 랙(~14개월)
+      구간의 월은 건수가 미확정이므로 추세 서술 금지.
+
+  - key: bp_provocations
+    name: 북한 도발 원장 (Beyond Parallel)
+    measures: >
+      CSIS Beyond Parallel이 큐레이션한 북한 도발 사건. 489건(1958~2026),
+      전 건 source_url 보유. 사람이 선별한 2차 집계이지 전수가 아니다.
+    unit: 건수
+    validity: ok
+    audited: 2026-07-13
+    caveat: >
+      "전수 수집"이라 말하지 마라 — 편집 판단이 들어간 선별 원장이다.
+      좌표가 없다(사건을 지도에 점으로 찍을 수 없다).
+      prov_type 라벨이 파손돼 있다(2025년 "Artillery Fire"가 Missile로 태깅) —
+      유형 분해에 prov_type을 쓰지 말고 title 기반으로 재분류하라.
+
+  # ── GDELT (재적재 후) ──────────────────────────────────────────────────────
+  - key: gdelt_geo_material_conflict_pol
+    name: GDELT 물리적 충돌 (발생지·행위자 필터)
+    measures: >
+      **발생지**(ActionGeo_CountryCode) 기준, 코딩된 행위자(GOV/MIL/COP/REB…)
+      간 물리적 충돌(QuadClass 4). v9.56.0 재적재로 신설.
+      구 판본(gdelt_country_daily)은 Actor1CountryCode = **행위자 국적** 키였고
+      필터가 없어 모나코의 "물리적 충돌" 279건이 전부 F1 그랑프리 기사였다
+      (MONACO vs POLE, formula1.com). 필터 후 2건.
+    unit: 건수 (미디어 추출)
+    validity: ok
+    audited: 2026-07-13
+    caveat: >
+      미디어에서 기계가 추출한 것이지 현장 실측이 아니다.
+      국가·region 이상 집계에서만 사용(CLAUDE.md §18-A — 하위국가 단독 금지).
+
+  - key: gdelt_geo_protest
+    name: GDELT 시위 (발생지)
+    measures: 발생지 기준 시위 이벤트(EventRootCode 14). **행위자 필터 미적용.**
+    unit: 건수 (미디어 추출)
+    validity: ok
+    audited: 2026-07-13
+    caveat: >
+      시위에 행위자 필터를 걸지 않은 이유: 시위 주체는 민간(CVL)이라 국가기구
+      행위자를 요구하면 신호가 죽는다(IDN 648 → 22). **구성개념마다 자물쇠가
+      다르다.** 대신 위치 오염은 발생지 키 전환으로 해소됐다.
+
+  # ── 이론·규칙 계열 ────────────────────────────────────────────────────────
+  - key: cascade_links
+    name: Cascade 발화 실적
+    measures: >
+      cascade_rules.yaml 규칙이 매칭된 강도(0~1). **상관계수가 아니다.**
+      그리고 **적중만 적재된다** — 시장이 예측대로 안 움직이면 _evaluate_trigger가
+      None을 반환해 링크 자체가 생성되지 않는다. 3,012건 전부 '적중'이고
+      79%가 정확히 1.0인 **분모 없는 기록**이다.
+    unit: 강도 0~1
+    validity: quarantined   # 신뢰도 크레딧 0
+    audited: 2026-07-13
+    caveat: >
+      적중률·예측력의 근거로 인용 금지 — **빗나간 횟수를 우리는 모른다.**
+      링크는 요청 시점 pull로만 생성돼 재고일 수 있다(실측 26일 유휴).
+
+  - key: fts_items
+    name: 브리핑·이론 원문 (LIKE 검색)
+    measures: library.db theories 테이블의 브리핑·이론 문서. **2차 사료**(기관 논평).
+    unit: 문서 수
+    validity: ok
+    audited: 2026-07-13
+    caveat: >
+      T2(기관 논평)이지 T1(순수 데이터)이 아니다. 구 채점기가 War on the Rocks·
+      Reuters를 SIPRI와 같은 "1차 사료"로 계수하던 오염은 v9.53.0에서 제거.
+      브리핑은 데이터가 아니다 — 데이터가 없을 때 브리핑이 컨텍스트를 독점하면
+      접지 가드가 신뢰도를 캡한다.
+
+  - key: sector_items
+    name: 브리핑 (섹터 필터)
+    measures: 섹터 태그로 조회한 브리핑. 쿼리 관련도와 무관하게 조달된다.
+    unit: 문서 수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 위와 동일 (T2).
+
+  - key: ifans_pubs
+    name: IFANS 발간물
+    measures: 국립외교원 발간물. 한국 시각의 2차 사료.
+    unit: 문서 수
+    validity: ok
+    audited: 2026-07-13
+    caveat: T2 (기관 논평).
+
+  - key: press
+    name: 보도자료 (외교부·북한·UN·govinfo·정책)
+    measures: 기관 공식 발표문. 1차 사료이나 **발표 주체의 관점**이 실린다.
+    unit: 건수
+    validity: ok
+    audited: 2026-07-13
+    caveat: T3 (보도·발표). 사실 확인이 아니라 "누가 무엇을 공표했나"의 기록.
+
+  # ── 기관 통계 (원정의 그대로 — 감사에서 건전 판정) ──────────────────────────
+  - key: sipri_countries
+    name: SIPRI 군사비
+    measures: SIPRI 발표 군사비(GDP 대비·절대액). 기관 원정의 그대로.
+    unit: USD / %GDP
+    validity: ok
+    audited: 2026-07-13
+    caveat: SIPRI 정의 준수. 변형 없음.
+
+  - key: fred
+    name: FRED 거시지표
+    measures: 미 연준 FRED 시계열. 기관 원정의 그대로.
+    unit: 지표별
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: eia_entries
+    name: EIA 에너지
+    measures: 미 에너지정보청 에너지 통계. 원정의 그대로.
+    unit: 배럴 / USD
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: cow_alliances
+    name: COW 동맹
+    measures: Correlates of War 공식 동맹 데이터. 원정의 그대로.
+    unit: 동맹 수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: cow_wars
+    name: COW 전쟁
+    measures: Correlates of War 전쟁 데이터(역사 선례).
+    unit: 건수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: vdem_entries
+    name: V-Dem 민주주의 지수
+    measures: V-Dem 프로젝트 지수. 원정의 그대로.
+    unit: 지수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: polity5
+    name: Polity5
+    measures: Polity5 정체 지수. 원정의 그대로.
+    unit: 지수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: wbk
+    name: World Bank 거버넌스 지표 (WGI)
+    measures: 세계은행 WGI. 원정의 그대로.
+    unit: 지수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: itu
+    name: ITU ICT 지수
+    measures: 국제전기통신연합 ICT 발전 지수.
+    unit: 지수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 프록시 가드 등록 대상 — "ICT 지수"는 사이버 역량이 아니다.
+
+  - key: hiik
+    name: HIIK 분쟁 강도
+    measures: 하이델베르크 분쟁연구소 분쟁 강도 등급.
+    unit: 등급
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: semi
+    name: 반도체 시장
+    measures: 반도체 시장 지표(가격·출하).
+    unit: 지표별
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: owid
+    name: OWID 다지표
+    measures: Our World in Data 다지표.
+    unit: 지표별
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: sipri_arms
+    name: SIPRI 무기이전
+    measures: SIPRI 무기이전 데이터(TIV).
+    unit: TIV
+    validity: ok
+    audited: 2026-07-13
+    caveat: TIV는 금액이 아니라 군사 능력의 대리 단위다.
+
+  - key: kiel_donors
+    name: Kiel 우크라이나 지원
+    measures: Kiel Institute 우크라이나 지원 추적.
+    unit: EUR
+    validity: ok
+    audited: 2026-07-13
+    caveat: 변형 없음.
+
+  - key: csis_incidents
+    name: CSIS 사이버 사건
+    measures: CSIS 주요 사이버 사건 목록. **큐레이션된 선별 목록**이지 전수가 아니다.
+    unit: 건수
+    validity: ok
+    audited: 2026-07-13
+    caveat: 선별 목록 — 건수 추세를 사이버 공격 증감의 증거로 쓰지 마라.
+
+  - key: country_profiles
+    name: 국가 프로파일
+    measures: 행위자 국가의 전략 태세·수단 프로파일(7대 축 태그).
+    unit: 범주
+    validity: ok
+    audited: 2026-07-13
+    caveat: 결정론 매퍼 산출. 태그이지 측정값이 아니다.
+
+  - key: theory_cmp_chars
+    name: 경쟁이론 비교 컨텍스트
+    measures: theory_comparator가 조립한 이론별 예측 vs 실측 대조표(문자 수).
+    unit: 문자
+    validity: ok
+    audited: 2026-07-13
+    caveat: 이 블록의 실측값이 이론의 우열을 판정한다 — LLM이 아니라.
+
+  # ── 퇴역 (컨텍스트 주입 중단) ─────────────────────────────────────────────
+  - key: goldstein_avg
+    name: GDELT 협조-갈등 톤 (국가-월 평균)
+    measures: >
+      **전쟁을 못 본다.** UKR 2022-02 전면 침공(+0.32)이 2021-11 평시(+0.34)보다
+      협조적으로 나온다. Goldstein은 CAMEO 동사별 상수라, 전쟁이 만드는
+      폭력(음수)과 격렬한 외교(양수)가 국가-월 평균에서 상쇄된다.
+      같은 기간 카운트는 13,319 → 76,612로 비명을 지른다.
+    unit: 지수 (-10 ~ +10)
+    validity: retired
+    audited: 2026-07-13
+    caveat: >
+      **소비 금지.** 회귀 테스트(test_goldstein_avg_has_no_consumer)가 강제한다.
+      컬럼은 삭제하지 않았다 — 미래의 소비자가 그럴듯한 컬럼명을 집어들지 않게
+      여기 신원을 박아둔다.
+
+  - key: severity
+    name: 이벤트 심각도
+    measures: >
+      **위해 척도가 아니라 event_type 조회표.**
+      severity = _SEVERITY_BASE[event_type] + min(30, fatalities).
+      사망 0명 전투 34,598건이 70점. 사망 36명 폭동은 최대 65점.
+      severity=100은 사망 30~520명을 한 점에 뭉갠다(992건, 17배 범위).
+    unit: 0~100
+    validity: retired       # 추론 층에서 퇴출 (v9.56.0)
+    audited: 2026-07-13
+    caveat: >
+      AVG(severity)를 권역 요약으로 쓰면 "이 권역이 얼마나 위험한가"가 아니라
+      "이 권역의 사건 유형 구성비"를 숫자로 재진술한 것이다.
+      cascade 룰 트리거(severity_min=50 = "전투급 이상")에는 사건유형 서열이
+      오히려 맞는 도구이므로 그 용도는 유지한다.
+
+  - key: importance_score
+    name: 이벤트 중요도
+    measures: >
+      **아무것도.** events 296,885건 전부 0.0 — importance_scorer가 쓰기 경로에
+      배선된 적이 없다. §18 아카이브 게이트의 'OR importance>=0.7'은 한 번도
+      참이 된 적이 없다.
+    unit: 0.0~1.0
+    validity: retired
+    audited: 2026-07-13
+    caveat: >
+      배선/폐기는 [판단필요]. 부활시키려면 recency 정규화 결함(배치 상대 min/max라
+      런 간 비교 불가)부터 수리해야 한다.
+      2026-07-13 신설한 config/importance_rules.yaml(관찰 중요도)과는 **다른 것**이다.
