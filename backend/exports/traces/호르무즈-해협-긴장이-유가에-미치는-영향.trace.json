@@ -1,0 +1,1018 @@
+{
+  "query": "호르무즈 해협 긴장이 유가에 미치는 영향",
+  "provider": "nim",
+  "model": "qwen/qwen3.5-122b-a10b",
+  "started_at": "2026-07-13T16:10:31+0900",
+  "stages": {
+    "1_parse": {
+      "status": "OK",
+      "ms": 0.0,
+      "raw_query": "호르무즈 해협 긴장이 유가에 미치는 영향",
+      "mode": "insight",
+      "regions": [
+        "hormuz"
+      ],
+      "actors": [],
+      "sectors": [
+        "maritime",
+        "energy"
+      ],
+      "era": null,
+      "thinking": false,
+      "keywords": [
+        "호르무즈",
+        "해협",
+        "긴장",
+        "유가",
+        "미치",
+        "영향"
+      ]
+    },
+    "2_procurement": {
+      "status": "OK",
+      "ms": 528.3,
+      "source_counts": {
+        "fts_items": 10,
+        "sector_items": 6,
+        "event_stats_regions": 1,
+        "cascade_links": 8,
+        "country_profiles": 0,
+        "sipri_countries": 4,
+        "cow_alliances": 37,
+        "kiel_donors": 0,
+        "eia_entries": 7,
+        "csis_incidents": 15,
+        "sipri_arms": 0,
+        "vdem_entries": 0,
+        "cow_wars": 3,
+        "ifans_pubs": 0,
+        "theory_cmp_chars": 3766,
+        "fred": 12,
+        "wbk": 4,
+        "polity5": 0,
+        "itu": 0,
+        "hiik": 2,
+        "semi": 0,
+        "owid": 6,
+        "press": 8,
+        "bp_provocations": 0
+      },
+      "sources": {
+        "library_like": {
+          "fn": "_search_library_like",
+          "ms": 67.2,
+          "args": [
+            "호르무즈 해협 긴장이 유가에 미치는 영향",
+            "['hormuz']",
+            "['maritime', 'energy']"
+          ],
+          "n_records": 10,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "fts_items"
+        },
+        "library_sector": {
+          "fn": "_search_library_by_sector",
+          "ms": 18.6,
+          "args": [
+            "['maritime', 'energy']"
+          ],
+          "n_records": 6,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "sector_items"
+        },
+        "acled_events": {
+          "fn": "_get_event_stats",
+          "ms": 65.8,
+          "args": [
+            "['hormuz']"
+          ],
+          "n_records": 1,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "event_stats_regions"
+        },
+        "cascade": {
+          "fn": "_get_cascade_context",
+          "ms": 63.1,
+          "args": [
+            "['hormuz']"
+          ],
+          "n_records": 2,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "cascade_links"
+        },
+        "country_profile": {
+          "fn": "_get_country_profiles",
+          "ms": 0.0,
+          "args": [
+            "[]"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "country_profiles"
+        },
+        "sipri_milex": {
+          "fn": "_get_sipri_data",
+          "ms": 16.8,
+          "args": [
+            "[]",
+            "['hormuz']"
+          ],
+          "n_records": 4,
+          "status": "OK",
+          "rendered_chars": 547,
+          "in_context": false,
+          "source_counts_key": "sipri_countries"
+        },
+        "cow_alliances": {
+          "fn": "_get_cow_alliances",
+          "ms": 17.1,
+          "args": [
+            "[]",
+            "['hormuz']"
+          ],
+          "n_records": 37,
+          "status": "OK",
+          "rendered_chars": 600,
+          "in_context": false,
+          "source_counts_key": "cow_alliances"
+        },
+        "kiel": {
+          "fn": "_get_kiel_data",
+          "ms": 0.0,
+          "args": [
+            "['hormuz']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "kiel_donors"
+        },
+        "eia": {
+          "fn": "_get_eia_data",
+          "ms": 14.6,
+          "args": [
+            "[]",
+            "['hormuz']"
+          ],
+          "n_records": 7,
+          "status": "OK",
+          "rendered_chars": 522,
+          "in_context": true,
+          "source_counts_key": "eia_entries"
+        },
+        "csis": {
+          "fn": "_get_csis_incidents",
+          "ms": 15.9,
+          "args": [
+            "[]",
+            "['hormuz']",
+            "['maritime', 'energy']"
+          ],
+          "n_records": 15,
+          "status": "OK",
+          "rendered_chars": 1386,
+          "in_context": false,
+          "source_counts_key": "csis_incidents"
+        },
+        "sipri_arms": {
+          "fn": "_get_sipri_arms",
+          "ms": 0.0,
+          "args": [
+            "[]",
+            "['hormuz']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "sipri_arms"
+        },
+        "vdem": {
+          "fn": "_get_vdem",
+          "ms": 0.0,
+          "args": [
+            "[]"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "vdem_entries"
+        },
+        "cow_wars": {
+          "fn": "_get_cow_wars",
+          "ms": 13.4,
+          "args": [
+            "['hormuz']",
+            "[]"
+          ],
+          "n_records": 3,
+          "status": "OK",
+          "rendered_chars": 309,
+          "in_context": true,
+          "source_counts_key": "cow_wars"
+        },
+        "ifans": {
+          "fn": "_get_ifans_publications",
+          "ms": 519.9,
+          "args": [
+            "[]",
+            "['hormuz']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "ifans_pubs"
+        },
+        "theory_compare": {
+          "fn": "build_theory_comparison_context",
+          "ms": 39.8,
+          "args": [
+            "['maritime', 'energy']",
+            "['hormuz']",
+            "[]"
+          ],
+          "n_records": 1,
+          "status": "OK",
+          "rendered_chars": 3766,
+          "in_context": true,
+          "source_counts_key": "theory_cmp_chars"
+        },
+        "fred": {
+          "fn": "_get_fred_data",
+          "ms": 16.8,
+          "args": [
+            "['hormuz']",
+            "['maritime', 'energy']"
+          ],
+          "n_records": 12,
+          "status": "OK",
+          "rendered_chars": 498,
+          "in_context": true,
+          "source_counts_key": "fred"
+        },
+        "worldbank_wgi": {
+          "fn": "_get_world_bank_wgi",
+          "ms": 14.5,
+          "args": [
+            "[]",
+            "['hormuz']"
+          ],
+          "n_records": 4,
+          "status": "OK",
+          "rendered_chars": 361,
+          "in_context": false,
+          "source_counts_key": "wbk"
+        },
+        "polity5": {
+          "fn": "_get_polity5",
+          "ms": 0.0,
+          "args": [
+            "[]"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "polity5"
+        },
+        "itu_ict": {
+          "fn": "_get_itu_ict",
+          "ms": 0.0,
+          "args": [
+            "[]",
+            "['maritime', 'energy']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "itu"
+        },
+        "hiik": {
+          "fn": "_get_hiik_conflict",
+          "ms": 10.3,
+          "args": [
+            "['hormuz']"
+          ],
+          "n_records": 2,
+          "status": "OK",
+          "rendered_chars": 312,
+          "in_context": true,
+          "source_counts_key": "hiik"
+        },
+        "semi_market": {
+          "fn": "_get_semi_market",
+          "ms": 0.0,
+          "args": [
+            "['maritime', 'energy']",
+            "['hormuz']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "semi"
+        },
+        "owid": {
+          "fn": "_get_owid_data",
+          "ms": 11.8,
+          "args": [
+            "[]",
+            "['hormuz']",
+            "['maritime', 'energy']"
+          ],
+          "n_records": 6,
+          "status": "OK",
+          "rendered_chars": 319,
+          "in_context": true,
+          "source_counts_key": "owid"
+        },
+        "trade_dep": {
+          "fn": "_get_trade_dependency",
+          "ms": 12.5,
+          "args": [
+            "[]",
+            "['hormuz']"
+          ],
+          "n_records": 20,
+          "status": "OK",
+          "rendered_chars": 674,
+          "in_context": true,
+          "source_counts_key": null
+        },
+        "press": {
+          "fn": "_get_press_releases",
+          "ms": 12.9,
+          "args": [
+            "['hormuz']"
+          ],
+          "n_records": 2,
+          "status": "OK",
+          "rendered_chars": 1759,
+          "in_context": false,
+          "source_counts_key": "press"
+        },
+        "bp_provocations": {
+          "fn": "_get_bp_provocations",
+          "ms": 0.0,
+          "args": [
+            "['hormuz']",
+            "[]",
+            "호르무즈 해협 긴장이 유가에 미치는 영향"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "bp_provocations"
+        }
+      }
+    },
+    "3_context": {
+      "status": "OK",
+      "ms": 0,
+      "context_chars": 19796,
+      "data_layer_chars": 8163,
+      "budget_max": 20000,
+      "budget_overflow": false,
+      "n_sections": 34,
+      "sections": [
+        {
+          "header": "## 분석 쿼리 요약",
+          "chars": 25,
+          "order": 1
+        },
+        {
+          "header": "## 브리핑·이론 원문 (3개 전문 포함)",
+          "chars": 562,
+          "order": 2
+        },
+        {
+          "header": "## 핵심 주장",
+          "chars": 594,
+          "order": 3
+        },
+        {
+          "header": "## 근거와 데이터",
+          "chars": 190,
+          "order": 4
+        },
+        {
+          "header": "## 기뢰 봉쇄의 비대칭 구조",
+          "chars": 168,
+          "order": 5
+        },
+        {
+          "header": "## 기뢰 유형 비교",
+          "chars": 164,
+          "order": 6
+        },
+        {
+          "header": "## 주요 행위자",
+          "chars": 250,
+          "order": 7
+        },
+        {
+          "header": "## 위협의 성격",
+          "chars": 225,
+          "order": 8
+        },
+        {
+          "header": "## 지정학적 함의",
+          "chars": 558,
+          "order": 9
+        },
+        {
+          "header": "## Cascade 연결 포인트",
+          "chars": 386,
+          "order": 10
+        },
+        {
+          "header": "## 정책 권고 (논지 도출)",
+          "chars": 717,
+          "order": 11
+        },
+        {
+          "header": "## 핵심 주장",
+          "chars": 763,
+          "order": 12
+        },
+        {
+          "header": "## 근거와 데이터",
+          "chars": 394,
+          "order": 13
+        },
+        {
+          "header": "## 비용 비대칭 구조",
+          "chars": 184,
+          "order": 14
+        },
+        {
+          "header": "## 주요 행위자",
+          "chars": 384,
+          "order": 15
+        },
+        {
+          "header": "## 위협의 성격",
+          "chars": 330,
+          "order": 16
+        },
+        {
+          "header": "## 지정학적 함의",
+          "chars": 1164,
+          "order": 17
+        },
+        {
+          "header": "## 핵심 주장",
+          "chars": 707,
+          "order": 18
+        },
+        {
+          "header": "## 주요 수치·데이터",
+          "chars": 498,
+          "order": 19
+        },
+        {
+          "header": "## 주요 행위자",
+          "chars": 401,
+          "order": 20
+        },
+        {
+          "header": "## 위협의 성격",
+          "chars": 338,
+          "order": 21
+        },
+        {
+          "header": "## 지정학적 함의",
+          "chars": 345,
+          "order": 22
+        },
+        {
+          "header": "## 추가 관련 브리핑 (요약)",
+          "chars": 976,
+          "order": 23
+        },
+        {
+          "header": "## Cascade 인과 룰 (이론 근거)",
+          "chars": 251,
+          "order": 24
+        },
+        {
+          "header": "## Cascade 발화 실적 (룰 기반 — 통계 상관계수 아님)",
+          "chars": 392,
+          "order": 25
+        },
+        {
+          "header": "## ACLED 이벤트 통계",
+          "chars": 175,
+          "order": 26
+        },
+        {
+          "header": "## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)",
+          "chars": 3768,
+          "order": 27
+        },
+        {
+          "header": "## 문헌 공백 원장 (결정론적 추출 — [문헌공백] 작성 근거)",
+          "chars": 2254,
+          "order": 28
+        },
+        {
+          "header": "## 에너지 생산·수출 현황 (EIA International Energy Statistics 2023)",
+          "chars": 522,
+          "order": 29
+        },
+        {
+          "header": "## 주요 경제 지표 시계열 (FRED — Federal Reserve Economic Data)",
+          "chars": 498,
+          "order": 30
+        },
+        {
+          "header": "## 무역 의존도 (UN Comtrade — Weaponized Interdependence IV)",
+          "chars": 674,
+          "order": 31
+        },
+        {
+          "header": "## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)",
+          "chars": 309,
+          "order": 32
+        },
+        {
+          "header": "## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)",
+          "chars": 319,
+          "order": 33
+        },
+        {
+          "header": "## 분쟁 강도 바로미터 (HIIK Conflict Barometer 2024)",
+          "chars": 311,
+          "order": 34
+        }
+      ],
+      "n_briefings_total": 15,
+      "n_briefings_full_body": 3,
+      "briefings": [
+        {
+          "title": "[RAND] 호르무즈 소해 작전: 기뢰 위협의 비대칭성과 인식이 만드는 봉쇄",
+          "source_org": "RAND Corporation",
+          "own_relevance": 8,
+          "own_rel_ts": 5,
+          "body_chars": 3899,
+          "full_body_injected": true
+        },
+        {
+          "title": "[War on the Rocks] 러시아의 호르무즈 플레이북: 발트해·흑해에 보험 연쇄 봉쇄가 온다",
+          "source_org": "War on the Rocks",
+          "own_relevance": 7,
+          "own_rel_ts": 5,
+          "body_chars": 4922,
+          "full_body_injected": true
+        },
+        {
+          "title": "[War on the Rocks] 사라진 해군: 호르무즈 위기와 미국 인도-태평양 파트너십의 한계",
+          "source_org": "War on the Rocks",
+          "own_relevance": 6,
+          "own_rel_ts": 5,
+          "body_chars": 5098,
+          "full_body_injected": true
+        },
+        {
+          "title": "[CFR] 이란전이 아시아에 야기하는 에너지 혼란",
+          "source_org": "CFR",
+          "own_relevance": 6,
+          "own_rel_ts": 4,
+          "body_chars": 3574,
+          "full_body_injected": false
+        },
+        {
+          "title": "[ECFR] 해협 우회: IMEC의 전시 재설계 — 단일 초크포인트 의존의 전략적 함정",
+          "source_org": "ECFR",
+          "own_relevance": 4,
+          "own_rel_ts": 2,
+          "body_chars": 4260,
+          "full_body_injected": false
+        },
+        {
+          "title": "[Chatham House] 이란전이 걸프 산유국에 부과하는 막대한 비용 — 북아프리카의 위험과 기회",
+          "source_org": "Chatham House",
+          "own_relevance": 4,
+          "own_rel_ts": 2,
+          "body_chars": 3671,
+          "full_body_injected": false
+        },
+        {
+          "title": "[War on the Rocks] 이란전이 한미동맹에 의미하는 것",
+          "source_org": "War on the Rocks",
+          "own_relevance": 3,
+          "own_rel_ts": 2,
+          "body_chars": 5001,
+          "full_body_injected": false
+        },
+        {
+          "title": "제재: 이란 (UN, US, EU, UK)",
+          "source_org": null,
+          "own_relevance": 3,
+          "own_rel_ts": 2,
+          "body_chars": 478,
+          "full_body_injected": false
+        },
+        {
+          "title": "[ECFR] 전후 UAE와 걸프 정치의 재편: 이란전이 뒤바꾼 지역 질서",
+          "source_org": "ECFR",
+          "own_relevance": 2,
+          "own_rel_ts": 0,
+          "body_chars": 4286,
+          "full_body_injected": false
+        },
+        {
+          "title": "[CSIS] 경제력과 해양력의 관계 재검토 — 미국 조선 위기와 MAP·SHIPS법",
+          "source_org": "CSIS",
+          "own_relevance": 0,
+          "own_rel_ts": 0,
+          "body_chars": 5208,
+          "full_body_injected": false
+        },
+        {
+          "title": "[CSIS] 아랍 걸프 국가들이 바라보는 미-이란 합의 — 안도와 우려의 혼합",
+          "source_org": "CSIS",
+          "own_relevance": 0,
+          "own_rel_ts": 0,
+          "body_chars": 4974,
+          "full_body_injected": false
+        },
+        {
+          "title": "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+          "source_org": "War on the Rocks",
+          "own_relevance": 0,
+          "own_rel_ts": 0,
+          "body_chars": 4651,
+          "full_body_injected": false
+        }
+      ]
+    },
+    "4_grounding": {
+      "status": "OK",
+      "ms": 0,
+      "terms": {
+        "호르무즈": 11,
+        "해협": 0,
+        "긴장": 7,
+        "유가": 7,
+        "미치": 0,
+        "영향": 0
+      },
+      "grounded_ratio": 0.5,
+      "flag": "GROUNDED",
+      "basis": "data-only context (브리핑·이론·문헌공백 제외)",
+      "data_context_chars": 8163
+    },
+    "5_prompt": {
+      "status": "OK",
+      "ms": 11.2,
+      "prompt_chars": 34606,
+      "synthesis_chars": 220,
+      "context_share": 0.572
+    },
+    "6_llm": {
+      "status": "OK",
+      "provider": "nim",
+      "model": "qwen/qwen3.5-122b-a10b",
+      "ms": 204714.7,
+      "response_chars": 5160,
+      "empty": false,
+      "response_text": "## 인사이트 카드 1\n\n**[탐색적] 호르무즈 긴장과 유가 상승의 상관관계는 '인식 기반 보험 연쇄'가 물리적 봉쇄보다 선행하여 결정한다**\n데이터기반: 고 | 이론근거: 중 | 연쇄강도: MEDIUM\n\n**[통념]**\n호르무즈 해협에서의 군사적 긴장이나 실제 기뢰 부설이 유조선 운항을 물리적으로 차단해야만 유가가 급등한다.\n\n**[비자명기여]**\n통념은 '물리적 차단'을 전제로 하지만, 실제 메커니즘은 **'인식 (Perception) 이 실물 (Reality) 을 앞서는 비대칭적 붕괴'**로 작동한다. RAND 분석에 따르면 이란 기뢰 비축량의 90%가 파괴되었음에도, '기뢰가 있을 수 있다'는 인식만으로도 해운 마비가 발생한다. 이는 SLOC 통제 이론의 예측 임계 (위협 강도 증가 시 운임·유가 급등) 가 물리적 파괴가 아닌 **'보험 시장의 선제적 반응'**에서 달성됨을 보여준다. 즉, 유가 상승은 봉쇄의 '결과'가 아니라, 봉쇄를 유도하는 **'시작점 (Trigger)'**으로서의 보험 연쇄 붕괴와 동반된다.\n\n**[관찰]**\n- 호르무즈 분쟁 이벤트 건수: 2026년 5월 18건 → 6월 284건 (사전계산)\n- 공습 이틀 후 호르무즈 통과 유조선: 56척 → 7척 (붕괴율 80% 이상)\n- WTI 유가: 2024년 76.96 USD/barrel (2024-01-01 기준, 최근 추세 +85.6% 상승)\n- 기뢰 비축량 파괴율: 약 90% (미국 공습)\n\n**[주장]**\n(등급: 상관) 호르무즈 해협의 분쟁 건수 증가와 유가 상승은 **상관한다**; 특히 물리적 기뢰 부설 여부와 무관하게, '기뢰 위협에 대한 인식'과 '보험료 급등'이 유조선 운항 중단 (80% 이상) 을 동반하며 유가 변동과 공변한다.\n\n**[가설]**\nH1: 호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 가 통계적으로 유의하게 상승한다 (통제변수: OPEC+ 생산량, 전략비축유 방출 여부).\n\n**[근거]**\n- ACLED hormuz 분쟁 건수: 2026-06 기준 284건 (사전계산)\n- War on the Rocks: 공습 이틀 후 유조선 통항 80% 붕괴 (56척→7척)\n- RAND: 기뢰 비축량 90% 파괴에도 인식만으로 봉쇄 효과 달성\n\n**[한계]**\n본 분석은 2026 년 5~6 월의 특정 위기 국면 데이터에 의존하므로, 장기적 추세나 다른 위기 (예: 홍해 후티 사태) 와의 비교에서 **선택편향 (Survivorship Bias)**이 개입될 수 있다. 또한, 보험료 변동의 구체적 수치 데이터가 부족해 '인식'의 정량적 임계값을 직접 측정하지는 못했다.\n\n**[경쟁설명]**\n이론 A: 자원무기화 (Resource Weaponization)\n예측: 호르무즈 긴장 (공급 차단 위협) 증가 시 정치적 양보 및 유가 상승 (공급 감소)\n실측: WTI 유가 76.96 USD/barrel (2024), 최근 추세 +85.6% (사전계산) — 분쟁 건수 284건 (2026-06)\n판정: 우세 — 예측 '위협 증가→유가 상승' vs 실측 '분쟁 급증 (+266건) 과 유가 상승 추세' — 방향 일치\n\n이론 B: 상호의존의 무기화 (Weaponized Interdependence)\n예측: 공급망 집중도 (HHI) 증가 시 피의존국 양보 및 유가 변동\n실측: SAU 수출 희토류 HHI 9398 (독과점, 사전계산) — 앵커: 임계 2500 vs 실측 9398 (편차 +6898.0, 전제 충족)\n판정: 전제충족 (DV 미검증) — 실측 HHI 는 독과점 조건 충족 (편차 +6898.0) 이나, DV(유가) 에 대한 직접적 인과 경로 데이터는 [UNVERIFIED]\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 (방향 일치, 유가 상승) vs 상호의존 무기화 예측편차 (전제 충족, DV 미검증) — 자원무기화 쪽 편차만 정량 확인됨\n▶ 당신의 판단 (연구자 몫): 두 이론 중 어느 쪽이 호르무즈 유가 변동의 주된 동인인지 연구자가 판정. (쟁점: 상호의존 이론의 HHI 값은 높으나, 실제 유가 변동이 '공급망 집중' 때문인지 '물리적 위협' 때문인지 구분 필요)\n\n**[검증포인트]**\n- Lloyd's 전쟁위험위원회(War Risk Committee) 의 보험료 인상 시점과 호르무즈 분쟁 발생 시점의 시간적 선후 관계 확인.\n- OPEC+ 의 생산량 조절 데이터와 유가 상승률의 상관관계 분석 (교란변수 통제).\n\n**[문헌공백]**\n기존 문헌은 <SLOC 통제 이론>에서 초크포인트 위협이 자동으로 가격 충격으로 이어진다고 가정하지만, **후티의 홍해 공격 (2024~2025) 사례**에서 보듯 물리적 위협에도 불구하고 미국 전략비축유 방출과 우회 항로로 인해 유가 급등이 제한된 **반례 클러스터**를 설명하지 못한다. 본 분석은 '물리적 파괴'가 아닌 **'보험 연쇄 (Insurance Cascade)'**라는 금융 메커니즘이 가격 충격의 임계값을 결정한다는 점을 제시하여, 기존 단일 도메인 (군사/에너지) 분석의 사각지대인 **교차도메인 (군사→금융→에너지)** 경로를 메워준다.\n\n---\n\n## 인사이트 카드 2\n\n**[탐색적] 호르무즈 봉쇄의 유가 전이 효과는 아시아 국가의 '전략적 방관'으로 인해 비선형적으로 증폭된다**\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n**[통념]**\n호르무즈 해협은 전 세계 에너지 공급의 핵심이므로, 봉쇄 시 전 세계적으로 즉각적이고 균일한 유가 상승이 발생하며, 주요 소비국들은 연합 대응을 통해 이를 억제한다.\n\n**[비자명기여]**\n통념은 '연합 대응'을 전제하지만, 실제 메커니즘은 **아시아 국가들의 '전략적 방관 (Strategic Abdication)'**이 봉쇄 효과를 증폭시킨다. War on the Rocks 분석에 따르면 호르무즈 통과 원유의 80% 이상이 아시아행이며, 일본 (95%), 한국 (70%), 필리핀 (98%) 이 극심한 의존도를 보임에도, 아시아 해군은 참여하지 않는다. 이는 **글렌 스나이더의 동맹 딜레마 (Alliance Dilemma)**가 '방기 (Abandonment)'보다 '연루 (Entrapment)' 공포로 작동하여, 가장 피해가 큰 국가들이 연합 구축을 기피함으로써 **대응 공백 (Response Gap)**이 발생하고, 이로 인해 유가 상승 압력이 억제되지 않고 **비선형적으로 증폭**되는 구조를 보여준다.\n\n**[관찰]**\n- 호르무즈 통과 원유·LNG 중 아시아行 비중: 80% 이상 (2024 기준)\n- 아시아 주요국 의존도: 일본 95%, 한국 70%, 필리핀 98%\n- 의미 있는 아시아 참여국: 싱가폴, 스리랑카 (2개국)\n- 한국 선박 피격일: 2026 년 5 월 4 일\n- 한국의 호르무즈 위기 대응 추경 예산: $170 억\n\n**[주장]**\n(등급: 상관) 아시아 국가들의 호르무즈 의존도 증가와 연합 참여 부재는 **상관한다**; 특히 아시아 해군의 참여 부재가 봉쇄 기간 연장과 유가 상승 지속성과 동반되며, 이는 **비대칭적 취약성**을 초래한다.\n\n**[가설]**\nH1: 호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 기간이 아시아 참여 시보다 통계적으로 유의하게 길어진다 (통제변수: OPEC+ 생산량, 대체 운송로 가용성).\n\n**[근거]**\n- War on the Rocks: 아시아 행 원유 80% 이상, 참여국 2 개국 (싱가폴, 스리랑카)\n- CFR: 이란전 개전 20 일 시점 유가 $95/배럴 급등\n- War on the Rocks: 한국 선박 피격 (2026.05.04) 에도 참여 검토만\n\n**[한계]**\n본 분석은 '참여 부재'를 정성적 관찰에 의존하므로, 참여가 유가 하락에 미치는 정량적 영향을 직접 측정하지는 못했다. 또한, 아시아 국가들의 내부 정치적 결정 과정 데이터가 부족해 '연루 공포'가 실제 결정 요인임을 입증하는 데 **선택편향**이 개입될 수 있다.\n\n**[경쟁설명]**\n이론 A: 마한의 해양력 이론 (Sea Power Theory)\n예측: 해군력 투자 증가 시 SLOC 통제 범위 확대 및 상업 운송 안전도 향상\n실측: United States 군비 3.3% GDP (2023), Iran 군비 2.5% GDP (2023) — 아시아 해군 (일본 등) 은 기뢰전 능력 보유하나 참여 안 함\n판정: 전제충족 (DV 미검증) — 미국 해군력은 충분하나, **아시아 파트너의 불참**으로 SLOC 통제 범위가 제한됨 (정성 증거: 참여 부재) — DV(안전도) 는 [UNVERIFIED]\n\n이론 B: 자유주의 상호의존 (Liberal Interdependence)\n예측: 상호의존 증가 시 분쟁 억제 효과 및 협력 강화\n실측: 아시아 국가들의 에너지 의존도 70~95% — 하지만 협력 (연합 참여) 은 부재 (2 개국만)\n판정: 열세 — 예측 '상호의존→협력' vs 실측 '고도 의존에도 참여 부재 (2 개국)' — 방향 불일치\n\n▶ 편차 비교 (사실): 마한 이론 예측 (해군력↑→통제↑) vs 실측 (해군력 보유에도 통제 실패) — 방향 불일치; 자유주의 이론 예측 (상호의존↑→협력↑) vs 실측 (의존도 95% 에도 협력 부재) — 방향 불일치\n▶ 당신의 판단 (연구자 몫): 두 이론 모두 호르무즈 위기에서 아시아의 행보를 설명하지 못함. 연구자는 '방기 vs 연루' 딜레마가 어떤 변수 (예: 중국과의 양자 관계, 국내 정치) 에 의해 결정되는지 판정해야 함.\n\n**[검증포인트]**\n- 2026 년 3 월~5 월 아시아 국가들의 외교 문서 및 내부 회의록 (참여 거절 사유).\n- 아시아 국가들의 에너지 안보 예산 배분과 해군 작전 비용의 상관관계 분석.\n\n**[문헌공백]**\n기존 문헌은 <공유지 지배권 (Command of the Commons)> 이론에서 미국 해군의 압도적 우위가 초크포인트 봉쇄를 무력화한다고 보지만, **중국 A2/AD 전략**과 **아시아 국가들의 비동맹적 태도**가 결합된 상황에서 공유지 지배가 형해화되는 **반례 클러스터**를 설명하지 못한다. 특히 <경쟁이론 미해결> 섹션에서 지적된 대로, **SLOC 통제 이론**과 **Self-deterrence/Insurance Markets** 이론 간의 충돌 (물리적 통제 vs 보험 시장 교란) 을 아시아의 전략적 부재라는 변수로 연결하여, 단일 도메인 (군사) 분석이 놓친 **교차도메인 (군사→외교→에너지)** 경로를 제시한다."
+    },
+    "7_postprocess": {
+      "status": "OK",
+      "ms": 46.9,
+      "scaffold_lines_stripped": 0,
+      "lint_problems": [],
+      "lint_count": 0,
+      "dv_gate_actions": [
+        {
+          "code": "provenance_missing",
+          "verdict": "우세",
+          "span": [
+            1503,
+            1509
+          ],
+          "detail": "실측 수치 [266.0] context 미실존"
+        }
+      ],
+      "dv_gate_count": 1,
+      "text_delta_chars": 44
+    },
+    "8_score": {
+      "status": "OK",
+      "ms": 0.3,
+      "confidence": 100,
+      "provisional": false,
+      "breakdown": {
+        "tier1_data_breadth": 10,
+        "tier2_commentary": 2,
+        "tier3_press": 1,
+        "dynamic_pair_bonus": 10,
+        "grounding_flag": "GROUNDED",
+        "grounding_ratio": 0.5
+      },
+      "grounding_flag": "GROUNDED",
+      "legacy_score": 100,
+      "legacy_breakdown": {
+        "numeric_citation": 30,
+        "primary_source": 20,
+        "hypothesis": 20,
+        "competing_theory": 15,
+        "chain_strength": 15
+      },
+      "inference_grade": "기술적",
+      "inference_caveat": "인과 검정 미수행 — 서술·이론 근거만(인과 아님)",
+      "data_void_penalty_applied": false,
+      "confidence_before_penalty": 100,
+      "structured_sources": 9
+    },
+    "9_hypothesis": {
+      "status": "OK",
+      "ms": 3.6,
+      "n_hypotheses": 2,
+      "hypotheses": [
+        {
+          "h1": "호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 가 통계적으로 유의하게 상승한다.",
+          "h0": "호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 가 통계적으로 유의한 관계가 없다.",
+          "independent_var": "호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과",
+          "dependent_var": "WTI 유가 (USD/배럴)",
+          "control_vars": [
+            "OPEC+ 생산량",
+            "전략비축유 방출 여부"
+          ],
+          "var_type": "Type_A",
+          "region_code": "hormuz",
+          "dependent_region": null,
+          "ticker": "CL=F",
+          "linear_testable": true,
+          "testability_reason": "",
+          "proxy_suggestions": [],
+          "is_proxy_pair": false,
+          "is_substituted_target": false,
+          "exploratory": true
+        },
+        {
+          "h1": "호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 기간이 아시아 참여 시보다 통계적으로 유의하게 길어진다.",
+          "h0": "위의 독립변수와 종속변수 사이에 통계적으로 유의한 관계가 없다.",
+          "independent_var": "호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 기간이 아시아 참여 시보다 통계적으로 유의하게 길어진다.",
+          "dependent_var": "미식별",
+          "control_vars": [
+            "OPEC+ 생산량",
+            "대체 운송로 가용성"
+          ],
+          "var_type": "Type_A",
+          "region_code": "hormuz",
+          "dependent_region": null,
+          "ticker": "CL=F",
+          "linear_testable": true,
+          "testability_reason": "",
+          "proxy_suggestions": [],
+          "is_proxy_pair": false,
+          "is_substituted_target": false,
+          "exploratory": true
+        }
+      ]
+    },
+    "10_routing": {
+      "status": "OK",
+      "ms": 8.1,
+      "n_routed": 2,
+      "routes": [
+        {
+          "h1": "호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 가 ",
+          "data_signature": "PAIRED_TIMESERIES",
+          "method_set": [
+            "granger"
+          ],
+          "implemented": [
+            "granger"
+          ],
+          "stubs": [],
+          "unquantifiable_reason": null
+        },
+        {
+          "h1": "호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 ",
+          "data_signature": "PAIRED_TIMESERIES",
+          "method_set": [
+            "granger"
+          ],
+          "implemented": [
+            "granger"
+          ],
+          "stubs": [],
+          "unquantifiable_reason": null
+        }
+      ]
+    },
+    "11_verify": {
+      "status": "OK",
+      "ms": 2637.0,
+      "results": [
+        {
+          "h1": "호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 가 ",
+          "verification_status": "PARTIAL",
+          "inference_grade": "상관",
+          "inference_caveat": "Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+          "routing_method": "granger_typeA",
+          "routing_confidence": "HIGH",
+          "routing_alternatives": [
+            "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+            "9-A 이벤트스터디 (단일 충격)"
+          ],
+          "data_signature": "PAIRED_TIMESERIES",
+          "granger_p": 0.1422,
+          "granger_q": 0.1422,
+          "f_statistic": 1.724,
+          "best_lag": 4,
+          "n_obs": 455,
+          "differenced": true,
+          "controlled": true,
+          "control_name": "VIX",
+          "theory_grounded": true,
+          "partial_basis": "TREND_P15",
+          "is_substituted_target": false,
+          "surface_summary": "[탐색적] [Granger] 호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과 → WTI 유가 (USD/배럴) 경향성 (p=0.142)",
+          "confidence_word": "보통",
+          "method_result": {
+            "iv_construct": null,
+            "headline_rung": "상관",
+            "headline_method": "granger",
+            "convergence": null,
+            "convergence_note": "",
+            "stub_methods": [],
+            "all_results": [
+              {
+                "method": "granger",
+                "signature": "PAIRED_TIMESERIES",
+                "effect_estimate": 1.724,
+                "effect_size_label": "무시할 수준",
+                "significance": 0.1422,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": true,
+                "assumption_caveat": "",
+                "reachable_rung": "선행성",
+                "actual_rung": "상관",
+                "confidence_within_rung": 75,
+                "robustness": {
+                  "extreme_p": null,
+                  "differenced": true,
+                  "controlled": true
+                },
+                "native_stats": {
+                  "granger_p": 0.1422,
+                  "granger_q": 0.1422,
+                  "f_statistic": 1.724,
+                  "best_lag": 4,
+                  "n_obs": 455
+                },
+                "exploratory": true
+              }
+            ]
+          },
+          "error": null
+        },
+        {
+          "h1": "호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 ",
+          "verification_status": "PARTIAL",
+          "inference_grade": "상관",
+          "inference_caveat": "[동일 검정 공유] 이 가설의 검정은 H1과 동일 변수쌍 (region=hormuz, ticker=CL=F) — 검정이 가설을 판별하지 않음 | Granger 선행성은 예측적 선행이지 구조적 인과가 아님 · 양변량 교란 미통제 · 경향성 수준(p<0.15)",
+          "routing_method": "granger_typeA",
+          "routing_confidence": "HIGH",
+          "routing_alternatives": [
+            "9-B 패널회귀 (CROSS_SECTION 시그니처)",
+            "9-A 이벤트스터디 (단일 충격)"
+          ],
+          "data_signature": "PAIRED_TIMESERIES",
+          "granger_p": 0.1422,
+          "granger_q": 0.1422,
+          "f_statistic": 1.724,
+          "best_lag": 4,
+          "n_obs": 455,
+          "differenced": true,
+          "controlled": true,
+          "control_name": "VIX",
+          "theory_grounded": true,
+          "partial_basis": "TREND_P15",
+          "is_substituted_target": false,
+          "surface_summary": "[탐색적] [Granger] 호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 기간이 아시아 참여 시보다 통계적으로 유의하게 길어진다. → 미식별 경향성 (p=0.142)",
+          "confidence_word": "보통",
+          "method_result": {
+            "iv_construct": null,
+            "headline_rung": "상관",
+            "headline_method": "granger",
+            "convergence": null,
+            "convergence_note": "",
+            "stub_methods": [],
+            "all_results": [
+              {
+                "method": "granger",
+                "signature": "PAIRED_TIMESERIES",
+                "effect_estimate": 1.724,
+                "effect_size_label": "무시할 수준",
+                "significance": 0.1422,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": true,
+                "assumption_caveat": "",
+                "reachable_rung": "선행성",
+                "actual_rung": "상관",
+                "confidence_within_rung": 75,
+                "robustness": {
+                  "extreme_p": null,
+                  "differenced": true,
+                  "controlled": true
+                },
+                "native_stats": {
+                  "granger_p": 0.1422,
+                  "granger_q": 0.1422,
+                  "f_statistic": 1.724,
+                  "best_lag": 4,
+                  "n_obs": 455
+                },
+                "exploratory": true
+              }
+            ]
+          },
+          "error": null
+        }
+      ]
+    },
+    "12_prediction_dryrun": {
+      "status": "OK",
+      "ms": 0.1,
+      "would_insert": 2,
+      "skipped_declarations": 0,
+      "dry_run": true,
+      "predictions": [
+        {
+          "prediction_id": "87ba0d415be94bf6a7bf12fc1e08714e",
+          "created_at": "2026-07-13T07:13:59.563822+00:00",
+          "query": "호르무즈 해협 긴장이 유가에 미치는 영향",
+          "h1": "호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과할 때, WTI 유가 (USD/배럴) 가 통계적으로 유의하게 상승한다.",
+          "independent_var": "호르무즈 해협 (hormuz) 의 ACLED 분쟁 이벤트 건수가 월간 100건을 초과",
+          "dependent_var": "WTI 유가 (USD/배럴)",
+          "target": "CL=F",
+          "target_kind": "market",
+          "direction": "up",
+          "threshold_pct": null,
+          "horizon_days": 7,
+          "resolve_by": "2026-07-20",
+          "region_code": "hormuz",
+          "data_signature": "PAIRED_TIMESERIES",
+          "inference_grade": "상관",
+          "method": "granger",
+          "exploratory": true,
+          "scorable": true,
+          "status": "PENDING",
+          "outcome_value": null,
+          "scored_at": null,
+          "confidence_at_creation": null,
+          "extraction_ok": 1
+        },
+        {
+          "prediction_id": "e1d3c42b8b8f471eb54364fb1f17541c",
+          "created_at": "2026-07-13T07:13:59.563901+00:00",
+          "query": "호르무즈 해협 긴장이 유가에 미치는 영향",
+          "h1": "호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 기간이 아시아 참여 시보다 통계적으로 유의하게 길어진다.",
+          "independent_var": "호르무즈 해협 (hormuz) 에서 아시아 국가의 연합 참여 건수가 0 건일 때, WTI 유가 (USD/배럴) 의 평균 상승 기간이 아시아 참여 시보다 통계적으로 유의하게 길어진다.",
+          "dependent_var": "미식별",
+          "target": "CL=F",
+          "target_kind": "market",
+          "direction": "up",
+          "threshold_pct": null,
+          "horizon_days": 7,
+          "resolve_by": "2026-07-20",
+          "region_code": "hormuz",
+          "data_signature": "PAIRED_TIMESERIES",
+          "inference_grade": "상관",
+          "method": "granger",
+          "exploratory": true,
+          "scorable": true,
+          "status": "PENDING",
+          "outcome_value": null,
+          "scored_at": null,
+          "confidence_at_creation": null,
+          "extraction_ok": 0
+        }
+      ]
+    }
+  },
+  "tripwire": []
+}

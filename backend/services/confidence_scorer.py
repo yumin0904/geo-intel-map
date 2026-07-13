@@ -264,13 +264,33 @@ def apply_verification_cap(confidence: int, verification_status: str) -> int:
 #   T1 = 순수 데이터 (이벤트 원장·통계 시계열·자체 원장) — source_counts 키
 #   T2 = 기관 논평·이론 (브리핑 fts/sector·이론비교·ifans)
 #   T3 = 언론·보도자료 (press)
+# T1 = 구성 타당도가 확인된 정형 소스 (기관 원정의를 그대로 쓰고, 변형 없음 —
+# 변수 타당도 감사 2026-07-13 확인). bp_provocations는 사람이 큐레이션한 도발
+# 원장으로 "도발"이라는 이름과 내용이 일치한다.
 _TIER1_DATA_KEYS = (
-    "event_stats_regions", "bp_provocations", "sipri_countries", "cow_alliances",
+    "bp_provocations", "sipri_countries", "cow_alliances",
     "kiel_donors", "eia_entries", "csis_incidents", "sipri_arms", "vdem_entries",
     "cow_wars", "fred", "wbk", "polity5", "itu", "hiik", "semi", "owid",
 )
 _TIER2_COMMENTARY_KEYS = ("fts_items", "sector_items", "ifans_pubs")
 _TIER3_PRESS_KEYS = ("press",)
+
+# ── 격리 (QUARANTINE) — 변수 타당도 감사 2026-07-13 ──────────────────────────
+# 이름과 내용이 다른 것이 실측된 소스. 신뢰도 크레딧 0. 수리 완료 후 복권한다.
+#
+#   event_stats_regions — 이벤트 "건수·평균 severity". severity는 위해 척도가
+#     아니라 event_type 조회표다(무혈 전투 70 > 사망 36명 폭동 65). 그리고 그
+#     건수의 정체가 권역마다 다르다 — "분쟁·충돌 이벤트"가 한반도 98.8%·대만해협
+#     94.5%는 국내 시위다. 우크라이나(군사 98.1%)처럼 건전한 권역도 있으나
+#     채점 시점에 구분할 수단이 없으므로 일괄 격리한다(보수적 선택).
+#
+#   cascade_links — correlation_score는 상관계수가 아니다. 빗나간 예측은 INSERT
+#     자체가 안 되므로(engine.py `return None`) 3,012건 전부 "적중"이고 79%가
+#     정확히 1.0인 분모 없는 기록이다. 생존편향에 가산점을 줄 수 없다.
+#
+# 이 격리는 오늘 오전 접지 수리가 만든 결함의 자기 정정이다 — 접지 가드는
+# "엔진이 무엇을 보았나"를 쟀지만, 그것이 "무엇을 재는 숫자인가"는 묻지 않았다.
+_QUARANTINED_KEYS = ("event_stats_regions", "cascade_links")
 
 
 def score_confidence(text: str, source_counts: dict | None = None,
@@ -278,8 +298,8 @@ def score_confidence(text: str, source_counts: dict | None = None,
     """접지·티어 기반 신뢰도 (0~100). 산문 가점 없음.
 
     배점 (결정론):
-      T1 데이터 폭:  0개 20 / 1개 40 / 2개 55 / 3개+ 70
-      동적 인과쌍:   이벤트 시계열 + cascade 동시 존재 +10
+      T1 데이터 폭:  0개 20 / 1개 40 / 2개 55 / 3개+ 70  (타당도 확인분만)
+      격리:          event_stats·cascade는 크레딧 0 (변수 타당도 감사 07-13)
       접지 보너스:   GROUNDED +20
       접지 캡:       TOPIC_SPARSE → min 72 / TOPIC_ABSENT → min 40 [구속 —
                      사용자 승인 2026-07-13. "본 적 없는 바다에 만점" 봉쇄]
@@ -292,11 +312,11 @@ def score_confidence(text: str, source_counts: dict | None = None,
     tier1 = sum(1 for k in _TIER1_DATA_KEYS if sc.get(k, 0) > 0)
     tier2 = sum(1 for k in _TIER2_COMMENTARY_KEYS if sc.get(k, 0) > 0)
     tier3 = sum(1 for k in _TIER3_PRESS_KEYS if sc.get(k, 0) > 0)
+    quarantined = [k for k in _QUARANTINED_KEYS if sc.get(k, 0) > 0]
 
     base = {0: 20, 1: 40, 2: 55}.get(tier1, 70)
-    dynamic_pair = (sc.get("event_stats_regions", 0) > 0
-                    and sc.get("cascade_links", 0) > 0)
-    conf = base + (10 if dynamic_pair else 0)
+    # 구 dynamic_pair 보너스(+10) 폐지 — 두 항(event_stats·cascade) 모두 격리 대상이다.
+    conf = base
 
     flag = (grounding or {}).get("flag", "UNKNOWN")
     if flag == "GROUNDED":
@@ -316,7 +336,7 @@ def score_confidence(text: str, source_counts: dict | None = None,
             "tier1_data_breadth": tier1,
             "tier2_commentary":   tier2,
             "tier3_press":        tier3,
-            "dynamic_pair_bonus": 10 if dynamic_pair else 0,
+            "quarantined":        quarantined,
             "grounding_flag":     flag,
             "grounding_ratio":    (grounding or {}).get("grounded_ratio"),
         },

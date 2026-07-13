@@ -1,0 +1,1010 @@
+{
+  "query": "소말릴란드 베르베라 항구 개발이 아덴만 물류 재편에서 갖는 위치",
+  "provider": "nim",
+  "model": "qwen/qwen3.5-122b-a10b",
+  "started_at": "2026-07-13T16:14:05+0900",
+  "stages": {
+    "1_parse": {
+      "status": "OK",
+      "ms": 0.0,
+      "raw_query": "소말릴란드 베르베라 항구 개발이 아덴만 물류 재편에서 갖는 위치",
+      "mode": "insight",
+      "regions": [
+        "bab_el_mandeb"
+      ],
+      "actors": [],
+      "sectors": [
+        "maritime",
+        "gray_zone"
+      ],
+      "era": null,
+      "thinking": false,
+      "keywords": [
+        "소말릴란드",
+        "베르베라",
+        "항구",
+        "개발",
+        "아덴",
+        "물류",
+        "재편",
+        "갖는"
+      ]
+    },
+    "2_procurement": {
+      "status": "OK",
+      "ms": 165.6,
+      "source_counts": {
+        "fts_items": 10,
+        "sector_items": 6,
+        "event_stats_regions": 1,
+        "cascade_links": 8,
+        "country_profiles": 0,
+        "sipri_countries": 2,
+        "cow_alliances": 37,
+        "kiel_donors": 12,
+        "eia_entries": 2,
+        "csis_incidents": 0,
+        "sipri_arms": 0,
+        "vdem_entries": 0,
+        "cow_wars": 1,
+        "ifans_pubs": 0,
+        "theory_cmp_chars": 3215,
+        "fred": 6,
+        "wbk": 4,
+        "polity5": 0,
+        "itu": 0,
+        "hiik": 4,
+        "semi": 0,
+        "owid": 6,
+        "press": 0,
+        "bp_provocations": 0
+      },
+      "sources": {
+        "library_like": {
+          "fn": "_search_library_like",
+          "ms": 61.9,
+          "args": [
+            "소말릴란드 베르베라 항구 개발이 아덴만 물류 재편에서 갖는 위치",
+            "['bab_el_mandeb']",
+            "['maritime', 'gray_zone']"
+          ],
+          "n_records": 10,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "fts_items"
+        },
+        "library_sector": {
+          "fn": "_search_library_by_sector",
+          "ms": 15.4,
+          "args": [
+            "['maritime', 'gray_zone']"
+          ],
+          "n_records": 6,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "sector_items"
+        },
+        "acled_events": {
+          "fn": "_get_event_stats",
+          "ms": 82.7,
+          "args": [
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 1,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "event_stats_regions"
+        },
+        "cascade": {
+          "fn": "_get_cascade_context",
+          "ms": 48.1,
+          "args": [
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 2,
+          "status": "OK",
+          "rendered_chars": 0,
+          "in_context": true,
+          "source_counts_key": "cascade_links"
+        },
+        "country_profile": {
+          "fn": "_get_country_profiles",
+          "ms": 0.0,
+          "args": [
+            "[]"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "country_profiles"
+        },
+        "sipri_milex": {
+          "fn": "_get_sipri_data",
+          "ms": 11.7,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 2,
+          "status": "OK",
+          "rendered_chars": 329,
+          "in_context": true,
+          "source_counts_key": "sipri_countries"
+        },
+        "cow_alliances": {
+          "fn": "_get_cow_alliances",
+          "ms": 13.3,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 37,
+          "status": "OK",
+          "rendered_chars": 600,
+          "in_context": true,
+          "source_counts_key": "cow_alliances"
+        },
+        "kiel": {
+          "fn": "_get_kiel_data",
+          "ms": 13.7,
+          "args": [
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 12,
+          "status": "OK",
+          "rendered_chars": 666,
+          "in_context": true,
+          "source_counts_key": "kiel_donors"
+        },
+        "eia": {
+          "fn": "_get_eia_data",
+          "ms": 11.7,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 2,
+          "status": "OK",
+          "rendered_chars": 247,
+          "in_context": true,
+          "source_counts_key": "eia_entries"
+        },
+        "csis": {
+          "fn": "_get_csis_incidents",
+          "ms": 1.1,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']",
+            "['maritime', 'gray_zone']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "csis_incidents"
+        },
+        "sipri_arms": {
+          "fn": "_get_sipri_arms",
+          "ms": 0.0,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "sipri_arms"
+        },
+        "vdem": {
+          "fn": "_get_vdem",
+          "ms": 0.0,
+          "args": [
+            "[]"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "vdem_entries"
+        },
+        "cow_wars": {
+          "fn": "_get_cow_wars",
+          "ms": 12.8,
+          "args": [
+            "['bab_el_mandeb']",
+            "[]"
+          ],
+          "n_records": 1,
+          "status": "OK",
+          "rendered_chars": 170,
+          "in_context": true,
+          "source_counts_key": "cow_wars"
+        },
+        "ifans": {
+          "fn": "_get_ifans_publications",
+          "ms": 159.8,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "ifans_pubs"
+        },
+        "theory_compare": {
+          "fn": "build_theory_comparison_context",
+          "ms": 48.6,
+          "args": [
+            "['maritime', 'gray_zone']",
+            "['bab_el_mandeb']",
+            "[]"
+          ],
+          "n_records": 1,
+          "status": "OK",
+          "rendered_chars": 3215,
+          "in_context": true,
+          "source_counts_key": "theory_cmp_chars"
+        },
+        "fred": {
+          "fn": "_get_fred_data",
+          "ms": 12.5,
+          "args": [
+            "['bab_el_mandeb']",
+            "['maritime', 'gray_zone']"
+          ],
+          "n_records": 6,
+          "status": "OK",
+          "rendered_chars": 307,
+          "in_context": true,
+          "source_counts_key": "fred"
+        },
+        "worldbank_wgi": {
+          "fn": "_get_world_bank_wgi",
+          "ms": 5.7,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 4,
+          "status": "OK",
+          "rendered_chars": 361,
+          "in_context": true,
+          "source_counts_key": "wbk"
+        },
+        "polity5": {
+          "fn": "_get_polity5",
+          "ms": 0.0,
+          "args": [
+            "[]"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "polity5"
+        },
+        "itu_ict": {
+          "fn": "_get_itu_ict",
+          "ms": 0.0,
+          "args": [
+            "[]",
+            "['maritime', 'gray_zone']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "itu"
+        },
+        "hiik": {
+          "fn": "_get_hiik_conflict",
+          "ms": 8.4,
+          "args": [
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 4,
+          "status": "OK",
+          "rendered_chars": 391,
+          "in_context": true,
+          "source_counts_key": "hiik"
+        },
+        "semi_market": {
+          "fn": "_get_semi_market",
+          "ms": 0.0,
+          "args": [
+            "['maritime', 'gray_zone']",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "semi"
+        },
+        "owid": {
+          "fn": "_get_owid_data",
+          "ms": 9.6,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']",
+            "['maritime', 'gray_zone']"
+          ],
+          "n_records": 6,
+          "status": "OK",
+          "rendered_chars": 319,
+          "in_context": true,
+          "source_counts_key": "owid"
+        },
+        "trade_dep": {
+          "fn": "_get_trade_dependency",
+          "ms": 11.2,
+          "args": [
+            "[]",
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 20,
+          "status": "OK",
+          "rendered_chars": 673,
+          "in_context": false,
+          "source_counts_key": null
+        },
+        "press": {
+          "fn": "_get_press_releases",
+          "ms": 11.4,
+          "args": [
+            "['bab_el_mandeb']"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "press"
+        },
+        "bp_provocations": {
+          "fn": "_get_bp_provocations",
+          "ms": 0.0,
+          "args": [
+            "['bab_el_mandeb']",
+            "[]",
+            "소말릴란드 베르베라 항구 개발이 아덴만 물류 재편에서 갖는 위치"
+          ],
+          "n_records": 0,
+          "status": "SILENT",
+          "rendered_chars": 0,
+          "in_context": false,
+          "source_counts_key": "bp_provocations"
+        }
+      }
+    },
+    "3_context": {
+      "status": "OK",
+      "ms": 0,
+      "context_chars": 19773,
+      "data_layer_chars": 5209,
+      "budget_max": 20000,
+      "budget_overflow": false,
+      "n_sections": 37,
+      "sections": [
+        {
+          "header": "## 분석 쿼리 요약",
+          "chars": 32,
+          "order": 1
+        },
+        {
+          "header": "## 브리핑·이론 원문 (3개 전문 포함)",
+          "chars": 713,
+          "order": 2
+        },
+        {
+          "header": "## 핵심 주장",
+          "chars": 721,
+          "order": 3
+        },
+        {
+          "header": "## 근거와 데이터",
+          "chars": 219,
+          "order": 4
+        },
+        {
+          "header": "## 주요 행위자",
+          "chars": 454,
+          "order": 5
+        },
+        {
+          "header": "## 위협의 성격",
+          "chars": 289,
+          "order": 6
+        },
+        {
+          "header": "## 지정학적 함의",
+          "chars": 1019,
+          "order": 7
+        },
+        {
+          "header": "## 핵심 주장",
+          "chars": 613,
+          "order": 8
+        },
+        {
+          "header": "## 근거와 데이터",
+          "chars": 296,
+          "order": 9
+        },
+        {
+          "header": "## 주요 행위자",
+          "chars": 346,
+          "order": 10
+        },
+        {
+          "header": "## 위협의 성격",
+          "chars": 354,
+          "order": 11
+        },
+        {
+          "header": "## 지정학적 함의",
+          "chars": 688,
+          "order": 12
+        },
+        {
+          "header": "## Cascade 연결 포인트",
+          "chars": 557,
+          "order": 13
+        },
+        {
+          "header": "## 사건 개요",
+          "chars": 184,
+          "order": 14
+        },
+        {
+          "header": "## 법안의 지정학적 배경",
+          "chars": 219,
+          "order": 15
+        },
+        {
+          "header": "## 기술 민족주의의 제도화",
+          "chars": 263,
+          "order": 16
+        },
+        {
+          "header": "## 중국의 대응 — 반도체 자립 경쟁",
+          "chars": 161,
+          "order": 17
+        },
+        {
+          "header": "## Cascade 연결",
+          "chars": 269,
+          "order": 18
+        },
+        {
+          "header": "## 한국에 대한 함의",
+          "chars": 241,
+          "order": 19
+        },
+        {
+          "header": "## 학습 포인트",
+          "chars": 134,
+          "order": 20
+        },
+        {
+          "header": "## 참고 자료",
+          "chars": 325,
+          "order": 21
+        },
+        {
+          "header": "## 추가 관련 브리핑 (요약)",
+          "chars": 1070,
+          "order": 22
+        },
+        {
+          "header": "## 이론 프로파일 (예측 도구)",
+          "chars": 651,
+          "order": 23
+        },
+        {
+          "header": "## Cascade 인과 룰 (이론 근거)",
+          "chars": 494,
+          "order": 24
+        },
+        {
+          "header": "## Cascade 발화 실적 (룰 기반 — 통계 상관계수 아님)",
+          "chars": 397,
+          "order": 25
+        },
+        {
+          "header": "## ACLED 이벤트 통계",
+          "chars": 187,
+          "order": 26
+        },
+        {
+          "header": "## 경쟁 이론 비교 프로파일 (예측값 vs 실측값)",
+          "chars": 3217,
+          "order": 27
+        },
+        {
+          "header": "## 문헌 공백 원장 (결정론적 추출 — [문헌공백] 작성 근거)",
+          "chars": 2271,
+          "order": 28
+        },
+        {
+          "header": "## 분쟁 강도 바로미터 (HIIK Conflict Barometer 2024)",
+          "chars": 391,
+          "order": 29
+        },
+        {
+          "header": "## 에너지 생산·수출 현황 (EIA International Energy Statistics 2023)",
+          "chars": 247,
+          "order": 30
+        },
+        {
+          "header": "## 국가 거버넌스 지수 (World Bank WGI 2022)",
+          "chars": 361,
+          "order": 31
+        },
+        {
+          "header": "## 관련 전쟁 선례 (COW Inter-State/Intra-State Wars)",
+          "chars": 170,
+          "order": 32
+        },
+        {
+          "header": "## 우크라이나 지원 현황 (Kiel Ukraine Support Tracker 2024)",
+          "chars": 666,
+          "order": 33
+        },
+        {
+          "header": "## 군사력 비교 (Our World in Data, SIPRI/FAS 원천)",
+          "chars": 319,
+          "order": 34
+        },
+        {
+          "header": "## 국방비 추이 (SIPRI 2023, % of GDP / USD billion)",
+          "chars": 329,
+          "order": 35
+        },
+        {
+          "header": "## 공식 동맹 관계 (COW Formal Alliances v4.1)",
+          "chars": 600,
+          "order": 36
+        },
+        {
+          "header": "## 주요 경제 지표 시계열 (FRED — Federal Reserve Economic Data)",
+          "chars": 306,
+          "order": 37
+        }
+      ],
+      "n_briefings_total": 15,
+      "n_briefings_full_body": 3,
+      "briefings": [
+        {
+          "title": "[War on the Rocks] 승인의 문제: 소말릴란드, 이스라엘 안보 기하학, 홍해 패권 경쟁",
+          "source_org": "War on the Rocks",
+          "own_relevance": 15,
+          "own_rel_ts": 9,
+          "body_chars": 4575,
+          "full_body_injected": true
+        },
+        {
+          "title": "[War on the Rocks] 제해권 혁명: 수단에서 목적 자체로 — 해양 통제 패러다임의 전환",
+          "source_org": "War on the Rocks",
+          "own_relevance": 5,
+          "own_rel_ts": 0,
+          "body_chars": 4651,
+          "full_body_injected": false
+        },
+        {
+          "title": "[INSS] 핵추진잠수함 개발 특별법 설계 방향 (이슈브리프 849호)",
+          "source_org": "INSS",
+          "own_relevance": 5,
+          "own_rel_ts": 3,
+          "body_chars": 4045,
+          "full_body_injected": true
+        },
+        {
+          "title": "사례: 2022 CHIPS Act — 반도체 공급망 재편과 기술 민족주의의 제도화",
+          "source_org": null,
+          "own_relevance": 5,
+          "own_rel_ts": 3,
+          "body_chars": 1794,
+          "full_body_injected": true
+        },
+        {
+          "title": "[Chatham House] 방산·이중 용도 AI 투자 붐이 글로벌 AI 경쟁을 어떻게 재편하는가",
+          "source_org": "Chatham House",
+          "own_relevance": 4,
+          "own_rel_ts": 3,
+          "body_chars": 4652,
+          "full_body_injected": false
+        },
+        {
+          "title": "[ECFR] 전후 UAE와 걸프 정치의 재편: 이란전이 뒤바꾼 지역 질서",
+          "source_org": "ECFR",
+          "own_relevance": 4,
+          "own_rel_ts": 3,
+          "body_chars": 4286,
+          "full_body_injected": false
+        },
+        {
+          "title": "[Chatham House] AI 버블 붕괴가 미국 기술 패권을 잠식하고 중국의 부상을 가속하는 방식",
+          "source_org": "Chatham House",
+          "own_relevance": 4,
+          "own_rel_ts": 2,
+          "body_chars": 4122,
+          "full_body_injected": false
+        },
+        {
+          "title": "AI 전략 경쟁론 (AI Strategic Competition Theory)",
+          "source_org": null,
+          "own_relevance": 4,
+          "own_rel_ts": 4,
+          "body_chars": 1816,
+          "full_body_injected": false
+        },
+        {
+          "title": "[CSIS] 글로벌 테러리즘 위협 평가 2026 — 복합·분산 위협과 대테러 역량 저하",
+          "source_org": "CSIS",
+          "own_relevance": 0,
+          "own_rel_ts": 0,
+          "body_chars": 5273,
+          "full_body_injected": false
+        },
+        {
+          "title": "[War on the Rocks] 유리 턱: 미국 경제 취약성이 국가안보 선택지를 좁힌다",
+          "source_org": "War on the Rocks",
+          "own_relevance": 0,
+          "own_rel_ts": 0,
+          "body_chars": 4996,
+          "full_body_injected": false
+        },
+        {
+          "title": "[ECFR] 코드·클라우드·위성: 유럽이 외주해선 안 될 방산 레이어",
+          "source_org": "European Council on Foreign Relations",
+          "own_relevance": 0,
+          "own_rel_ts": 0,
+          "body_chars": 4650,
+          "full_body_injected": false
+        },
+        {
+          "title": "[CSIS] 아프리카 합동전영역작전(JADO) 미래 시험: 드론 배틀랩 전략",
+          "source_org": "CSIS",
+          "own_relevance": 0,
+          "own_rel_ts": 0,
+          "body_chars": 4540,
+          "full_body_injected": false
+        }
+      ]
+    },
+    "4_grounding": {
+      "status": "OK",
+      "ms": 0,
+      "terms": {
+        "소말릴란드": 0,
+        "베르베라": 0,
+        "항구": 0,
+        "개발": 0,
+        "아덴": 1,
+        "물류": 0,
+        "재편": 0,
+        "갖는": 0
+      },
+      "grounded_ratio": 0.12,
+      "flag": "TOPIC_SPARSE",
+      "basis": "data-only context (브리핑·이론·문헌공백 제외)",
+      "data_context_chars": 5209
+    },
+    "5_prompt": {
+      "status": "OK",
+      "ms": 7.0,
+      "prompt_chars": 34623,
+      "synthesis_chars": 234,
+      "context_share": 0.571
+    },
+    "6_llm": {
+      "status": "OK",
+      "provider": "nim",
+      "model": "qwen/qwen3.5-122b-a10b",
+      "ms": 128918.9,
+      "response_chars": 5526,
+      "empty": false,
+      "response_text": "[탐색적] 소말릴란드 베르베라 항구 개발은 아덴만 물류의 단순한 '대체 경로'가 아니라, 후티의 회색지대 강압 메커니즘을 '물리적 표적화'로 전환하는 지정학적 분기점이다.\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 베르베라 항구 개발은 지부티 항구의 독점을 깨고 에티오피아에 대체 운송로를 제공함으로써, 홍해-아덴만 해역의 물류 리스크를 분산시키고 운송 안정성을 높인다.\n[비자명기여] 통념은 '물류 대체'가 곧 '안정화'라고 가정하나, 베르베라가 이스라엘의 안보 기지화될 경우 오히려 **회색지대 강압의 표적을 명확히 하여** 아덴만 전체의 위험 프리미엄을 높이는 '역효과'가 발생할 수 있다. 이는 〈SLOC 통제 이론〉의 예측 임계인 \"초크포인트 위협 증가 시 운임·유가 단기 급등\"이 **대체항로 확보라는 완충재가 있더라도, 위협의 '신호'가 강화되면 전이가 차단되지 않는** 범위조건을 보여준다. 즉, 물리적 대체 경로 존재 여부와 무관하게, '표적화'된 항구가 존재하는 것 자체가 후티의 공격 명분을 강화하여 보험료와 위험 할증을 유발한다.\n[관찰] 2025 년 12 월 26 일 이스라엘이 소말릴란드를 공식 승인하고 베르베라 항구에 군사 기지 추진을 선언했다. 반면, 21 개 아랍·이슬람·아프리카 국가는 이 승인을 반대하는 공동성명을 발표했다. ACLED 데이터에 따르면 바브엘만데브 (bab_el_mandeb) 해역 분쟁 건수는 2025 년 4 월 1,246 건에서 2025 년 7 월 238 건으로 급감했으나, 2026 년 6 월 2 건, 7 월 1 건으로 극도로 낮아진 상태이다. 그러나 후티는 베르베라를 이스라엘 거점으로 규정하고 공격을 선언했다.\n[주장] (등급: 상관) 베르베라 항구의 군사 기지화 선언과 이스라엘 승인 사건은 아덴만 해역의 '표적화 위험' 인지와 동반한다. 물류 대체 경로 확보와 후티의 공격 명부 등재는 서로 공변한다.\n[가설] H1: 소말릴란드 승인 관련 외교 이벤트 건수 증가 시, 아덴만 해역 선박 보험료 (War Risk Premium) 가 통계적으로 유의하게 상승한다 (통제변수: 유가, 대안항로 가용성).\n[근거] War on the Rocks 브리핑 (이스라엘 승인 및 베르베라 기지화), ACLED bab_el_mandeb 분쟁 건수 (2025-04: 1246 건 → 2025-07: 238 건), 후티 공격 선언 (context 내 서술).\n[한계] 현재 보험료 정량 데이터가 <context>에 없어 실측 검증 불가. 소수 사례 (이스라엘 승인) 에 기반한 일반화는 선택편향 (성공적인 기지화 사례만 기록됨) 위험이 있음.\n[경쟁설명]\n이론: 자원무기화 (Resource Weaponization)\n  예측: 바브엘만데브 초크포인트 위협 강도 증가 시, 운임 및 유가 단기 급등 (통제: 비축유 방출·대체 운송로·완충 재고)\n  실측: Brent Crude Oil Price 80.22 USD/barrel (2024-01-01, 최근 추세 +91.7%, 사전계산) [FRED]; 바브엘만데브 통과량 6.2 Mbpd [EIA]\n  판정: 전제충족 (DV 미검증) — 실측 유가는 존재하나, 이스라엘 승인 이후 유가 변동성과 베르베라 표적화의 직접적 인과 연결은 데이터 부재.\n  (앵커: 6.2 Mbpd, 전제 충족, 사전계산)\n\n이론: 회색지대 전략 (Gray Zone Strategy)\n  예측: 회색지대 행동 빈도 증가 시 목표국 정책 양보 증가 (통제: 동맹 지원 수준)\n  실측: HIIK 분쟁강도 Sudan Civil War 강도 5 (전쟁, 2024) | Ethiopia-Oromia 강도 4 (제한전쟁, 2024) [Gray Zone 예측: 강도 1~3 저강도 지속 / Hybrid 예측: 강도 3~4 위기·제한전]\n  판정: 전제충족 (DV 미검증) — 지역 분쟁 강도는 높으나, 베르베라 항구 개발로 인한 '정책 양보' (에티오피아 등) 의 정량적 변화는 미측정.\n  (앵커: 강도 4~5, 전제 충족, 사전계산)\n\n▶ 편차 비교 (사실): 자원무기화 예측편차 [산술 미제공] (유가 변동성 미연계) vs 회색지대 전략 예측편차 [산술 미제공] (정책 양보 미측정) — 두 이론 모두 DV 정량값 부재로 편차 산출 불가\n▶ 당신의 판단 (연구자 몫): 베르베라 항구가 '물리적 대체'인지 '전략적 표적'인지 판단하기 위해서는 유가 변동성 데이터와 보험료 데이터의 상관성을 검증해야 함. 쟁점: 후티의 위협이 실제 봉쇄 (물리적 차단) 로 이어지지 않아도 '인지적 위협'만으로 운임이 상승하는지 (회색지대 전략 우세) vs 실제 봉쇄 시에만 상승하는지 (자원무기화 우세).\n[검증포인트] 2025 년 12 월 이후 아덴만 통과 선박의 전쟁보험료 (War Risk Premium) 변화율, 에티오피아의 베르베라 항구 사용량 증감 데이터, 후티의 베르베라 공격 시도 건수.\n[문헌공백] 기존 연구는 〈SLOC 통제 이론〉을 통해 초크포인트 위협이 운임에 미치는 영향을 분석했으나, **'대체항로 존재'와 '표적화 강화'가 상충하는 조건**을 다루지 못했다. 문헌 공백 원장 ① 반례 클러스터에 따르면, 후티의 홍해 공격에도 유가 급등이 제한적이었던 2024~2025 년 사례는 \"미국 전략비축유 방출·OPEC+ 여유 생산능력·우회 항로\"가 전이를 차단했다고 보지만, 본 분석은 **이스라엘-소말릴란드 승인이라는 '신호'가 새로운 표적을 생성하여 전이 차단 메커니즘을 무력화할 수 있음**을 지적한다. 즉, 물리적 대체 경로 (베르베라) 가 오히려 공격 명분을 강화하는 역설적 메커니즘이 기존 단일 도메인 (에너지 또는 군사) 문헌의 사각지대이다.\n\n---\n\n[탐색적] 베르베라 항구의 '미국 미승인' 상태는 이스라엘의 단독 기지화를 부추겨 아덴만 물류 재편을 '안보화' 시키며, 미국이 통제하지 못하는 비국가 행위자 (후티) 의 개입을 유도하는 구조적 취약점이 된다.\n데이터기반: 중 | 이론근거: 고 | 연쇄강도: MEDIUM\n\n[통념] 소말릴란드 베르베라 항구 개발은 아프리카의 자발적 발전과 에티오피아의 무역 다변화를 위한 경제적 프로젝트이며, 국제 사회의 승인 여부는 안보 문제와 별개로 경제 논리에 의해 결정된다.\n[비자명기여] 통념은 '경제 프로젝트'와 '안보 문제'를 분리하지만, 이스라엘의 단독 승인 (2025.12.26) 과 미국의 미승인 (검토 중) 사이의 간극은 **안보 아키텍처의 불완전성**을 노출시킨다. 이는 〈공유지 지배권 (Command of the Commons)〉 이론이 예측하는 \"미국 해군의 압도적 우위로 초크포인트 통제\"가 실패할 때, 오히려 **비국가 행위자 (후티) 가 공유지 (공해) 를 무기화하여 미국 동맹 (이스라엘) 의 기지를 타격하는 A2/AD 전략의 변형**이 발생할 수 있음을 보여준다. 즉, 미국의 모호한 태도가 오히려 '회색지대 강압'의 임계점을 낮추어 물류 재편을 고비용 안보 경쟁으로 전환시키는 범위조건을 제공한다.\n[관찰] 이스라엘은 2025 년 12 월 26 일 소말릴란드를 승인했으나, 미국은 트럼프 행정부 하에서 \"검토 중\" 입장을 유지하고 있으며 의회 입법 (NDAA FY2026) 과 행정부 실행 간 간극이 존재한다. 21 개국이 승인 반대 공동성명을 냈지만, 실제 물리적 안보 공백이 발생했다. 에티오피아는 지부티 의존 탈피 기회를 얻었으나, 베르베라가 후티의 표적이 될 수 있는 '제로섬 딜레마'에 처했다.\n[주장] (등급: 상관) 미국의 승인 지연과 이스라엘의 단독 기지화 추진은 아덴만 해역의 '안보 불확실성'과 공변한다. 미국 안보 우산의 부재는 비국가 행위자의 공격 명분을 강화하는 조건과 동반된다.\n[가설] H1: 미국이 소말릴란드 승인 관련 입법을 지연할 때, 아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격) 가 통계적으로 유의하게 증가한다 (통제변수: 지역 분쟁 건수, 유가).\n[근거] War on the Rocks 브리핑 (미국 미승인, 이스라엘 단독 승인, 에티오피아 딜레마), ACLED bab_el_mandeb 분쟁 건수 (2026-06: 2 건, 2026-07: 1 건).\n[한계] 뉴스 키워드 빈도 데이터 부재로 정량 검증 불가. 소수 사례 (이스라엘 승인 1 건) 에 의존하여 일반화할 경우 생존편향 (성공적인 기지화 사례만 주목됨) 위험 존재.\n[경쟁설명]\n이론: 마한의 해양력 이론 (Sea Power Theory)\n  예측: 해군력 투자 증가 시 SLOC 통제 범위 확대 (통제: 경쟁국 해군력 규모)\n  실측: Saudi Arabia 군비 6.4% GDP (2023) | United States 군비 3.3% GDP (2023) [OWID]\n  판정: 전제충족 (DV 미검증) — 군비 지출 데이터는 있으나, 베르베라 기지화로 인한 SLOC 통제 범위 변화 (확대/축소) 는 정량 측정 불가.\n  (앵커: 3.3% GDP, 전제 충족, 사전계산)\n\n이론: 회색지대 전략 (Gray Zone Strategy)\n  예측: 회색지대 행동 빈도 증가 시 목표국 정책 양보 증가 (통제: 동맹 지원 수준)\n  실측: HIIK 분쟁강도 Sudan Civil War 강도 5 (전쟁, 2024) | Ethiopia-Oromia 강도 4 (제한전쟁, 2024) [Gray Zone 예측: 강도 1~3 저강도 지속 / Hybrid 예측: 강도 3~4 위기·제한전]\n  판정: 전제충족 (DV 미검증) — 지역 분쟁 강도는 높으나, 베르베라 표적화로 인한 에티오피아의 정책 양보 (지부티 회귀 등) 는 미측정.\n  (앵커: 강도 4~5, 전제 충족, 사전계산)\n\n▶ 편차 비교 (사실): 마한 이론 예측편차 [산술 미제공] (SLOC 통제 범위 미측정) vs 회색지대 전략 예측편차 [산술 미제공] (정책 양보 미측정) — 두 이론 모두 DV 정량값 부재로 편차 산출 불가\n▶ 당신의 판단 (연구자 몫): 베르베라 기지화가 '해양력 확장' (마한) 으로 작동할지, '회색지대 도발' (후티) 을 부추기는지 판단하기 위해서는 미국의 해군력 투입 규모와 후티의 공격 빈도 간 상관관계를 분석해야 함. 쟁점: 미국이 기지를 지원하지 않더라도 이스라엘 단독 기지가 '공유지 지배'를 유지할 수 있는지 (마한 우세) vs 오히려 비국가 행위자의 공격을 유발하여 지배력을 약화시키는지 (회색지대 우세).\n[검증포인트] 미국 해군의 아덴만 주둔 함대 규모 변화, 이스라엘 해군 함정의 베르베라 입출港 기록, 후티의 베르베라 관련 위협 발언 빈도.\n[문헌공백] 기존 문헌은 〈공유지 지배권 (Command of the Commons)〉 이론을 통해 미국 해군의 압도적 우위가 초크포인트 통제를 보장한다고 보았으나, **'동맹 내 불일치 (미국 미승인 vs 이스라엘 승인)'가 공유지 지배력을 약화시키는 경로**를 다루지 못했다. 문헌 공백 원장 ① 반례 클러스터의 \"중국 A2/AD 전략이 미국 공유지 지배력 지수 약화\" 반례와 유사하게, 본 분석은 **동맹국 간의 안보 격차 (미국 미지원) 가 오히려 비국가 행위자의 A2/AD 전략 (후티 공격) 을 가능하게 하는 조건**임을 지적한다. 즉, 단일 국가의 해군력 투자 (마한 이론) 만으로는 설명되지 않는 '동맹 내부의 안보 공백'이 공유지 지배를 무력화하는 교차 도메인 (외교 - 군사) 메커니즘이 기존 연구의 사각지대이다."
+    },
+    "7_postprocess": {
+      "status": "OK",
+      "ms": 67.6,
+      "scaffold_lines_stripped": 0,
+      "lint_problems": [],
+      "lint_count": 0,
+      "dv_gate_actions": [],
+      "dv_gate_count": 0,
+      "text_delta_chars": 0
+    },
+    "8_score": {
+      "status": "OK",
+      "ms": 1.1,
+      "confidence": 72,
+      "provisional": false,
+      "breakdown": {
+        "tier1_data_breadth": 10,
+        "tier2_commentary": 2,
+        "tier3_press": 0,
+        "dynamic_pair_bonus": 10,
+        "grounding_flag": "TOPIC_SPARSE",
+        "grounding_ratio": 0.12
+      },
+      "grounding_flag": "TOPIC_SPARSE",
+      "legacy_score": 100,
+      "legacy_breakdown": {
+        "numeric_citation": 30,
+        "primary_source": 20,
+        "hypothesis": 20,
+        "competing_theory": 15,
+        "chain_strength": 15
+      },
+      "inference_grade": "기술적",
+      "inference_caveat": "인과 검정 미수행 — 서술·이론 근거만(인과 아님)",
+      "data_void_penalty_applied": false,
+      "confidence_before_penalty": 72,
+      "structured_sources": 9
+    },
+    "9_hypothesis": {
+      "status": "OK",
+      "ms": 2.1,
+      "n_hypotheses": 2,
+      "hypotheses": [
+        {
+          "h1": "소말릴란드 승인 관련 외교 이벤트 건수 증가 시, 아덴만 해역 선박 보험료 (War Risk Premium) 가 통계적으로 유의하게 상승한다.",
+          "h0": "소말릴란드 승인 관련 외교 이벤트 건수 증가 시, 아덴만 해역 선박 보험료 (War Risk Premium) 가 통계적으로 유의한 관계가 없다.",
+          "independent_var": "소말릴란드 승인 관련 외교 이벤트 건수",
+          "dependent_var": "아덴만 해역 선박 보험료 (War Risk Premium)",
+          "control_vars": [
+            "유가",
+            "대안항로 가용성"
+          ],
+          "var_type": "Type_A",
+          "region_code": "bab_el_mandeb",
+          "dependent_region": null,
+          "ticker": null,
+          "linear_testable": true,
+          "testability_reason": "",
+          "proxy_suggestions": [],
+          "is_proxy_pair": false,
+          "is_substituted_target": false,
+          "exploratory": true
+        },
+        {
+          "h1": "미국이 소말릴란드 승인 관련 입법을 지연할 때, 아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격) 가 통계적으로 유의하게 증가한다.",
+          "h0": "미국이 소말릴란드 승인 관련 입법을 지연할 때, 아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격) 가 통계적으로 유의한 관계가 없다.",
+          "independent_var": "미국이 소말릴란드 승인 관련 입법을 지연",
+          "dependent_var": "아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격)",
+          "control_vars": [
+            "지역 분쟁 건수",
+            "유가"
+          ],
+          "var_type": "Type_B",
+          "region_code": "bab_el_mandeb",
+          "dependent_region": null,
+          "ticker": null,
+          "linear_testable": true,
+          "testability_reason": "",
+          "proxy_suggestions": [],
+          "is_proxy_pair": false,
+          "is_substituted_target": false,
+          "exploratory": true
+        }
+      ]
+    },
+    "10_routing": {
+      "status": "OK",
+      "ms": 26.5,
+      "n_routed": 2,
+      "routes": [
+        {
+          "h1": "소말릴란드 승인 관련 외교 이벤트 건수 증가 시, 아덴만 해역 선박 보험료 (War Risk Premium) 가 통계적으로 유",
+          "data_signature": "PAIRED_TIMESERIES",
+          "method_set": [
+            "granger"
+          ],
+          "implemented": [
+            "granger"
+          ],
+          "stubs": [],
+          "unquantifiable_reason": null
+        },
+        {
+          "h1": "미국이 소말릴란드 승인 관련 입법을 지연할 때, 아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격) 가 통계적으로 유의하",
+          "data_signature": "PAIRED_TIMESERIES",
+          "method_set": [
+            "granger"
+          ],
+          "implemented": [
+            "granger"
+          ],
+          "stubs": [],
+          "unquantifiable_reason": null
+        }
+      ]
+    },
+    "11_verify": {
+      "status": "OK",
+      "ms": 5491.4,
+      "results": [
+        {
+          "h1": "소말릴란드 승인 관련 외교 이벤트 건수 증가 시, 아덴만 해역 선박 보험료 (War Risk Premium) 가 통계적으로 유",
+          "verification_status": "PENDING",
+          "inference_grade": "기술적",
+          "inference_caveat": "[대리 검정 미귀속] 표면 가설의 DV가 조달 불가 — 대리쌍(region 기본 지표) 검정 수치는 탐색 참고용이며 표면 가설의 검증 상태로 승격되지 않음 | Granger 비유의(p≥0.15) — 선행성 근거 없음",
+          "routing_method": "granger_typeA_downgrade",
+          "routing_confidence": "MEDIUM",
+          "routing_alternatives": [
+            "ticker 재정의 후 Type_A 정상경로 재시도"
+          ],
+          "data_signature": "PAIRED_TIMESERIES",
+          "granger_p": 0.8978,
+          "granger_q": null,
+          "f_statistic": 0.269,
+          "best_lag": 4,
+          "n_obs": 455,
+          "differenced": true,
+          "controlled": true,
+          "control_name": "VIX",
+          "theory_grounded": true,
+          "partial_basis": null,
+          "is_substituted_target": true,
+          "surface_summary": "[탐색적] [Granger] bab_el_mandeb→CL=F — 비유의",
+          "confidence_word": "낮음",
+          "method_result": {
+            "iv_construct": null,
+            "headline_rung": "기술적",
+            "headline_method": "granger",
+            "convergence": null,
+            "convergence_note": "",
+            "stub_methods": [],
+            "all_results": [
+              {
+                "method": "granger",
+                "signature": "PAIRED_TIMESERIES",
+                "effect_estimate": 0.269,
+                "effect_size_label": "무시할 수준",
+                "significance": 0.8978,
+                "ci_low": null,
+                "ci_high": null,
+                "assumptions_met": true,
+                "assumption_caveat": "",
+                "reachable_rung": "선행성",
+                "actual_rung": "기술적",
+                "confidence_within_rung": 50,
+                "robustness": {
+                  "extreme_p": null,
+                  "differenced": true,
+                  "controlled": true
+                },
+                "native_stats": {
+                  "granger_p": 0.8978,
+                  "granger_q": null,
+                  "f_statistic": 0.269,
+                  "best_lag": 4,
+                  "n_obs": 455
+                },
+                "exploratory": true
+              }
+            ]
+          },
+          "error": "[대리변수 사용] Type A 강등 → ACLED bab_el_mandeb + CL=F 대리변수 → CL=F (p=0.8978, F=0.269, lag=4, diff=True)"
+        },
+        {
+          "h1": "미국이 소말릴란드 승인 관련 입법을 지연할 때, 아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격) 가 통계적으로 유의하",
+          "verification_status": "PENDING",
+          "inference_grade": "기술적",
+          "inference_caveat": "[구성타당도] IV 지목 대상(United States) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 Yemen(100%). [진단: DATA_ABSENT — 창 내 전 지역에도 대상 데이터 없음. 정직한 한계(감점 대상 아님) → 소스 수집(data_gap)이 유일한 해소]",
+          "routing_method": "construct_validity_fail",
+          "routing_confidence": "HIGH",
+          "routing_alternatives": [
+            "질문 대상을 커버하는 데이터 확보 후 재검정"
+          ],
+          "data_signature": "",
+          "granger_p": null,
+          "granger_q": null,
+          "f_statistic": null,
+          "best_lag": null,
+          "n_obs": 0,
+          "differenced": false,
+          "controlled": false,
+          "control_name": null,
+          "theory_grounded": false,
+          "partial_basis": null,
+          "is_substituted_target": false,
+          "surface_summary": "[탐색적] [검정불가] 미국이 소말릴란드 승인 관련 입법을 지연 → 아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격) — 데이터 매핑 실패",
+          "confidence_word": "검정불가",
+          "method_result": {
+            "skipped": true,
+            "skip_reason": "construct_validity_fail",
+            "iv_construct": {
+              "named_countries": [
+                "United States"
+              ],
+              "named_share": 0.0,
+              "named_n": 0,
+              "top_country": "Yemen",
+              "top_share": 0.999,
+              "n_events": 7798,
+              "country_dist": {
+                "(미상)": 3,
+                "Somalia": 2,
+                "Yemen": 7793
+              },
+              "filter_country": "United States",
+              "global_named_n": 0,
+              "fail_kind": "DATA_ABSENT"
+            }
+          },
+          "error": "[구성타당도] IV 지목 대상(United States) 이벤트 0건 < 30 — 검정 표본 부족. 표본 최다는 Yemen(100%). [진단: DATA_ABSENT — 창 내 전 지역에도 대상 데이터 없음. 정직한 한계(감점 대상 아님) → 소스 수집(data_gap)이 유일한 해소]"
+        }
+      ]
+    },
+    "12_prediction_dryrun": {
+      "status": "OK",
+      "ms": 0.4,
+      "would_insert": 2,
+      "skipped_declarations": 0,
+      "dry_run": true,
+      "predictions": [
+        {
+          "prediction_id": "a7690af527d54946abf385b65418711b",
+          "created_at": "2026-07-13T07:16:20.176859+00:00",
+          "query": "소말릴란드 베르베라 항구 개발이 아덴만 물류 재편에서 갖는 위치",
+          "h1": "소말릴란드 승인 관련 외교 이벤트 건수 증가 시, 아덴만 해역 선박 보험료 (War Risk Premium) 가 통계적으로 유의하게 상승한다.",
+          "independent_var": "소말릴란드 승인 관련 외교 이벤트 건수",
+          "dependent_var": "아덴만 해역 선박 보험료 (War Risk Premium)",
+          "target": "CL=F",
+          "target_kind": "market",
+          "direction": "up",
+          "threshold_pct": null,
+          "horizon_days": 7,
+          "resolve_by": "2026-07-20",
+          "region_code": "bab_el_mandeb",
+          "data_signature": "PAIRED_TIMESERIES",
+          "inference_grade": "기술적",
+          "method": "granger",
+          "exploratory": true,
+          "scorable": true,
+          "status": "PENDING",
+          "outcome_value": null,
+          "scored_at": null,
+          "confidence_at_creation": null,
+          "extraction_ok": 1
+        },
+        {
+          "prediction_id": "341ebec9cede4d769493bf980b4d5a50",
+          "created_at": "2026-07-13T07:16:20.177185+00:00",
+          "query": "소말릴란드 베르베라 항구 개발이 아덴만 물류 재편에서 갖는 위치",
+          "h1": "미국이 소말릴란드 승인 관련 입법을 지연할 때, 아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격) 가 통계적으로 유의하게 증가한다.",
+          "independent_var": "미국이 소말릴란드 승인 관련 입법을 지연",
+          "dependent_var": "아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격)",
+          "target": "아덴만 해역의 분쟁 관련 뉴스 키워드 빈도 (안보/공격)",
+          "target_kind": "qualitative",
+          "direction": "up",
+          "threshold_pct": null,
+          "horizon_days": 180,
+          "resolve_by": "2027-01-09",
+          "region_code": "bab_el_mandeb",
+          "data_signature": "",
+          "inference_grade": "기술적",
+          "method": "",
+          "exploratory": true,
+          "scorable": false,
+          "status": "PENDING",
+          "outcome_value": null,
+          "scored_at": null,
+          "confidence_at_creation": null,
+          "extraction_ok": 1
+        }
+      ]
+    }
+  },
+  "tripwire": []
+}

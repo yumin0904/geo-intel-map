@@ -42,6 +42,10 @@ _CONFIG   = Path(__file__).resolve().parent.parent / "config"
 _INTEL_DB = Path(__file__).resolve().parent.parent / "db" / "intel.db"
 _LIB_DB   = Path(__file__).resolve().parent.parent / "db" / "library.db"
 
+# ACLED 학술 티어 수집 랙 (CLAUDE.md §18-A 규칙 1 — event_date 기준 최대 ~14개월).
+# 이 창 안의 월은 백필이 진행 중이므로 건수가 확정되지 않았다. 추세 산출 금지.
+_ACLED_LAG_MONTHS = 14
+
 # 브리핑 원문 1개당 최대 포함 글자 수 (토큰 절약)
 _BODY_MAX_CHARS = 3000
 # [접지 감사 2026-07-13] 브리핑 전문(full body) 주입 자격 문턱 — 쿼리 고유
@@ -278,13 +282,23 @@ def _get_event_stats(regions: list[str]) -> dict:
     placeholders = ",".join("?" * len(regions))
     try:
         with _db(_INTEL_DB) as con:
+            # [변수 타당도 감사 2026-07-13] 구 쿼리는 source_type("conflict")으로
+            # 그룹핑해 "유형: conflict(8265건)"이라는 무의미한 줄을 만들었다. 그
+            # 8,265건의 98.8%가 남한 국내 시위인데 컨텍스트는 그 사실을 한 번도
+            # 말하지 않았고, 그래서 "한반도 분쟁 이벤트"가 가설의 독립변수가 됐다.
+            # 실제 ACLED event_type + 사망자를 조달한다 — 숫자를 압축하지 말고
+            # 구성을 보여준다.
             rows = con.execute(
                 f"""
-                SELECT region_code, source_type, COUNT(*) as cnt
+                SELECT region_code,
+                       COALESCE(json_extract(payload, '$.event_type'), '미분류') AS etype,
+                       COUNT(*) AS cnt,
+                       SUM(CAST(COALESCE(json_extract(payload, '$.fatalities'), 0) AS INT))
+                           AS deaths
                 FROM event_archive
                 WHERE region_code IN ({placeholders})
-                GROUP BY region_code, source_type
-                ORDER BY cnt DESC LIMIT 20
+                GROUP BY region_code, etype
+                ORDER BY cnt DESC
                 """,
                 tuple(regions),
             ).fetchall()
@@ -316,8 +330,9 @@ def _get_event_stats(regions: list[str]) -> dict:
         for r in rows:
             rc = r["region_code"]
             if rc not in stats:
-                stats[rc] = {"event_types": {}}
-            stats[rc]["event_types"][r["source_type"]] = r["cnt"]
+                stats[rc] = {"event_types": {}, "deaths": 0}
+            stats[rc]["event_types"][r["etype"]] = r["cnt"]
+            stats[rc]["deaths"] = stats[rc].get("deaths", 0) + (r["deaths"] or 0)
         for r in sev_rows:
             rc = r["region_code"]
             if rc not in stats:
@@ -330,14 +345,30 @@ def _get_event_stats(regions: list[str]) -> dict:
         # 월별 추이: 지역별 최근 6개 버킷(ym 내림차순 조회분을 오름차순 보관).
         # 변화율은 '완결월' 두 개 사이만 — 당월은 진행 중이라 비교 대상에서 제외.
         this_ym = datetime.now(timezone.utc).strftime("%Y-%m")
+        # [변수 타당도 감사 2026-07-13] ACLED 수집 랙 집행 — CLAUDE.md §18-A 규칙 1
+        # ("ACLED 학술 티어는 event_date 기준 최대 ~14개월 랙. 근과거(<14개월) 분석에
+        # 이벤트 건수를 증거로 쓰지 않는다")은 선언만 있고 집행이 없었다. 랙 구간의
+        # 월은 백필이 아직 들어오는 중이라 건수가 낮게 나오고, 그것을 완결월로 취급해
+        # 추세를 만들면 아티팩트가 된다 — 실측 사례: 한반도 "1,348건→2건 급감"(NLL
+        # 인사이트), 우크라이나 "110건→1,058건 +861.8%". 둘 다 실제 변화가 아니다.
+        _now = datetime.now(timezone.utc)
+        _lag_cut = (_now.year * 12 + _now.month) - _ACLED_LAG_MONTHS
+        def _in_lag(ym: str) -> bool:
+            return (int(ym[:4]) * 12 + int(ym[5:7])) > _lag_cut
+
         monthly: dict[str, list] = {}
         for r in month_rows:
             monthly.setdefault(r["region_code"], []).append((r["ym"], r["cnt"]))
         for rc, series in monthly.items():
             if rc not in stats:
                 continue
-            series = sorted(series)[-6:]
-            stats[rc]["monthly"] = series
+            series = sorted(series)
+            stats[rc]["lag_months"] = [ym for ym, _ in series if _in_lag(ym)]
+            # 랙 구간 월은 추세 산출에서 제외 — 렌더러가 별도로 '미확정'이라 표시한다.
+            settled = [(ym, c) for ym, c in series if not _in_lag(ym)]
+            stats[rc]["monthly"] = settled[-6:]
+            stats[rc]["monthly_lag"] = [(ym, c) for ym, c in series if _in_lag(ym)][-3:]
+            series = settled[-6:]
             complete = [(ym, c) for ym, c in series if ym != this_ym]
             if len(complete) >= 2:
                 (ym_p, prev), (ym_l, last) = complete[-2], complete[-1]
@@ -1885,14 +1916,29 @@ def _build_context(
 
     # ── 이벤트 통계 ───────────────────────────────────────────────────────
     if event_stats:
-        lines.append("## ACLED 이벤트 통계")
+        lines.append("## ACLED 이벤트 통계 (구성 공개 — 압축 금지)")
         for region, stats in event_stats.items():
-            total = stats.get("total_events", "?")
-            avg_s = stats.get("avg_severity", "?")
-            lines.append(f"- **{region}**: 총 {total}건, 평균 심각도 {avg_s}/100")
-            top3 = sorted(stats.get("event_types", {}).items(), key=lambda x: -x[1])[:3]
-            if top3:
-                lines.append("  유형: " + " / ".join(f"{t}({n}건)" for t, n in top3))
+            total = stats.get("total_events", 0) or 0
+            deaths = stats.get("deaths", 0) or 0
+            lines.append(f"- **{region}**: 총 {total:,}건 · 사망 {deaths:,}명")
+            et = stats.get("event_types", {})
+            ordered = sorted(et.items(), key=lambda x: -x[1])
+            if ordered and total:
+                lines.append("  구성: " + " · ".join(
+                    f"{t} {n:,}건({n / total * 100:.1f}%)" for t, n in ordered[:6]))
+                # [변수 타당도 감사 2026-07-13] 구성 타당도 자동 경고.
+                # "분쟁 이벤트"라는 이름과 내용이 어긋나는 권역을 컨텍스트가 스스로
+                # 고발한다 — 한반도 98.8%·대만해협 94.5%가 국내 시위인데 그 숫자가
+                # 북한 도발 가설의 독립변수로 쓰이던 사고(8호)의 재발 봉쇄.
+                soft = sum(n for t, n in et.items()
+                           if t in ("Protests", "Riots", "Strategic developments"))
+                if total and soft / total >= 0.5:
+                    lines.append(
+                        f"  ⚠️ **구성 타당도 경고**: 이 권역 이벤트의 {soft / total * 100:.1f}%가 "
+                        f"시위·소요·전략적 전개다(사망 {deaths:,}명). 이것은 **군사 충돌 지표가 아니다** "
+                        f"— '분쟁 이벤트 건수'를 무력 충돌·도발의 대리변수로 인용하지 마라. "
+                        f"국내 정치 시위를 지정학 긴장으로 오독하는 것이 이 경고의 표적이다."
+                    )
             # [큐 10] 추이 사전계산 — 추세 서술은 이 배열·변화율만 인용 가능(창작 금지)
             monthly = stats.get("monthly")
             if monthly:
@@ -1904,7 +1950,17 @@ def _build_context(
                         parts.append(" ‖ " if gap else " → ")   # ‖ = 수집 단절 구간
                     parts.append(f"{ym[:7]} {c}건")
                     prev_ym = ym
-                lines.append("  월별 추이(사전계산): " + "".join(parts))
+                lines.append("  월별 추이(확정월, 사전계산): " + "".join(parts))
+            # 랙 구간은 별도 표시 — 숫자를 보여주되 '추세 아님'을 못박는다.
+            lag = stats.get("monthly_lag")
+            if lag:
+                lines.append(
+                    "  ⚠️ **수집 랙 구간(건수 미확정)**: "
+                    + " · ".join(f"{ym} {c}건" for ym, c in lag)
+                    + f" — ACLED 학술 티어는 event_date 기준 최대 {_ACLED_LAG_MONTHS}개월 랙이라 "
+                      "이 달들은 백필이 진행 중이다. **이 숫자로 증감·추세를 서술하지 마라** "
+                      "(낮게 보이는 것은 사건이 줄어서가 아니라 아직 안 들어와서다)."
+                )
                 if stats.get("trend_dir"):
                     pct = stats.get("trend_pct")
                     pct_s = f" ({pct:+.1f}%)" if pct is not None else ""
