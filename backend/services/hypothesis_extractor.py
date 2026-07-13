@@ -103,9 +103,30 @@ class HypothesisSpec:
     # ── [9-Q 우선순위 2] 인식론 모드 — HARKing(데이터→가설) 방어 ──────────────
     # exploratory=True: 데이터를 본 뒤 가설을 생성(탐색) → 같은 데이터 검정은 순환.
     #   헤드라인 등급을 '상관'에서 상한 + [탐색적] 라벨. 원본 추정치는 보존(칸만 강등).
-    # exploratory=False: 사용자가 데이터 보기 전 가설을 직접 선언(확증) → 캡 없음 + [확증].
-    # 기본 False(=확증) — 직접 호출(테스트)은 기존 동작 유지, intel_query가 모드로 설정.
-    exploratory: bool = False
+    # exploratory=False: 사용자가 데이터 보기 **전** 가설을 직접 선언(확증) → 캡 없음.
+    #
+    # ⚠️ **기본값 True (fail-safe). 2026-07-13 세탁 버그 수리로 뒤집었다.**
+    #
+    # 구판 기본값은 False(=확증)였고 주석은 "직접 호출(테스트)은 기존 동작 유지"라고
+    # 적혀 있었다. 즉 **깜빡하면 캡이 열리는** fail-open 기본값이었다. 그리고 실제로
+    # 열렸다 — 예측 974건 중 157건이 "확증형"으로 기록됐는데 **진짜 사전등록은 0건**이고,
+    # 157건 전부가 쿼리에 "검증"·"근거"·"확인" 같은 단어가 들어갔다는 이유만으로
+    # 확증 판정을 받았다(entity_parser의 verify 키워드 → mode → exploratory=False).
+    #
+    # **이 클래스의 인스턴스는 `extract_hypotheses()`가 LLM 출력 마크다운에서 파싱한다.**
+    # 그 마크다운은 데이터 컨텍스트를 보고 생성된 것이다 — **구성상 전부 HARKing이다.**
+    # 따라서 추출기가 만든 spec은 예외 없이 exploratory=True여야 한다.
+    #
+    # exploratory=False가 정당한 유일한 경우: 사용자가 엔진을 돌리기 **전에** H1을 직접
+    # 선언하고 그 spec을 주입하는 사전등록 경로. **그 경로는 아직 존재하지 않는다**
+    # (9-Q 잔여 — 준실험 칸 도달의 유일한 전제).
+    # 판례: geo-os/wiki/decisions/20260713-downstream-contamination-committee.md
+    exploratory: bool = True
+
+    # 사전등록 증거 — 사용자가 데이터 보기 전 선언한 가설임을 표시한다.
+    # extract_hypotheses()는 이 값을 **절대 True로 만들지 않는다**(구성상 불가능).
+    # 이 플래그 없이 exploratory=False인 spec은 세탁이다 — _apply_epistemic_cap이 막는다.
+    preregistered: bool = False
 
 
 # ── [P1] 변수 유형 3분류 ──────────────────────────────────────────────────────

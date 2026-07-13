@@ -91,7 +91,12 @@ class MethodResult:
     native_stats: dict = field(default_factory=dict)
 
     # 탐색형 플래그 (8-F 가드)
-    exploratory: bool = False
+    # [세탁 버그 수리 2026-07-13] 기본값 False → True. 구판은 fail-open이었다 —
+    # 깜빡하면 확증형(캡 면제)이 됐고, event_study·panel_regression이 실제로
+    # exploratory=False를 하드코딩하고 있었다. 캡의 진실원은 spec.exploratory라
+    # 라이브 피해는 없었으나(grader가 이 필드를 안 읽는다) 지뢰였다.
+    # 확증 자격은 spec.preregistered로만 얻는다 — 방법 어댑터가 부여할 수 없다.
+    exploratory: bool = True
 
 
 @dataclass

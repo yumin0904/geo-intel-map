@@ -306,11 +306,33 @@ def _apply_epistemic_cap(spec: "HypothesisSpec") -> None:
     모든 등급 계산(FDR·_build_surface·Method Router)이 끝난 뒤 단일 패스로 적용.
     LLM 호출 0 (Token-Zero).
     """
-    if not getattr(spec, "exploratory", False):
-        # ── 확증형 — 캡 없음, 라벨만 (사용자 직접 선언 가설) ──
-        if spec.surface_summary and not spec.surface_summary.startswith("[확증]"):
-            spec.surface_summary = "[확증] " + spec.surface_summary
-        return
+    # ── [세탁 방어 2026-07-13] 확증 자격 검사 ────────────────────────────────
+    # exploratory=False만으로 캡을 면제하지 않는다. **사전등록 증거(preregistered)를
+    # 요구한다.**
+    #
+    # 구판은 exploratory=False면 무조건 캡을 면제했고, 그 플래그는 쿼리에 "검증"이라는
+    # 단어가 있으면 켜졌다(entity_parser verify 키워드 → mode → exploratory). 그래서
+    # **"검증해줘"라고 타이핑하면 LLM이 데이터를 보고 지어낸 가설이 '선행성' 등급을
+    # 받았다.** 실측: 확증형 157건 중 진짜 사전등록 0건 · 선행성 16건 전부가 이 경로.
+    #
+    # 캡의 근거는 "가설이 데이터보다 먼저 존재했는가"다. 쿼리의 어투가 아니다.
+    # 증거 없는 면제는 method-type laundering과 같은 병이다(§9-0 정직성 가드).
+    if not getattr(spec, "exploratory", True):
+        if not getattr(spec, "preregistered", False):
+            # 확증을 자칭했으나 사전등록 증거가 없다 → 탐색형으로 강등하고 계속 진행.
+            logger.warning(
+                "[인식론] exploratory=False인데 preregistered 증거 없음 → 탐색형 강등 "
+                "(세탁 방어). h1=%.60s", getattr(spec, "h1", ""))
+            spec.exploratory = True
+            spec.inference_caveat = (
+                "[세탁 방어] 확증형을 자칭했으나 사전등록 증거가 없다 — 가설이 데이터보다 "
+                "먼저 존재했음을 보일 수 없으므로 탐색형으로 처리한다. "
+                f"{getattr(spec, 'inference_caveat', '')}").rstrip()
+        else:
+            # ── 확증형 — 캡 없음, 라벨만 (사용자가 데이터 보기 전 직접 선언) ──
+            if spec.surface_summary and not spec.surface_summary.startswith("[확증]"):
+                spec.surface_summary = "[확증] " + spec.surface_summary
+            return
 
     # ── 탐색형 — '상관' 상한 + [탐색적] 라벨 ──
     _HARK_CAVEAT = (

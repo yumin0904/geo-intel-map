@@ -357,3 +357,84 @@ def test_caveat_gate_silent_when_no_warning():
     txt = "[관찰] 우크라이나 분쟁 이벤트 108,417건이 전쟁 강도를 보여준다."
     _, acts = apply_gate(txt, ctx)
     assert not acts, "경고 없는 권역에 게이트가 오발화했다"
+
+
+# ── 9. 인식론 세탁 게이트 (하류 오염위 2026-07-13) ────────────────────────────
+
+def _spec():
+    """최소 HypothesisSpec — 필수 인자만 채운다."""
+    from services.hypothesis_extractor import HypothesisSpec
+    return HypothesisSpec(
+        h1="X가 증가할 때 Y가 상승한다",
+        h0="X와 Y 사이에 유의한 관계가 없다",
+        independent_var="X",
+        dependent_var="Y",
+    )
+
+
+def test_verify_keyword_does_not_grant_confirmatory():
+    """**쿼리에 "검증"이 있다고 확증형이 되면 안 된다.**
+
+    무너지면: "검증해줘"라고 타이핑하면 LLM이 데이터를 보고 지어낸 가설이
+    HARKing 캡을 우회해 '선행성'·'준실험' 등급을 받는다.
+
+    실측(2026-07-13): 예측 974건 중 "확증형" 157건 — **진짜 사전등록 0건.**
+    157건 전부가 쿼리에 "검증"·"근거"·"확인" 키워드가 있었다는 이유만으로
+    확증 판정을 받았고, 선행성 16건이 전부 이 경로로 캡을 우회했다.
+
+    verify 모드는 entity_parser의 **어투 판정**이지 가설 직접 입력이 아니다.
+    가설은 언제나 extract_hypotheses()가 LLM 출력에서 뽑는다 — 구성상 HARKing이다.
+    """
+    from services.entity_parser import parse_query
+    from services.hypothesis_extractor import HypothesisSpec
+
+    # ① verify 모드는 여전히 켜진다 (프롬프트·Thinking 제어용으로는 유효)
+    pq = parse_query("호르무즈 봉쇄가 유가를 올리는지 통계적으로 검증해줘")
+    assert pq.mode == "verify", "verify 모드 감지 자체가 깨졌다"
+
+    # ② 그런데 그것이 확증 자격을 주면 안 된다 — 추출기 기본값은 탐색형이다
+    spec = _spec()
+    assert spec.exploratory is True, (
+        "추출기 기본값이 탐색형이 아니다 — fail-open 기본값이 부활했다")
+    assert spec.preregistered is False, "사전등록을 기본으로 자칭한다"
+
+
+def test_confirmatory_without_prereg_is_demoted():
+    """**확증형을 자칭해도 사전등록 증거가 없으면 강등된다.** (음성 테스트)
+
+    플래그만으로는 못 막는다 — 누군가 exploratory=False를 세팅하면 그만이다.
+    캡 자체가 증거를 요구해야 한다. 이 테스트가 그 요구를 고정한다.
+    """
+    from services.hypothesis_extractor import HypothesisSpec
+    from services.hypothesis_verifier import _apply_epistemic_cap
+
+    # 세탁 시도: 사전등록 증거 없이 확증형을 자칭하고 '선행성'을 노린다
+    spec = _spec()
+    spec.exploratory = False           # ← 자칭
+    spec.preregistered = False         # ← 증거 없음
+    spec.inference_grade = "선행성"
+    spec.surface_summary = "선행성 유의"
+
+    _apply_epistemic_cap(spec)
+
+    assert spec.exploratory is True, "증거 없는 확증 자칭을 통과시켰다 — 세탁 성립"
+    assert spec.inference_grade == "상관", (
+        f"선행성이 상관으로 강등되지 않았다: {spec.inference_grade}")
+    assert "세탁 방어" in (spec.inference_caveat or ""), "강등 사유가 안 박혔다"
+
+
+def test_genuine_prereg_keeps_confirmatory():
+    """진짜 사전등록은 캡을 면제받아야 한다 — 오탐하면 준실험 칸이 영원히 닫힌다."""
+    from services.hypothesis_extractor import HypothesisSpec
+    from services.hypothesis_verifier import _apply_epistemic_cap
+
+    spec = _spec()
+    spec.exploratory = False
+    spec.preregistered = True          # ← 데이터 보기 전 선언한 증거
+    spec.inference_grade = "선행성"
+    spec.surface_summary = "선행성 유의"
+
+    _apply_epistemic_cap(spec)
+
+    assert spec.inference_grade == "선행성", "진짜 사전등록을 강등했다 — 준실험 경로가 막힌다"
+    assert spec.surface_summary.startswith("[확증]"), "확증 라벨이 안 붙었다"

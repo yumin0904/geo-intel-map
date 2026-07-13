@@ -854,12 +854,21 @@ async def _stream_gemini(
             specs = extract_hypotheses(full_text, default_regions=default_regions)
             if specs:
                 # [9-0] 원본 쿼리를 spec에 주입 — 시그니처 분류 시 H1+H0에 없는 키워드 보완
-                # [9-Q 우선순위 2] 인식론 모드 — verify(가설 직접 입력)=확증, 그 외=탐색(HARKing).
-                #   탐색형은 데이터를 본 뒤 가설을 생성 → 같은 데이터 검정은 순환 → 등급 '상관' 상한.
-                _is_exploratory = (mode != "verify")
+                #
+                # [세탁 버그 수리 2026-07-13] 구판: `_is_exploratory = (mode != "verify")`
+                # 주석은 "verify(가설 직접 입력)=확증"이라 적혀 있었으나 **verify 모드는
+                # 가설 직접 입력이 아니다.** entity_parser가 쿼리 텍스트에서 "검증"·"근거"·
+                # "확인" 같은 키워드를 찾아 켜는 어투 판정일 뿐이고, 가설은 바로 위
+                # `extract_hypotheses(full_text)`가 **LLM 출력에서** 뽑는다 — 즉 데이터를
+                # 본 뒤 생성된 것이다. 사용자가 가설을 넣는 입구는 파이프라인에 없다.
+                #
+                # 그 결과 "검증해줘"라고 타이핑하면 HARKing 캡이 해제됐다. 실측: 확증형
+                # 157건 중 진짜 사전등록 0건, 선행성 16건 전부가 이 경로로 캡을 우회했다.
+                #
+                # 추출기가 만든 spec은 구성상 전부 탐색형이다(기본값 True). 여기서
+                # 손대지 않는다. 확증은 사전등록 경로가 생길 때 preregistered=True로만.
                 for _s in specs:
                     _s.source_query = source_query
-                    _s.exploratory  = _is_exploratory
                 specs = await verify_hypotheses(specs)
 
                 # [Phase 10-1] 예측 계측 — 반증가능 타깃·방향·시점을 로그에 동결.

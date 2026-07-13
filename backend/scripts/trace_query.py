@@ -504,7 +504,11 @@ async def main() -> None:
         specs = extract_hypotheses(clean, default_regions=pq.regions)
         for s in specs:
             s.source_query = ARGS.query
-            s.exploratory = (pq.mode != "verify")
+            # [세탁 버그 수리 2026-07-13] 구판: `s.exploratory = (pq.mode != "verify")`
+            # verify 모드는 쿼리에 "검증"·"근거"·"확인"이 있으면 켜지는 어투 판정이지
+            # 가설 직접 입력이 아니다. 가설은 위 extract_hypotheses(clean)가 **LLM 출력
+            # (=데이터를 보고 생성된 텍스트)**에서 뽑는다 — 구성상 전부 HARKing이다.
+            # 추출기 기본값(exploratory=True)을 그대로 둔다. 확증은 사전등록 경로에서만.
         return {"n_hypotheses": len(specs),
                 "hypotheses": [_spec_dump(s) for s in specs],
                 "_specs": specs}

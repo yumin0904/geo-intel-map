@@ -200,7 +200,11 @@ def from_spec(spec) -> MethodResult:
             "estimation_window": f"T-{_ESTIMATION_PRE}~T-{_ESTIMATION_POST}",
             "event_window":      f"T-{_EVENT_PRE}~T+{_EVENT_POST}",
         },
-        exploratory=False,
+        # [세탁 버그 수리 2026-07-13] 구판 하드코딩 exploratory=False 제거.
+        # 방법 어댑터는 확증 자격을 부여할 수 없다 — 자격의 근거는 '가설이
+        # 데이터보다 먼저 존재했는가'이지 '어떤 검정을 썼는가'가 아니다.
+        # 어댑터가 확증을 자칭하는 것이 곧 method-type laundering이다.
+        # spec.preregistered가 유일한 자격 원천. 기본값(True=탐색)을 쓴다.
     )
 
 
