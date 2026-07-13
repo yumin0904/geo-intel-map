@@ -67,7 +67,7 @@ from services.entity_parser import parse_query, ParsedQuery
 from services.intel_analyzer import build_intel_context
 from services.claim_ledger import build_nob_hints
 from services.confidence_scorer import (
-    score_output,
+    score_output, score_confidence,
     apply_data_void_penalty, validate_insight_completeness,
 )
 from services.hypothesis_extractor import extract_hypotheses, build_measurable_menu
@@ -657,6 +657,7 @@ async def _stream_gemini(
     default_regions: list[str] | None = None,
     source_query: str = "",
     mode: str = "insight",
+    grounding: dict | None = None,  # 접지 감사 2026-07-13 — score_confidence 입력
 ) -> AsyncGenerator[str, None]:
     """Gemini 2.5 Flash SSE 스트리밍. thinking=True 시 thinkingBudget 8192.
 
@@ -785,9 +786,17 @@ async def _stream_gemini(
                 logger.warning("[dv_gate] 판정 강등 %d건 %s", len(_dv_actions),
                                [(a["code"], a["detail"]) for a in _dv_actions])
 
-        # §19-D 신뢰도 점수 역산 — 스트리밍 완료 후 score 이벤트 전송
+        # [접지 감사 2026-07-13 — 사용자 승인] 신뢰도 원천 교체: §19-D 산문
+        # 형태 채점(score_output)을 접지·소스티어 결정론(score_confidence)으로.
+        # 구 점수는 legacy_score로 병기(눈금 단절 관찰용 — 종단 비교 금지).
+        # TOPIC_ABSENT(데이터층 접지 0)면 confidence≤40 구속 캡 + provisional.
         if full_text:
-            score_result = score_output(full_text)
+            score_result = score_confidence(full_text, source_counts, grounding)
+            if score_result.get("grounding_flag") in ("TOPIC_ABSENT", "TOPIC_SPARSE"):
+                logger.warning("[grounding] %s — ratio=%s terms=%s",
+                               score_result["grounding_flag"],
+                               (grounding or {}).get("grounded_ratio"),
+                               (grounding or {}).get("terms"))
             # [A1 2축] 추론 등급 기본값: 인과 검정이 없으면 '기술적'(서술적 근거만).
             # 증거 등급(confidence)이 높아도 인과 검증과 무관함을 항상 표시.
             score_result["inference_grade"]  = "기술적"
@@ -984,6 +993,7 @@ async def intel_query(req: IntelQueryRequest):
     intel_ctx  = await build_intel_context(pq)
     context_text = intel_ctx["context_text"]
     source_counts = intel_ctx["source_counts"]
+    grounding  = intel_ctx.get("grounding")  # 접지 감사 2026-07-13
 
     # ── 3. synthesis context 조립 ─────────────────────────────────────────
     synthesis_ctx = ""
@@ -1031,7 +1041,7 @@ async def intel_query(req: IntelQueryRequest):
         async for chunk in _stream_gemini(
             prompt, pq.thinking, source_counts,
             default_regions=pq.regions, source_query=req.query,
-            mode=pq.mode,
+            mode=pq.mode, grounding=grounding,
         ):
             yield chunk
 

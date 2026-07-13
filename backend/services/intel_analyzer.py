@@ -44,6 +44,11 @@ _LIB_DB   = Path(__file__).resolve().parent.parent / "db" / "library.db"
 
 # 브리핑 원문 1개당 최대 포함 글자 수 (토큰 절약)
 _BODY_MAX_CHARS = 3000
+# [접지 감사 2026-07-13] 브리핑 전문(full body) 주입 자격 문턱 — 쿼리 고유
+# 키워드(지역 별칭 제외) 가중 히트합(title 3·summary 2·body 1). 미달은 요약 강등.
+# 실측 근거: NLL 쿼리에서 '북한' 별칭 하나로 드론·테러 브리핑이 전문 주입돼
+# 컨텍스트 90%를 독점(ENGINE_GROUNDING_AUDIT_20260713 §8-2).
+_BRIEF_FULL_MIN = 4
 # Gemini 컨텍스트 총 상한 (글자 기준 — 약 30,000 tokens)
 _CONTEXT_MAX_CHARS = 20000
 # _build_context 섹션 추가 전 예산 검사용 헬퍼
@@ -96,9 +101,21 @@ def _db(path: Path) -> Iterator[sqlite3.Connection]:
 
 # ── 1. LIKE 기반 한국어 키워드 검색 ─────────────────────────────────────────
 
+# 어절 말미 조사 — 벗겨서 2자 이상 남을 때만 채택 (접지 감사 2026-07-13:
+# '증가가'·'빈도와'·'도발의'가 그대로 키워드가 되어 브리핑 관련도와 접지 측정을
+# 모두 오염시키던 결함. 전수 감사에서 NLL 쿼리가 일반어 히트로 '접지' 오판된 근원)
+_JOSA_TAIL = re.compile(
+    r"(?:은|는|이|가|을|를|과|와|의|도|만|에|에서|으로|로|보다|까지|부터|처럼|마다|조차|밖에)$")
+
+
 def _extract_keywords(query: str) -> list[str]:
-    """쿼리에서 유의미한 키워드 추출 (한국어 2자+ / 영어 3자+)."""
-    ko = re.findall(r"[가-힣]{2,}", query)
+    """쿼리에서 유의미한 키워드 추출 (한국어 2자+ 조사 제거 / 영어 3자+)."""
+    ko: list[str] = []
+    for w in re.findall(r"[가-힣]{2,}", query):
+        stripped = _JOSA_TAIL.sub("", w)
+        w2 = stripped if len(stripped) >= 2 else w
+        if w2 not in ko:
+            ko.append(w2)
     en = [w.lower() for w in re.findall(r"[a-zA-Z]{3,}", query)
           if w.lower() not in {"the", "and", "for", "with", "this", "that"}]
     return (ko + en)[:8]
@@ -166,7 +183,40 @@ def _search_library_like(query: str, regions: list[str],
                 """,
                 params,
             ).fetchall()
-        return [{k: v for k, v in dict(r).items() if k != "_relevance"} for r in rows]
+        # [접지 감사 2026-07-13] 자체 관련도: 지역 별칭('북한'·'한반도')을 뺀
+        # 쿼리 고유 키워드만으로 재채점. 별칭 한 단어만 겹친 브리핑(드론·테러)이
+        # 전문 주입 자격을 얻어 컨텍스트 90%를 독점하던 경로의 판별 신호 —
+        # _build_context가 이 값으로 전문/요약을 가른다.
+        own_kws = [k.lower() for k in _extract_keywords(query)]
+        # 문서빈도(DF) 할인 — 라이브러리 문서의 30%+에 등장하는 일반어('구조'·
+        # '이후'·'공백')는 판별력이 없어 가중치 0. 일반어 body 히트가 쌓여 무관
+        # 브리핑(우크라 전장 루프 등)이 전문 주입 문턱을 넘던 것을 결정론 차단
+        # (반박석 공격 실증 후 보강, 2026-07-13). 94행 테이블이라 비용 무시 가능.
+        with _db(_LIB_DB) as con:
+            n_docs = con.execute("SELECT COUNT(*) FROM theories").fetchone()[0] or 1
+            distinctive = []
+            for k in own_kws:
+                pat = f"%{k}%"
+                df = con.execute(
+                    "SELECT COUNT(*) FROM theories WHERE title LIKE ? "
+                    "OR summary LIKE ? OR body LIKE ?", (pat, pat, pat)
+                ).fetchone()[0]
+                if df / n_docs <= 0.30:
+                    distinctive.append(k)
+        items = []
+        for r in rows:
+            it = {k: v for k, v in dict(r).items() if k != "_relevance"}
+            t = (it.get("title") or "").lower()
+            s = (it.get("summary") or "").lower()
+            b = (it.get("body") or "").lower()
+            it["_own_relevance"] = sum(
+                (k in t) * 3 + (k in s) * 2 + (k in b) for k in distinctive)
+            # 제목/요약 전용 점수 — body-only 누적으로 무관 브리핑이 전문 자격을
+            # 얻는 잔여 경로 차단(이란전·테러 브리핑 실측, 2026-07-13)
+            it["_own_rel_ts"] = sum(
+                (k in t) * 3 + (k in s) * 2 for k in distinctive)
+            items.append(it)
+        return items
     except Exception as e:
         logger.warning("[intel] LIKE 검색 실패: %s", e)
         return []
@@ -1107,6 +1157,9 @@ def _get_country_profiles(actors: list[str]) -> dict:
 # ── 융합1: 관련성 게이트 (Phase 8) ────────────────────────────────────────────
 # 섹터 친화도: key=소스 식별자, sectors=주 관련 섹터(비어있으면 범용)
 _SOURCE_SPECS: dict[str, dict] = {
+    # bp: _get_bp_provocations가 이중언어 토픽·지역으로 조달을 게이트 — kiel·press와
+    # 동일 원리로 범용 (접지 감사 2026-07-13)
+    "bp":            {"sectors": set()},
     "sipri_milex":   {"sectors": {"indo_pacific", "alliance"}},
     "cow_alliances": {"sectors": {"indo_pacific", "alliance"}},
     # kiel: _get_kiel_data가 우크라이나 지역 쿼리에만 조달하므로 지역 게이트가 이미
@@ -1550,8 +1603,111 @@ def _emit_trade(trade_dep_data) -> list[str]:
     return out
 
 
+# ── [접지 감사 2026-07-13] 북한 도발 원장 (bp_provocations) 배선 ─────────────
+# 반박석 판정 반영: 별칭의 region 승격(서해→korean_peninsula) 대신 이중언어 토픽
+# 매핑 — 원장이 영문 코딩(NLL 20·West Sea 14·Yellow Sea 28건)이라 한국어 쿼리
+# ("서해")는 LIKE 0건이었다. 유일한 진짜 서해 데이터원의 언어 격벽을 여기서 푼다.
+# 이론 연결: 회색지대 전략(gray zone)의 국지 도발 시계열 — 반복·공백·재점화 구조.
+_BP_TOPIC_EN: dict[str, list[str]] = {
+    "서해":   ["West Sea", "Yellow Sea", "NLL", "Yeonpyeong", "Baengnyeong"],
+    "nll":    ["NLL", "West Sea", "Yellow Sea"],
+    "연평":   ["Yeonpyeong"],
+    "백령":   ["Baengnyeong"],
+    "천안함": ["Cheonan"],
+    "판문점": ["Panmunjom", "JSA"],
+    "미사일": ["Missile"],
+    "핵실험": ["Nuclear"],
+    "위성":   ["Satellite"],
+    "포격":   ["Artillery"],
+    "드론":   ["drone", "UAV"],
+    "무인기": ["drone", "UAV"],
+    "풍선":   ["Balloon"],
+    "잠수함": ["Submarine", "SLBM"],
+    "재밍":   ["Jamming"],
+}
+
+
+def _get_bp_provocations(regions: list[str], actors: list[str],
+                         raw_query: str) -> dict:
+    """도발 원장 조달 — 연도 집계 + 이중언어 토픽 매칭 이벤트 (예산 ~1,200자)."""
+    kws = [k.lower() for k in _extract_keywords(raw_query)]
+    en_terms: list[str] = []
+    ko_hits: list[str] = []
+    for k in kws:
+        for ko, ens in _BP_TOPIC_EN.items():
+            if ko in k or k in ko:
+                en_terms.extend(ens)
+                ko_hits.append(ko)
+    en_terms = list(dict.fromkeys(en_terms))
+    ko_hits = list(dict.fromkeys(ko_hits))
+
+    triggered = ("korean_peninsula" in regions or "north_korea" in regions
+                 or "PRK" in actors or bool(en_terms))
+    if not triggered:
+        return {}
+    try:
+        with _db(_INTEL_DB) as con:
+            total, dmin, dmax = con.execute(
+                "SELECT COUNT(*), MIN(event_date), MAX(event_date) "
+                "FROM bp_provocations").fetchone()
+            yearly = con.execute(
+                "SELECT substr(event_date,1,4) y, COUNT(*) n FROM bp_provocations "
+                "WHERE event_date >= date('now','-12 years') "
+                "GROUP BY 1 ORDER BY 1").fetchall()
+            matched, match_years = [], {}
+            if en_terms:
+                like = " OR ".join(
+                    "(title LIKE ? OR description LIKE ?)" for _ in en_terms)
+                params: list = []
+                for t in en_terms:
+                    params.extend([f"%{t}%", f"%{t}%"])
+                matched = con.execute(
+                    f"SELECT event_date, prov_type, title FROM bp_provocations "
+                    f"WHERE {like} ORDER BY event_date DESC LIMIT 8",
+                    params).fetchall()
+                match_years = dict(con.execute(
+                    f"SELECT substr(event_date,1,4) y, COUNT(*) n "
+                    f"FROM bp_provocations WHERE {like} "
+                    f"GROUP BY 1 ORDER BY 1", params).fetchall())
+        return {"total": total, "dmin": dmin, "dmax": dmax,
+                "yearly": [tuple(r) for r in yearly],
+                "matched": [tuple(r) for r in matched],
+                "match_years": match_years,
+                "en_terms": en_terms, "ko_terms": ko_hits}
+    except Exception as e:
+        logger.warning("[intel] bp_provocations 조달 실패: %s", e)
+        return {}
+
+
+def _emit_bp(data: dict) -> list[str]:
+    """도발 원장 렌더. 매칭 연도 분포는 공백 연도(0건)도 명시 — 침묵도 신호다."""
+    if not data or not data.get("total"):
+        return []
+    out = [f"## 북한 도발 원장 (Beyond Parallel · "
+           f"{str(data['dmin'])[:4]}~{str(data['dmax'])[:4]} · 총 {data['total']}건 · "
+           f"출처 URL 전건 보유)"]
+    if data.get("ko_terms"):
+        out.append(f"- 주제 매핑(한↔영): {', '.join(data['ko_terms'])} → "
+                   f"{', '.join(data['en_terms'][:6])}")
+    my = data.get("match_years") or {}
+    if my:
+        y0, y1 = int(min(my)), int(max(my))
+        seq = " ".join(f"{y}:{my.get(str(y), 0)}" for y in range(y0, y1 + 1))
+        out.append(f"- 주제 매칭 연도 분포(총 {sum(my.values())}건, 0=기록 공백): {seq}")
+    if data.get("matched"):
+        out.append("- 주제 매칭 최근 이벤트:")
+        for d_, pt, ti in data["matched"]:
+            out.append(f"    {d_} | {pt} | {ti}")
+    if data.get("yearly"):
+        out.append("- 전체 원장 연도별(최근 12년): "
+                   + " ".join(f"{y}:{n}" for y, n in data["yearly"]))
+    out.append("")
+    return out
+
+
 # emitter 매핑 테이블 (키 → 함수)
 _SOURCE_EMITTERS = {
+    "bp":            _emit_bp,
     "sipri_milex":   _emit_sipri_milex,
     "cow_alliances": _emit_cow_alliances,
     "kiel":          _emit_kiel,
@@ -1601,6 +1757,12 @@ def _build_context(
     press_data:       dict | None = None,
     # Phase 8 융합1: 경쟁이론 비교 컨텍스트 (priority tier)
     theory_cmp_ctx:   str = "",
+    # [접지 감사 2026-07-13] 도발 원장 (이중언어 조달)
+    bp_data:          dict | None = None,
+    # [접지 감사 2026-07-13] True면 라이브러리 유래(브리핑 전문·요약·이론 프로파일·
+    # 문헌공백 원장·이론비교)를 전부 생략한 순수 데이터 조립 — 접지 측정 전용.
+    # 브리핑 히트가 접지로 계수되던 미탐(반박석 공격 2)을 막는 분모 정의다.
+    data_only:        bool = False,
 ) -> str:
     lines: list[str] = []
     total_chars = 0
@@ -1622,8 +1784,10 @@ def _build_context(
             seen_ids.add(tid)
             all_items.append(item)
 
-    # body 있는 것 우선 정렬
-    all_items.sort(key=lambda x: len(x.get("body") or ""), reverse=True)
+    # [접지 감사 2026-07-13] 정렬을 body 길이에서 자체 관련도 우선으로 교체 —
+    # "긴 글이 곧 관련 글"이라는 가정이 드론·테러 브리핑 전문 주입의 공범이었다.
+    all_items.sort(key=lambda x: (x.get("_own_relevance", 0),
+                                  len(x.get("body") or "")), reverse=True)
 
     body_count = 0
     meta_items = []
@@ -1633,7 +1797,14 @@ def _build_context(
         org  = f"[{item.get('source_org', '')}] " if item.get("source_org") else ""
         title = item.get("title", "")
 
-        if body and body_count < 3 and total_chars < _CONTEXT_MAX_CHARS:
+        if data_only:
+            continue  # 순수 데이터 조립 — 브리핑층 전체 생략
+        # [접지 감사 2026-07-13] 전문 주입 자격 = 자체 관련도 문턱. 지역 별칭
+        # ('북한' 등) 한 단어만 겹친 브리핑은 요약으로 강등 — 데이터 우선·브리핑 보조.
+        # 섹터 채움분(_own_relevance 부재)은 0으로 취급되어 자동 강등된다.
+        if (body and body_count < 3 and total_chars < _CONTEXT_MAX_CHARS
+                and item.get("_own_relevance", 0) >= _BRIEF_FULL_MIN
+                and item.get("_own_rel_ts", 0) >= 2):
             # 원문 포함 (최대 3개, 각 3000자)
             truncated = body[:_BODY_MAX_CHARS]
             if len(body) > _BODY_MAX_CHARS:
@@ -1643,14 +1814,14 @@ def _build_context(
             total_chars += len(section)
             body_count += 1
         else:
-            # 원문 초과 시 제목+요약만
+            # 원문 초과·관련도 미달 시 제목+요약만
             meta_items.append(item)
 
     if body_count > 0:
         lines.insert(2, f"## 브리핑·이론 원문 ({body_count}개 전문 포함)\n")
 
     # 나머지는 제목+요약만
-    if meta_items:
+    if meta_items and not data_only:
         lines.append("## 추가 관련 브리핑 (요약)")
         for item in meta_items[:5]:
             org   = f"[{item.get('source_org', '')}] " if item.get("source_org") else ""
@@ -1667,7 +1838,7 @@ def _build_context(
         item for item in all_items
         if item.get("asset_type") == "theory" and item.get("independent_var")
     ]
-    if theory_profiles:
+    if theory_profiles and not data_only:
         lines.append("## 이론 프로파일 (예측 도구)")
         for tp in theory_profiles[:4]:
             lines.append(f"### {tp.get('title', tp.get('theory_id', ''))}")
@@ -1760,7 +1931,7 @@ def _build_context(
 
     # ── Phase 8 융합1: priority tier — theory_cmp_ctx 우선 확보 ─────────────────
     # backbone 직후 경쟁이론 수치비교 블록을 먼저 넣어 잔량 누락 방지.
-    if theory_cmp_ctx:
+    if theory_cmp_ctx and not data_only:
         block_chars = len(theory_cmp_ctx) + 2
         used = sum(len(l) + 1 for l in lines)
         if used + block_chars <= _CONTEXT_MAX_CHARS:
@@ -1773,7 +1944,7 @@ def _build_context(
     # ── Phase 8 Cycle 8-D: priority tier — 문헌 공백 원장 ───────────────────────
     # 라이브러리 주장에서 결정론적으로 추출한 공백 신호(반례·경쟁이론·밀도).
     # [문헌공백] 섹션이 추측이 아니라 실측 주장 지도에 근거하도록 만든다.
-    ledger_block = build_claim_ledger(pq, all_items)
+    ledger_block = [] if data_only else build_claim_ledger(pq, all_items)
     if ledger_block:
         block_chars = len(ledger_block) + 2
         used = sum(len(l) + 1 for l in lines)
@@ -1785,6 +1956,7 @@ def _build_context(
     # ⚠️ 정직성 가드: 점수는 '이 소스가 이 쿼리 주제에 관한가'만 판단한다.
     #   '이 데이터가 가설을 지지하는가'는 절대 점수에 넣지 않는다 (체리피킹=환각).
     _source_records = {
+        "bp":            bp_data,
         "sipri_milex":   sipri_data,
         "cow_alliances": cow_alliances,
         "kiel":          kiel_data,
@@ -1879,6 +2051,9 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         loop.run_in_executor(None, _get_trade_dependency, pq.actors, pq.regions),
         # 큐 10① 배선 (2026-07-11): govinfo·nk_press·un_news — region_hint 게이트
         loop.run_in_executor(None, _get_press_releases, pq.regions),
+        # 접지 감사 배선 (2026-07-13): 도발 원장 — 이중언어 토픽 게이트
+        loop.run_in_executor(None, _get_bp_provocations,
+                             pq.regions, pq.actors, pq.raw_query),
         return_exceptions=True,
     )
 
@@ -1909,6 +2084,7 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
     owid_data         = _safe(results[21], [])
     trade_dep_data    = _safe(results[22], [])
     press_data        = _safe(results[23], {})
+    bp_data           = _safe(results[24], {})
 
     context_text = _build_context(
         pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
@@ -1917,7 +2093,56 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
         fred_data, wbk_data, polity5_data, itu_data, hiik_data, semi_data,
         owid_data, trade_dep_data, press_data,
         theory_cmp_ctx=theory_cmp_ctx,  # Phase 8 융합1: priority tier로 이동
+        bp_data=bp_data,
     )
+
+    # ── [접지 감사 2026-07-13] 접지(grounding) 측정 ──────────────────────────
+    # 같은 조달 결과로 라이브러리 유래(브리핑·이론·문헌공백)를 뺀 순수 데이터
+    # 컨텍스트를 재조립(추가 SQL 없음 — 문자열 조립만)해, 쿼리 키워드가 '데이터'에
+    # 실제로 등장하는지 항별로 센다. 브리핑 히트를 접지로 오인하던 미탐(반박석
+    # 공격 2)과 키워드 합계의 일반어 인플레이션(전수 감사 실측)을 함께 막는다.
+    data_text = _build_context(
+        pq, like_items, sector_items, event_stats, cascade_ctx, country_profiles,
+        sipri_data, cow_alliances, kiel_data, eia_data, csis_incidents,
+        sipri_arms, vdem_data, cow_wars, ifans_pubs,
+        fred_data, wbk_data, polity5_data, itu_data, hiik_data, semi_data,
+        owid_data, trade_dep_data, press_data,
+        theory_cmp_ctx="", bp_data=bp_data, data_only=True,
+    )
+    _g_terms = _extract_keywords(pq.raw_query)
+    # 지역어 한↔영 별칭 — 데이터 텍스트가 영문 코드(hormuz·taiwan_strait)로 흐르는
+    # 소스가 많아 한국어 키워드만 세면 정상 접지 쿼리가 SPARSE 오탐된다(반박석
+    # 예견 → 호르무즈 실측). 별칭 히트도 그 항의 접지로 계수한다.
+    _GROUNDING_KO_EN = {
+        "호르무즈": ["hormuz"], "대만": ["taiwan"], "우크라이나": ["ukraine"],
+        "발트": ["baltic"], "홍해": ["red sea", "bab_el_mandeb"],
+        "서해": ["west sea", "yellow sea", "nll"], "수에즈": ["suez"],
+        "남중국해": ["south_china_sea", "south china sea"],
+        "동중국해": ["east_china_sea"], "말라카": ["malacca"],
+        "한반도": ["korean_peninsula", "korea"],
+        "북한": ["north korea", "dprk", "prk"], "중동": ["middle_east"],
+    }
+    _dt_low = data_text.lower()
+    def _g_count(term: str) -> int:
+        n = data_text.count(term)
+        for ko, ens in _GROUNDING_KO_EN.items():
+            if ko in term:
+                n += sum(_dt_low.count(e) for e in ens)
+        return n
+    _g_hits = {t: _g_count(t) for t in _g_terms}
+    _grounded = [t for t, v in _g_hits.items() if v > 0]
+    _g_ratio = round(len(_grounded) / len(_g_terms), 2) if _g_terms else 0.0
+    grounding = {
+        "terms": _g_hits,
+        "grounded_ratio": _g_ratio,
+        # SPARSE 문턱 0.25 — 0.34는 일반어가 많은 쿼리(호르무즈 8키워드 중
+        # 접지 3항 = 0.33)를 오탐했다(경계 실측 2026-07-13). 개체층 부재
+        # (베르베라 0.12)와 완전 부재(발트 0.0)는 0.25에서도 그대로 잡힌다.
+        "flag": ("TOPIC_ABSENT" if _g_ratio == 0.0
+                 else "TOPIC_SPARSE" if _g_ratio < 0.25 else "GROUNDED"),
+        "basis": "data-only context (브리핑·이론·문헌공백 제외)",
+        "data_context_chars": len(data_text),
+    }
 
     logger.debug(
         "[intel] 컨텍스트 조립 — LIKE=%d sector=%d SIPRI=%d COW=%d Kiel=%d "
@@ -1936,6 +2161,7 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
 
     return {
         "context_text": context_text,
+        "grounding": grounding,
         "source_counts": {
             "fts_items":           len(like_items),
             "sector_items":        len(sector_items),
@@ -1961,6 +2187,9 @@ async def build_intel_context(pq: ParsedQuery) -> dict:
             "semi":                len(semi_data),
             "owid":                len(owid_data),
             "press":               sum(len(v) for v in press_data.values()),
+            # 접지 감사 2026-07-13: 도발 원장 (주제 매칭 건수)
+            "bp_provocations":     sum((bp_data or {}).get("match_years", {}).values())
+                                   or (1 if bp_data else 0),
         },
         "like_items":        like_items,
         "sector_items":      sector_items,

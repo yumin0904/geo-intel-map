@@ -160,6 +160,11 @@ def validate_insight_completeness(text: str, mode: str = "insight") -> tuple[boo
 
 def score_output(text: str) -> dict:
     """
+    [강등 2026-07-13 접지 감사 위원회 — 사용자 승인] §19-D 산문 형태 채점은
+    근거가 아니라 생김새를 재는 Goodhart였다(주제를 한 번도 못 본 글이 100점 —
+    ENGINE_GROUNDING_AUDIT_20260713 §4). 이 함수는 이제 신뢰도 원천이 아니라
+    report-only 형식 체크리스트(legacy)다. 신뢰도 원천은 score_confidence().
+
     Gemini 출력 마크다운에서 §19-D 5개 항목을 탐지해 신뢰도 점수를 산출한다.
 
     Returns:
@@ -247,3 +252,75 @@ def apply_verification_cap(confidence: int, verification_status: str) -> int:
     """[DEPRECATED — A1 2축 분리로 폐기] Granger 상태별 신뢰도 상한. 더는 호출되지 않음."""
     cap = _VERIFICATION_CAPS.get(verification_status, 75)
     return min(confidence, cap)
+
+
+# ── [접지 감사 2026-07-13] 접지·소스티어 기반 결정론 신뢰도 ──────────────────
+# 사용자 4축 지시(논리성·사실성·근거 신뢰성·맥락 일치)의 1단계 결정론 코어.
+# 산문을 읽지 않는다 — 컨텍스트 조립이 산출한 구조화 신호(source_counts·grounding)
+# 만 소비한다(Token-Zero). 판사 축(논리 링크·맥락)은 2단계 별도 발효.
+
+# 근거 신뢰성 티어 (구 _PRIMARY_SOURCES 오염 수리 — WotR·Reuters가 SIPRI와
+# 같은 '1차 사료' 점수를 받던 무차별 목록 폐기):
+#   T1 = 순수 데이터 (이벤트 원장·통계 시계열·자체 원장) — source_counts 키
+#   T2 = 기관 논평·이론 (브리핑 fts/sector·이론비교·ifans)
+#   T3 = 언론·보도자료 (press)
+_TIER1_DATA_KEYS = (
+    "event_stats_regions", "bp_provocations", "sipri_countries", "cow_alliances",
+    "kiel_donors", "eia_entries", "csis_incidents", "sipri_arms", "vdem_entries",
+    "cow_wars", "fred", "wbk", "polity5", "itu", "hiik", "semi", "owid",
+)
+_TIER2_COMMENTARY_KEYS = ("fts_items", "sector_items", "ifans_pubs")
+_TIER3_PRESS_KEYS = ("press",)
+
+
+def score_confidence(text: str, source_counts: dict | None = None,
+                     grounding: dict | None = None) -> dict:
+    """접지·티어 기반 신뢰도 (0~100). 산문 가점 없음.
+
+    배점 (결정론):
+      T1 데이터 폭:  0개 20 / 1개 40 / 2개 55 / 3개+ 70
+      동적 인과쌍:   이벤트 시계열 + cascade 동시 존재 +10
+      접지 보너스:   GROUNDED +20
+      접지 캡:       TOPIC_SPARSE → min 72 / TOPIC_ABSENT → min 40 [구속 —
+                     사용자 승인 2026-07-13. "본 적 없는 바다에 만점" 봉쇄]
+      60 미만 → provisional.
+
+    legacy_* 필드: 구 §19-D 산문 채점을 병기 — 눈금 단절 관찰용(N런 병행,
+    종단 비교 금지). 소비자는 confidence/provisional 키만 계약으로 신뢰하라.
+    """
+    sc = source_counts or {}
+    tier1 = sum(1 for k in _TIER1_DATA_KEYS if sc.get(k, 0) > 0)
+    tier2 = sum(1 for k in _TIER2_COMMENTARY_KEYS if sc.get(k, 0) > 0)
+    tier3 = sum(1 for k in _TIER3_PRESS_KEYS if sc.get(k, 0) > 0)
+
+    base = {0: 20, 1: 40, 2: 55}.get(tier1, 70)
+    dynamic_pair = (sc.get("event_stats_regions", 0) > 0
+                    and sc.get("cascade_links", 0) > 0)
+    conf = base + (10 if dynamic_pair else 0)
+
+    flag = (grounding or {}).get("flag", "UNKNOWN")
+    if flag == "GROUNDED":
+        conf += 20
+    conf = min(conf, 100)
+    if flag == "TOPIC_SPARSE":
+        conf = min(conf, 72)
+    elif flag == "TOPIC_ABSENT":
+        conf = min(conf, 40)
+
+    legacy = score_output(text) if text else {"confidence": None, "breakdown": {}}
+    provisional = conf < 60 or flag == "TOPIC_ABSENT"
+    return {
+        "confidence":  conf,
+        "provisional": provisional,
+        "breakdown": {
+            "tier1_data_breadth": tier1,
+            "tier2_commentary":   tier2,
+            "tier3_press":        tier3,
+            "dynamic_pair_bonus": 10 if dynamic_pair else 0,
+            "grounding_flag":     flag,
+            "grounding_ratio":    (grounding or {}).get("grounded_ratio"),
+        },
+        "grounding_flag":   flag,
+        "legacy_score":     legacy.get("confidence"),
+        "legacy_breakdown": legacy.get("breakdown"),
+    }

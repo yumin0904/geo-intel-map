@@ -93,6 +93,7 @@ async def run_analysis(query: str, regions: list[str], sectors: list[str]) -> di
     async for chunk in _stream_gemini(
         prompt, pq.thinking, intel_ctx["source_counts"],
         default_regions=pq.regions, source_query=query, mode=pq.mode,
+        grounding=intel_ctx.get("grounding"),  # 접지 감사 2026-07-13
     ):
         for ev in _parse_sse(chunk):
             if ev.get("type") == "hypothesis":
