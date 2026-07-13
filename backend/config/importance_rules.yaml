@@ -1,0 +1,54 @@
+# importance_rules.yaml — 관찰 중요도 게이트 (2026-07-13 신설)
+#
+# 왜 필요한가 (실측 근거):
+#   관찰 원장의 p값은 "얼마나 이례적인가"만 잰다. 평소 조용한 나라가 시끄러워지면
+#   p값이 폭발한다. 실측: 2022-02 캐나다 프리덤 컨보이(물리충돌 p=1.0e-297)가
+#   같은 달 우크라이나 전면 침공(p=8.6e-56)보다 **더 유의**하게 나온다.
+#   유의성(p) ≠ 타당도(변수가 진짜인가) ≠ **중요도(우리 도메인인가)**. 세 축이 직교한다.
+#
+# 이 규칙은 결정론(Token-Zero)이다 — LLM을 부르지 않는다. CLAUDE.md §14-A 부칙.
+# 산출 importance는 0.0~1.0. 발행 후보 게이트는 소비자가 정한다(여기서 문턱 미선언 —
+#   문턱을 규칙 파일에 박으면 Goodhart 표적이 된다).
+#
+# 축 3개의 곱이 아니라 **합**이다 — 하나가 0이어도 다른 축으로 살아날 수 있어야 한다
+#   (예: 파나마는 전략국이 아니지만 운하 = 해양 섹터).
+
+# ── 축 1: 전략 권역 (우리 12개 region_code의 무대) ────────────────────────────
+# 근거: backend/config/regions.yaml · cascade_rules.yaml의 실제 트리거 무대.
+strategic_theatre:
+  weight: 0.45
+  iso3:
+    - UKR, RUS, BLR            # ukraine
+    - CHN, TWN                 # taiwan_strait · east_china_sea
+    - PRK, KOR                 # korean_peninsula · north_korea
+    - IRN, IRQ, SAU, ARE, OMN, QAT, BHR, KWT, YEM   # hormuz · bab_el_mandeb
+    - ISR, LBN, SYR, EGY, JOR                       # middle_east · suez
+    - PHL, VNM, MYS, IDN, SGP                       # south_china_sea · malacca
+    - JPN, IND, USA                                 # 역외 균형자·동맹축
+    - MMR                                           # 인도-태평양 회색지대 (2021 쿠데타)
+    - SOM, DJI, ERI, ETH                            # bab_el_mandeb 아프리카안
+
+# ── 축 2: 6대 섹터 연결 (전략 권역 밖이어도 섹터로 걸리는 나라) ────────────────
+# CLAUDE.md §1의 6대 섹터. "이 나라의 소요가 우리 섹터에 파급되는가"를 묻는다.
+sector_link:
+  weight: 0.35
+  sectors:
+    maritime:   [PAN, EGY, SGP, MYS, DJI, YEM, OMN]        # 운하·초크포인트
+    energy:     [SAU, IRN, IRQ, RUS, UKR, ARE, QAT, KWT, VEN, NGA, LBY, DZA, NOR, KAZ]
+                # UKR: 가스 통과 회랑·곡물 수출 — 채점이 누락을 잡았다(침공 0.65 오판)
+    techno:     [TWN, KOR, CHN, USA, NLD, JPN, DEU]        # 반도체 공급망
+    indo_pacific: [CHN, TWN, JPN, KOR, PRK, PHL, VNM, IND, AUS]
+    gray_zone:  [RUS, BLR, UKR, MMR, MLI, NER, SDN, LBY, SOM, VEN, SRB]
+    cyber:      [RUS, CHN, PRK, IRN, ISR, USA]
+  # 공급망 원자재 — 우리가 실제로 발행한 주제(인니 니켈·칠레 구리)
+  resource:     [IDN, CHL, PER, COD, GIN, AUS, ZAF, MNG]
+
+# ── 축 3: 사건 유형 가중 (국내 시위 vs 국가 폭력) ─────────────────────────────
+# 근거: 오늘 실측 — "분쟁 이벤트"의 정체가 권역마다 다르고, 시위는 대체로
+#   국내 정치다. 그러나 전략국의 시위는 체제 안정성 신호라 무시할 수 없다
+#   (이란 시위 → 유가). 그래서 0이 아니라 감쇠 계수다.
+family_weight:
+  weight: 0.20
+  gdelt_geo_material_conflict_pol: 1.00   # 코딩된 행위자 간 물리적 충돌
+  event_archive_region:            1.00   # ACLED, 이미 전략 권역으로 스코프됨
+  gdelt_geo_protest:               0.45   # 국내 시위 — 전략국일 때만 의미
