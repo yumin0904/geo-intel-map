@@ -183,6 +183,49 @@ def assess_construct(iv_text: str, probe: dict | None,
         "filter_country": filter_country,
     }
 
+    # ── 주어 부재 게이트 (하류 오염 위원회 2026-07-13) ────────────────────────────
+    # named_n은 지목된 국가들의 건수를 **합산**한다. 그래서 지역 이름이 여러 나라로
+    # 펼쳐질 때(korean_peninsula → North Korea + South Korea) 한 나라가 0건이어도
+    # 다른 나라의 건수가 문턱을 넘겨 통과한다. 그리고 len(named)>1이면 filter_country가
+    # None이라 필터도 안 걸린다 — 오염된 전체 표본으로 검정이 그대로 실행된다.
+    #
+    # 8호 「도발의 가격」이 정확히 이 구멍으로 나갔다. IV="korean_peninsula ACLED 분쟁
+    # 이벤트"의 country_dist는 {South Korea: 7404, Japan: 26, China: 2} — **North Korea
+    # 키가 없다(0건)**. 게이트는 그 사실을 계산해서 meta에 적어 파일로 내보냈고
+    # (nk-provocation-v2-a.insight.json), 합산 7,404이 문턱을 넘어 통과시켰다.
+    # 그 검정 결과가 「북한 도발의 가격」이라는 제목으로 발행됐다.
+    #
+    # 규칙: **지목된 국가 중 표본에 통째로 없는(0건) 나라가 있으면 검정하지 않는다.**
+    # 그 나라에 대해 어떤 주장도 할 수 없고, 지역 이름표가 하류에서 그 나라의 이름으로
+    # 번역되는 것을 막을 방법이 없기 때문이다. 0건은 "적다"가 아니라 "없다"이다 —
+    # _MIN_TARGET_N(적음) 판정과 구분해 먼저 건다.
+    absent = [c for c in named if dist.get(c, 0) == 0]
+    if absent and named_n > 0:
+        meta["absent_countries"] = absent
+        meta["fail_kind"] = "SUBJECT_ABSENT"
+        reason = (
+            f"[구성타당도] IV가 지목한 {'·'.join(absent)} 이벤트가 표본에 **0건**이다. "
+            f"표본 {total:,}건은 사실상 {top_country}({top_share:.0%})이며, "
+            f"{'·'.join(absent)}에 관한 어떤 주장도 이 표본으로는 할 수 없다. "
+            f"검정 미수행 — 지역 라벨이 하류에서 부재한 국가의 이름으로 번역되는 것을 막는다."
+        )
+        if start and end:
+            g = _probe_global_named_n(absent, start, end)
+            if g is not None:
+                meta["absent_global_n"] = g
+                if g >= _MIN_TARGET_N:
+                    reason += (
+                        f" [진단: IV_MISROUTE — {'·'.join(absent)} 이벤트가 창 내 타 region에 "
+                        f"{g}건 실재한다. 데이터가 없는 게 아니라 **다른 서랍에 있다** → "
+                        f"올바른 region으로 라우팅하면 해소]"
+                    )
+                else:
+                    reason += (
+                        f" [진단: DATA_ABSENT — 창 내 전 지역에도 {g}건뿐. 구조적 미관측 "
+                        f"(§18-A 폐쇄국가 규칙) → 과정추적·구조적 논증 트랙]"
+                    )
+        return ConstructVerdict(ok=False, reason=reason, meta=meta, filter_country=None)
+
     # 판정 기준: share가 아니라 '필터 후 절대량'. 대상 이벤트가 검정할 만큼(≥_MIN_TARGET_N)
     # 있으면, 표본에 다른 국가가 섞여 있어도 country 필터로 순수 시계열을 뽑아 검정한다.
     # 부족하면(수집 안 됨) 검정 미수행 — 데이터 갭. (share는 오염도 참고값으로만 meta에 보존.)

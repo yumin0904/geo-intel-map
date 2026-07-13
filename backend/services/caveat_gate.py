@@ -68,10 +68,48 @@ _QUALIFIER = re.compile(
     r"군사 충돌 지표가 아니|정치 시위|Protests"
 )
 
+# ── 인과 프레임 (하류 오염 위원회 2026-07-13) ────────────────────────────────
+# **캐비엇은 서술을 구하지만 인과 주장을 구하지 못한다.**
+#
+# 초판 게이트는 자격 표시가 같은 문장에 있으면 무조건 통과시켰다 — 문서에 그렇게
+# 명시돼 있다: "즉 '8,265건(98.8%가 국내 시위)'은 정상 인용이다."
+#
+# 그런데 **8호가 한 것이 정확히 그것이다.** 8호의 한계 절은 이렇게 썼다:
+#   "ACLED 이벤트는 미사일 도발만이 아니라 한반도 긴장 전반을 포괄하므로…"
+# 자격을 표시하는 시늉을 하고, 그 숫자 위에 Granger 검정을 세우고, 「도발의 가격」
+# 이라는 제목으로 발행했다. 자격 표시가 오염을 무해하게 만들지 않는다 —
+# **알면서 쓴 것이 모르고 쓴 것보다 낫지 않다.**
+#
+# geo-os wiki/discarded.md 폐기 #1(2026-07-13)이 이미 이것을 죽였다:
+#   "반증된 주장을 캐비엇 달아 라이브 유지하는 것은 A2A 신뢰 앵커와 정면 충돌."
+# 위원회가 기사에 대해 죽인 처방(C안)을 이 가드는 LLM 컨텍스트 표준으로 집행하고
+# 있었다. 판례를 코드에 들여온다.
+#
+# 규칙: 오염된 건수를 **서술**하는 것(구성을 밝히는 것)은 정상이다. 그 건수를
+#       **독립변수·선행지표·인과 주장의 근거로 쓰는 것**은 자격 표시가 있어도 위반이다.
+_CAUSAL_FRAME = re.compile(
+    r"증가할 때|감소할 때|증가하면|늘어나면|상승|하락|급등|급락|"
+    r"선행|예측|유의|상관|인과|영향을 미치|이끈다|견인|"
+    r"독립변수|종속변수|IV\b|DV\b|Granger|그레인저|가설|H1|검정|"
+    r"때문에|따라서|그 결과|반응한다|움직인다|움직이는지"
+)
+
 # 문장 분할 (한국어 종결 + 개행)
-_SENT = re.compile(r"[^\n。.!?]*[。.!?]|[^\n]+")
+#
+# ⚠️ 마침표는 **숫자 사이에 있으면 문장 끝이 아니다** — "99.5%"의 소수점이다.
+# 구판은 `[。.!?]`로 갈라서 "…8,207건(99." 까지를 한 문장으로 잘랐고, 강등 스탬프가
+# 숫자 한가운데(`99. [경고게이트…]5%가`) 박혔다. 퍼센트·p값이 들어간 모든 출력에서
+# 스탬프가 수치를 훼손한다 — 정직성 가드가 본문을 망가뜨리는 자해다.
+# 하류 오염 위원회(2026-07-13) 음성 테스트가 검출. 뒤에 숫자가 오는 마침표는 넘긴다.
+_SENT = re.compile(r"(?:[^\n。.!?]|\.(?=\d))*[。.!?]|[^\n]+")
 
 _STAMP = " [경고게이트: {code} — 컨텍스트가 '{region} 건수는 군사 충돌 지표가 아니다'라고 경고했으나 자격 표시 없이 인용됨]"
+
+_STAMP_IV = " [경고게이트: {code} — '{region} 건수'는 구성 타당도 경고 대상이라 인과·검정의 근거로 쓸 수 없다. 자격 표시를 달아도 마찬가지다: 오염된 변수 위에 세운 추론은 자격 표시가 구제하지 못한다]"
+
+
+def _stamp_for(code: str) -> str:
+    return _STAMP_IV if code == "construct_invalid_iv" else _STAMP
 
 
 def _warned_regions(context_text: str) -> dict[str, str]:
@@ -104,10 +142,26 @@ def check(full_text: str, context_text: str | None = None) -> list[dict]:
             sent = sm.group(0)
             if not num_re.search(sent):
                 continue
-            if not _MILITARY_FRAME.search(sent):
-                continue          # 군사 프레임이 아니면 위반 아님
-            if _QUALIFIER.search(sent):
-                continue          # 자격 표시가 있으면 정상 인용
+            causal = bool(_CAUSAL_FRAME.search(sent))
+            if not _MILITARY_FRAME.search(sent) and not causal:
+                continue          # 군사 프레임도 인과 프레임도 아니면 위반 아님
+            if _QUALIFIER.search(sent) and not causal:
+                continue          # 자격 표시가 있고 **서술**이면 정상 인용
+            if causal:
+                # 인과 프레임 — 자격 표시가 있어도 막는다. 오염된 건수는 서술의
+                # 대상은 될 수 있어도 추론의 **근거**는 될 수 없다.
+                actions.append({
+                    "code": "construct_invalid_iv",
+                    "region": region,
+                    "number": total,
+                    "detail": (
+                        f"{region} 총 {total}건(구성 타당도 경고 대상)을 인과·검정 "
+                        f"프레임의 근거로 인용 — 자격 표시가 있어도 위반이다. "
+                        f"오염된 건수는 서술의 대상은 되어도 추론의 근거는 될 수 없다."
+                    ),
+                    "span": (sm.start(), sm.end()),
+                })
+                continue
             actions.append({
                 "code": "caveat_ignored",
                 "region": region,
@@ -127,6 +181,6 @@ def apply_gate(full_text: str, context_text: str | None = None) -> tuple[str, li
     actions = check(full_text, context_text)
     for a in sorted(actions, key=lambda x: x["span"][0], reverse=True):
         s, e = a["span"]
-        stamp = _STAMP.format(code=a["code"], region=a["region"])
+        stamp = _stamp_for(a["code"]).format(code=a["code"], region=a["region"])
         full_text = full_text[:s] + full_text[s:e].rstrip() + stamp + full_text[e:]
     return full_text, actions

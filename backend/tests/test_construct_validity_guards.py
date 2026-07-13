@@ -38,6 +38,20 @@ def _ctx(query: str) -> str:
     return asyncio.run(build_intel_context(parse_query(query)))["context_text"]
 
 
+def _warned_total(ctx: str) -> str:
+    """경고가 붙은 권역의 총건수를 **컨텍스트에서 읽어온다**.
+
+    수치를 테스트에 하드코딩하지 않는다 — 구판은 "8,265"를 박아뒀는데, 하류 오염
+    위원회가 게이트 분모의 GDELT 희석을 걷어내자(진값 8,207) 픽스처가 낡아 게이트가
+    멀쩡한데도 테스트만 깨졌다. 가드가 지키는 대상은 '그때 그 숫자'가 아니라
+    '지금 컨텍스트가 경고한 숫자'다. 테스트도 그렇게 물어야 한다.
+    """
+    from services.caveat_gate import _warned_regions
+    warned = _warned_regions(ctx)
+    assert warned, "컨텍스트에 구성 타당도 경고가 없다 — 픽스처 전제 붕괴"
+    return next(iter(warned.values()))
+
+
 # ── 1. 이벤트 구성 타당도 ────────────────────────────────────────────────────
 
 def test_context_exposes_event_composition_not_avg_severity():
@@ -293,20 +307,47 @@ def test_caveat_gate_catches_ignored_warning():
     """
     from services.caveat_gate import apply_gate
     ctx = _ctx("북한 미사일 도발과 한국 방산주")
-    bad = "[관찰] 한반도의 긴장은 8,265건에 달한다. 북한의 도발이 증가한다."
+    n = _warned_total(ctx)
+    bad = f"[관찰] 한반도의 긴장은 {n}건에 달한다. 북한의 무력 도발이 잦다."
     out, acts = apply_gate(bad, ctx)
     assert acts, "경고를 무시한 인용을 못 잡았다 — 가드가 자기 표적을 놓쳤다"
     assert "경고게이트" in out, "강등 스탬프가 안 박혔다"
 
 
 def test_caveat_gate_allows_qualified_citation():
-    """자격 표시가 있으면 정상 인용이다 — 오탐하면 게이트가 무시된다."""
+    """자격 표시가 있으면 **서술은** 정상 인용이다 — 오탐하면 게이트가 무시된다."""
     from services.caveat_gate import apply_gate
     ctx = _ctx("북한 미사일 도발과 한국 방산주")
-    for ok in ("[관찰] 한반도 이벤트 8,265건 중 98.8%가 국내 시위다.",
-               "[관찰] 한반도 이벤트는 총 8,265건 수집됐다."):
+    n = _warned_total(ctx)
+    for ok in (f"[관찰] 한반도 이벤트 {n}건 중 99.5%가 국내 시위다.",
+               f"[관찰] 한반도 이벤트는 총 {n}건 수집됐다."):
         _, acts = apply_gate(ok, ctx)
         assert not acts, f"정상 인용을 오탐했다: {ok}"
+
+
+def test_caveat_gate_blocks_qualified_causal_citation():
+    """**자격 표시를 달아도 인과 주장의 근거로 쓰면 위반이다.** (하류 오염위 2026-07-13)
+
+    무너지면: 판례 폐기 #1(캐비엇 달고 라이브 유지 = C안)이 코드에서 부활한다.
+    8호가 정확히 이것을 했다 — 한계 절에 "ACLED 이벤트는 미사일 도발만이 아니라
+    한반도 긴장 전반을 포괄하므로"라고 자격을 표시하는 시늉을 하고, 그 숫자 위에
+    Granger 검정을 세우고, 「도발의 가격」이라는 제목으로 발행했다.
+
+    **알면서 쓴 것이 모르고 쓴 것보다 낫지 않다.** 오염된 건수는 서술의 대상은
+    되어도 추론의 근거는 될 수 없다.
+    """
+    from services.caveat_gate import apply_gate
+    ctx = _ctx("북한 미사일 도발과 한국 방산주")
+    n = _warned_total(ctx)
+    # 자격 표시(국내 시위)가 **있는데도** 인과 프레임이라 막혀야 한다.
+    bad = (f"[가설] 한반도 분쟁 이벤트 {n}건(99.5%가 국내 시위)이 증가할 때 "
+           f"방산 ETF가 유의하게 상승한다.")
+    out, acts = apply_gate(bad, ctx)
+    assert acts, "자격 표시가 붙은 인과 인용을 통과시켰다 — 판례 C안이 코드에서 부활했다"
+    assert acts[0]["code"] == "construct_invalid_iv", f"코드 오분류: {acts[0]['code']}"
+    assert "자격 표시가 구제하지 못한다" in out, "강등 사유가 안 박혔다"
+    # 스탬프가 수치를 쪼개지 않는다 — "99.5%"의 소수점을 문장 끝으로 오인하던 버그.
+    assert "99.5%가 국내 시위" in out, "강등 스탬프가 문장 중간(소수점)에 박혀 본문을 훼손했다"
 
 
 def test_caveat_gate_silent_when_no_warning():

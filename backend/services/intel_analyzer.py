@@ -288,6 +288,20 @@ def _get_event_stats(regions: list[str]) -> dict:
             # 말하지 않았고, 그래서 "한반도 분쟁 이벤트"가 가설의 독립변수가 됐다.
             # 실제 ACLED event_type + 사망자를 조달한다 — 숫자를 압축하지 말고
             # 구성을 보여준다.
+            #
+            # [하류 오염 위원회 2026-07-13 · 계량석] data_source='ACLED' 필터 신설.
+            # 이 절의 제목은 "ACLED 이벤트 통계"인데 쿼리는 event_archive 전체를
+            # 긁어 GDELT 행까지 세고 있었다. GDELT 행은 event_type이 NULL이라
+            # COALESCE로 '미분류'가 되고, 분자(시위·소요)에는 원리상 못 들어가면서
+            # 분모만 불린다 — 순수 희석재다. 호르무즈: ACLED 305 + GDELT 337 = 642가
+            # 분모가 돼 구성비가 94.8% → 45.0%로 내려앉았고, 그래서 강경고(≥50%)를
+            # 빠져나갔다. 그 GDELT 337건의 정체가 n_material_conflict — 같은 감사가
+            # 오염이라 선고한 바로 그 변수다(행위자 국적 키·모나코 F1 사건).
+            # **오염을 잡는 게이트의 분모가 오염으로 채워져 있었다.**
+            # 희석은 언제나 한 방향(비율을 낮춤)이라 거짓음성만 만들고, 피해는
+            # ACLED 기반이 얇은 초크포인트(호르무즈·수에즈·말라카)에 집중된다 —
+            # 게이트가 가장 필요한 곳에서 가장 약했다.
+            acled = "json_extract(payload, '$.data_source') = 'ACLED'"
             rows = con.execute(
                 f"""
                 SELECT region_code,
@@ -296,7 +310,7 @@ def _get_event_stats(regions: list[str]) -> dict:
                        SUM(CAST(COALESCE(json_extract(payload, '$.fatalities'), 0) AS INT))
                            AS deaths
                 FROM event_archive
-                WHERE region_code IN ({placeholders})
+                WHERE region_code IN ({placeholders}) AND {acled}
                 GROUP BY region_code, etype
                 ORDER BY cnt DESC
                 """,
@@ -310,7 +324,7 @@ def _get_event_stats(regions: list[str]) -> dict:
                 f"""
                 SELECT region_code, COUNT(*) as total
                 FROM event_archive
-                WHERE region_code IN ({placeholders})
+                WHERE region_code IN ({placeholders}) AND {acled}
                 GROUP BY region_code
                 """,
                 tuple(regions),
@@ -318,11 +332,14 @@ def _get_event_stats(regions: list[str]) -> dict:
             # [큐 10 — 시계열 형태 공백 처방 2026-07-11] 총량·평균만 주면 모델이 총량으로
             # 추세를 창작한다(전수 감사 검증비약 ~12건의 구조 원인). 월별 배열을 Token-Zero로
             # 사전계산 조달 — 추세 서술의 유일 허용 원천.
+            # ACLED 필터가 여기에도 필요한 이유: GDELT 행은 2026-05~06 적재 버스트에
+            # 몰려 있어, 수년치 ACLED 월별 배열에 2개월치 GDELT를 섞으면 그 두 달만
+            # 인위적으로 부풀어 "최근 급증"이라는 추세를 창작한다.
             month_rows = con.execute(
                 f"""
                 SELECT region_code, substr(timestamp, 1, 7) AS ym, COUNT(*) AS cnt
                 FROM event_archive
-                WHERE region_code IN ({placeholders})
+                WHERE region_code IN ({placeholders}) AND {acled}
                 GROUP BY region_code, ym
                 ORDER BY ym DESC
                 """,
@@ -1960,27 +1977,54 @@ def _build_context(
                     f"{t} {n:,}건({n / total * 100:.1f}%)" for t, n in ordered[:6]))
                 # [변수 타당도 감사 2026-07-13] 구성 타당도 자동 경고.
                 # "분쟁 이벤트"라는 이름과 내용이 어긋나는 권역을 컨텍스트가 스스로
-                # 고발한다 — 한반도 98.8%·대만해협 94.5%가 국내 시위인데 그 숫자가
+                # 고발한다 — 한반도 99.5%·대만해협 99.6%가 국내 시위인데 그 숫자가
                 # 북한 도발 가설의 독립변수로 쓰이던 사고(8호)의 재발 봉쇄.
-                soft = sum(n for t, n in et.items()
-                           if t in ("Protests", "Riots", "Strategic developments"))
-                ratio = soft / total if total else 0.0
-                # 단계식 — 이진 문턱(50%)은 호르무즈(45.0%)를 놓쳤다. 그 45%가
-                # 이란 국내 시위인데, 하필 그 권역이 "월간 200건 초과 시 유가 상승"
-                # 가설의 무대다(전문가 패킷). 문턱 바로 아래가 가장 위험하다.
+                #
+                # [하류 오염 위원회 2026-07-13] 두 가지를 고쳤다.
+                #
+                # ① 시위·소요와 '전략적 전개'(SD)를 분리한다. 구판은 셋을 한 통에
+                #    넣어 soft로 셌는데, SD는 ACLED 정의상 "비폭력 전략적 전개"이고
+                #    **북한 미사일 시험이 정확히 거기 코딩된다**(north_korea 권역
+                #    122건 중 112건이 SD, 전부 "Military Forces of North Korea").
+                #    즉 구판 게이트에 물으면 북한 도발 원장이 "91.8% 오염"으로 나온다 —
+                #    잡으려던 신호를 오염으로 판정한다. **구성 타당도는 질문에 상대적**이다:
+                #    "무력분쟁이 있었나"를 물으면 SD는 잡음이고, "북한이 신호를 보내나"를
+                #    물으면 SD가 바로 그 신호다. 게이트는 질문을 모르므로 판정하지 않고
+                #    **구성을 분해해서 보여주고 판단을 소비자에게 넘긴다.**
+                #
+                # ② 경고 등급은 시위·소요 비율(domestic)로만 매긴다 — 그것이 이름과
+                #    내용이 어긋나는 유일한 축이다. SD는 별도 줄로 항상 노출한다.
+                domestic = sum(n for t, n in et.items() if t in ("Protests", "Riots"))
+                strat = sum(n for t, n in et.items() if t == "Strategic developments")
+                ratio = domestic / total if total else 0.0
+                # 문턱은 이진 50%로 되돌린다. 구판의 20% "주의" 단계는 호르무즈가
+                # 45.0%로 강경고를 빠져나간다는 관측 위에 세워졌는데, 그 45.0%는
+                # 게이트가 자기 분모를 GDELT로 희석해 만든 인공물이었다(위 _get_event_stats
+                # 주석). 진값은 94.8% — 원래의 50% 문턱이 정상 발화했어야 했다.
+                # 단계식 패치는 없는 병을 고치면서 호르무즈를 "주의"(약) 구간에
+                # 안착시켜 **과소경고를 제도화했다.** 분모를 고쳤으니 패치를 걷는다.
                 if ratio >= 0.5:
                     lines.append(
-                        f"  ⚠️ **구성 타당도 경고(강)**: 이 권역 이벤트의 {ratio * 100:.1f}%가 "
-                        f"시위·소요·전략적 전개다(사망 {deaths:,}명). 이것은 **군사 충돌 지표가 아니다** "
-                        f"— '분쟁 이벤트 건수'를 무력 충돌·도발의 대리변수로 인용하지 마라. "
-                        f"국내 정치 시위를 지정학 긴장으로 오독하는 것이 이 경고의 표적이다."
+                        f"  ⚠️ **구성 타당도 경고(강)**: 이 권역 ACLED 이벤트의 "
+                        f"{ratio * 100:.1f}%가 국내 시위·소요다(사망 {deaths:,}명). 이것은 "
+                        f"**군사 충돌 지표가 아니다** — '분쟁 이벤트 건수'를 무력 충돌·도발의 "
+                        f"대리변수로 인용하지 마라. 국내 정치 시위를 지정학 긴장으로 오독하는 "
+                        f"것이 이 경고의 표적이다. 무력 충돌을 말하려면 Battles·Explosions "
+                        f"하위 건수나 사망자 수를 인용하라."
                     )
                 elif ratio >= 0.2:
                     lines.append(
-                        f"  ⚠️ **구성 타당도 주의**: 이 권역 이벤트의 {ratio * 100:.1f}%가 "
-                        f"시위·소요·전략적 전개다(사망 {deaths:,}명) — 상당 부분이 국내 정치 사건이다. "
-                        f"'분쟁 이벤트 건수'를 **순수 군사 지표로 쓰지 마라**. 무력 충돌을 말하려면 "
-                        f"Battles·Explosions 하위 건수나 사망자 수를 인용하라."
+                        f"  ⚠️ **구성 타당도 주의**: 이 권역 ACLED 이벤트의 {ratio * 100:.1f}%가 "
+                        f"국내 시위·소요다(사망 {deaths:,}명) — 상당 부분이 국내 정치 사건이다. "
+                        f"'분쟁 이벤트 건수'를 **순수 군사 지표로 쓰지 마라**."
+                    )
+                if strat:
+                    lines.append(
+                        f"  ℹ️ 이 중 **전략적 전개(Strategic developments) {strat:,}건"
+                        f"({strat / total * 100:.1f}%)** — ACLED 정의상 비폭력 사건이며 "
+                        f"미사일 시험·부대 이동·무력시위가 여기 코딩된다. **무력 충돌을 "
+                        f"물으면 이것은 잡음이고, 군사적 신호(도발·억지 시그널링)를 물으면 "
+                        f"이것이 바로 그 신호다.** 어느 쪽인지는 가설이 정한다 — 자동 판정하지 않는다."
                     )
             # [큐 10] 추이 사전계산 — 추세 서술은 이 배열·변화율만 인용 가능(창작 금지)
             monthly = stats.get("monthly")
