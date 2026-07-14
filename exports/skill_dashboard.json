@@ -1,23 +1,9 @@
 {
  "schema_version": "1.0",
- "generated_at": "2026-07-14T01:58:02Z",
- "engine_version": "9.64.0",
+ "generated_at": "2026-07-14T05:37:05Z",
+ "engine_version": "9.66.0",
  "skill": {
-  "n": 21,
-  "n_targets": 6,
-  "hit_rate": 0.429,
-  "wilson95": [
-   0.245,
-   0.635
-  ],
-  "baseline_coin": 0.5,
-  "baseline_const_majority": 0.571,
-  "baseline_const_direction": "down",
-  "baseline_persistence": [
-   0.867,
-   15
-  ],
-  "verdict": "skill 검출 불가 — CI가 기준선 이하 포함"
+  "n": 0
  },
  "ledger_distribution": [
   {

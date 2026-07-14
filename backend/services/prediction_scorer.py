@@ -321,7 +321,14 @@ def cumulative_skill_summary(con: sqlite3.Connection) -> dict:
     ).fetchall()
     n = len(rows)
     if not n:
-        return {"n": 0}
+        # 침묵은 "아직 안 쟀다"로 오해된다. 정직한 상태가 스스로 말하게 한다.
+        # (18-①위원회 2026-07-14: 간판 21건 전건 판정 불능으로 VOID → n=0)
+        return {
+            "n": 0,
+            "verdict": "track record 없음 — 나쁜 것이 아니라 아직 존재하지 않는다",
+            "why": "채점된 예측 전건(independent_var)의 발생 여부를 판정할 계기가 없다. "
+                   "적중률을 산출하지 않는다.",
+        }
     hits = sum(1 for r in rows if r[1] == "HIT")
     realized = [r[2] for r in rows if r[2] in ("up", "down")]
     maj = max(set(realized), key=realized.count) if realized else None

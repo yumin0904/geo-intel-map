@@ -152,6 +152,47 @@ def _classify_target(spec: "HypothesisSpec") -> tuple[str, str, bool]:
 _DECLARATION_H1 = re.compile(r"가설\s*없음|정량\s*가설이?\s*(?:부재|불가)|작성\s*시도했으나")
 
 
+# 티커가 가리키는 실물의 별칭. IV 텍스트에 이 중 하나가 있으면 IV와 DV가 같은 것을 가리킨다.
+_TICKER_ALIASES: dict[str, tuple[str, ...]] = {
+    "CL=F":  ("WTI", "서부텍사스", "West Texas"),
+    "BZ=F":  ("Brent", "브렌트"),
+    "NG=F":  ("TTF", "Henry Hub", "헨리허브", "천연가스 가격", "가스 가격", "Natural Gas Price"),
+    "GLD":   ("금값", "금 가격", "Gold Price", "금 시세"),
+    "^KS11": ("KOSPI", "코스피"),
+    "KRW=X": ("원/달러", "원달러", "Korean Won per"),
+    "CNY=X": ("위안/달러", "위안달러", "Chinese Yuan per"),
+    "TSM":   ("TSMC 주가", "TSM 주가"),
+    "ITA":   ("ITA 주가", "방산 ETF"),
+}
+
+
+def _iv_extraction_failed(independent_var: str, h1: str) -> bool:
+    """IV 필드가 H1 문장을 통째로 삼켰는가 — 전건이 분리되지 않은 상태.
+
+    추출기가 "X가 오르면 Y가 오른다"에서 X만 떼는 데 실패하고 문장 전체를 IV에 넣은 경우다.
+    전건을 분리하지 못했으면 전건을 잴 수도 없다 → 채점 대상에서 뺀다.
+    이것은 동어반복과 **다른 병**이다(폐기 #36: 진단이 다르면 처방이 다르다. 뭉개지 마라).
+    """
+    iv, h = (independent_var or "").strip(), (h1 or "").strip()
+    if not iv or not h or len(iv) <= 45:
+        return False
+    return iv[:30] in h
+
+
+def _is_tautological(independent_var: str, target: str | None) -> bool:
+    """분리된 IV가 target 자신을 가리키는가 — "IF X THEN X" 검출.
+
+    가격을 가격으로 예측하는 것은 지정학 가설이 아니다. 대소문자 무시 부분일치.
+    ⚠️ 호출 전에 _iv_extraction_failed로 거를 것 — H1을 삼킨 IV는 후행절까지 텍스트에 품고
+    있어 여기서 무조건 참이 된다(오탐). 실측: 그렇게 걸리는 30건 중 상당수의 전건은
+    정상 지정학 변수였다(예: "bab_el_mandeb ACLED 건수 증가가 WTI 유가를…" → target CL=F).
+    """
+    if not target or not independent_var:
+        return False
+    iv = independent_var.lower()
+    return any(a.lower() in iv for a in _TICKER_ALIASES.get(target, ()))
+
+
 def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord | None:
     """단일 HypothesisSpec → 반증가능 PredictionRecord (Token-Zero).
 
@@ -180,6 +221,20 @@ def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord | N
     # 실측 2026-07-14: 43건이 scorable=1로 8/15 만기 대기 중이었다(전건 동결).
     # 이 파일 docstring(L16-17)이 이미 이 규칙을 선언해 놓고 지키지 않았다(패턴 E).
     if scorable and getattr(spec, "data_signature", "") == "UNQUANTIFIABLE":
+        scorable = False
+
+    # 전건 게이트 2종 (18-①위원회 2026-07-14, 사용자 승인). 순서가 중요하다 — 진단이 다르다.
+    _iv = getattr(spec, "independent_var", "") or ""
+    if scorable and _iv_extraction_failed(_iv, spec.h1 or ""):
+        # ① 전건이 분리되지 않았다. 못 뗀 전건은 잴 수 없다. 실측 30건.
+        scorable = False
+    elif scorable and _is_tautological(_iv, target):
+        # ② 동어반복 — IV가 target 그 자체다. "IF X THEN X"는 지정학 가설이 아니라
+        #    가격 자기예측이다. 실측 8건: IV "WTI 유가(USD/배럴) 상승률" → target CL=F(=WTI).
+        #    발원지는 LLM의 실수가 아니라 배관이었다 — theory_comparator가 FRED 시세를
+        #    "실측 — Brent Crude Oil Price: … (최근 추세, 사전계산) [FRED]"로 주입하면
+        #    LLM이 그 줄을 독립변수로 되받아 썼다. 그 주입은 신선도 게이트로 막았고(같은
+        #    위원회), 이 가드는 그래도 새어 나오는 것을 채점에서 거른다(2층 방어).
         scorable = False
 
     if scorable and direction == "unclear":

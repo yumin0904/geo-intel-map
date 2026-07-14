@@ -15,6 +15,7 @@ import json
 import logging
 import sqlite3
 from contextlib import contextmanager
+from datetime import date
 from pathlib import Path
 
 from services import arithmetic_layer as A
@@ -25,6 +26,11 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 _LIB_DB   = Path(__file__).resolve().parent.parent / "db" / "library.db"
 _MAIN_DB  = Path(__file__).resolve().parent.parent / "db" / "geomap.db"
 _INTEL_DB = Path(__file__).resolve().parent.parent / "db" / "intel.db"
+
+# FRED 주입 신선도 임계. "긴장 → 가격 상승"을 대조하려면 값이 최근이어야 한다.
+# 실측(2026-07-14): fred_indicators는 시리즈당 5행·2020~2024 **연간**값이고 2024-01-01에
+# 멈춰 있다(925일). 그 값이 "최근 추세 … 사전계산 [FRED]"로 LLM에 들어가고 있었다.
+_FRED_MAX_STALE_DAYS = 120
 
 
 @contextmanager
@@ -188,6 +194,18 @@ def _get_fred_for_theories(regions: list[str]) -> dict:
                     continue
                 latest = rows[0]
                 oldest = rows[-1]
+                stale_days = (date.today() - date.fromisoformat(latest["date"])).days
+                if stale_days > _FRED_MAX_STALE_DAYS:
+                    # 낡은 값을 "최근 추세·실측"으로 주입하면 LLM이 그것을 독립변수로 되받아 쓴다.
+                    # 그렇게 예측할 변수(CL=F)를 전건(WTI 유가)이라며 자기에게 먹인 동어반복이
+                    # prediction_log에 실재한다 — 18-①위원회 2026-07-14.
+                    # 캐비엇으로 달지 않고 주입을 막는다("말했다"와 "지켜졌다"는 다르다 — caveat_gate).
+                    logger.warning(
+                        "[theory_cmp] FRED %s(%s) %d일 낡음 — 주입 차단(임계 %d일). "
+                        "fred_indicators는 연간 표이고 갱신이 멈춰 있다.",
+                        sid, latest["date"], stale_days, _FRED_MAX_STALE_DAYS,
+                    )
+                    continue
                 pct = A.pct_change(oldest["value"], latest["value"])
                 result[sid] = {
                     "name": latest["series_name"],
@@ -195,6 +213,7 @@ def _get_fred_for_theories(regions: list[str]) -> dict:
                     "latest_date": latest["date"],
                     "unit": latest["unit"],
                     "pct_change": pct,  # 최근 12개 데이터 구간 변화율
+                    "span_from": oldest["date"],  # "최근 추세"의 실제 구간을 숨기지 않는다
                 }
     except Exception as e:
         logger.debug("[theory_cmp] fred 조회 실패: %s", e)
