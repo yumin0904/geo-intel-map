@@ -28,7 +28,7 @@ import re
 import sqlite3
 import yaml
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -862,6 +862,9 @@ _REGION_FRED_SERIES: dict[str, list[str]] = {
     "gray_zone":        ["GOLDAMGBD228NLBM", "DCOILWTICO"],
 }
 
+from services.theory_comparator import _FRED_MAX_STALE_DAYS   # 임계는 하나다 — 두 곳이 갈라지면 그게 병이다
+
+
 def _get_fred_data(regions: list[str], sectors: list[str]) -> list[dict]:
     """FRED 경제 지표 시계열 — 지역·섹터 기반 스마트 라우팅."""
     series_ids: set[str] = set()
@@ -886,10 +889,36 @@ def _get_fred_data(regions: list[str], sectors: list[str]) -> list[dict]:
                     ORDER BY series_id, date DESC""",
                 list(series_ids),
             ).fetchall()
-        # 시리즈별로 최근 3개 값만 반환
+        # ── 신선도 게이트 (B30 재수리, 2026-07-14) ──────────────────────────────
+        #
+        # ⚠️ **B30의 첫 수리는 죽은 경로를 막았다.** 18-①위원회가 오염원으로 지목한 것은
+        #    `theory_comparator._get_fred_for_theories`였는데, 그 함수는 **수리 전에도
+        #    빈 dict를 반환했다**(cc2a0af에서 실측 0개). 게이트를 달아도 막을 게 없었다.
+        #
+        #    **살아 있는 주입 경로는 여기다.** `build_intel_context`(intel_analyzer:2196)가
+        #    이 함수를 불러 LLM 프롬프트에 넣는다. 그리고 이 함수는 게이트가 없었다 —
+        #    2026-07-14 실측: `Brent Crude Oil Price · 2024-01-01 · 80.22` **12행 반환**.
+        #    위원회가 인용한 바로 그 줄이다. **"고쳤다"는 말이 두 달 가까이 틀려 있었다.**
+        #
+        #    fred_indicators는 시리즈당 연간값이고 2024-01-01에 멈춰 있다(925일).
+        #    그 값을 "실측 · 최근 추세"로 LLM에 먹이면 LLM이 그것을 **독립변수로 되받아 쓴다**
+        #    (→ IV "WTI 유가" → target CL=F. 동어반복 8건의 발원지).
+        #
+        #    ⚠️ 재는 것은 **"오늘 주입이 0건이다"가 아니라 불변식**이다 —
+        #    FRED가 최신화되면 주입이 되살아나야 **맞다.**
+        today = date.today()
         result: dict[str, list] = {}
         for r in rows:
             sid = r[0]
+            stale_days = (today - date.fromisoformat(r[2])).days
+            if stale_days > _FRED_MAX_STALE_DAYS:
+                if sid not in result:
+                    logger.warning(
+                        "[ctx] FRED %s(%s) %d일 낡음 — 프롬프트 주입 차단(임계 %d일).",
+                        sid, r[2], stale_days, _FRED_MAX_STALE_DAYS,
+                    )
+                    result[sid] = []          # 로그 1회만
+                continue
             if sid not in result:
                 result[sid] = []
             if len(result[sid]) < 3:

@@ -22,9 +22,27 @@ _DEFAULT_DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
 
 
 def intel_db() -> Path:
-    """실 DB, 또는 검증기가 지정한 백업."""
+    """실 DB, 또는 검증기가 지정한 백업.
+
+    ## worktree엔 `db/`가 없다 (2026-07-14 실측)
+
+    `verify_repair --pre`는 구 커밋을 **worktree로 체크아웃**하는데, `db/`는 gitignore라
+    **거기 없다.** 그대로 두면 테스트가 **빈 DB를 읽고 0행 → 루프 미실행 → 공허한 통과**가
+    되고, 검증기는 그걸 *"수리 전에도 통과했다 = 결함의 증거가 없다"*로 읽는다.
+
+    **B30이 그 함정에 두 번 빠졌다.** 실제로는 구 코드가 낡은 FRED 12행을 LLM 프롬프트에
+    먹이고 있었는데, 테스트는 «문제 없음»을 뱉었다. **엉뚱한 이유로 딴 초록불이 가장 위험하다.**
+
+    → `VERIFY_REAL_ROOT`(검증기가 주입)가 있으면 **실 저장소의 DB**를 문다.
+      우선순위: `GEO_INTEL_DB`(--pre-db 백업) > `VERIFY_REAL_ROOT`(실 DB) > 로컬 기본값.
+    """
     override = os.environ.get("GEO_INTEL_DB")
-    if not override:
-        return _DEFAULT_DB
-    p = Path(override)
-    return p if p.is_absolute() else Path(__file__).resolve().parents[1] / p
+    if override:
+        p = Path(override)
+        return p if p.is_absolute() else Path(__file__).resolve().parents[1] / p
+
+    real_root = os.environ.get("VERIFY_REAL_ROOT")
+    if real_root:
+        return Path(real_root) / "geo-intel-map" / "backend" / "db" / "intel.db"
+
+    return _DEFAULT_DB
