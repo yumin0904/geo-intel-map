@@ -7,6 +7,7 @@ CLAUDE.md 아키텍처: backend/api/layers.py
 import json
 import sqlite3
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
@@ -27,6 +28,45 @@ _INTEL_DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
 
 # ACLED 응답 1시간 캐시 — 분쟁 데이터는 실시간 불필요 (CLAUDE.md 성능 원칙)
 _CONFLICT_TTL = timedelta(hours=1)
+
+
+@lru_cache(maxsize=1)
+def _source_horizon_and_activity() -> tuple[datetime | None, dict[str, int]]:
+    """importance_score의 **세계 기준점** — 배치가 아니라 원장에서 읽는다 (B15).
+
+    반환:
+      horizon  — ACLED 최신 event_date. 랙이 365일이라 `now` 기준으로는 전건 rec=0이 된다.
+                 "이 소스가 아는 가장 최근"이 recency의 정직한 기준점이다.
+      activity — 권역별 전역 이벤트 수. 구 코드는 **배치 안 등장 횟수**를 썼고, 그래서
+                 같은 이벤트가 무엇과 함께 조회됐느냐에 따라 다른 점수를 받았다.
+
+    ⚠️ lru_cache라 프로세스 수명 동안 고정된다. 수집이 돌아 지평이 밀리면 재시작해야
+       반영된다 — 지도 표시용이라 허용 가능한 지연이지만, **자동 갱신이 아니라는 사실은
+       적어 둔다**(계통도가 수동 스냅샷인 것과 같은 성질).
+    """
+    if not _INTEL_DB.exists():
+        return None, {}
+    try:
+        with sqlite3.connect(f"file:{_INTEL_DB}?mode=ro", uri=True) as con:
+            row = con.execute(
+                "SELECT MAX(timestamp) FROM events "
+                "WHERE json_extract(payload,'$.data_source') = 'ACLED'"
+            ).fetchone()
+            horizon = datetime.fromisoformat(row[0]) if row and row[0] else None
+            activity = {
+                r[0]: r[1]
+                for r in con.execute(
+                    "SELECT region_code, COUNT(*) FROM events "
+                    "WHERE region_code IS NOT NULL GROUP BY 1"
+                )
+            }
+        return horizon, activity
+    except Exception as exc:  # noqa: BLE001
+        import logging
+        logging.getLogger(__name__).warning(
+            "[layers] importance 기준점 조회 실패 — recency·repeat 비활성: %s", exc
+        )
+        return None, {}
 
 
 def _load_events_from_db() -> list[Event] | None:
@@ -229,7 +269,12 @@ async def get_conflict_events():
         )
 
     events = cluster_events(events)
-    events = score_events(events, gdelt_regions)
+    # [B15 수리 2026-07-14] 지평·전역 빈도를 **넘겨야** importance가 배치 불변이 된다.
+    #   · ref_time         = ACLED의 최신 event_date (랙 365일 — `now`를 쓰면 전건 rec=0)
+    #   · region_activity  = 권역별 전역 이벤트 수 (구 코드는 **배치 안 등장 횟수**를 썼다)
+    # 안 넘기면 recency가 죽고 repeat_region이 0이 된다 — 그게 "없는 숫자를 지어내지 않는" 기본값이다.
+    horizon, activity = _source_horizon_and_activity()
+    events = score_events(events, gdelt_regions, ref_time=horizon, region_activity=activity)
     result = _events_to_geojson(events)
     _conflict_cache["geojson"] = result
     _conflict_cache["expires_at"] = now + _CONFLICT_TTL
