@@ -629,14 +629,53 @@ async def _evaluate_chain_step(
     return new_links
 
 
+# 합성 시장 이벤트 id의 네임스페이스. **랜덤이면 안 된다** — 아래 참조.
+_SYNTHETIC_NS = uuid.UUID("6f9b1e2a-3c4d-5e6f-8a9b-0c1d2e3f4a5b")
+
+
+def _synthetic_event_id(rule: CascadeRule, trigger: Event, result: dict) -> str:
+    """합성 시장 이벤트의 **결정론적** id.
+
+    〔왜 랜덤이면 안 되나 — 2026-07-14 실측〕
+    구판은 `uuid.uuid4()`를 썼다. 이 id는 `cascade_links.target_event_id`로 들어가고,
+    테이블에는 `UNIQUE(source_event_id, target_event_id, rule_id)`가 걸려 있다.
+    **target이 매 런 새 랜덤값이면 이 제약은 절대 충돌하지 않는다** — 같은 트리거·같은
+    룰을 다시 평가할 때마다 새 행이 INSERT된다.
+
+    실측 결과: `cascade_links` **3,012행 중 진짜 링크는 315개**(89.5%가 중복).
+      malacca_to_lng          730행 → 고유 소스 10  (×73)
+      hormuz_tension_to_oil    63행 → 고유 소스  1  (×63)
+      taiwan_strait_to_soxx    50행 → 고유 소스  1  (×50)
+
+    그리고 이 숫자가 그대로 LLM에 들어간다 — `intel_analyzer._cascade_context()`가
+    `COUNT(*) AS fires`로 **"이 룰이 730번 발화했다"**를 컨텍스트에 주입한다.
+    실제 발화는 10번이다. **룰의 실적이 재실행으로 제조되고 있었다.**
+
+    B01과 같은 병이다: *"IV는 분쟁 강도가 아니라 적재 행 수였다"* → 여기선
+    *"발화 횟수가 아니라 재삽입 횟수다."* 그때도 원인이 `uuid4()` 랜덤 id였다.
+
+    〔무엇으로 id를 만드나〕 같은 시장 반응이면 같은 id가 나와야 한다:
+    룰 · 트리거 · 티커 · 극값일자. 이 넷이 같으면 **같은 사건**이고, 다시 평가해도
+    링크는 하나여야 한다(점수가 올랐으면 UPDATE — INSERT의 ON CONFLICT가 그렇게 짜여 있다).
+    """
+    resp = rule.expected_response
+    key = f"{rule.id}|{trigger.id}|{resp.ticker}|{result['extreme_date']}"
+    return str(uuid.uuid5(_SYNTHETIC_NS, key))
+
+
 def _build_response_event(rule: CascadeRule, trigger: Event, result: dict) -> Event:
-    """시장 변동을 Event로 정규화한다(좌표 없으므로 region 대표점에 앵커링)."""
+    """시장 변동을 Event로 정규화한다(좌표 없으므로 region 대표점에 앵커링).
+
+    ⚠️ 이 Event는 **`events` 테이블에 저장되지 않는다** — 메모리에만 사는 합성 이벤트다
+    (체이닝·링크 표현용). `cascade_links.target_event_id`가 이 id를 가리키므로
+    `events`에서 조회하면 없는 것이 **정상**이다. 결함이 아니다.
+    """
     resp = rule.expected_response
     center = region_center(rule.trigger.region) or trigger.location
     pct = result["pct_change"]
 
     return Event(
-        id=str(uuid.uuid4()),
+        id=_synthetic_event_id(rule, trigger, result),
         timestamp=datetime.fromisoformat(result["extreme_date"]),
         source_type="market",
         source_id=resp.ticker,

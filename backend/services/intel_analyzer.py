@@ -441,6 +441,16 @@ def _get_cascade_context(regions: list[str]) -> dict:
             # 79%가 정확히 1.0이다. 게다가 이 쿼리는 ORDER BY score DESC라 그중에서도
             # 최상위만 보여준다(이중 생존편향). 또 링크는 요청 시점 pull로만 생성돼
             # 오래 정체할 수 있다(실측 26일 유휴). 셋 다 컨텍스트가 자백하게 한다.
+            #
+            # ⚠️ [B31 수리 2026-07-14] 위 `COUNT(*) AS fires`는 **2026-07-14 이전에
+            # 재삽입 횟수를 세고 있었다.** 합성 시장 이벤트 id가 `uuid4()` 랜덤이라
+            # UNIQUE(source,target,rule)가 무력화됐고, 같은 트리거를 다시 평가할 때마다
+            # 새 행이 INSERT됐다. 실측: 3,012행 중 진짜 링크는 315개(89.5% 중복).
+            #   malacca_to_lng 730회 → 실제 10회(×73) · hormuz 63회 → 1회(×63)
+            # **"이 룰이 730번 발화했다"가 LLM 컨텍스트에 들어가고 있었다.**
+            # 근인 수리: cascade/engine.py::_synthetic_event_id (uuid5 결정론).
+            # 불변식: tests/test_cascade_idempotency.py가 (source,rule)당 1행을 강제한다.
+            # → 이제 `fires`는 **정직한 발화 횟수**다.
             total, mx = con.execute(
                 "SELECT COUNT(*), MAX(created_at) FROM cascade_links").fetchone()
         result["links"] = [dict(r) for r in rows]
