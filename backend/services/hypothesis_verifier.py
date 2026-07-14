@@ -165,6 +165,54 @@ def _classify_inference_grade(
     return _LADDER_DESCRIPTIVE, f"Granger 비유의(p≥{_P_PARTIAL}) — 선행성 근거 없음"
 
 
+def _classify_null_result(spec: "HypothesisSpec", p_value: float | None) -> str:
+    """비유의 결과를 **셋으로 가른다** — 처방이 정반대이므로 이름도 달라야 한다 (B02+B25).
+
+    D2위원회의 8-F 진단 3분할을 그대로 승계한다. 뭉개면 **고칠 수 있는 것(D4)이
+    못 고치는 것(D3)으로 위장하고**, 못 잰 것(D4)이 관계 없는 것(D1)으로 읽힌다.
+
+        D3_BAD_PROXY    → INVALID_PROXY  질문이 틀렸다. 더 모아도 소용없다
+        D4_INSUFFICIENT → UNDERPOWERED   표본이 없었다. **더 모으면 된다**
+        D1(검정 성립) + 검정력 충분 → REJECTED      쟀고 관계 없었다 — **발견이다**
+        D1(검정 성립) + 검정력 미달 → UNDERPOWERED  못 잴 설계였다
+        검정 자체를 안 함           → PENDING       아직 안 쟀다
+
+    ⚠️ 검정력 바닥선은 `granger_thresholds.yaml`에 **사전 선언**돼 있다. 결과를 보고
+    고르면 그 자체가 forking path다("이번엔 유의하니까 효과가 컸다고 하자").
+
+    실측(2026-07-14): 현실적 효과(f²=0.0045)에서 이 엔진의 최대 창(n=411)의 검정력은
+    **0.274**다. 즉 **거의 모든 비유의는 REJECTED가 아니라 UNDERPOWERED다** — 그것이
+    정직한 상태이고, 그 사실 자체가 드러나야 한다.
+    """
+    from services.statistical_power import achieved_power, can_reject, power_caveat
+
+    diag = getattr(spec, "diagnosis", None)
+
+    if diag == "D3_BAD_PROXY":
+        return "INVALID_PROXY"
+    if diag == "D4_INSUFFICIENT":
+        return "UNDERPOWERED"
+
+    # 검정이 아예 안 돌았다 → 아직 안 쟀다
+    if p_value is None:
+        return "PENDING"
+
+    n_obs = int(getattr(spec, "n_obs", 0) or 0)
+    n_lags = int(getattr(spec, "best_lag", 0) or 1)
+    n_ctrl = 1 if getattr(spec, "controlled", False) else 0
+
+    if can_reject(n_obs, n_lags, n_controls=n_ctrl):
+        return "REJECTED"  # 쟀고, 잴 힘이 있었고, 관계 없었다
+
+    # 검정은 돌았으나 잡을 힘이 없었다 — 캐비엇을 반드시 남긴다
+    caveat = power_caveat(n_obs, n_lags, n_controls=n_ctrl)
+    if caveat:
+        prev = getattr(spec, "inference_caveat", "") or ""
+        spec.inference_caveat = f"{prev} {caveat}".strip()
+    spec.achieved_power = round(achieved_power(n_obs, n_lags, n_controls=n_ctrl), 3)
+    return "UNDERPOWERED"
+
+
 def _get_date_range() -> tuple[date, date]:
     end = date.today()
     start = end - timedelta(days=_LOOKBACK_MONTHS * 30)
@@ -536,7 +584,14 @@ async def _run_granger_for_spec(
             if p_value is not None and _P_VERIFIED <= p_value < _P_PARTIAL:
                 spec.partial_basis = "TREND_P15"
         else:
-            spec.verification_status = "PENDING"
+            # ★ B02+B25 (2026-07-14): 구 코드는 여기서 무조건 "PENDING"이었다.
+            #    그 한 줄이 세 가지를 뭉갰다 —
+            #      · p=0.8로 **명확히 기각된** 가설 (정직한 귀무는 발견이다)
+            #      · 데이터가 없어 **못 잰** 가설
+            #      · 검정력이 없어 **잴 수 없는 설계**였던 가설
+            #    "미검증"이라는 말이 정직한 기각을 '아직 안 해봤다'로 위장하고,
+            #    못 잰 것을 '관계 없다'로 바꿔치기한다. **후자가 B01의 정의였다.**
+            spec.verification_status = _classify_null_result(spec, p_value)
 
         # ── [B8] P90 극단 시리즈 보조 검정 ──────────────────────────────────
         # 정규 Granger 유의하지 않을 때(p > 0.15) 비선형 임계 전이 탐색.

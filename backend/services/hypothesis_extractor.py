@@ -23,7 +23,28 @@ _MEASURABLE_YAML = Path(__file__).resolve().parents[1] / "config" / "measurable_
 
 # ── 데이터 모델 ───────────────────────────────────────────────────────────────
 
-VerificationStatus = Literal["PENDING", "PARTIAL", "VERIFIED"]
+VerificationStatus = Literal[
+    "PENDING",       # 아직 안 쟀다 (검정 미수행)
+    "PARTIAL",       # 경향성 (p<0.15)
+    "VERIFIED",      # 선행성 유의 (p<0.05)
+    "REJECTED",      # ★ 쟀고, **잴 검정력이 있었고**, 관계 없었다 — 정직한 귀무는 발견이다
+    "UNDERPOWERED",  # ★ 못 쟀다 — 표본 부족(D4) 또는 검정력 미달. **수리 가능**
+    "INVALID_PROXY", # ★ 질문이 틀렸다 (D3) — IV가 그 권역에서 분산 0. 데이터를 더 모아도 소용없다
+]
+# ⚠️ REJECTED·UNDERPOWERED·INVALID_PROXY는 2026-07-14 신설(B02+B25).
+# 구 코드는 셋을 전부 `PENDING(미검증)`으로 뭉갰다:
+#     if 선행성: VERIFIED / elif 상관: PARTIAL / else: PENDING   ← else가 셋을 삼켰다
+# 그래서 **p=0.8로 명확히 기각된 가설**과 **데이터가 없어 못 잰 가설**이 원장에서
+# 구별되지 않았다. "미검증"이라는 말이 정직한 기각을 '아직 안 해봤다'로 위장하고,
+# 못 잰 것을 '관계 없다'로 바꿔치기한다 — **후자가 B01의 정의였다.**
+#
+# 셋을 가르는 근거(D2위원회 8-F 진단 3분할 — 뭉개면 고칠 수 있는 것이 못 고치는 것으로
+# 위장한다):
+#   D1_NO_RELATION  + 검정력 충분 → REJECTED       (쟀고 관계 없었다)
+#   D1_NO_RELATION  + 검정력 미달 → UNDERPOWERED   (못 잴 설계였다)
+#   D4_INSUFFICIENT               → UNDERPOWERED   (표본이 없었다 — 더 모으면 된다)
+#   D3_BAD_PROXY                  → INVALID_PROXY  (변수가 틀렸다 — 더 모아도 소용없다)
+# 처방이 정반대이므로 이름도 달라야 한다. 상세 사유는 `diagnosis` 필드가 계속 보존한다.
 VariableType = Literal["Type_A", "Type_B", "Type_C"]
 
 
@@ -57,6 +78,7 @@ class HypothesisSpec:
     granger_q: float | None = None       # 다중검정 FDR 보정 q값 (Benjamini-Hochberg)
     differenced: bool = False            # 정상성 보정(1차 차분) 적용 여부
     controlled: bool = False             # B3 통제변수(VIX) 조건부 Granger 적용 여부
+    achieved_power: float | None = None  # 달성 검정력 (B25) — UNDERPOWERED 판정 근거. None=미계산
     control_name: str | None = None      # 사용된 통제변수명
     # ── [B8] P90 극단 이벤트 보조 검정 ──────────────────────────────────────
     extreme_granger_p: float | None = None   # P90 극단 시리즈 Granger p값 (보조)
