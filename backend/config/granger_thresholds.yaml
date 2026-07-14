@@ -40,6 +40,26 @@ p_extreme_verified: 0.05   # 극단(P90) 검정 유의 임계
 # 판정 신호는 source_type(데이터 소스 설계 시점에 선언되는 이벤트 클래스)이다.
 # 형태 프로브(과분산·0-달 비율)는 캘리브레이션에서 기각됨: ACLED 계열이 수집 배치
 # 아티팩트 탓에 미사일보다 과분산(var/mean 200~3747 vs 6.1) — 판별력 없음.
+#
+# ⚠️ [D2 위원회 2026-07-14 — 기각 사유 소멸, 재측정 필요] 위 "수집 배치 아티팩트"는
+# 그날 오전 B01 위원회가 디듑한 event_archive ×1.9 이중 적재(304,581→249,438행)였다.
+# 그 사유가 오늘 삭제됐다. 디듑된 DB + 오늘 사전선언된 신규 IV(violence_count·fatalities,
+# 구 severity 합산 IV는 은퇴)로 재측정한 결과(창 2024-05-31~2025-07-14, 8개 등록쌍):
+#   ukraine       violence_count var/mean=31.97 fatalities=87.90 (zero_share 0.08~0.09)
+#   middle_east   violence_count var/mean=36.63 fatalities=87.97 (zero_share 0.03~0.05)
+#   bab_el_mandeb violence_count var/mean= 1.50 fatalities= 6.08 (zero_share 0.03~0.16)
+#   나머지 5쌍(korean_peninsula·north_korea·taiwan_strait·east_china_sea·malacca)은
+#   해당 창의 ACLED 실사건이 0~90건뿐이라 var/mean이 표본부족으로 자명하게 낮다(~1.0~3.0).
+#   CNS 미사일(north_korea, source_type=missile_test) 대조군: 같은 창 var/mean=1.27(n=7건,
+#   불안정) · 활동기(2022-01~2024-11) var/mean=1.73, zero_share=0.938~0.985.
+# 디듑 전(백업 DB) 대비 과분산은 축소됐으나(예: ukraine fatalities 150.05→87.90,
+# violence_count 92.35→31.97) **소멸하지 않았다** — 실전 분쟁권(ukraine·middle_east)은
+# 여전히 미사일 대조군 대비 var/mean 약 20~60배. 다만 디듑 전엔 이 프로브가 8개 권역
+# 전부를 "200~3747" 대에 뭉갰던 반면, 디듑 후엔 실전쟁권(30~90) > 저강도(bab_el_mandeb,
+# 1.5~6) > 정책행위/공백권(~1~3)의 **실측 강도와 일치하는 단조 구배**가 나타난다 —
+# 이전엔 오염이 모든 권역을 균질하게 부풀려 판별력이 없었던 것이고, 지금은 서로 다른
+# 진짜 과정(연속 무력분쟁 vs 희소 정책행위)을 구분하는 신호로 보인다.
+# → [판단필요] 프로브 재도입 여부는 의장 판단(D2위원회 2026-07-14 보고, 배선 미실시).
 # 의미론 판정은 쿼리별 튜닝이 불가능한 사전선언(북한 특례 아님 — 어느 나라든 적용).
 episodic_policy_source_types: ["missile_test"]  # 단일 행위자의 의도적 정책 행위 계열
 episodic_dominance_ratio: 0.8   # A-1 필터 후 표본에서 이 비율 이상이면 episodic 판정

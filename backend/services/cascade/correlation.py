@@ -10,17 +10,28 @@ Granger 인과분석 (Clive Granger, 1969 노벨경제학상):
   → 기존 cascade 룰의 통계적 근거를 사후 검증한다.
 
 검정 방법:
-  - 이벤트 시계열 X: region별 일별 severity 합산 (event_archive)
+  - 이벤트 시계열 X: region별 일별 **사전선언 IV**(_IV_KINDS) — ACLED 전용
+      violence_count : 무력충돌 건수 (Battles·Explosions/RV·Violence against civilians)
+      fatalities     : 사망자 합
+    ⚠️ 구 IV였던 일별 `SUM(severity)`는 **은퇴**(D2 위원회 2026-07-14). severity는 위해
+    척도가 아니라 사건유형 순서코드였고, 하루치를 합산하면 일건수가 지배했다
+    (r(SUM(severity), COUNT(*)) = ukraine 1.000 · 전역 0.984). **IV의 정체는 적재 행 수였다.**
+    상세는 아래 「IV 사전선언」 블록.
   - 시장 시계열 Y: 일별 % 변동 (FRED DB 또는 yfinance)
   - statsmodels.tsa.stattools.grangercausalitytests F-test
   - maxlag=5 (거래일 1주), p < 0.05 = 유의
 
 ★ Granger 비유의(Non-significant) 결과가 의미하는 바:
-  지정학 충격 → 시장 전이는 비선형(Non-linear) 구조다.
-  평균적 conflict intensity(낮은 severity의 일상 이벤트)는 시장에 신호를 주지 않는다.
-  오직 임계값(threshold)을 초과한 극단 사건만 전이를 일으킨다.
-  → 이는 기존 cascade engine의 "event-specific yfinance 검증" 방식을 통계적으로 정당화한다.
-  → Farrell & Newman(2019) 무기화된 상호의존이 "chokepoint shock"에서만 발현됨을 뒷받침한다.
+  ⚠️ **먼저 "못 쟀다"와 "관계 없다"를 가른다** (B01 위원회 2026-07-14의 정의).
+  커버리지 미달이면 검정은 아예 성립하지 않는다(InsufficientCoverageError) — 그건 귀무가
+  아니라 **측정 불가**다. 비유의를 "룰북이 틀렸다"로 읽지 마라: 8/8 비유의여도 8룰이
+  전부 참일 확률이 20%다(검정력 0.18, 우도비 3.3 = 무증거).
+  검정이 **성립한 뒤의** 비유의라면 아래 해석이 후보다:
+  지정학 충격 → 시장 전이는 비선형(Non-linear) 구조일 수 있다. 평균적 conflict intensity는
+  시장에 신호를 주지 않고, 임계값을 초과한 극단 사건만 전이를 일으킨다.
+  → Farrell & Newman(2019) 무기화된 상호의존이 "chokepoint shock"에서만 발현됨과 정합.
+  단 이것을 주장하려면 **적극적 비선형 검정으로 양성 증거**를 대야 한다 (헌법 8-gate:
+  선형검정의 실패를 비선형의 증거로 쓰지 않는다 — affirming-the-null 금지).
 
 출력:
   {rule_id, region, ticker, p_value, best_lag, n_obs, supported, theory, note}
@@ -210,14 +221,27 @@ class GrangerResult:
     p_value:   float | None   # 최적 지연에서의 F-test p-value
     best_lag:  int | None     # 가장 유의한 지연일
     n_obs:     int            # 분석에 사용된 관측값 수
-    supported: bool           # p < 0.05
+    supported: bool           # q < 0.05 (FDR 보정 후 — 아래 q_value 참조)
     theory:    str
     note:      str
+    # [D2 위원회 2026-07-14] 어느 사전선언 IV로 잰 결과인가. 한 쌍당 _IV_KINDS 전부 실행되며
+    # 결과도 전부 보고된다(승자 고르기 금지 — 유의한 IV만 남기면 그게 p-해킹이다).
+    iv_kind:   str = "violence_count"
+    # FDR(Benjamini-Hochberg) 보정 q값 — 쌍×IV 전체 집합에 대해 계산.
+    # 검정 수가 2배(8쌍 × 2IV)가 됐으므로 보정 없이 p<0.05를 쓰면 위양성이 늘어난다.
+    q_value:   float | None = None
+    # 검정 미수행 사유 (8-F 진단코드). 성립한 검정에선 None.
+    #   D4_INSUFFICIENT — 못 쟀다 (커버리지 미달·표본 부족). **수리 가능**
+    #   D3_BAD_PROXY    — 질문이 틀렸다 (IV가 그 권역에서 분산 0)
+    #   D1_NO_RELATION  — 쟀고 관계 없었다 (정직한 귀무)
+    # ⚠️ 이 셋을 하나의 "검정 불가"로 뭉개면 **고칠 수 있는 것(D4)이 못 고치는 것(D3)으로
+    # 위장한다.** "못 쟀다"를 "관계 없다"로 바꿔치기하는 것이 B01의 정의였다.
+    diagnosis: str | None = None
     # 극단 이벤트 분석 결과 (상위 25% 이벤트 → 다음 날 수익률)
     extreme_return_pct:   float | None = None  # 극단 이벤트 다음 날 평균 수익률 %
     normal_return_pct:    float | None = None  # 일반 이벤트 다음 날 평균 수익률 %
     n_extreme_events:     int = 0
-    extreme_threshold_sv: float | None = None  # 극단 임계 severity
+    extreme_threshold_sv: float | None = None  # 극단 IV 임계값 (severity 아님 — D2 이후)
     error:     str | None = None  # 오류 발생 시 메시지
 
 
@@ -259,9 +283,10 @@ class InsufficientCoverageError(RuntimeError):
     """
 
 
-@lru_cache(maxsize=16)
-def _coverage_days(start_iso: str, end_iso: str) -> frozenset[str]:
-    """이 창에서 **수집이 실재한 날** 집합.
+@lru_cache(maxsize=32)
+def _coverage_days(start_iso: str, end_iso: str,
+                   data_source: str | None = None) -> frozenset[str]:
+    """이 창에서 **수집이 실재한 날** 집합. `data_source`를 주면 그 소스만 세어 판정한다.
 
     ⚠️ [B01 위원회 2026-07-14 — 반박석 적발] 문턱이 '≥1건'이면 가드가 자기 병을 다시 만든다.
     실측: 수집일로 인정된 444일 중 **전역 <10건인 날이 19일, <100건인 날이 48일**이다.
@@ -273,13 +298,33 @@ def _coverage_days(start_iso: str, end_iso: str) -> frozenset[str]:
     처방: 절대 문턱(1건)이 아니라 **정상 수집일 대비 상대 문턱**. 창 내 일별 건수의
     중앙값 대비 _COVERAGE_MIN_RATIO 미만인 날은 수집이 온전했다고 보지 않는다 → NaN.
     중앙값을 쓰는 이유는 구멍(0건인 날)이 평균을 끌어내려 문턱을 스스로 낮추기 때문이다.
+
+    ⚠️⚠️ [D2 위원회 2026-07-14 — 반박석 적발, 패턴 E 다섯 번째] **분모가 분자를 몰랐다.**
+    위 B01 수리는 문턱만 고치고 **모집단은 전역 COUNT(*)로 놔뒀다.** 그런데 IV는 전역이
+    아니다 — 사망자·폭력사건 IV는 **100% ACLED**다(fatalities·event_type은 ACLED payload에만
+    존재). 그래서 GDELT가 신선하게 들어온 날은 ACLED가 **0건이어도** 게이트가 "수집 정상"을
+    확정하고, 그러면 `apply_coverage`가 그날의 ACLED 0을 **"진짜 0 — 아무도 안 죽었다"로
+    주조한다.**
+
+    실측(창 2024-06-01~2026-07-14): 게이트가 수집정상으로 확정한 396일 중 **ACLED가 0건인
+    날이 18일**. 그리고 **ACLED 최신 이벤트는 2026-05-26(랙 49일)인데 GDELT는 07-13까지
+    신선하다** — 전역 분모가 GDELT의 신선함으로 ACLED의 공백을 덮고 있었다. 랙이 자라면
+    이 위조도 같이 자란다.
+
+    처방: 커버리지는 **IV가 실제로 길어 올리는 소스에 대해** 계산한다. 가드가 쓰는 모집단도
+    변수다(패턴 H) — 그 변수의 출처를 IV의 출처와 일치시킨다.
     """
     con = sqlite3.connect(_DB_PATH)
+    where = "DATE(timestamp) BETWEEN ? AND ?"
+    params: list = [start_iso, end_iso]
+    if data_source:
+        where += " AND json_extract(payload, '$.data_source') = ?"
+        params.append(data_source)
     try:
         rows = con.execute(
-            "SELECT DATE(timestamp) AS day, COUNT(*) AS n FROM event_archive "
-            "WHERE DATE(timestamp) BETWEEN ? AND ? GROUP BY day",
-            (start_iso, end_iso),
+            f"SELECT DATE(timestamp) AS day, COUNT(*) AS n FROM event_archive "
+            f"WHERE {where} GROUP BY day",
+            tuple(params),
         ).fetchall()
     finally:
         con.close()
@@ -297,9 +342,10 @@ def _coverage_days(start_iso: str, end_iso: str) -> frozenset[str]:
     thin = len(counts) - len(covered)
     if thin:
         logger.warning(
-            "[커버리지] 부분 수집일 %d일을 결측으로 강등 — 전역 건수 < %d "
+            "[커버리지/%s] 부분 수집일 %d일을 결측으로 강등 — 건수 < %d "
             "(정상일 중앙값 %d의 %.0f%%). 잡이 거의 실패한 날을 '사건 0건'으로 "
-            "주조하지 않는다.", thin, floor, median, _COVERAGE_MIN_RATIO * 100,
+            "주조하지 않는다.", data_source or "전역", thin, floor, median,
+            _COVERAGE_MIN_RATIO * 100,
         )
     return covered
 
@@ -346,27 +392,100 @@ _REGION_ALIAS: dict[str, str] = {
 }
 
 
+# ── IV 사전선언 (D2 위원회 2026-07-14) ────────────────────────────────────────
+#
+# 〔무엇이 죽었나〕 구 IV = 일별 `SUM(severity)`, 이름은 `event_severity`.
+# 그런데 severity는 위해 척도가 **아니다** — `_SEVERITY_BASE[event_type] + min(30, fatalities)`
+# (connectors/acled.py:82), 즉 **ACLED 사건유형을 숫자로 바꾼 순서 코드**다
+# (Protests 15 · Riots 35 · VaC 55 · Explosions 65 · Battles 70).
+# 그걸 하루치 **합산**하면 일건수가 지배한다 — 일건수 변동계수 0.738 vs 일평균 severity
+# 변동계수 0.234. 실측 r(SUM(severity), COUNT(*)): ukraine **1.000** · korean_peninsula
+# **1.000** · taiwan_strait 0.995 · 전역 0.984.
+# **엔진의 모든 Granger 독립변수는 사실상 「그날 적재된 행 수」였다.**
+#
+# 그리고 그것이 어디서나 "검정 가능"했던 이유가 바로 그것이다 — 행은 언제나 들어오니까.
+# **범용성이 타당성의 증거가 아니라 그 반대의 증거였다.**
+#
+# 〔무엇이 대신 서는가〕 하나로 갈아끼우지 않는다. 두 개를 **사전선언**한다 —
+# 결과를 보기 전에 고정하고, 둘 다 돌리고, 둘 다 보고한다(null 포함, FDR 보정).
+# 헌법 Phase 9 3원칙: "방법 집합은 데이터 모양으로 **사전 선언** · 전부 실행 + 전부 보고 ·
+# 수렴/발산을 해석." 삼각측량이지 승자 고르기가 아니다.
+#
+#   violence_count — "무력이 사용됐나" (Battles·Explosions/RV·Violence against civilians)
+#   fatalities     — "얼마나 다쳤나"   (payload.fatalities 합)
+#
+# 둘은 중복이 아니다: 실측 r(폭력건수, 사망자) = 0.51~0.77 — 분산의 41~74%가 서로 다르다.
+# 그리고 둘 중 하나만 쓰면 권역이 조용히 죽는다 — **east_china_sea는 폭력 39일인데 사망
+# 0명**이다(무력이 쓰였으나 사람이 안 죽은 권역). 사망자 단독 IV는 이 등록 쌍을 말없이
+# 지운다. 폐기 원장 패턴 I("구성 타당도는 질문에 상대적이다").
+#
+# 〔왜 부피족을 안 쓰는가〕 "디듑 고유 이벤트 수"·"ingestion_volume 개명"은 구 IV와
+# r>0.99 — **같은 것의 다른 이름**이다. 개명은 부정직을 고치지 않고 읽히게만 한다.
+# 단 **폭력사건 건수는 부피가 아니다** — 적재 행 수가 아니라 무력충돌 건수이고, 분쟁
+# 강도의 표준 측도다. 엔진 자신이 `diluted_iv` 회수 사유에 이미 적어놨다:
+# "무력충돌을 말하려면 Battles·Explosions 하위 건수를 쓸 것."
+#
+# 〔severity는 어디로 갔나〕 폐기가 아니라 **용도 제한**이다(07-13 변수타당도 판례의
+# 검정층 확장). cascade 룰 트리거(`severity_min: 50` = "전투급 이상")에는 사건유형
+# 서열이 오히려 맞는 도구라 그 용도는 유지한다 — engine.py는 행단위 `severity >= min`을
+# 쓰고 correlation.py는 일별 집계를 쓴다. 코드 경로가 분리돼 있어 파급되지 않는다.
+
+_ACLED = "ACLED"   # fatalities·event_type이 실재하는 유일한 소스 (GDELT·CNS엔 없다)
+
+# 무력충돌로 세는 ACLED event_type — 시위·전략적전개는 무력이 아니다
+_VIOLENT_TYPES: tuple[str, ...] = (
+    "Battles", "Explosions/Remote violence", "Violence against civilians",
+)
+
+# 사전선언 IV 집합 — 결과를 보기 전에 고정한다. 여기 없는 IV는 검정에 못 들어간다.
+_IV_KINDS: tuple[str, ...] = ("violence_count", "fatalities")
+
+
 def _load_event_series(region: str, start: date, end: date,
-                       country: str | None = None) -> pd.Series:
-    """event_archive에서 region별 일별 severity 합산 시계열을 반환한다.
+                       country: str | None = None,
+                       iv_kind: str = "violence_count") -> pd.Series:
+    """event_archive에서 region별 일별 IV 시계열을 반환한다. IV는 `_IV_KINDS` 중 하나.
+
+    iv_kind: "violence_count"(무력충돌 건수) 또는 "fatalities"(사망자 합).
+        severity 합산(구 `event_severity`)은 **은퇴**했다 — 위 사전선언 블록 참조.
 
     country: 지정 시 payload.country가 그 국가인 이벤트만 집계(A-1 필터). IV가 특정 국가를
         지목한 경우 구성타당도 게이트가 결정 — region에 섞인 타국 이벤트를 배제해 순수
-        대상 시계열을 뽑는다. 예: "북한 도발"→country="North Korea"면 korean_peninsula의
-        남한 시위를 배제하고 북한 미사일만 센다.
+        대상 시계열을 뽑는다.
+
+    ⚠️ 두 IV 모두 **ACLED 전용**이다(fatalities·event_type이 ACLED payload에만 있다).
+    그래서 커버리지도 ACLED에 대해 잰다 — 전역 분모를 쓰면 GDELT가 들어온 날의 ACLED
+    0건이 "진짜 0"으로 위조된다(D2 위원회 실측 18일). `_coverage_days` docstring 참조.
     """
+    if iv_kind not in _IV_KINDS:
+        raise ValueError(
+            f"미선언 IV '{iv_kind}' — 사전선언 집합 {_IV_KINDS} 밖의 변수는 검정에 넣지 "
+            f"않는다(결과 보고 IV 고르기 = p-해킹). 새 IV는 variable_catalog.yaml 등재 후 "
+            f"_IV_KINDS에 추가하라."
+        )
+
     region = _REGION_ALIAS.get(region, region)  # 별칭 보정
     con = sqlite3.connect(_DB_PATH)
-    where = "region_code = ? AND DATE(timestamp) BETWEEN ? AND ?"
-    params: list = [region, start.isoformat(), end.isoformat()]
+    # ACLED 고정 — 이 IV들의 재료(fatalities·event_type)가 다른 소스엔 없다.
+    where = ("region_code = ? AND DATE(timestamp) BETWEEN ? AND ? "
+             "AND json_extract(payload, '$.data_source') = ?")
+    params: list = [region, start.isoformat(), end.isoformat(), _ACLED]
     if country:
         where += " AND json_extract(payload, '$.country') = ?"
         params.append(country)
+
+    if iv_kind == "violence_count":
+        placeholders = ",".join("?" * len(_VIOLENT_TYPES))
+        where += f" AND json_extract(payload, '$.event_type') IN ({placeholders})"
+        params.extend(_VIOLENT_TYPES)
+        value_expr = "COUNT(*)"
+    else:  # fatalities
+        value_expr = "SUM(COALESCE(CAST(json_extract(payload, '$.fatalities') AS INT), 0))"
+
     df = pd.read_sql_query(
         f"""
         SELECT DATE(timestamp) AS day,
-               SUM(severity)   AS sev_sum,
-               COUNT(*)        AS cnt
+               {value_expr}     AS iv_value
         FROM event_archive
         WHERE {where}
         GROUP BY day
@@ -379,15 +498,16 @@ def _load_event_series(region: str, start: date, end: date,
     con.close()
 
     if df.empty:
-        return pd.Series(dtype=float, name="event_severity")
+        return pd.Series(dtype=float, name=iv_kind)
 
     idx = pd.date_range(start, end, freq="D")
     # [B01 수리] 수집 공백은 NaN, 수집된 날의 무사건은 0.0 — 아래 apply_coverage 참조.
     # 구 코드: reindex(idx, fill_value=0.0) ← 8개월 데이터 공백을 "전쟁 없음"으로 위조
-    covered = _coverage_days(start.isoformat(), end.isoformat())
-    label = f"event_severity[{region}{'/' + country if country else ''}]"
-    series = apply_coverage(df.set_index("day")["sev_sum"], idx, covered, label)
-    series.name = "event_severity"
+    # [D2 수리] 커버리지 모집단도 ACLED — 분모와 분자의 출처를 일치시킨다(패턴 H).
+    covered = _coverage_days(start.isoformat(), end.isoformat(), _ACLED)
+    label = f"{iv_kind}[{region}{'/' + country if country else ''}]"
+    series = apply_coverage(df.set_index("day")["iv_value"], idx, covered, label)
+    series.name = iv_kind
 
     nonzero = int((series > 0).sum())
 
@@ -414,8 +534,12 @@ def _load_event_series(region: str, start: date, end: date,
         # [B01 수리] min_count=1 — pandas의 sum()은 기본적으로 NaN을 0으로 세므로,
         # 통째로 결측인 주가 "그 주엔 사건 0건"으로 되살아난다. 위조를 여기서 다시
         # 만들지 않으려면 관측이 하나도 없는 주는 NaN으로 남겨야 한다.
+        # [D2 수리] 이름을 IV에 맞춘다 — 구 코드는 `event_severity_weekly`로 하드코딩돼
+        # 있어, IV가 사망자여도 하류가 "severity"라고 읽었다(변수 타당도: 이름이 내용을
+        # 뜻해야 한다). `_load_extreme_event_series`의 "weekly" 문자열 판정도 이 이름에
+        # 의존하므로 접미사는 유지한다.
         series = series.resample("W").sum(min_count=1)
-        series.name = "event_severity_weekly"
+        series.name = f"{iv_kind}_weekly"
 
     return series
 
@@ -425,6 +549,7 @@ def _load_extreme_event_series(
     start: date,
     end: date,
     p_quantile: float = 0.90,
+    iv_kind: str = "violence_count",
 ) -> pd.Series | None:
     """
     [B8] P90 극단 이벤트 시계열.
@@ -432,13 +557,18 @@ def _load_extreme_event_series(
     이론적 근거 (Farrell & Newman 2019 임계 효과):
     평균 분쟁 강도는 시장에 신호를 주지 않는다. 임계값을 넘는 극단 사건만
     공급망·투자 심리를 통해 시장으로 전이된다. 따라서 Granger 독립변수를
-    전체 severity 대신 P90 초과분(excess severity)으로 대체하면 비선형 신호를
-    선형 검정에서 포착할 수 있다.
+    전체 수준 대신 P90 초과분(excess)으로 대체하면 비선형 신호를 선형 검정에서
+    포착할 수 있다.
+
+    ⚠️ [D2 위원회 2026-07-14] 기저 IV가 `SUM(severity)`에서 사전선언 IV(기본
+    `violence_count`)로 교체됐다. 따라서 이것은 이제 "극단 severity"가 아니라
+    **극단 무력충돌 건수**다 — 이름을 그렇게 바꿨다. 구 이름(`event_severity_p90`)을
+    유지하면 하류가 "심각도"라고 읽는다(변수 타당도 판례: 이름이 내용을 뜻해야 한다).
 
     반환: 임계값 초과분 시계열 (기본값 미달 시 None).
     반환 시리즈가 일별이므로 시장 시계열도 일별 유지 가능 (고빈도 종속변수).
     """
-    base = _load_event_series(region, start, end)
+    base = _load_event_series(region, start, end, iv_kind=iv_kind)
     if base is None or len(base) == 0:
         return None
 
@@ -456,7 +586,7 @@ def _load_extreme_event_series(
 
     # 임계값 초과분: 일상 이벤트 노이즈 제거, 극단 신호만 보존
     extreme = (base - threshold).clip(lower=0)
-    extreme.name = "event_severity_p90"
+    extreme.name = f"{iv_kind}_p90"
 
     if (extreme > 0).sum() < 10:
         return None
@@ -468,28 +598,35 @@ def _load_global_conflict_series(
     start: date, end: date, exclude: list[str] | None = None,
 ) -> pd.Series:
     """
-    [B4] 전세계 일별 분쟁 강도 합산 시계열 — 사건→사건 Granger의 통제변수(Z).
+    [B4] 전세계 일별 분쟁 강도 시계열 — 사건→사건 Granger의 통제변수(Z).
 
     공통 충격(계절성·글로벌 불안정)이 여러 지역 분쟁을 동시에 움직이는 교란을
-    통제하기 위해, 검정 대상 두 지역을 제외한 전세계 severity 합산을 사용한다.
+    통제하기 위해, 검정 대상 두 지역을 제외한 전세계 무력충돌 건수를 사용한다.
+
+    ⚠️ [D2 위원회 2026-07-14] 구 코드는 `SUM(severity)`였다 — IV와 **같은 병**이다.
+    통제변수의 척도가 IV와 다르면 단위 불일치이고, 같은 위조를 겪으면 통제 자체가
+    가짜다(교란을 "통제했다"고 주장하며 편의를 주입한다). IV를 무력충돌 건수로 바꾼
+    이상 Z도 같은 척도·같은 소스(ACLED)·같은 커버리지로 간다.
     """
-    region = _REGION_ALIAS  # noqa: 별칭 일관성 참조
     exclude = [_REGION_ALIAS.get(r, r) for r in (exclude or [])]
     con = sqlite3.connect(_DB_PATH)
     placeholders = ",".join("?" * len(exclude)) if exclude else ""
     where_excl = f"AND region_code NOT IN ({placeholders})" if exclude else ""
+    vt_placeholders = ",".join("?" * len(_VIOLENT_TYPES))
     df = pd.read_sql_query(
         f"""
-        SELECT DATE(timestamp) AS day, SUM(severity) AS sev_sum
+        SELECT DATE(timestamp) AS day, COUNT(*) AS iv_value
         FROM event_archive
         WHERE region_code IS NOT NULL
           AND DATE(timestamp) BETWEEN ? AND ?
+          AND json_extract(payload, '$.data_source') = ?
+          AND json_extract(payload, '$.event_type') IN ({vt_placeholders})
           {where_excl}
         GROUP BY day
         ORDER BY day
         """,
         con,
-        params=(start.isoformat(), end.isoformat(), *exclude),
+        params=(start.isoformat(), end.isoformat(), _ACLED, *_VIOLENT_TYPES, *exclude),
         parse_dates=["day"],
     )
     con.close()
@@ -498,8 +635,9 @@ def _load_global_conflict_series(
     idx = pd.date_range(start, end, freq="D")
     # [B01 수리] 통제변수 Z도 같은 위조를 겪었다. 통제변수가 가짜 0이면 통제 자체가
     # 가짜다 — 오히려 교란을 "통제했다"고 주장하며 편의를 주입한다.
-    covered = _coverage_days(start.isoformat(), end.isoformat())
-    series = apply_coverage(df.set_index("day")["sev_sum"], idx, covered, "global_conflict")
+    # [D2 수리] 커버리지 모집단도 ACLED — 분모와 분자의 출처 일치(패턴 H).
+    covered = _coverage_days(start.isoformat(), end.isoformat(), _ACLED)
+    series = apply_coverage(df.set_index("day")["iv_value"], idx, covered, "global_conflict")
     series.name = "global_conflict"
     return series
 
@@ -861,70 +999,114 @@ async def run_correlation_analysis(
     """
     results: list[GrangerResult] = []
 
+    # [D2 위원회 2026-07-14] 쌍 × **사전선언 IV 전부**를 돌린다. 결과가 나온 뒤 IV를 고르지
+    # 않는다 — 그게 p-해킹이다. 둘 다 돌리고 둘 다 보고하고, 수렴/발산을 해석한다
+    # (헌법 Phase 9 3원칙: 삼각측량은 승자 고르기가 아니다).
     for pair in _VALIDATION_PAIRS:
         rule_id = pair["rule_id"]
         region  = pair["region"]
         ticker  = pair["ticker"]
 
-        logger.info("[correlation] %s 검증 중 (region=%s, ticker=%s)", rule_id, region, ticker)
+        market_series = await _get_market_series(ticker, start, end)
 
+        for iv_kind in _IV_KINDS:
+            logger.info("[correlation] %s 검증 중 (region=%s, ticker=%s, IV=%s)",
+                        rule_id, region, ticker, iv_kind)
+
+            def _fail(error: str, diagnosis: str) -> GrangerResult:
+                return GrangerResult(
+                    rule_id=rule_id, region=region, ticker=ticker,
+                    direction=pair["direction"], p_value=None, best_lag=None,
+                    n_obs=0, supported=False,
+                    theory=pair["theory"], note=pair["note"],
+                    iv_kind=iv_kind, diagnosis=diagnosis, error=error,
+                )
+
+            try:
+                if market_series is None or len(market_series) < 30:
+                    results.append(_fail("시장 데이터 로드 실패", "D4_INSUFFICIENT"))
+                    continue
+
+                event_series = await asyncio.get_event_loop().run_in_executor(
+                    None, _load_event_series, region, start, end, None, iv_kind
+                )
+
+                # ── "못 쟀다" vs "관계 없다"를 여기서 가른다 (B01의 정의) ──────────
+                if len(event_series) == 0:
+                    results.append(_fail(
+                        f"region={region}: {iv_kind} 이벤트 없음 — 수집 자체가 0건",
+                        "D4_INSUFFICIENT"))
+                    continue
+
+                # 분산 0 = 그 권역에서 이 IV는 상수다. 검정이 원리상 불가능하다.
+                # 이건 "관계 없음"이 아니라 **질문이 틀렸다**(D3) — 예: east_china_sea는
+                # 폭력 39일인데 사망 0명이라 fatalities IV가 상수 0이다. 그 권역에
+                # 무력충돌이 없어서가 아니라, 사람이 안 죽어서다.
+                observed = event_series.dropna()
+                if len(observed) == 0 or float(observed.std() or 0) == 0.0:
+                    results.append(_fail(
+                        f"region={region}: {iv_kind}의 분산이 0 "
+                        f"(관측 {len(observed)}일, 전부 동일값) — 이 IV로는 이 권역을 잴 수 "
+                        f"없다. '관계 없음'이 아니라 **질문이 틀렸다**.",
+                        "D3_BAD_PROXY"))
+                    continue
+
+                p_val, best_lag, n_obs, _f, _meta = _run_granger(event_series, market_series)
+
+                # 극단 이벤트 비선형 분석 (Granger 비유의 이유 진단)
+                extreme = _run_extreme_correlation(event_series, market_series)
+
+                results.append(GrangerResult(
+                    rule_id=rule_id, region=region, ticker=ticker,
+                    direction=pair["direction"],
+                    p_value=round(p_val, 4) if p_val is not None else None,
+                    best_lag=best_lag,
+                    n_obs=n_obs,
+                    supported=False,   # ← FDR 보정 후 아래에서 확정한다
+                    theory=pair["theory"],
+                    note=pair["note"],
+                    iv_kind=iv_kind,
+                    diagnosis=None if p_val is not None else "D4_INSUFFICIENT",
+                    extreme_return_pct=extreme.get("avg_return_extreme"),
+                    normal_return_pct=extreme.get("avg_return_normal"),
+                    n_extreme_events=extreme.get("n_extreme", 0),
+                    extreme_threshold_sv=extreme.get("threshold_severity"),
+                ))
+
+            except InsufficientCoverageError as exc:
+                # 커버리지 미달 — **수리 가능한 결함**이다. 귀무로 읽으면 안 된다.
+                logger.warning("[correlation] %s/%s 커버리지 미달: %s", rule_id, iv_kind, exc)
+                results.append(_fail(str(exc), "D4_INSUFFICIENT"))
+
+            except Exception as exc:
+                logger.error("[correlation] %s/%s 오류: %s", rule_id, iv_kind, exc)
+                results.append(_fail(str(exc), "D4_INSUFFICIENT"))
+
+    # ── FDR 보정 (Benjamini-Hochberg) ────────────────────────────────────────
+    # 검정 수가 8쌍 → 8쌍×2IV = 16으로 늘었다. 보정 없이 p<0.05를 쓰면 위양성이 는다.
+    # 보정은 **성립한 검정에 대해서만** — 미수행(p=None)은 검정이 아니라 부재다.
+    tested = [r for r in results if r.p_value is not None]
+    if tested:
         try:
-            # 두 시계열 비동기 병렬 로드
-            event_task  = asyncio.get_event_loop().run_in_executor(
-                None, _load_event_series, region, start, end
+            from statsmodels.stats.multitest import multipletests
+            _, qvals, _, _ = multipletests(
+                [r.p_value for r in tested], alpha=0.05, method="fdr_bh"
             )
-            market_task = _get_market_series(ticker, start, end)
-            event_series, market_series = await asyncio.gather(event_task, market_task)
+            for r, q in zip(tested, qvals):
+                r.q_value = round(float(q), 4)
+                r.supported = bool(q < 0.05)
+                if not r.supported:
+                    r.diagnosis = "D1_NO_RELATION"   # 쟀고, 관계 없었다 (정직한 귀무)
+        except Exception as exc:   # 보정 실패 시 유의 주장 금지 — 침묵 승격 방지
+            logger.error("[correlation] FDR 보정 실패 — 전건 비유의 처리: %s", exc)
+            for r in tested:
+                r.supported = False
+                r.diagnosis = "D4_INSUFFICIENT"
 
-            if market_series is None or len(market_series) < 30:
-                results.append(GrangerResult(
-                    rule_id=rule_id, region=region, ticker=ticker,
-                    direction=pair["direction"], p_value=None, best_lag=None,
-                    n_obs=0, supported=False,
-                    theory=pair["theory"], note=pair["note"],
-                    error="시장 데이터 로드 실패",
-                ))
-                continue
-
-            if len(event_series) == 0 or event_series.sum() == 0:
-                results.append(GrangerResult(
-                    rule_id=rule_id, region=region, ticker=ticker,
-                    direction=pair["direction"], p_value=None, best_lag=None,
-                    n_obs=0, supported=False,
-                    theory=pair["theory"], note=pair["note"],
-                    error=f"region={region} 이벤트 없음",
-                ))
-                continue
-
-            p_val, best_lag, n_obs, _f, _meta = _run_granger(event_series, market_series)
-
-            # 극단 이벤트 비선형 분석 (Granger 비유의 이유 진단)
-            extreme = _run_extreme_correlation(event_series, market_series)
-
-            results.append(GrangerResult(
-                rule_id=rule_id, region=region, ticker=ticker,
-                direction=pair["direction"],
-                p_value=round(p_val, 4) if p_val is not None else None,
-                best_lag=best_lag,
-                n_obs=n_obs,
-                supported=(p_val is not None and p_val < 0.05),
-                theory=pair["theory"],
-                note=pair["note"],
-                extreme_return_pct=extreme.get("avg_return_extreme"),
-                normal_return_pct=extreme.get("avg_return_normal"),
-                n_extreme_events=extreme.get("n_extreme", 0),
-                extreme_threshold_sv=extreme.get("threshold_severity"),
-            ))
-
-        except Exception as exc:
-            logger.error("[correlation] %s 오류: %s", rule_id, exc)
-            results.append(GrangerResult(
-                rule_id=rule_id, region=region, ticker=ticker,
-                direction=pair["direction"], p_value=None, best_lag=None,
-                n_obs=0, supported=False,
-                theory=pair["theory"], note=pair["note"],
-                error=str(exc),
-            ))
+    n_tested, n_sup = len(tested), sum(1 for r in tested if r.supported)
+    logger.info("[correlation] 검정 %d/%d 성립 · FDR 후 유의 %d "
+                "(미수행 %d — D3/D4 진단코드 참조)",
+                n_tested, len(results), n_sup, len(results) - n_tested)
 
     return [asdict(r) for r in results]
 
@@ -1162,10 +1344,26 @@ def generate_yaml_draft(candidates: list[dict], top_n: int = 10) -> str:
             else "극단 이벤트 분석 없음"
         )
 
-        # threshold_sv는 일별 severity 합산의 75분위수 — 개별 이벤트 severity(0~100)와 단위가 다름.
-        # 100 초과 시 일별 집계값으로 판단해 기본값 50을 사용한다.
+        # ⚠️ [D2 위원회 2026-07-14] **역산 폐기 — 두 척도는 변환 불가다.**
+        #
+        # 구 코드:
+        #     sv = c.get("extreme_threshold_sv")
+        #     severity_min = min(int(sv), 100) if (sv is not None and sv <= 100) else 50
+        #
+        # 이 코드는 **자기 주석에서 이미 "단위가 다름"을 자인하고도 숫자를 그대로 썼다.**
+        # threshold_sv는 검정 IV의 일별 집계 분위수이고, cascade의 severity_min은 개별
+        # 이벤트의 severity(0~100)다. `sv <= 100`이면 통과시킨 것은 척도 검증이 아니라
+        # **우연히 범위가 겹치는지를 본 것**이다.
+        #
+        # IV가 `violence_count`(일별 무력충돌 건수)로 바뀌면서 이 우연이 **함정이 됐다** —
+        # 일별 폭력건수는 대개 0~50이라 거의 항상 `sv <= 100`을 통과한다. 그러면 "하루
+        # 폭력 12건"이라는 문턱이 `severity_min: 12`로 주조되고, 그건 **severity 12 이상인
+        # 모든 이벤트**를 뜻한다(Protests가 15다). 룰이 전건에 발화한다.
+        #
+        # 처방: 변환하지 않는다. 사람이 채우게 두고, 왜 비었는지를 초안에 적는다.
+        # 검정 문턱과 룰 트리거 문턱은 서로 다른 질문에 답하는 서로 다른 변수다(패턴 H).
+        severity_min = None
         sv = c.get("extreme_threshold_sv")
-        severity_min = min(int(sv), 100) if (sv is not None and sv <= 100) else 50
 
         lines += [
             f"# ── 후보 #{i+1} ──────────────────────────────────────────────────",
@@ -1177,8 +1375,11 @@ def generate_yaml_draft(candidates: list[dict], top_n: int = 10) -> str:
             "  trigger:",
             "    source_type: conflict",
             f"    region: {c['region']}",
-            f"    severity_min: {severity_min}  "
-            "# 극단 이벤트 임계값 기반 자동 추정 — 검토 필요",
+            "    severity_min: TODO  # ★ 사람이 채운다 — 자동 추정 폐기(D2 위원회 2026-07-14)",
+            f"    # 검정 IV 문턱은 {sv} (일별 {c.get('iv_kind', 'violence_count')} 분위수)였다.",
+            "    # 그러나 이것을 severity_min으로 변환하지 않는다 — 척도가 다르다:",
+            "    #   검정 IV = 일별 집계(그날 몇 건) · severity_min = 개별 이벤트 등급(0~100).",
+            "    # 우연히 범위가 겹친다고 옮겨 쓰면 룰이 전건에 발화한다(Protests=15).",
             "  expected_response:",
             "    source_type: market",
             f"    ticker: \"{c['ticker']}\"  # {c.get('ticker_label', '')}",

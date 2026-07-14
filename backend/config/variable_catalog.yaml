@@ -330,6 +330,47 @@ sources:
     audited: 2026-07-13
     caveat: 이 블록의 실측값이 이론의 우열을 판정한다 — LLM이 아니라.
 
+  - key: violence_count
+    name: 일별 무력충돌 건수 (Granger IV)
+    measures: >
+      event_archive에서 region·일 단위로 집계한 ACLED event_type IN
+      (Battles, Explosions/Remote violence, Violence against civilians) 건수.
+      "무력이 쓰였나"를 잰다 — severity(사건유형을 숫자로 바꾼 조회표)를 은퇴시킨
+      2026-07-14 D2 위원회의 대체 IV 2종 중 하나(`services/cascade/correlation.py`
+      `_IV_KINDS`).
+    unit: 건수/일
+    validity: ok
+    audited: 2026-07-14
+    caveat: >
+      **ACLED 전용** — GDELT·CNS 등 다른 소스엔 event_type 필드가 없어 이 IV에
+      섞이지 않는다(분모도 ACLED 커버리지로 잰다, `_coverage_days` 참조).
+      **ACLED 랙 ~14개월**(event_date 기준) — 근과거(<14개월) 구간을 이 IV로
+      추세 서술하지 마라(CLAUDE.md §18-A 규칙 1).
+      **시위·전략적전개는 셈에서 제외** — Protests·Strategic developments는
+      무력이 아니므로 폭력 3유형(Battles·Explosions/RV·VaC)만 카운트한다.
+      fatalities IV와 상관 0.51~0.77 — 중복이 아니라 서로 다른 단면(무력 사용 여부
+      vs 피해 규모)을 잰다. 둘 다 사전선언돼 함께 보고된다(삼각측량, 승자고르기 아님).
+
+  - key: fatalities
+    name: 일별 사망자 합계 (Granger IV)
+    measures: >
+      event_archive에서 region·일 단위로 합산한 ACLED payload.fatalities.
+      "얼마나 다쳤나"를 잰다 — violence_count와 짝을 이루는 사전선언 IV
+      (`services/cascade/correlation.py` `_IV_KINDS`, 2026-07-14 D2 위원회).
+    unit: 명/일
+    validity: ok
+    audited: 2026-07-14
+    caveat: >
+      **ACLED 전용** — payload.fatalities가 ACLED에만 있다.
+      **korean_peninsula·taiwan_strait·east_china_sea에서 분산 0** — 이 3권역은
+      사망자 총합이 0명이라 이 IV로 Granger 검정 자체가 불가능하다(분산 0 →
+      회귀 불능, `D3_BAD_PROXY` 반환). violence_count로 대체 검정할 것.
+      **전체 이벤트의 15.9%만 fatalities>0** — 나머지 84.1%는 0으로, 이 IV의
+      변동 대부분이 소수의 고사상자 사건에서 나온다(극단값 민감).
+      violence_count와 상관 0.51~0.77 — 대체재가 아니라 보완재(무력사용 여부
+      자체가 잡히는 권역에서도 사망은 0일 수 있음, 예: east_china_sea 폭력
+      39일·사망 0명).
+
   # ── 퇴역 (컨텍스트 주입 중단) ─────────────────────────────────────────────
   - key: goldstein_avg
     name: GDELT 협조-갈등 톤 (국가-월 평균)
@@ -361,6 +402,13 @@ sources:
       "이 권역의 사건 유형 구성비"를 숫자로 재진술한 것이다.
       cascade 룰 트리거(severity_min=50 = "전투급 이상")에는 사건유형 서열이
       오히려 맞는 도구이므로 그 용도는 유지한다.
+
+      **Granger IV 용도는 2026-07-14 D2 위원회에서 은퇴** — 이유: 일별
+      SUM(severity)(구 변수명 `event_severity`)는 사실상 그날 적재된 행 수였다
+      (r(SUM(severity), COUNT(*)) = 0.98~1.00, ukraine·korean_peninsula는 1.000).
+      "범용적으로 검정 가능"했던 것은 타당성의 증거가 아니라 그 반대의 증거였다
+      (행은 언제나 들어오니까). 대체 IV는 `violence_count`·`fatalities` 2종
+      (사전선언, 본 카탈로그 참조).
 
   - key: importance_score
     name: 이벤트 중요도

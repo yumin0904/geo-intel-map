@@ -271,6 +271,29 @@ def test_all_context_sources_are_cataloged():
     )
 
 
+def test_granger_iv_kinds_are_cataloged():
+    """`correlation.py`의 사전선언 IV(`_IV_KINDS`)도 카탈로그 등재 대상이다.
+
+    무너지면(이 테스트가 없던 이유): 위의 `test_all_context_sources_are_cataloged`는
+    `build_intel_context()`가 반환하는 `ctx["source_counts"]`의 키만 검사한다.
+    Granger IV(`violence_count`·`fatalities`)는 intel_context 경로를 타지 않고
+    `services/cascade/correlation.py`가 event_archive에서 직접 계산하므로, 그 게이트의
+    사정권 밖이었다 — 가드가 자기 표적을 놓친 사례(폐기 원장 패턴 E의 5번째: 구
+    severity IV가 은퇴하고 새 IV 2종이 들어왔는데도 등재 강제 게이트는 이를 볼 수
+    없었다). 이 테스트가 그 사각을 메운다.
+    """
+    from services.cascade.correlation import _IV_KINDS
+
+    cataloged = _catalog_keys()
+    assert cataloged, "변수 카탈로그가 비었다 — 파싱 실패 가능성"
+
+    missing = set(_IV_KINDS) - cataloged
+    assert not missing, (
+        f"Granger 사전선언 IV가 카탈로그에 미등재: {sorted(missing)}\n"
+        f"  → config/variable_catalog.yaml에 등재하고 'measures'·'caveat'을 실측으로 적어라."
+    )
+
+
 def test_retired_variables_stay_out_of_context():
     """퇴역 변수가 컨텍스트에 되살아나면 안 된다.
 
