@@ -273,6 +273,36 @@ def _result(row, status, realized_pct, realized_dir, reason, as_of) -> dict:
 
 # ── 배치 채점 ──────────────────────────────────────────────────────────────────
 
+def _antecedent_gate(con: sqlite3.Connection, r, as_of: date) -> tuple[str, float | None] | None:
+    """★ **전건이 일어났는가.** 안 일어났으면 DV를 채점할 자격이 없다 — B28.
+
+    ## 공허한 참
+
+    *"X가 증가하면 Y가 오른다"*에서 **X가 안 일어났으면 그 예측은 참도 거짓도 아니다.**
+    그런데 이 채점기는 **X를 한 번도 안 읽었다** — 자기 주석에 자백해 놨다:
+    *"채점된 예측 전건(independent_var)의 발생 여부를 판정할 계기가 없다."*
+
+    그래서 「호르무즈 긴장 → 유가 상승」 예측이 **호르무즈에서 아무 일도 없었는데**
+    유가가 올랐다는 이유로 **HIT**가 됐다. **적중률 59.8%가 그렇게 만들어졌다.**
+
+    반환 None = 전건 통과(채점 진행). 아니면 (status, 관측값).
+    """
+    from services.antecedent import Antecedent, verify
+
+    if not r["iv_metric"]:
+        return "UNRESOLVED", None          # 전건이 구조화 안 됨 = 판정 불능
+    ant = Antecedent(
+        metric=r["iv_metric"], region=r["iv_region"], direction=r["iv_direction"],
+        window_days=r["iv_window_days"] or 30, threshold=r["iv_threshold"],
+    )
+    verdict, obs = verify(con, ant, as_of)
+    if verdict == "MET":
+        return None                        # ★ 이제서야 DV를 채점할 자격이 생긴다
+    if verdict == "NOT_MET":
+        return "ANTECEDENT_NOT_MET", obs   # 공허한 참 — 적중도 오답도 아니다
+    return "UNRESOLVED", obs               # 못 판정한다 (「안 일어났다」로 바꿔치기 금지)
+
+
 def score_due_predictions(as_of: date | None = None, dry_run: bool = False) -> dict:
     """
     resolve_by가 도래한 PENDING 예측을 일괄 채점 (scorable=0은 UNRESOLVED 종결).

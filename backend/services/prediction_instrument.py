@@ -166,6 +166,25 @@ _TICKER_ALIASES: dict[str, tuple[str, ...]] = {
 }
 
 
+def _antecedent_fields(rec) -> dict:
+    """전건(IV)을 **구조화**해서 저장한다 — B28.
+
+    **DV는 정량 7필드인데 IV는 TEXT 한 칸이었다.** 명사구로는 참·거짓을 물을 수 없어서
+    `prediction_scorer`가 IV를 **한 번도 안 읽었고**, 채점된 82건이 전부 무효가 됐다.
+
+    파싱 못 하면 **전부 None** — 그러면 만기에 채점기가 `UNRESOLVED`로 종결한다.
+    **지어내지 않는다.**
+    """
+    from services.antecedent import parse
+
+    ant = parse(rec.independent_var, rec.region_code)
+    if ant is None:
+        return {"iv_metric": None, "iv_region": None, "iv_direction": None,
+                "iv_threshold": None, "iv_window_days": None}
+    return {"iv_metric": ant.metric, "iv_region": ant.region, "iv_direction": ant.direction,
+            "iv_threshold": ant.threshold, "iv_window_days": ant.window_days}
+
+
 def _iv_extraction_failed(independent_var: str, h1: str) -> bool:
     """IV 필드가 H1 문장을 통째로 삼켰는가 — 전건이 분리되지 않은 상태.
 
@@ -371,16 +390,19 @@ def log_predictions(specs: list["HypothesisSpec"], query: str,
                     target, target_kind, direction, threshold_pct, horizon_days, resolve_by,
                     region_code, data_signature, inference_grade, method, exploratory,
                     scorable, status, outcome_value, scored_at, confidence_at_creation,
-                    extraction_ok
+                    extraction_ok,
+                    iv_metric, iv_region, iv_direction, iv_threshold, iv_window_days
                 ) VALUES (
                     :prediction_id, :created_at, :query, :h1, :independent_var, :dependent_var,
                     :target, :target_kind, :direction, :threshold_pct, :horizon_days, :resolve_by,
                     :region_code, :data_signature, :inference_grade, :method, :exploratory,
                     :scorable, :status, :outcome_value, :scored_at, :confidence_at_creation,
-                    :extraction_ok
+                    :extraction_ok,
+                    :iv_metric, :iv_region, :iv_direction, :iv_threshold, :iv_window_days
                 )
                 """,
-                {**asdict(rec), "exploratory": int(rec.exploratory), "scorable": int(rec.scorable)},
+                {**asdict(rec), "exploratory": int(rec.exploratory), "scorable": int(rec.scorable),
+                 **_antecedent_fields(rec)},
             )
             recs.append(rec)
         con.commit()
