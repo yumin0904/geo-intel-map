@@ -22,7 +22,9 @@ from types import SimpleNamespace
 
 from services.cascade.engine import _synthetic_event_id
 
-DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
+from tests.conftest import intel_db
+
+DB = intel_db()  # 검증기가 GEO_INTEL_DB로 백업을 물릴 수 있다
 
 
 def _fixture():

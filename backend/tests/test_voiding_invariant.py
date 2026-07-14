@@ -27,7 +27,9 @@ from services.prediction_voiding import (
     void,
 )
 
-DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
+from tests.conftest import intel_db
+
+DB = intel_db()  # 검증기가 GEO_INTEL_DB로 백업을 물릴 수 있다
 
 
 def test_no_retracted_prediction_remains_on_the_board():

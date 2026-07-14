@@ -29,9 +29,22 @@ from services import prediction_scorer as ps
 
 @pytest.fixture(autouse=True)
 def _clear_cache():
-    ps._fetch_market_outcome.cache_clear()
+    """캐시를 비운다 — **단, 캐시가 없어도 죽지 않는다.**
+
+    ⚠️ 초판은 `ps._fetch_market_outcome.cache_clear()`를 무조건 불렀다. 그래서 **수리 전
+    코드(lru_cache 없음)에서는 AttributeError로 죽었고**, 테스트가 돌지도 못했다.
+    `verify_repair.py`가 그걸 잡았다 — 증명 등급 **ABSENT**(코드가 새로 생겼다는 것만
+    증명. 행동이 틀렸었다는 증거가 아니다).
+
+    **회귀 테스트는 고장난 코드 위에서도 돌 수 있어야 한다.** 안 그러면 "수리 전에는
+    실패했다"를 증명할 수 없고, 그러면 그건 결함의 증거가 아니라 그냥 새 테스트다.
+    """
+    cc = getattr(ps._fetch_market_outcome, "cache_clear", None)
+    if cc:
+        cc()
     yield
-    ps._fetch_market_outcome.cache_clear()
+    if cc:
+        cc()
 
 
 class _DriftingFeed:
@@ -99,7 +112,10 @@ def test_settle_lag_allows_a_weekend(monkeypatch):
     friday_bar = _DriftingFeed(last_date=date(2026, 7, 10))  # 금요일 종가가 마지막
     monkeypatch.setattr("yfinance.download", friday_bar)
     sunday_maturity = date(2026, 7, 12)
-    assert (ps._SETTLE_LAG_D >= 2), "주말(2일)조차 못 넘기면 주말 만기가 영구 미채점된다"
+    # 수리 전엔 이 상수가 없다 — getattr로 방어해야 테스트가 구 코드 위에서도 돈다
+    assert getattr(ps, "_SETTLE_LAG_D", 0) >= 2, (
+        "주말(2일)조차 못 넘기면 주말 만기가 영구 미채점된다"
+    )
     assert ps._fetch_market_outcome("CL=F", date(2026, 7, 3), sunday_maturity) is not None
 
 

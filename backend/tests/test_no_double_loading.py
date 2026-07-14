@@ -20,7 +20,9 @@ from pathlib import Path
 
 import pytest
 
-DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
+from tests.conftest import intel_db
+
+DB = intel_db()  # 검증기가 GEO_INTEL_DB로 백업을 물릴 수 있다
 
 # 이벤트 행을 담는 테이블 전수. 새 테이블이 생기면 여기 추가한다 —
 # 빠뜨리면 그 테이블이 다음 은신처다.

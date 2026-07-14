@@ -30,7 +30,9 @@ from services.cascade.correlation import (
     apply_coverage,
 )
 
-_DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
+from tests.conftest import intel_db
+
+_DB = intel_db()  # 검증기가 GEO_INTEL_DB로 백업을 물릴 수 있다
 
 # ACLED가 연속으로 존재하는 유일한 창. 이 밖은 315일 수집 구멍(2025-07-15~2026-05-25)이라
 # 검정에 못 쓴다 — 창을 넓히면 커버리지 게이트가 정직하게 던진다.
