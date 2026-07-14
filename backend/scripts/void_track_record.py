@@ -51,20 +51,16 @@ import sqlite3
 import sys
 from pathlib import Path
 
-DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
+_BACKEND = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_BACKEND))  # scripts/를 직접 실행해도 services를 임포트하도록
 
-# 회수 사유 — eligible=0으로 전파한다
-RETRACTION_KEYS = (
-    "fabricated_input",
-    "construct_invalid_iv",  # _narrative 포함 (LIKE 부분일치)
-    "epistemic_laundering",
-    "unquantifiable",
-    "antecedent_unverified",
-    "캡처 필터 비가설 조각 기각",
-    "정직한 무가설 선언",
-)
-# 표시 사유 — 회수가 아니다. 절대 전파하지 않는다 (07-13 판례)
-MARKING_ONLY = ("diluted_iv", "grade_demoted")
+DB = _BACKEND / "db" / "intel.db"
+
+# ⚠️ 사유 목록은 services.prediction_voiding이 **단일 원천**이다(2026-07-14, B33).
+#    여기 복사본을 두면 한쪽만 갱신되고 조용히 갈라진다 — 새 회수 사유를 만들면
+#    그 모듈의 RETRACTION_KEYS에 등재하라. 그래야 invariant 테스트가 지킨다.
+from services.prediction_voiding import MARKING_KEYS as MARKING_ONLY  # noqa: E402
+from services.prediction_voiding import RETRACTION_KEYS  # noqa: E402
 
 UNDECIDABLE = (
     "antecedent_undecidable:2026-07-14:18-①위원회 — 전건 판정 불능(미발생이 아니라 잴 계기 부재). "

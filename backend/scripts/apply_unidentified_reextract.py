@@ -33,8 +33,13 @@ from __future__ import annotations
 import argparse
 import json
 import sqlite3
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # scripts/ 직접 실행 대비
+
+from services.prediction_voiding import void  # noqa: E402
 
 _BACKEND = Path(__file__).resolve().parent.parent
 _DB = _BACKEND / "db" / "intel.db"
@@ -103,17 +108,24 @@ def main() -> None:
             )
 
         # 2) 마킹 43건 — DELETE 금지, DV/IV/created_at/confidence_at_creation 불변.
-        #    score_reason append(v9.50.0 선례 방식 승계) + voided_reason 구조화 스탬프
-        #    (triage/채점 모수 제외의 기계 판별 키).
+        #    score_reason append(v9.50.0 선례 방식 승계) + voided_reason 구조화 스탬프.
+        #
+        #    ⚠️ 2026-07-14 수리(B33): 구판은 `voided_reason`만 쓰고
+        #    **`eligible_for_calibration`을 내리지 않았다.** 주석은 "triage/채점 모수 제외"라고
+        #    의도를 밝혔는데, 실제로는 triage의 `voided_reason IS NULL` 필터에서만 빠졌고
+        #    **track record 간판에는 그대로 남았다.** 의도는 옳았고 기전이 반쪽이었다.
+        #    그 결과 회수 판정을 받은 예측 144건이 간판 모수에 남았고, 그중 1건은 이미
+        #    채점돼 HIT로 간판 위에 있었다(2026-07-14 반박석 적발 — 정직한 간판은 40.0%였다).
+        #    → 회수는 이제 `services.prediction_voiding.void()` 단일 경로로만 집행한다.
+        #      불변식은 tests/test_voiding_invariant.py가 감시한다.
         for r in marked:
             bucket = r["버킷"]
             con.execute(
-                "UPDATE prediction_log SET "
-                "score_reason = IFNULL(score_reason,'') || ?, "
-                "voided_reason = ? "
+                "UPDATE prediction_log SET score_reason = IFNULL(score_reason,'') || ? "
                 "WHERE prediction_id=?",
-                (_SCORE_REASON_TAG.format(bucket=bucket), _VOID_REASON[bucket], r["prediction_id"]),
+                (_SCORE_REASON_TAG.format(bucket=bucket), r["prediction_id"]),
             )
+            void(con, [r["prediction_id"]], _VOID_REASON[bucket])
 
         # 3) 유지 33건 — 무변경 (검증용 카운트만 확인, UPDATE 없음)
 
