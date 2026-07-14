@@ -584,12 +584,24 @@ Pydantic 모델: `backend/models/intelligence.py` → `IntelligenceMetadata`
 
 | 소스 | 핫 테이블 보관 | 아카이브 이관 조건 | 완전 삭제 |
 |------|-------------|-----------------|---------|
-| GDELT/RSS | 3일 (72h) | confidence≥0.8 또는 importance≥0.7 → `event_archive` 영구 보존 | 미검증(≤0.5) 3일 후 자동 삭제 |
+| GDELT/RSS | 3일 (72h) | **confidence≥0.8** → `event_archive` 영구 보존 | 미검증(<0.8) 3일 후 자동 삭제 |
 | ACLED | 상시 (1년 전 고정) | 인입 즉시 `event_archive` 영구 귀속 (베이스라인 상수) | 없음 |
 | FIRMS | 24h | Cascade Link 매칭된 열점만 보존 | 미매칭 48h 후 삭제 |
 | AIS/ADS-B | 12h 스냅샷 | 초크포인트·기지 주변 이상 로그만 보존 | 일반 로그 24h 후 소멸 |
 
 구현 파일: `backend/db/archive_manager.py`
+
+> ⚠️ **`importance≥0.7` 승격 경로 폐기 (2026-07-14 사용자 결정, B15)**
+> 구 정책은 승격 조건을 `confidence≥0.8 **또는 importance≥0.7**`로 선언했다.
+> **뒷항은 한 번도 참이 된 적이 없다** — `events.importance_score`가 전건 0.0이었다
+> (importance_scorer가 쓰기 경로에 배선된 적 없음).
+> **그리고 배선해도 발화하지 않는다**: 도달 가능창이 24~26h × severity 94~100인데,
+> `event_archive`의 GDELT는 **severity 90 이상이 0건**이다(전량 70~89).
+> → **구조적으로 도달 불가능한 허구였다.** 게이트는 처음부터 confidence 단독으로
+> 작동해 왔고, 이제 문서와 코드가 같은 말을 한다.
+> `importance_score` 자체는 **지도 표시용으로 살아 있다**(줌별 마커 가시성·등급 기호 —
+> 배치 상대 정규화 결함은 v9.72.0에서 수리). 되살리려면 "무엇을 보관할 가치가 있는가"를
+> 먼저 정의해야 한다 — **임계만 낮추는 것은 게이트를 통과시키려고 게이트를 옮기는 것이다.**
 
 ---
 

@@ -27,7 +27,30 @@ _SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 
 # 승격 기준 (CLAUDE.md §16)
 _ARCHIVE_CONFIDENCE_MIN = 0.8
-_ARCHIVE_IMPORTANCE_MIN = 0.7
+
+# ── `importance ≥ 0.7` 승격 경로 폐기 (B15, 2026-07-14 사용자 결정) ──────────
+#
+# §18 TTL 정책은 승격 조건을 `confidence≥0.8 **OR importance≥0.7**`으로 선언했다.
+# **뒷항은 한 번도 참이 된 적이 없다** — `events.importance_score`가 전건 0.0이었기 때문이다
+# (importance_scorer가 쓰기 경로에 배선된 적 없음. 이 파일이 이미 주석으로 자백해뒀다).
+#
+# **그런데 배선해도 발화하지 않는다.** 도달 가능성 실측(미검증 GDELT, conf=0.5):
+#
+#     심사 시점    recency    필요 severity
+#         24h      0.667          94
+#         26h      0.639          98
+#         30h+     ≤0.583     **어떤 severity로도 불가능**
+#
+# (승격 심사는 24h 최소 보관 후 시작 — 아래 cutoff_24h)
+# 그리고 `event_archive`의 GDELT는 **severity 90 이상이 0건**이다(전량 70~89).
+#
+# → 이 경로는 **구조적으로 도달 불가능한 허구**였다. 게이트는 처음부터 confidence 단독으로
+#   작동해 왔다. 문서만 아니라고 말하고 있었다.
+#
+# ⚠️ 폐기이지 은폐가 아니다: `importance_score`는 **지도 표시용으로 살아 있다**
+#   (프론트의 줌별 마커 가시성·등급 기호). 그 배치 상대 정규화 결함은 v9.72.0에서 수리했다.
+#   되살리려면 "무엇을 보관할 가치가 있는가"를 먼저 정의해야 한다 — 임계만 낮추는 것은
+#   **게이트를 통과시키려고 게이트를 옮기는 것**이다.
 
 # source_type → 핫 테이블 보관 시간 (hours)
 _TTL_HOURS: dict[str, int] = {
@@ -202,17 +225,17 @@ class ArchiveManager:
             SELECT * FROM events
              WHERE source_type = 'conflict'
                AND json_extract(payload, '$.data_source') = 'GDELT'
-               -- ⚠️ [변수 타당도 감사 2026-07-13] importance_score는 events 296,885건
-               -- 전부 0.0이다 — importance_scorer가 쓰기 경로에 배선된 적이 없어
-               -- 이 OR 절의 뒷항은 **한 번도 참이 된 적이 없다**. 게이트는 실질적으로
-               -- confidence_score 단독으로 작동한다(ACLED=1.0, GDELT 펀넬=0.8).
-               -- 배선할지 폐기할지는 [판단필요] — 부활시키려면 importance_scorer의
-               -- recency 정규화 결함(배치 상대 min/max라 런 간 비교 불가)부터 고쳐야 한다.
-               AND (confidence_score >= ? OR importance_score >= ?)
+               -- ✅ [B15 폐기 2026-07-14, 사용자 결정] 구 조건은
+               --    `(confidence_score >= ? OR importance_score >= ?)`였다.
+               --    뒷항은 **한 번도 참이 된 적이 없고, 배선해도 발화하지 않는다**
+               --    (도달창 24~26h × severity 94~100인데 GDELT는 sev≥90이 0건).
+               --    게이트는 처음부터 confidence 단독으로 작동해 왔다 — 이제 코드가
+               --    그 사실을 말한다. 근거는 파일 상단 _ARCHIVE_CONFIDENCE_MIN 주석.
+               AND confidence_score >= ?
                AND created_at < ?
                AND id NOT IN (SELECT id FROM event_archive)
             """,
-            (_ARCHIVE_CONFIDENCE_MIN, _ARCHIVE_IMPORTANCE_MIN, cutoff_24h),
+            (_ARCHIVE_CONFIDENCE_MIN, cutoff_24h),
         ).fetchall()
 
         count = 0
@@ -241,11 +264,14 @@ class ArchiveManager:
                  WHERE source_type = ?
                    AND timestamp < ?
                    AND confidence_score < ?
-                   AND importance_score < ?
+                   -- ✅ [B15 폐기 2026-07-14] 구 조건에 `AND importance_score < ?`가 있었다.
+                   --    importance가 전건 0.0이라 이 항은 **항상 참**이었다 — 즉 삭제를
+                   --    막아준 적이 한 번도 없다. 조건을 지워도 **삭제 대상은 불변**이다
+                   --    (0.0 < 0.7은 언제나 참). 코드가 하는 일은 그대로이고,
+                   --    이제 **코드가 하는 말이 하는 일과 같아졌다.**
                    AND id NOT IN (SELECT id FROM event_archive)
                 """,
-                (source_type, cutoff,
-                 _ARCHIVE_CONFIDENCE_MIN, _ARCHIVE_IMPORTANCE_MIN),
+                (source_type, cutoff, _ARCHIVE_CONFIDENCE_MIN),
             )
             if result.rowcount:
                 logger.info("[Archive] TTL 삭제: type=%s, %d건", source_type, result.rowcount)
