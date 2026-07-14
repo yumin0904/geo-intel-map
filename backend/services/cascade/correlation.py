@@ -88,6 +88,8 @@ _THR_PATH = Path(__file__).resolve().parents[2] / "config" / "granger_thresholds
 _THR: dict = yaml.safe_load(_THR_PATH.read_text(encoding="utf-8"))
 _MAX_MISSING_SHARE: float = float(_THR.get("max_missing_share", 0.30))
 _COVERAGE_MIN_RATIO: float = float(_THR.get("coverage_min_ratio", 0.20))
+# G2 (권역위 2026-07-14): 검정 성립에 필요한 **최소 정보량**. 달력 칸이 아니라 사건이 있는 날을 센다.
+_MIN_INFORMATIVE_DAYS: int = int(_THR.get("min_informative_days", 10))
 
 # historical_macro_indices DB에서 직접 조회 가능한 티커 → indicator 매핑
 # FRED 원본 + yfinance 로컬 캐시 (baseline_bulk_ingest.py --yfinance 로 적재)
@@ -283,6 +285,31 @@ class InsufficientCoverageError(RuntimeError):
     """
 
 
+class InsufficientInformationError(InsufficientCoverageError):
+    """수집은 있었는데 **사건이 없다** — 검정을 성립시키지 않는다. (G2, 권역위 2026-07-14)
+
+    커버리지 형제와 무엇이 다른가: 저쪽은 "그날 아무도 안 봤다"(수집 공백)이고,
+    이쪽은 "보긴 봤는데 셀 것이 없다"(정보량 부족)다. 둘 다 **"관계 없음"이 아니다.**
+    `InsufficientCoverageError`를 상속하는 이유는 상위 러너 3곳(correlation:1086·1231,
+    hypothesis_verifier:682)이 이미 그 예외를 잡아 **D4_INSUFFICIENT**로 라우팅하기 때문이다 —
+    "못 쟀다(수리 가능)"이지 "쟀고 관계없었다(D1)"가 아니다.
+
+    〔무엇이 이 예외를 낳았나 — 실측 2026-07-14〕
+    D4 게이트(`granger_adapter.py`)는 `n_obs >= 40`으로 데이터 충분성을 판정했다.
+    그런데 `n_obs`는 시계열의 **달력 칸 수**이지 정보량이 아니다. 그리고 바로 아래
+    sparse 가드가 비제로일 10 미만이면 **주간 리샘플**로 전환한다 → 411일이 59주가 되고
+    → `59 >= 40` → **data_ok=True**. **얇아서 주간으로 접은 계열이, 접었다는 이유로 충분해졌다.**
+
+    실측 피해(창 2024-05-31~2025-07-14, IV=violence_count):
+      korean_peninsula  총 2건 / 비제로 2일   ← 북한 가설 71건이 여기로 라우팅됐다
+      north_korea       총 7건 / 비제로 6일
+      taiwan_strait     총 1건 / 비제로 1일   ← `taiwan_strait × TSM` 등록 쌍이 여기 걸려 있다
+    나머지 9개 권역은 전부 비제로 13일 이상이라 이 문턱에 걸리지 않는다(hormuz 13 · sahel 364).
+
+    **패턴 H의 재발**: 가드가 쓰는 수치도 변수다. 분모가 정보가 아니라 달력이었다.
+    """
+
+
 @lru_cache(maxsize=32)
 def _coverage_days(start_iso: str, end_iso: str,
                    data_source: str | None = None) -> frozenset[str]:
@@ -386,9 +413,19 @@ def apply_coverage(raw: pd.Series, idx: pd.DatetimeIndex,
 
 # ── 이벤트 시계열 구축 ────────────────────────────────────────────────────────
 
-# event_archive region_code 별칭 매핑 — hypothesis_extractor와 DB 코드 불일치 보정
+# event_archive region_code 별칭 — **과거 기록 호환 전용** (권역위 2026-07-14 강등).
+#
+# 〔무엇이었나〕 원래 이것은 `hypothesis_extractor._REGION_MAP`이 DB에 없는 `eastern_europe`를
+# 뱉는 버그를 correlation.py가 **혼자 몰래 보정**하던 사설 패치였다. 그 덕에 예측 160건이 우연히
+# 살았고, 다른 소비자(theory_comparator 등)는 다리가 없어 빈손으로 돌아갔다 — 원천의 버그가
+# 소비자마다 사설 패치를 요구하는 구조였다(7번째·8번째 권역 정의가 생길 참이었다).
+#
+# 〔지금〕 원천을 고쳤다 — `_REGION_MAP`이 이제 `ukraine`을 뱉고, G1(import-time assert)이
+# regions.yaml에 없는 코드의 신규 유입을 차단한다. **이 dict은 삭제하지 않는다**: prediction_log에
+# `region_code='eastern_europe'`로 적재된 160건이 실재하고, 기록층은 불변이기 때문이다(1-A).
+# 새 항목을 추가하지 마라 — 추가하고 싶어지면 그것은 regions.yaml이나 _REGION_MAP을 고쳐야 한다는 신호다.
 _REGION_ALIAS: dict[str, str] = {
-    "eastern_europe": "ukraine",  # DB에 ukraine으로 저장됨
+    "eastern_europe": "ukraine",  # 구 _REGION_MAP 산물(~2026-07-14). 기록층 호환용 — 신규 발생 없음.
 }
 
 
@@ -437,8 +474,57 @@ _VIOLENT_TYPES: tuple[str, ...] = (
     "Battles", "Explosions/Remote violence", "Violence against civilians",
 )
 
+# ── 제3 IV: provocation_count (권역위 2026-07-14, 사용자 승인) ────────────────
+#
+# 〔왜 필요했나〕 D2의 IV 2종은 **북한을 구조적으로 못 본다.** `_VIOLENT_TYPES`가 SD를
+# 빼고 `_ACLED` 고정이 CNS를 빼기 때문이다. 그 결과 `north_korea`의 violence_count는
+# 411일 창에서 **7건**(그중 5건이 중국 접경 사건)이고, 검정력이 원리상 없다(MDE 18.7%).
+# 그런데 **캐스케이드 룰의 이름은 `north_korea_missile_to_krw`다 — 룰은 미사일을 묻는데
+# IV는 전투를 세고 있었다.** 폐기 원장 패턴 I가 이미 적어놨다: "SD는 '무력분쟁이 있었나'엔
+# 잡음이고 '북한이 신호를 보내나'엔 **그 신호다**." 구성 타당도는 질문에 상대적이다.
+#
+# 〔무엇을 세는가〕 ACLED `Strategic developments` 중 **행위자가 그 권역의 주체**인 것.
+# 미사일 발사·군사훈련·무력시위처럼 **사람이 안 죽는 신호 행위**가 여기 코딩된다.
+# 권역 종속 하드코딩을 피하려고 `regions.yaml`의 `actor_match`를 재사용한다 —
+# **행위자형 권역 전용 IV**다(현재 north_korea 하나. actor_match 없는 권역은 ValueError).
+#
+# 〔실측 — 창 2024-05-31~2025-07-14, region=north_korea〕
+#   총 91건 · 비제로 76일 (G2 문턱 10일을 넉넉히 통과 — violence_count는 6일이었다)
+#   구성 타당도: SD 96건 중 91건이 북한 행위자(Military Forces of NK 79 · Government of NK 11 · 경찰 1).
+#     **5건은 남한군이 행위자라 제외했다** — 한반도 긴장이지만 '북한 도발'은 아니다(이름이 내용을 뜻해야 한다).
+#
+# 〔패턴 N 검사 — D2가 의무화한 부피 대리물 대조. 처방도 재라〕
+#   r(provocation_count, north_korea 적재행수) = **0.922**
+#   r(provocation_count, 사망자)               = **-0.199**  ← 직교. 사망자 대리물 아님.
+#   [대조] 은퇴한 severity 1.000 · violence_count 0.994.
+#
+#   ⚠️⚠️ **재는 방법에 따라 값이 흔들렸다 — 이것 자체가 발견이다.**
+#   같은 IV를 세 번 쟀더니 0.85(처방석) · 0.698(의장, raw SQL 조인) · **0.922**(회귀 테스트,
+#   `_load_event_series` 출력)가 나왔다. **검정에 실제 들어가는 계열로 재야 한다** — raw SQL은
+#   사건이 있는 날만 뽑아 인덱스가 어긋났고, 커버리지 NaN이 빠져 상관을 과소평가했다.
+#   패턴 N 검사는 앞으로 **검정 계열로만** 잰다(회귀 테스트가 그렇게 한다).
+#
+#   ⚠️ **0.922는 부피 동행이다 — 공표 대상.** north_korea 권역은 적재분의 대부분이 SD라서
+#      (96/113) "도발을 센 것"과 "이 권역에 행이 들어온 것"이 거의 같이 움직인다. **이 권역에
+#      이벤트가 기록된다는 것 자체가 대개 도발이 있었다는 뜻**이라 구조적이다 — severity의 병
+#      (우크라이나처럼 시위·전투가 섞인 권역에서도 행 수를 세던 것)과는 결이 다르다.
+#      그러나 **다르다고 무해한 것은 아니다**: violence_count(0.994)와 같은 취급을 받는다 —
+#      D2가 정한 조건 그대로 **단독 결론에는 이 수치를 반드시 동봉한다**(2종 병기의 이유).
+#      진짜 대조군은 **r(사망자)=-0.199**다 — 이게 0.5를 넘으면 병이 옮겨 심어진 것이다.
+#
+# 〔CNS를 왜 안 넣었나〕 CNS missile_test 197건은 매력적이지만 **2024-11-04에 죽었다**.
+# 창 내 기여는 7건(6.8%)뿐이면서, 넣으면 IV 구성이 2024-11을 기점으로 바뀐다 —
+# **구조적 단절**이고 그게 B01·FIRMS를 낳은 병(stale을 sparse로 오진)의 씨앗이다.
+# 얻는 것보다 잃는 것이 크다. 소스를 ACLED로 일관시켜 커버리지 분모도 일치시킨다(D2 교훈).
+# CNS 재가동 시 재상정 — 그때는 **소스 단절을 명시적으로 모델링**할 것.
+#
+# ⚠️ **사전등록 상태**: 이 IV의 속성(건수·비제로일·부피상관)만 쟀다. **DV(KRW=X 등)와의
+#    Granger는 아직 한 번도 돌리지 않았다.** 사전등록이 살아 있다 — 등재 후 첫 검정이 확증검정이다.
+#    "되나 보려고" 돌리는 순간 소각된다(패턴 K).
+_STRATEGIC_TYPE = "Strategic developments"
+
 # 사전선언 IV 집합 — 결과를 보기 전에 고정한다. 여기 없는 IV는 검정에 못 들어간다.
-_IV_KINDS: tuple[str, ...] = ("violence_count", "fatalities")
+_IV_KINDS: tuple[str, ...] = ("violence_count", "fatalities", "provocation_count")
 
 
 def _load_event_series(region: str, start: date, end: date,
@@ -478,6 +564,29 @@ def _load_event_series(region: str, start: date, end: date,
         placeholders = ",".join("?" * len(_VIOLENT_TYPES))
         where += f" AND json_extract(payload, '$.event_type') IN ({placeholders})"
         params.extend(_VIOLENT_TYPES)
+        value_expr = "COUNT(*)"
+    elif iv_kind == "provocation_count":
+        # 행위자형 권역 전용 — regions.yaml의 actor_match를 재사용한다(권역 하드코딩 회피).
+        # 이 IV가 묻는 것은 "무력이 사용됐나"가 아니라 "**이 주체가 신호를 보냈나**"다.
+        from services.region import get_region
+
+        meta = get_region(region) or {}
+        actors = meta.get("actor_match") or []
+        if not actors:
+            raise ValueError(
+                f"provocation_count는 **행위자형 권역 전용** IV다 — '{region}'에는 regions.yaml에 "
+                f"`actor_match`가 없다. 이 IV는 '누가 신호를 보냈나'를 세므로 주체가 정의돼 있어야 "
+                f"한다. 지역의 무력충돌 강도를 원하면 violence_count를 쓰라."
+            )
+        where += " AND json_extract(payload, '$.event_type') = ?"
+        params.append(_STRATEGIC_TYPE)
+        # 행위자 필터 — 그 권역의 주체가 **일으킨** 것만. (남한군이 북한을 상대로 한 SD 5건은
+        # 한반도 긴장이지만 '북한 도발'이 아니다 — 이름이 내용을 뜻해야 한다.)
+        actor_clause = " OR ".join(
+            "json_extract(payload, '$.actor1') LIKE ?" for _ in actors
+        )
+        where += f" AND ({actor_clause})"
+        params.extend(f"%{a}%" for a in actors)
         value_expr = "COUNT(*)"
     else:  # fatalities
         value_expr = "SUM(COALESCE(CAST(json_extract(payload, '$.fatalities') AS INT), 0))"
@@ -526,7 +635,41 @@ def _load_event_series(region: str, start: date, end: date,
             region, last_data, end, stale_gap_days, nonzero,
         )
 
+    # ── G2 정보량 게이트 (권역위 2026-07-14, 사용자 승인) ─────────────────────
+    # **이 검사는 주간 전환보다 먼저 와야 한다.** 아래 sparse 가드가 얇은 계열을 주간으로
+    # 접으면 달력 칸 수(n_obs)가 40을 넘어 D4 게이트를 통과해 버린다 — 7건짜리 시계열이
+    # "데이터 충분" 판정을 받고 Granger를 돌았다(granger_adapter.py: `data_ok = n >= 40`).
+    #
+    # 여기서 던지면 상위 러너가 InsufficientCoverageError 핸들러로 잡아 **D4_INSUFFICIENT**로
+    # 라우팅한다 — "못 쟀다(수리 가능)". 조용히 계열을 돌려주면 그 결과는 p≥0.05가 되고,
+    # 그것이 **"관계 없음"(D1)으로 위조**된다. B01이 죽인 병의 마지막 서식지다.
+    # ⚠️ **분산 0은 여기서 던지지 않는다** — D2 위원회의 8-F 3분할을 지킨다:
+    #   D3_BAD_PROXY   = IV가 그 권역에서 **상수**다 → "질문이 틀렸다" (수리 불가)
+    #   D4_INSUFFICIENT = 표본이 얇다              → "못 쟀다"    (**수리 가능**)
+    # 분산 0(예: east_china_sea × fatalities — 폭력 39일인데 사망 0명)은 아래 러너의
+    # D3 경로가 이미 정확히 처리한다. 그것까지 D4로 채가면 **못 고치는 것(D3)이 고칠 수
+    # 있는 것(D4)으로 위장한다** — D2가 만든 구별을 뭉개는 것이다.
+    # 여기가 잡는 것은 **분산은 있는데 표본이 얇은** 계열이다: north_korea × violence_count는
+    # 7건/6일로 얇았고, 실제로 **수리 가능했다**(provocation_count로 91건/76일). 그게 D4다.
+    observed = series.dropna()
+    has_variance = len(observed) > 0 and float(observed.std() or 0) > 0.0
+
+    if nonzero < _MIN_INFORMATIVE_DAYS and has_variance:
+        raise InsufficientInformationError(
+            f"{label}: 창 내 사건 {int(series.sum())}건 · 비제로 {nonzero}일 "
+            f"(< {_MIN_INFORMATIVE_DAYS}일). 수집은 있었으나 셀 사건이 거의 없다 — "
+            f"검정을 성립시키지 않는다(D4_INSUFFICIENT). "
+            f"이것은 '관계 없음'이 아니라 '측정 불가'다. **수리 가능** — "
+            f"이 권역에서 관측 가능한 행위를 세는 IV로 바꾸라 "
+            f"(예: north_korea는 violence_count 7건/6일 → provocation_count 91건/76일). "
+            f"대안이 없으면 UNQUANTIFIABLE 트랙(과정추적·구조적 논증)."
+        )
+
     # sparse 지역 (비제로 일수 < 10): 주간 집계로 자동 전환해 Granger 분산 확보.
+    # ⚠️ 위 G2 게이트가 nonzero < 10을 이미 던지므로 **이 분기는 현재 도달 불가**다.
+    #    보존하는 이유: _MIN_INFORMATIVE_DAYS를 낮추면(설정 변경) 다시 살아나는 경로이고,
+    #    그때 이 결합(주간 전환 → n_obs 부풀림 → D4 통과)이 되살아난다. 삭제하지 말고
+    #    **경고로 남긴다** — 문턱을 만지는 사람이 이 주석을 반드시 읽도록.
     # ⚠️ 이 스위치는 lookback 종속이다 — 창을 넓히면 비제로일이 임계 10을 넘겨 조용히
     #    꺼지고, 대부분이 0인 일별 계열에 Granger가 돌아 식별이 오히려 약해진다. lookback
     #    확대 논의 시 이 결합을 반드시 함께 검토할 것(위원회 2026-07-06, granger_thresholds.yaml).

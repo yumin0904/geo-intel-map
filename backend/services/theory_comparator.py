@@ -373,15 +373,46 @@ def _get_owid_military(actors: list[str], regions: list[str]) -> dict:
 
 
 def _get_acled_event_count(regions: list[str]) -> dict:
-    """ACLED 분쟁 이벤트 수 — Gray Zone/A2AD IV proxy."""
+    """ACLED 분쟁 이벤트 수 — Gray Zone/A2AD IV proxy.
+
+    ⚠️⚠️ **이 함수는 죽어 있다 — 그리고 그 사실을 숨기고 있었다.** (권역위 2026-07-14 적발)
+
+    아래 쿼리는 `WHERE country IN (...)`를 쓰는데 **`event_archive`에 `country` 컬럼은 없다**
+    (실제 위치는 `payload` JSON 안 — `json_extract(payload,'$.country')`). 그래서 매 호출이
+    `sqlite3.OperationalError: no such column: country`로 죽고, 아래 `except`가 그것을
+    `logger.debug`로 삼켜 **빈 dict을 반환해 왔다.** 경쟁이론 대조표는 평생 비어 있었고,
+    비어 있다는 사실조차 로그에 안 남았다. **FIRMS 사고와 같은 병** — 기술적으로 "정상 종료"하는
+    코드가 실질적으로 아무것도 안 한다(07-13 판례: NASA가 죽은 데이터셋에 HTTP 200을 주던 건).
+
+    그리고 위 `_REGION_COUNTRIES`는 **엔진의 7번째 권역 정의**다. `eastern_europe`를 쓰는데
+    그 코드는 event_archive에 **0행**이다(실재 코드는 `ukraine`).
+
+    **왜 지금 고쳐서 켜지 않는가**: 이걸 켜면 **한 번도 존재한 적 없던 숫자**가 경쟁이론
+    대조표를 통해 LLM 컨텍스트에 새로 주입된다. 그것은 변수 카탈로그 등재 의무 대상이고
+    (§14-A 부칙 · 변수 타당도 판례), 발행물의 근거로 흘러간다. **사용자 승인 사안**이다.
+    지금 하는 것은 **은폐를 끝내는 것**뿐이다 — 죽었으면 죽었다고 말하게 한다.
+
+    → [판단필요] 활성화 여부. 활성화 시 선행 조건: ① 쿼리를 json_extract로 수리
+       ② `_REGION_COUNTRIES`를 regions.yaml의 `country_match`로 대체(7번째 정의 제거)
+       ③ 변수 카탈로그 등재 + 부피 대리물 검사(패턴 N).
+    """
+    logger.warning(
+        "[죽은 경로] _get_acled_event_count는 비활성 상태다 — 쿼리가 event_archive에 없는 "
+        "`country` 컬럼을 참조한다(실제 위치: payload JSON). 경쟁이론 대조표의 ACLED 근거는 "
+        "**비어 있다.** 이것은 '이벤트 0건'이 아니라 '조회 실패'다. "
+        "활성화는 사용자 승인 사안 — 권역위 2026-07-14 [판단필요]."
+    )
+    return {}
+
+    # ── 이하 도달 불가 (위 return). 활성화 시 아래를 수리해 되살린다 ──────────────
     _REGION_COUNTRIES = {
         "taiwan_strait": ["Taiwan", "China"],
-        "eastern_europe": ["Ukraine", "Russia"],
+        "eastern_europe": ["Ukraine", "Russia"],   # ⚠️ eastern_europe는 DB에 0행 — ukraine이 실재 코드
         "hormuz": ["Iran", "Yemen"],
-        "korean_peninsula": ["North Korea", "South Korea"],
+        "korean_peninsula": ["North Korea", "South Korea"],  # ⚠️ 이 권역에 북한은 0건이다
         "east_china_sea": ["Japan", "China"],
         "bab_el_mandeb": ["Yemen", "Ethiopia"],
-        "sahel": ["Mali", "Niger", "Burkina Faso"],
+        "sahel": ["Mali", "Niger", "Burkina Faso"],  # ⚠️ regions.yaml은 7개국 — 여기는 3개
     }
     target_countries = []
     for r in regions:

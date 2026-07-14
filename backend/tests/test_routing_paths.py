@@ -10,10 +10,17 @@ from services.hypothesis_extractor import extract_hypotheses
 
 
 def test_downgrade_ingredients():
-    """티커 무접점 DV + region 존재 = Type_A→C 강등의 결정론 재료."""
+    """티커 무접점 DV + region 존재 = Type_A→C 강등의 결정론 재료.
+
+    ⚠️ [권역위 2026-07-14] 기대값 `eastern_europe` → **`ukraine`**으로 정정.
+    이 테스트는 낡은 계약을 고정하고 있었다 — `eastern_europe`는 **event_archive에 0행**이고
+    (실재 코드는 `ukraine`, 88,431행), correlation.py가 사설 별칭으로 몰래 보정해 온 덕에
+    예측 160건이 우연히 살았을 뿐이다. 검정층 어휘를 저장층(regions.yaml)에 종속시키면서
+    원천을 고쳤고, G1(import-time assert)이 없는 코드의 재유입을 막는다.
+    """
     sp = extract_hypotheses('[가설] H1: "글로벌 제재 강도 지수가 증가할 때 러시아에 대한 유엔총회 표결 동조율이 통계적으로 유의하게 하락한다"')[0]
     assert sp.ticker is None, f"티커 무접점이어야 함: {sp.ticker}"
-    assert sp.region_code == "eastern_europe", f"러시아→eastern_europe: {sp.region_code}"
+    assert sp.region_code == "ukraine", f"러시아→ukraine(DB 실재 코드): {sp.region_code}"
 
 
 def test_kospi_typeA():

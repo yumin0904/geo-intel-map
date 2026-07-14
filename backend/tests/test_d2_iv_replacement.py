@@ -11,6 +11,7 @@
 """
 from __future__ import annotations
 
+import re
 import sqlite3
 from datetime import date
 from pathlib import Path
@@ -23,6 +24,7 @@ from services.cascade.correlation import (
     _IV_KINDS,
     _VIOLENT_TYPES,
     InsufficientCoverageError,
+    InsufficientInformationError,
     _coverage_days,
     _load_event_series,
     apply_coverage,
@@ -97,9 +99,35 @@ def test_declared_ivs_are_the_only_ones():
         _load_event_series("ukraine", _WIN_START, _WIN_END, None, "event_severity")
 
     # 음성 테스트: 선언된 IV는 통과해야 한다(가드가 전부를 막으면 그것도 고장이다)
-    for iv in _IV_KINDS:
-        s = _load_event_series("ukraine", _WIN_START, _WIN_END, None, iv)
+    #
+    # ⚠️ [권역위 2026-07-14] IV가 **권역 종속**이 됐다 — `provocation_count`(제3 IV)는
+    #    행위자형 권역 전용이라 ukraine에는 원리적으로 적용 불가하다(actor_match 없음).
+    #    "모든 IV가 모든 권역에서 돈다"는 전제는 더 이상 참이 아니며, 그 전제야말로
+    #    구 severity IV가 **어디서나 검정 가능했던** 이유였다(범용성 = 타당성의 반증).
+    #    각 IV를 그것이 유효한 권역에서 검사한다.
+    _IV_HOME: dict[str, str] = {
+        "violence_count":    "ukraine",       # 지역 무력충돌 강도
+        "fatalities":        "ukraine",       # 피해 규모
+        "provocation_count": "north_korea",   # 행위자의 신호 행위 (actor_match 필수)
+    }
+    assert set(_IV_HOME) == set(_IV_KINDS), (
+        f"사전선언 IV가 바뀌었는데 이 테스트의 적용 권역 표가 안 따라왔다: "
+        f"{set(_IV_KINDS) ^ set(_IV_HOME)}"
+    )
+    for iv, region in _IV_HOME.items():
+        s = _load_event_series(region, _WIN_START, _WIN_END, None, iv)
         assert s.name == iv, f"IV 이름이 내용과 다르다: {s.name} != {iv}"
+
+
+def test_provocation_count_rejects_non_actor_regions():
+    """제3 IV는 '누가 신호를 보냈나'를 센다 — 주체가 정의된 권역에만 쓴다.
+
+    이 가드가 없으면 `provocation_count[ukraine]`이 조용히 빈 계열을 돌려주고,
+    그것이 또 '관계 없음'으로 위조된다 (검정층 어휘 불일치가 만든 병과 동형).
+    """
+    for region in ("ukraine", "middle_east"):
+        with pytest.raises(ValueError, match="행위자형"):
+            _load_event_series(region, _WIN_START, _WIN_END, None, "provocation_count")
 
 
 # ── 2. 커버리지 분모가 IV 출처와 일치한다 ─────────────────────────────────────
@@ -208,10 +236,19 @@ def test_violence_count_excludes_protests():
         "Battles", "Explosions/Remote violence", "Violence against civilians",
     }
 
-    # 라이브 대조: korean_peninsula의 violence_count는 시위 6,435건을 안 센다
-    s = _load_event_series("korean_peninsula", _WIN_START, _WIN_END, None, "violence_count")
-    assert float(s.dropna().sum()) < 10, (
-        f"korean_peninsula violence_count가 {s.dropna().sum()}건 — 시위가 새어 들어왔다."
+    # 라이브 대조: korean_peninsula의 violence_count는 시위 6,435건을 안 센다.
+    #
+    # [권역위 2026-07-14] 이제 이 호출은 **던진다** — 시위를 뺀 결과 남는 것이 2건뿐이라
+    # G2 정보량 게이트(비제로 < 10일)에 걸리기 때문이다. 예외가 나는 것 자체가 이 테스트가
+    # 지키려던 명제의 **더 강한 증거**다: 시위 6,435건을 셌다면 게이트에 걸릴 리가 없다.
+    # 그리고 구 엔진은 이 2건짜리 계열을 주간으로 접어 n=59로 만들고 D4 게이트를 통과시켜
+    # 북한 가설 23건에 Granger를 돌렸다. 예외 메시지에서 실제 건수를 뽑아 상한을 확인한다.
+    with pytest.raises(InsufficientInformationError) as exc:
+        _load_event_series("korean_peninsula", _WIN_START, _WIN_END, None, "violence_count")
+    m = re.search(r"사건 (\d+)건", str(exc.value))
+    assert m, f"예외 메시지 형식이 바뀌었다: {exc.value}"
+    assert int(m.group(1)) < 10, (
+        f"korean_peninsula violence_count가 {m.group(1)}건 — 시위가 새어 들어왔다."
     )
 
 

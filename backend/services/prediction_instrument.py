@@ -171,6 +171,17 @@ def build_prediction(spec: "HypothesisSpec", query: str) -> PredictionRecord | N
         horizon = max(best_lag, 7)
 
     mr = getattr(spec, "method_result", None) or {}
+
+    # UNQUANTIFIABLE 게이트 (권역위 2026-07-14, 사용자 승인 — 헌법 §18-A.2 집행).
+    # 8-gate가 "정량화 불가"로 분류한 가설에 ticker가 물리면 _classify_target이
+    # market·scorable=True를 주고, prediction_scorer는 independent_var를 **읽지 않는다**
+    # (score_prediction: target 등락만 본다). 그 결과 "북한 내 AI 접근성 → GLD" 같은
+    # 가설이 금값 랠리 한 번에 HIT를 받았다 — 선행절이 관측 불가능한 채로 후행절만 채점.
+    # 실측 2026-07-14: 43건이 scorable=1로 8/15 만기 대기 중이었다(전건 동결).
+    # 이 파일 docstring(L16-17)이 이미 이 규칙을 선언해 놓고 지키지 않았다(패턴 E).
+    if scorable and getattr(spec, "data_signature", "") == "UNQUANTIFIABLE":
+        scorable = False
+
     if scorable and direction == "unclear":
         # DV까지 미식별이면 가설이 아니라 상류 추출 실패 산물(오류 문구 속 키워드에
         # ticker가 물려 market으로 오분류되는 경로 실측) — 등재 자체를 거른다.

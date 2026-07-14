@@ -264,11 +264,31 @@ def _classify_linear_testability(
 # 키워드("bab el"·"middle east")는 언더스코어 리터럴과 부분문자열 매치가 안 돼
 # dependent_region이 비고 B4 사건→사건 경로가 차단됐다 (위원회 실측 2026-07-09:
 # hormuz_redsea_contagion·middle_east_hormuz_contagion 2건이 이 버그로 pending_typeB 낙하).
+# 〔권역위 2026-07-14 수리 — 사용자 승인〕 이 표는 **가설층의 어휘**이고, 적재층(`services/region.py`
+# ::region_for_event → config/regions.yaml)이 **저장층의 어휘**다. 둘이 갈라져 있었다:
+#
+#   ① `eastern_europe` → event_archive에 **0행**. 실재 코드는 `ukraine`(88,431행).
+#      correlation.py가 사설 `_REGION_ALIAS`로 몰래 보정하고 있었다 — 그래서 예측 160건이 우연히 살았다.
+#      다른 소비자는 그 다리가 없어 빈손으로 돌아갔다. 원천을 고치고 파생 패치를 지운다(geo-os 1-A).
+#   ② "북한"·"dprk" → `korean_peninsula`. 그런데 그 권역에 **북한 이벤트는 0건**이다(98.8% South Korea).
+#      적재층은 계약대로 북한을 `north_korea`에 넣는다(engine.py:66-67 · 판례 20260709-nk-region-bbox-contamination
+#      — 구 bbox가 서울을 물어 남한 3,136건이 오염된 것을 고친 구조다). **적재는 옳았고 가설이 misroute됐다.**
+#      실측 2026-07-14: 북한 언급 예측 72건 중 71건이 korean_peninsula로 라우팅 → 23건이 Granger 실행
+#      → **폭력 이벤트 2건짜리 시계열에 대고**. 14건이 '상관' 등급을 받았다.
+#      ⚠️ "조선"은 제거 — 조선업(shipbuilding) 오탐이 실측됐다. "조선민주주의"로 좁힌다.
+#   ③ "남중국해" → `taiwan_strait`. `south_china_sea`(681행)는 검정층이 도달할 수 없었다. 명백한 오배선.
+#
+# **first-match이므로 순서가 계약이다** — 더 좁은 권역이 넓은 권역보다 위에 와야 한다
+# (north_korea > korean_peninsula · south_china_sea > taiwan_strait).
 _REGION_MAP: list[tuple[list[str], str]] = [
-    (["우크라이나", "ukraine", "러시아", "russia", "동유럽", "eastern europe", "eastern_europe"], "eastern_europe"),
-    (["대만", "taiwan", "남중국해", "south china", "반도체", "tsmc", "taiwan_strait"], "taiwan_strait"),
+    (["우크라이나", "ukraine", "러시아", "russia", "동유럽", "eastern europe", "eastern_europe"], "ukraine"),
+    # north_korea는 korean_peninsula보다 **먼저** — "북한 도발"이 남한 시위 버킷으로 새는 것을 막는다
+    (["북한", "dprk", "조선민주주의", "north korea", "north_korea", "김정은", "평양"], "north_korea"),
+    (["한반도", "korean", "남한", "south korea", "korean_peninsula"], "korean_peninsula"),  # 남한: 골드셋 v2가 검출한 공백
+    # south_china_sea는 taiwan_strait보다 **먼저** — 둘은 다른 권역이고 둘 다 실재한다
+    (["남중국해", "south china", "스프래틀리", "spratly", "구단선", "south_china_sea"], "south_china_sea"),
+    (["대만", "taiwan", "반도체", "tsmc", "taiwan_strait"], "taiwan_strait"),
     (["호르무즈", "hormuz", "이란", "iran", "걸프", "gulf", "페르시아"], "hormuz"),
-    (["한반도", "korean", "북한", "dprk", "조선", "남한", "south korea", "korean_peninsula"], "korean_peninsula"),  # 남한: 골드셋 v2가 검출한 공백
     (["동중국해", "east china", "센카쿠", "senkaku", "일본", "japan", "자위대", "jsdf", "east_china_sea"], "east_china_sea"),
     (["홍해", "red sea", "바브엘만데브", "bab el", "예멘", "후티", "houthi", "bab_el_mandeb"], "bab_el_mandeb"),
     (["수에즈", "suez", "이집트", "egypt"], "suez"),
@@ -276,6 +296,30 @@ _REGION_MAP: list[tuple[list[str], str]] = [
     (["말라카", "malacca", "동남아", "southeast asia"], "malacca"),
     (["사헬", "sahel", "아프리카", "africa", "말리", "niger"], "sahel"),
 ]
+
+
+def _assert_region_map_grounded() -> None:
+    """G1 (권역위 2026-07-14) — 가설층 어휘가 저장층에 실재하는 코드만 쓰는지 import 시점에 검사.
+
+    왜 import-time인가: 이 불일치는 **조용히** 빈 시계열이 되고, 빈 시계열은
+    "관계 없음"으로 읽힌다. 런타임에 터지면 이미 예측이 발행된 뒤다.
+    `eastern_europe`가 정확히 그렇게 살았다 — 0행짜리 코드로 예측 160건.
+    """
+    from services.region import _load_regions  # 순환 import 회피 — 함수 내부에서 로드
+
+    defined = {k for k, v in _load_regions().items() if isinstance(v, dict)}
+    used = {code for _, code in _REGION_MAP}
+    orphans = used - defined
+    if orphans:
+        raise ImportError(
+            f"_REGION_MAP이 regions.yaml에 없는 권역을 가리킵니다: {sorted(orphans)}. "
+            f"검정층 어휘는 저장층(config/regions.yaml)에 종속됩니다 — "
+            f"없는 코드로 조회하면 빈 시계열이 나오고, 그것이 '관계 없음'으로 위조됩니다. "
+            f"regions.yaml에 등재하거나 _REGION_MAP에서 제거하십시오."
+        )
+
+
+_assert_region_map_grounded()
 
 # ── ticker 키워드 매핑 ────────────────────────────────────────────────────────
 # dependent_var 텍스트에서 지표를 식별해 correlation.py 호환 ticker로 변환

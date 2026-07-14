@@ -350,6 +350,18 @@ sources:
       무력이 아니므로 폭력 3유형(Battles·Explosions/RV·VaC)만 카운트한다.
       fatalities IV와 상관 0.51~0.77 — 중복이 아니라 서로 다른 단면(무력 사용 여부
       vs 피해 규모)을 잰다. 둘 다 사전선언돼 함께 보고된다(삼각측량, 승자고르기 아님).
+      **부피 동행 r=0.9941** (적재 행 수와) — 우크라이나는 ACLED가 거의 전부 폭력이라
+      "폭력을 센 것"과 "행을 센 것"이 수렴한다. 단독 결론 시 반드시 공표(D2 패턴 N).
+    observability: >
+      **권역별 관측 가능성 (G3, 권역위 2026-07-14 — 창 2024-05-31~2025-07-14, 총건수/비제로일)**:
+      ukraine 83,104/376 · middle_east 28,173/396 · sahel 11,925/364 · bab_el_mandeb 2,372/399 ·
+      south_china_sea 155/121 · malacca 86/73 · east_china_sea 45/40 · suez 43/34 · hormuz 15/13.
+      ❌ **측정 불가(G2 게이트가 D4_INSUFFICIENT로 거부)**:
+      **taiwan_strait 1건/1일** · **north_korea 7건/6일** · **korean_peninsula 2건/2일**.
+      ⚠️ `taiwan_strait × TSM`은 등록된 검정 쌍인데 IV가 **사건 1건**이다 — 대만해협 긴장은
+      ADIZ 침범·군사훈련(=SD)이지 ACLED가 세는 '폭력'이 아니다. **IV 구성이 질문과 어긋나 있다**
+      (north_korea가 provocation_count로 푼 것과 같은 병 — taiwan_strait는 미해결. [판단필요]).
+      ⚠️ **북한 도발을 재려면 이 IV가 아니라 `provocation_count`를 쓸 것.**
 
   - key: fatalities
     name: 일별 사망자 합계 (Granger IV)
@@ -370,6 +382,44 @@ sources:
       violence_count와 상관 0.51~0.77 — 대체재가 아니라 보완재(무력사용 여부
       자체가 잡히는 권역에서도 사망은 0일 수 있음, 예: east_china_sea 폭력
       39일·사망 0명).
+    observability: >
+      **권역별 관측 가능성 (G3, 권역위 2026-07-14 — 창 2024-05-31~2025-07-14)**:
+      korean_peninsula·taiwan_strait·east_china_sea = **분산 0(측정 불가)**.
+
+  - key: provocation_count
+    name: 일별 도발 신호 건수 (Granger IV — 행위자형 권역 전용)
+    measures: >
+      event_archive에서 region·일 단위로 집계한 ACLED `Strategic developments` 중
+      **actor1이 그 권역의 주체**인 건수(주체는 `config/regions.yaml`의 `actor_match`가
+      정의 — 현재 north_korea 하나). "무력이 쓰였나"가 아니라 **"이 주체가 신호를
+      보냈나"**를 잰다: 미사일 발사·군사훈련·무력시위처럼 **사람이 안 죽는 신호 행위**가
+      ACLED에서 SD로 코딩되기 때문이다.
+      신설: 2026-07-14 권역위(사용자 승인), `services/cascade/correlation.py` `_IV_KINDS`.
+    unit: 건수/일
+    validity: ok
+    audited: 2026-07-14
+    caveat: >
+      **부피 동행을 공표한다** — r(provocation_count, north_korea 적재행수) = **0.922**
+      (검정 계열 기준. ⚠️ raw SQL 조인으로 재면 0.698이 나온다 — 인덱스가 어긋나고 커버리지
+      NaN이 빠져 **과소평가된다**. 패턴 N 검사는 반드시 `_load_event_series` 출력으로 잴 것).
+      north_korea 권역은 적재분의 대부분이 SD라(96/113) "도발을 센 것"과 "이 권역에 행이
+      들어온 것"이 거의 같이 움직인다 — 이 권역에 이벤트가 기록된다는 것 자체가 대개 도발이
+      있었다는 뜻이라 **구조적**이다. 그래도 violence_count(0.994)와 **같은 취급**을 받는다:
+      단독 결론에는 이 수치를 반드시 동봉할 것(D2 패턴 N — 2종 병기의 이유).
+      **r(사망자) = -0.199 — 직교.** 사망자 대리물이 아니다. **이것이 진짜 대조군**이며
+      0.5를 넘으면 병이 옮겨 심어진 것이다(회귀 테스트가 감시).
+      **CNS 미배합** — CNS missile_test 197건은 2024-11-04에 죽었다. 창 내 기여 7건(6.8%)을
+      얻자고 넣으면 IV 구성이 그 날짜를 기점으로 바뀐다(구조적 단절 = stale을 sparse로
+      오진하는 병의 씨앗). 소스를 ACLED로 일관시켜 커버리지 분모와 일치시켰다.
+      CNS 재가동 시 재상정 — 그때는 소스 단절을 명시적으로 모델링할 것.
+      **행위자형 권역 전용** — `actor_match` 없는 권역(ukraine·middle_east 등)에 쓰면
+      ValueError. 지역의 무력충돌 강도를 원하면 violence_count를 쓰라.
+      ⚠️ **사전등록 살아 있음(2026-07-14 기준)** — IV 속성만 쟀고 DV(KRW=X 등)와의 Granger는
+      아직 한 번도 돌리지 않았다. 등재 후 첫 검정이 확증검정이다. "되나 보려고" 돌리면 소각.
+    observability: >
+      **권역별 관측 가능성 (창 2024-05-31~2025-07-14)**:
+      north_korea = 91건 / 비제로 76일 (✅ 검정 가능 — violence_count는 같은 권역에서 7건/6일이었다).
+      그 외 권역 = actor_match 미정의로 **적용 불가**(ValueError).
 
   # ── 퇴역 (컨텍스트 주입 중단) ─────────────────────────────────────────────
   - key: goldstein_avg

@@ -66,6 +66,26 @@ ukraine:
   center: [31.0, 48.5]
   theory: "Resource Weaponization — 우크라이나+러시아가 세계 밀 수출의 약 28% 담당. 전쟁이 식량 안보 무기로 전환"
 
+sahel:
+  name: "사헬"
+  # [국가형 region] bbox 없음 — 사하라 남단을 가로지르는 광역 벨트라 사각형이 원리적으로 안 맞는다.
+  #   country_match만으로 판정한다(region_for_event 2순위). 좌표만 있는 소스(FIRMS 등)는 이 권역에 낙하하지 않는다.
+  #
+  # 〔등재 경위 — 권역위 2026-07-14, 사용자 승인〕
+  #   이 코드는 2026-06-06 `scripts/retag_sahel_events.py`가 event_archive에 **직접 UPDATE**해 만들었고,
+  #   regions.yaml에는 등재되지 않았다. 그래서 `region_for_event`가 영원히 부여할 수 없는 코드였다
+  #   → 신규 사헬 이벤트가 계속 NULL로 증발했다(실측: 2025-06-09 이후 Mali 52·Niger 9·Nigeria 139 = 200행).
+  #   그리고 예측 65건이 **2025-05-29에 얼어붙은 시계열** 위에서 돌고 있었다 — 앞으로 "분쟁이 끝났다"처럼
+  #   보이게 되는 구조(B01 `fill_value=0` 위조와 동형). 코드를 사후 등재해 원천을 현실에 맞춘다(geo-os 1-B).
+  #
+  # ⚠️ [판단필요 이월] Sudan이 사헬인가 — 태깅 최대 국가가 Sudan(7,417건)이다. 지리적 동사헬 정의로는
+  #   포함되나, 수단 내전(RSF↔SAF)은 말리·니제르의 지하디스트·쿠데타 벨트와 기전이 다르다. retag 스크립트의
+  #   7개국 정의를 **그대로 승계**한다(바꾸면 기존 16,022행과 불일치) — 재정의는 실소비 시점에.
+  #   폐기 원장 패턴 F(이름을 믿고 확대) 대상으로 등록.
+  country_match: ["Mali", "Niger", "Burkina Faso", "Chad", "Sudan", "Mauritania", "Nigeria"]
+  center: [5.0, 15.0]
+  theory: "Gray Zone / State Failure — 서방 철수(바르한 작전 종료) 후 지하디스트 확산·쿠데타 벨트. 자원(우라늄·금) 통제와 결합"
+
 middle_east:
   name: "중동"
   # 레반트·걸프·이라크·시리아 포함 광역 중동. 호르무즈·바브엘만데브는 별도 region으로 분리 관리.
