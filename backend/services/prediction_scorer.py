@@ -36,6 +36,7 @@ import argparse
 import logging
 import sqlite3
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -46,6 +47,12 @@ _INTEL_DB = Path(__file__).resolve().parents[1] / "db" / "intel.db"
 MIN_BASELINE_EVENTS = 5     # 이벤트 비율 변화를 논하려면 기준선이 최소 이만큼 필요 (Poisson 잡음 방어)
 FLAT_EPS_PCT = 0.05         # |수익률| < 0.05% 는 사실상 무변동 — 방향 판정 보류 신호
 MARKET_FETCH_BUFFER_D = 5   # 거래일 공백(주말·휴장) 보정용 양끝 버퍼
+
+_SETTLE_LAG_D = 5
+# [B29] 만기 봉의 확정 지연 허용치(달력일). 만기일이 금요일이면 다음 월요일 채점 시
+# 간격은 3일 — 주말·연휴를 넘기려면 5일이 필요하다. 이보다 벌어지면 데이터가 아직 안 온
+# 것이므로 **채점을 보류한다**(다음 런에서 재시도). 짧은 창으로 대신 재고 그것을
+# 예측 결과라 부르지 않는다.
 
 # 비인과 단서 (방향 적중이 메커니즘을 입증하지 않음 — 원칙 ①)
 _MARKET_CAVEAT = "방향 실현일 뿐(메커니즘 비입증) · raw 수익률(시장요인 미통제)"
@@ -72,6 +79,7 @@ def _ensure_score_columns(con: sqlite3.Connection) -> None:
 
 # ── 실측 조회 (Token-Zero 산술) ────────────────────────────────────────────────
 
+@lru_cache(maxsize=512)
 def _fetch_market_outcome(
     ticker: str, start: date, end: date
 ) -> tuple[float, str] | None:
@@ -79,6 +87,26 @@ def _fetch_market_outcome(
     [start, end] 구간의 raw 가격 변화율(%)과 방향을 반환. 데이터 없으면 None.
 
     start 당일 종가(없으면 직후 첫 거래일) → end 종가(없으면 직전 거래일) 비교.
+
+    ── B29 수리 (2026-07-14): 이 함수는 **결정적이어야 한다** ──────────────────
+    같은 (ticker, start, end)면 같은 값이 나와야 한다. 그런데 실측에서 안 그랬다:
+
+        CL=F · created 2026-07-03 · resolve 2026-07-10 · 3건
+          → realized_pct  4.8432 / 4.8432 / **4.8286**
+
+    같은 창·같은 티커인데 값이 갈렸다. 코드상 순수 함수인데 불순물은 `yf.download`
+    외부 호출뿐이다. 원인 둘:
+
+      ① **만기 당일에 채점했다** — `score_due_predictions`가 `resolve_by <= as_of`로
+         뽑았다. 만기일 장중이면 그날 종가는 **아직 확정되지 않았고**, yfinance는
+         진행 중인 봉의 현재가를 준다. 24시간 거래 선물(CL=F)에선 특히.
+      ② **행마다 따로 호출했다** — 배치가 N번 `yf.download`를 하는 사이 가격이 움직인다.
+
+    수리: ①`resolve_by < as_of` (창이 완전히 닫힌 뒤에만 채점) ②`lru_cache`로
+    런 내 메모(같은 창은 한 번만 조회) ③확정 봉 지연 가드(아래 `_SETTLE_LAG_D`).
+
+    ⚠️ `realized_pct`가 재현되지 않으면 **간판 숫자에 재현 가능성이 없다.** 임계 근처에서는
+       재채점 시 HIT/MISS가 뒤집힌다. 이건 IV 결함(B32)과 **독립된 별개의 병**이었다.
     """
     try:
         import pandas as pd
@@ -107,6 +135,20 @@ def _fetch_market_outcome(
         on_end = close[close.index <= ts_end]
         if on_start.empty or on_end.empty:
             return None
+
+        # [B29] 확정 봉 지연 가드 — 만기 봉이 아직 안 왔으면 **더 짧은 창으로 대신 재지 않는다.**
+        # `on_end.iloc[-1]`은 "end 이하 마지막 종가"다. 데이터 지연으로 만기 근처 봉이
+        # 없으면 이 값은 **한참 이전 종가**가 되고, 그러면 우리는 선언한 창이 아니라
+        # **우연히 데이터가 있는 짧은 창**을 잰 뒤 그것을 예측 결과라고 부르게 된다.
+        # (오늘 하루 종일 잡은 병과 같은 모양 — 분모가 세계가 아니라 가진 데이터다)
+        settle_gap = (ts_end - on_end.index[-1]).days
+        if settle_gap > _SETTLE_LAG_D:
+            logger.warning(
+                "[10-2] %s 만기(%s) 봉 미도착 — 최신 %s (%d일 차). 채점 보류.",
+                ticker, end, on_end.index[-1].date(), settle_gap,
+            )
+            return None
+
         p0 = float(on_start.iloc[0])
         p1 = float(on_end.iloc[-1])
         if p0 == 0:
@@ -246,8 +288,12 @@ def score_due_predictions(as_of: date | None = None, dry_run: bool = False) -> d
     # scorable=0도 만기 시 인출 — score_prediction 상단 가드가 UNRESOLVED로 종결
     # (구 필터 'AND scorable = 1'은 채점 비대상을 영구 PENDING에 가뒀다)
     due = con.execute(
+        # [B29] `<= as_of` → `< as_of`. 구 코드는 **만기 당일**에 채점했고,
+        #   그날 종가는 아직 확정되지 않아 yfinance가 진행 중인 봉의 현재가를 줬다.
+        #   같은 창·같은 티커의 예측 3건이 다른 realized_pct를 받은 원인(CL=F 실측).
+        #   창이 **완전히 닫힌 뒤에만** 채점한다 — 하루 늦어지는 대신 재현된다.
         "SELECT * FROM prediction_log "
-        "WHERE status = 'PENDING' AND resolve_by <= ? "
+        "WHERE status = 'PENDING' AND resolve_by < ? "
         "ORDER BY resolve_by",
         (as_of.isoformat(),),
     ).fetchall()
