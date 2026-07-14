@@ -76,6 +76,7 @@ _DB_PATH = Path(__file__).resolve().parents[2] / "db" / "intel.db"
 _THR_PATH = Path(__file__).resolve().parents[2] / "config" / "granger_thresholds.yaml"
 _THR: dict = yaml.safe_load(_THR_PATH.read_text(encoding="utf-8"))
 _MAX_MISSING_SHARE: float = float(_THR.get("max_missing_share", 0.30))
+_COVERAGE_MIN_RATIO: float = float(_THR.get("coverage_min_ratio", 0.20))
 
 # historical_macro_indices DB에서 직접 조회 가능한 티커 → indicator 매핑
 # FRED 원본 + yfinance 로컬 캐시 (baseline_bulk_ingest.py --yfinance 로 적재)
@@ -260,21 +261,47 @@ class InsufficientCoverageError(RuntimeError):
 
 @lru_cache(maxsize=16)
 def _coverage_days(start_iso: str, end_iso: str) -> frozenset[str]:
-    """이 창에서 **수집이 실재한 날** 집합 = 전역으로 이벤트가 1건이라도 있는 날.
+    """이 창에서 **수집이 실재한 날** 집합.
 
-    region을 가리지 않는다 — 어느 지역의 이벤트든 1건이라도 있으면 그날 파이프라인이
-    돌았다는 뜻이고, 그러면 다른 지역의 0건은 진짜 0이다.
+    ⚠️ [B01 위원회 2026-07-14 — 반박석 적발] 문턱이 '≥1건'이면 가드가 자기 병을 다시 만든다.
+    실측: 수집일로 인정된 444일 중 **전역 <10건인 날이 19일, <100건인 날이 48일**이다.
+    정상 수집일의 일평균은 625건이다 — 전역 3건 들어온 날은 수집이 정상이었던 게 아니라
+    **잡이 거의 실패한 날**이다. 그런데 '≥1건' 문턱은 그날을 "수집 정상"으로 확정하고,
+    그러면 그날 8개 지역 전부의 0이 **"진짜 0"으로 주조된다.** B01이 죽인 위조를 B01의
+    게이트가 48일치 되살린다 — 폐기 원장 패턴 E(자기 표적을 놓치는 가드)의 네 번째 실사례.
+
+    처방: 절대 문턱(1건)이 아니라 **정상 수집일 대비 상대 문턱**. 창 내 일별 건수의
+    중앙값 대비 _COVERAGE_MIN_RATIO 미만인 날은 수집이 온전했다고 보지 않는다 → NaN.
+    중앙값을 쓰는 이유는 구멍(0건인 날)이 평균을 끌어내려 문턱을 스스로 낮추기 때문이다.
     """
     con = sqlite3.connect(_DB_PATH)
     try:
         rows = con.execute(
-            "SELECT DISTINCT DATE(timestamp) FROM event_archive "
-            "WHERE DATE(timestamp) BETWEEN ? AND ?",
+            "SELECT DATE(timestamp) AS day, COUNT(*) AS n FROM event_archive "
+            "WHERE DATE(timestamp) BETWEEN ? AND ? GROUP BY day",
             (start_iso, end_iso),
         ).fetchall()
     finally:
         con.close()
-    return frozenset(r[0] for r in rows if r[0])
+
+    counts = {r[0]: int(r[1]) for r in rows if r[0]}
+    if not counts:
+        return frozenset()
+
+    # 문턱: 비어있지 않은 날들의 중앙값 × ratio (0건인 날은 애초에 후보가 아니라 제외)
+    ordered = sorted(counts.values())
+    median = ordered[len(ordered) // 2]
+    floor = max(1, int(median * _COVERAGE_MIN_RATIO))
+
+    covered = frozenset(d for d, n in counts.items() if n >= floor)
+    thin = len(counts) - len(covered)
+    if thin:
+        logger.warning(
+            "[커버리지] 부분 수집일 %d일을 결측으로 강등 — 전역 건수 < %d "
+            "(정상일 중앙값 %d의 %.0f%%). 잡이 거의 실패한 날을 '사건 0건'으로 "
+            "주조하지 않는다.", thin, floor, median, _COVERAGE_MIN_RATIO * 100,
+        )
+    return covered
 
 
 def apply_coverage(raw: pd.Series, idx: pd.DatetimeIndex,
